@@ -1,7 +1,6 @@
 //  @@ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
 char Version1[]="A.COM CComp V0.9";
 #define ARCHIVE "AR.C"
-  char NASM=1;  
 #define LSTART        200
 #define VARMAX        300
 #define GNAMEMAX     4800 // 16*VARMAX
@@ -89,9 +88,12 @@ void ttt(long par1) {
  si= &FAdr;     si=FAdr;
  &FTop;         FTop;
   }
-int a(unsigned int i) { if(NASM == 0) prs("offset "); printName(i);}//address
-int v(unsigned int i) { if(NASM) { if (i < LSTART) prc('['); }
-  printName(i); if(NASM) { if (i < LSTART) prc(']'); }   }//value
+int a(unsigned int i) {  printName(i);}//address
+int v(unsigned int i) {//value 
+    if (i < LSTART) prc('['); 
+    printName(i);
+    if (i < LSTART) prc(']');   
+}
 int checknamelen() { int i;    i=strlen(symbol);
   if (i > IDLENMAX) error1("Item name is too long in characters)");
 }
@@ -103,16 +105,14 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
   if (checkName() != 0) error1("Variable already defined");
   if (istoken('[')) { istype='&';
     if (istoken(T_CONST)) {
-      if (NASM) {prs("\nsection .bss\nabsolute ");
-        prunsign1(orgData); }
-        else {prs("\nAData = $\norg "); prunsign1(orgData);} 
+      prs("\nsection .bss\nabsolute ");
+      prunsign1(orgData);
       prs("\n"); prs(symbol); 
-      if      (iswidth==1) {if (NASM) prs(" resb "); else prs(" db ");}
-      else if (iswidth==2) {if (NASM) prs(" resw "); else prs(" dw ");}
-      else                 {if (NASM) prs(" resd "); else prs(" dd ");}
-      prunsign1(lexval); if (NASM==0)prs(" dup (?)");
-      if(NASM) prs("\nsection .text");
-        else prs("\norg AData"); 
+      if (iswidth==1) prs(" resb "); 
+      if (iswidth==2) prs(" resw ");
+      if (iswidth==4) prs(" resd ");
+      prunsign1(lexval); 
+      prs("\nsection .text");
       orgData=orgData+lexval;
       if (iswidth==2) orgData=orgData+lexval;
       if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
@@ -262,7 +262,6 @@ int constantexpr() { int mode; int id1;int ids;
   expect(T_CONST);  prs(" ; constant expression");
   prs("\ncmp "); 
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  if (NASM==0) prs(" ptr ");
   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
   expect(')');
 }  
@@ -286,7 +285,6 @@ int expr2(int kind) {  int i;
     if (idw1 == 1) prs("byte ");
     if (idw1 == 2) prs("word ");
     if (idw1 == 4) prs("dword ");
-    if (NASM == 0) prs("ptr ");
     v(idx1);
     prs(", "); prunsign1(val2);
     if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
@@ -308,7 +306,6 @@ int expr2(int kind) {  int i;
       if (idw2 == 1) prs("byte ");
       if (idw2 == 2) prs("word ");
       if (idw2 == 4) prs("dword ");
-      if (NASM == 0) prs("ptr ");
       v(idx2);
       if (idx2 >= LSTART) { i=adrofname(idx2);  prs("; "); prs(i); }  }
     return;
@@ -385,10 +382,10 @@ int expr(int isRight)
     if (widthi != 2) error1("Arrayindex muss Zahl oder int sein"); } }
   if (istoken(T_PLUSPLUS  )) {if(mode)error1("Nur var erlaubt");
      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
-       if(NASM==0)prs(" ptr "); v(id1); goto e1;}
+     v(id1); goto e1;}
   if (istoken(T_MINUSMINUS)) {if(mode)error1("Nur var erlaubt");
      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
-       if(NASM==0)prs(" ptr "); v(id1); goto e1;}
+     v(id1); goto e1;}
        
   if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
   if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
@@ -418,7 +415,7 @@ int compoundass(char *op, int mode, int id1) {
   if(mode) error1("only scalar Var allowed");
   prnl(); prs(op); prs("  "); 
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-    if (NASM==0) prs(" ptr "); v(id1); prs(", ");
+  v(id1); prs(", ");
   expect(T_CONST); prunsign1(lexval);
 }
 int dovar1(int mode, int op, int ixarr, int id1) { 
@@ -481,7 +478,7 @@ int doreg(char *dr) { int i; expect('=');
 
 int doassign(int mode, int i, int ixarr, int ixconst) {
   gettypes(i);
-  if (mode==1) {prs("\n mov  bx, ");v(i);                       /*NASM??*/
+  if (mode==1) {prs("\n mov  bx, ");v(i);                  
     if (widthi == 2) prs("\n mov  [bx], ax");
     else  prs("\n mov  [bx], al"); return;}
   if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
@@ -491,11 +488,11 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
     prs("\n mov ["); printName(i);
     if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
   if (wi==1){prs("\n mov ");if(i<LSTART) {prs("byte ");
-    if(NASM==0)prs("ptr ");} v(i); prs(", al"); return; }
+    } v(i); prs(", al"); return; }
   if (wi==2){prs("\n mov ");if(i<LSTART) {prs("word ");
-    if(NASM==0)prs("ptr ");} v(i); prs(", ax"); return; }
+    } v(i); prs(", ax"); return; }
   if (wi==4){prs("\n mov ");if(i<LSTART) {prs("dword ");
-    if(NASM==0)prs("ptr ");} v(i); prs(", eax"); return; }
+    } v(i); prs(", eax"); return; }
 }
 int domul(int ids) {
   if (ids) rterm("imul"); else {
@@ -546,13 +543,13 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
       t0 = docalltype [i];
       n0 = docallvalue[i];     
       if(t0==1){ prs("\n push "); pint1(n0);}
-      if(t0==2){ prs("\n push "); if(NASM==0) prs("offset ");
+      if(t0==2){ prs("\n push "); 
         prs(fname);prc(95);pint1(n0);}
-      if(t0==3){ prs("\n lea  ax, "); if(NASM==0)prs("word ptr ");  v(n0);
+      if(t0==3){ prs("\n lea  ax, ");   v(n0);
         prs("\n push ax");}
       if(t0==4){ gettypes(n0); 
-        if(wi==2) { prs("\n push word ");if(NASM==0)prs("ptr "); v(n0);}
-        else { prs("\n mov al, byte ");  if(NASM==0)prs("ptr "); v(n0);
+        if(wi==2) { prs("\n push word "); v(n0);}
+        else { prs("\n mov al, byte ");   v(n0);
         prs("\n mov ah, 0\n push ax"); } }
       if(t0==5){ prs("\n push "); printreg(n0); if (n0 >= 47) sz32+2;  }
    i--; } while (i > 0);  }
@@ -581,9 +578,6 @@ int getarg() { int arglen1; int i; char *c;
   strcpy(namein, argv);
   if (instr2(namein, '.') == 0) strcat1(namein, ".C");
   toupper(namein);
-  c=instr2(namein, '/');
-  if (c != 0)  { c++; if (*c == 'N') {NASM=1; c+=2; strcpy(namein, c);  }
-    else {cputs("Parameter unknown "); exitR(3);  }  }
   strcpy(namelst, namein); i=strlen(namelst); i--; c=&namelst+i; *c='S';
  
   fdin=openR (namein);
@@ -593,8 +587,7 @@ int getarg() { int arglen1; int i; char *c;
   prs("\n; ");prs(Version1);
   prs(", Arglen: "); pint1(arglen1); if(arglen1){prs(", Argv: "); prs(argv);}
   prs(", Source: "); prs(namein);  prs(", Output asm: "); prs(namelst);
-  if (NASM) prs("\norg  256 ; NASM ON\njmp main"); else
-  prs("\n.MODEL TINY,C\n.386P\n.CODE\nJUMPS\nLOCALS\nSTARTUPCODE\njmp main");
+  prs("\norg  256 \njmp main"); 
 }
 int parse() { token=getlex(); do {
     if (token <= 0) return 1;
@@ -966,7 +959,7 @@ int epilog() {unsigned int i;
   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
   prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
   printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
-  if(NASM==0)prs("\nEND");end1(0);}
+  end1(0);}
 // while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
 int setblock(unsigned int i) {
   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
