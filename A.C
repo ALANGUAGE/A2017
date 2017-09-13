@@ -1,8 +1,7 @@
-//  @@ret redefined 2011.04.25  Full  Working 2011.09.13
-char Version1[]="F.COM CComp V0.6";
-#define BSS
+//  @@ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
+char Version1[]="A.COM CComp V0.9";
 #define ARCHIVE "AR.C"
-char BSS=1;  char NASM=1;  char LIST=1;
+  char NASM=1;  
 #define LSTART        200
 #define VARMAX        300
 #define GNAMEMAX     4800 // 16*VARMAX
@@ -104,16 +103,16 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
   if (checkName() != 0) error1("Variable already defined");
   if (istoken('[')) { istype='&';
     if (istoken(T_CONST)) {
-      if (BSS) { if (NASM) {prs("\nsection .bss\nabsolute ");
+      if (NASM) {prs("\nsection .bss\nabsolute ");
         prunsign1(orgData); }
-        else {prs("\nAData = $\norg "); prunsign1(orgData);} }
+        else {prs("\nAData = $\norg "); prunsign1(orgData);} 
       prs("\n"); prs(symbol); 
       if      (iswidth==1) {if (NASM) prs(" resb "); else prs(" db ");}
       else if (iswidth==2) {if (NASM) prs(" resw "); else prs(" dw ");}
       else                 {if (NASM) prs(" resd "); else prs(" dd ");}
       prunsign1(lexval); if (NASM==0)prs(" dup (?)");
-      if (BSS) {if(NASM) prs("\nsection .text");
-        else prs("\norg AData"); }
+      if(NASM) prs("\nsection .text");
+        else prs("\norg AData"); 
       orgData=orgData+lexval;
       if (iswidth==2) orgData=orgData+lexval;
       if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
@@ -577,7 +576,7 @@ char *arglen=0x80; char *argv=0x82;
 int getarg() { int arglen1; int i; char *c;
   arglen1=*arglen;
   if (arglen1) { i=arglen1+129; *i=0; }
-  else { cputs(Version1); cputs(" Usage: F.COM [/N] in_file[.C] (/N=NASM): ");
+  else { cputs(Version1); cputs(" Usage: A.COM in_file[.C]: ");
     DOS_NoBytes=readRL(argv, 0, CMDLENMAX); c=DOS_NoBytes+128; *c=0; prnl(); }
   strcpy(namein, argv);
   if (instr2(namein, '.') == 0) strcat1(namein, ".C");
@@ -668,9 +667,6 @@ int doinclude() { int fdtemp;
   getfirstchar(); token=getlex(); }
 }
 int dodefine() { int i; int j; int fdtemp;
-  if (eqstr(symbol, "BSS"   )) {BSS =1; token=getlex(); return; }
-  if (eqstr(symbol, "LIST"  )) {LIST=1; token=getlex(); return; }
-  if (eqstr(symbol, "NOLIST")) {LIST=0; token=getlex(); return; }
   if (eqstr(symbol, "ORGDATA")) {token=getlex();
     ORGDATAORIG=lexval; orgData=lexval; return; }
   if (eqstr(symbol, "ARCHIVE")){token=getlex();  if (token==T_STRING) {
@@ -837,8 +833,11 @@ int expect(int t) {if (istoken(t)==0) { *cloc=0; prs(co); listproc();
 
 int eprc(char c)  {*cloc=c; cloc++; }
 int eprs(char *s) {char c;  while(*s) { c=*s; eprc(c); s++; } }
-int prc(unsigned char c) { if (LIST) { if (c==10) {_AX=13; writetty(); }
-  _AL=c; writetty(); } fputcR(c, fdout); }
+int prc(unsigned char c) { 
+  if (c==10) {_AX=13; writetty(); }
+  _AL=c; writetty(); 
+  fputcR(c, fdout); 
+  }
 int prscomment(unsigned char *s) {unsigned char c;
   while(*s){c=*s;prc(c);s++;} }
 int prnl() { prs("\n ");}
@@ -872,7 +871,7 @@ int printinputline() { fgetsp=&fgetsdest;
       prscomment(&fgetsdest);}
 }
 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
-int error1(char *s) { LIST=1; //  *cloc=0; prs(co); listproc();
+int error1(char *s) { 
   lineno--;
   prnl(); prscomment(&fgetsdest);
   prs(";Line: "); prunsign1(lineno);
@@ -944,7 +943,7 @@ int epilog() {unsigned int i;
   i=1;
   while (i< GTop) { listvar(i); i++; }
   listfunc();   listcall();
-  LIST=1;
+
   prs("\n;Input: "); prs(&namein);
   prs(", List: ");   prs(&namelst);
   prs(",  Lines:"); printint51(lineno);
