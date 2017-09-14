@@ -29,13 +29,6 @@ char Version1[]="A.COM CComp V0.9";
 #define T_SIGNED      531
 #define T_UNSIGNED    532
 #define T_LONG        533
-#define T_SHORT       534
-//T_INT8 540   T_UINT8 541   T_INT16 542   T_UINT16 543   T_INT32 544
-#define T_UINT32      545
-//T_INT64 546   T_UINT64 547
-#define T_INTH        600
-#define T_IFCARRY     601
-#define T_IFZERO      602
 #define T_EQ          806
 #define T_NE          807
 #define T_GE          811
@@ -80,14 +73,57 @@ unsigned int lineno=1;       unsigned int linenoinclude=1;
 unsigned char *pt=0;         unsigned char *p1=0;
 int DOS_ERR=0; int DOS_NoBytes=0; char DOS_ByteRead=0;
 
-int tt1=7; int tt2; long ex;
-void ttt(long par1) {
-  int i1; long in; int i9;
-  ttt(in, ex );
- si = &FTop;  si=FTop;
- si= &FAdr;     si=FAdr;
- &FTop;         FTop;
-  }
+int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); } 
+int putch(char c)  {if (_ c==10) {al=13; writetty();} al=c; writetty(); }
+int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
+int mkneg(int n)   { n; __asm {neg ax} }
+
+int DosInt() { 
+    __emit__(0xCD,0x21);//inth 0x21; 
+    __emit__(0x73, 04); //ifcarry DOS_ERR++;
+    DOS_ERR++;
+}
+int openR (char *s) { dx=s;       ax=0x3D02; DosInt(); }
+int creatR(char *s) { dx=s; cx=0; ax=0x3C00; DosInt(); }
+int fcloseR(int fd) {bx=fd;       ax=0x3E00; DosInt(); }
+int exitR  (char c) {ah=0x4C; al=c;          DosInt(); }
+int readR (char *s, int fd) {dx=s; cx=1; bx=fd; ax=0x3F00; DosInt(); }
+int readRL(char *s, int fd, int len){dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
+int fputcR(char *n, int fd) { __asm{lea dx, [bp+4]}; /* = *n */
+  cx=1; bx=fd; ax=0x4000; DosInt(); }
+
+int strlen(char *s) { int c; c=0; while (*s!=0) {s++; c++;} return c; }
+int strcpy(char *s, char *t) {do { *s=*t; s++; t++; } while (*t!=0); *s=0; }
+int eqstr(char *p, char *q) { while(*p) {
+    if (*p != *q) return 0; p++; q++; }
+    if(*q) return 0; return 1; }
+int instr1(char *s, char c) { while(*s) {if (*s==c) return 1; s++;}return 0;}
+int instr2(char *s, char c) { while(*s) {if (*s==c)return &s; s++;}return 0;}
+int strcat1(char *s, char *t) { while (*s != 0) s++; strcpy(s, t);  }
+int toupper(char *s) {while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
+int pint (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
+  if (n >= 10) {e=n/10;  pint(e);}  n=n%10; n=n+'0'; putch(n); }
+int digit(char c){ 
+    if(c<'0') return 0; 
+    if(c>'9') return 0; 
+    return 1; 
+}
+int letter(char c) { 
+    if (digit(c)) return 1;   ////////
+    if (c=='_') return 1;
+    if (c=='.') return 1;
+    if (c=='?') return 1;
+    if (c=='$') return 1;
+    if (c> 'z') return 0; 
+    if (c< '@') return 0;// at included
+    if (c> 'Z') { if (c< 'a') return 0; }  
+    return 1; 
+}    
+int alnum(char c) {
+  if (digit (c)) return 1;
+  if (letter(c)) return 1;
+  return 0;
+}       
 int a(unsigned int i) {  printName(i);}//address
 int v(unsigned int i) {//value 
     if (i < LSTART) prc('['); 
@@ -157,7 +193,7 @@ int gettypes(int i) {int j; char c;
   if (c=='&')  typei=2;  
   return i; }  
 int adrofname(unsigned int i) { adrF(GNameField, i); }
-int adrF(char *s, unsigned int i) { i << 4;
+int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
   __asm{ add ax, [bp+4]  ; offset s } }
 int printName(unsigned int i) {int j;
   if (i < LSTART) { i=adrofname(i); prs(i); }
@@ -173,16 +209,25 @@ int checkName() { unsigned int i; unsigned int j;
   return 0;
 }    
 int typeName() { int m; //0=V,1=*,2=&
-  issign='S';
-  if(istoken(T_SIGNED))   issign='S';  if(istoken(T_UNSIGNED)) issign='U';
-  iswidth=2;                           if(istoken(T_VOID))     iswidth=0;
-  if(istoken(T_CHAR))     iswidth=1;   if(istoken(T_INT))      iswidth=2;
-  if(istoken(T_SHORT))    iswidth=2;   if(istoken(T_LONG))     iswidth=4;
-  if(istoken(T_UINT32)) { iswidth=4; issign='U'; }
-  istype='V'; m=0;
-  if(istoken('*'))  { istype='*'; m=1; } if(istoken('&'))  {istype='&'; m=2;}
-  name1(); return m; }
-int name1() {if (token!=T_NAME) error1("Name expected"); token=getlex(); }
+    issign='S';
+    if(istoken(T_SIGNED))   issign='S';  
+    if(istoken(T_UNSIGNED)) issign='U';
+    iswidth=2;                           
+    if(istoken(T_VOID))     iswidth=0;
+    if(istoken(T_CHAR))     iswidth=1;   
+    if(istoken(T_INT))      iswidth=2;
+    if(istoken(T_LONG))     iswidth=4;
+    istype='V'; 
+    m=0;
+    if(istoken('*'))  {istype='*'; m=1;} 
+    if(istoken('&'))  {istype='&'; m=2;}
+    name1(); 
+    return m; 
+}
+int name1() {
+    if (token!=T_NAME) error1("Name expected"); 
+    token=getlex(); 
+}
 
 int storecall() { int i; if (CTop >= CALLMAX) error1("Call table full");
   if (CNameTop >= 65468) error1("Call name table fuill");
@@ -239,10 +284,13 @@ int dofunc() { int nloc; int i; int narg;
   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
 }
 int isvariable() {
-  if(token==T_SIGNED) goto v1;   if(token==T_UNSIGNED) goto v1;
-  if(token==T_CHAR)   goto v1;   if(token==T_INT)      goto v1;
-  if(token==T_SHORT)  goto v1;   if(token==T_LONG)     goto v1;
-  if(token==T_UINT32) goto v1;   return 0;  v1: return 1;
+    if(token==T_SIGNED)   goto v1;   
+    if(token==T_UNSIGNED) goto v1;
+    if(token==T_CHAR)     goto v1;   
+    if(token==T_INT)      goto v1;
+    if(token==T_LONG)     goto v1;
+    return 0;  
+v1: return 1;
 }
                   
 int mod1; int ireg1; int idx1; int ids1; int idw1; int idt1; int val1;
@@ -682,22 +730,28 @@ int stmt() { int c; char cha;
   else if(istoken(T_WHILE)) dowhile();
   else if(istoken(T_GOTO))  {prs("\n jmp @@");name1();prs(symbol);expect(';');}
   else if(token==T_ASM)     {prs("\n"); c=next();
-    while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
+        while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
   else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();  
-    while(cha!= '}') { prc(cha); cha=next(); }
-    token=getlex(); }
-    else error1("Curly open expected"); }
-  else if(istoken(T_INTH))  {prs("\n int  "); expect(T_CONST);
-    prunsign1(lexval); expect(';');    }
-  else if(istoken(T_IFCARRY))doifcarry();
-  else if(istoken(T_IFZERO))doifzero();
+        while(cha!= '}') { prc(cha); cha=next(); }
+        token=getlex(); }
+        else error1("Curly open expected"); 
+        }
   else if(istoken(T_EMIT))   doemit();
   else if(istoken(';'))      { }
-  else if(istoken(T_RETURN)) {if (token!=';') exprstart();
-    prs("\n jmp @@retn"); nreturn++; expect(';');}
-  else if(thechar==':')      {prs("\n@@"); // Label
-     prs(symbol); prc(':');  expect(T_NAME); expect(':'); }
-  else                       {exprstart(); expect(';'); } }
+  else if(istoken(T_RETURN)) {
+        if (token!=';') exprstart();
+        prs("\n jmp @@retn"); 
+        nreturn++; 
+        expect(';');
+        }
+  else if(thechar==':')      {
+        prs("\n@@"); // Label
+        prs(symbol); prc(':');  
+        expect(T_NAME); 
+        expect(':'); 
+        }
+  else  {exprstart(); expect(';'); } 
+}
 
 int doemit() {prs("\n db ");
   L1: token=getlex(); prunsign1(lexval); token=getlex();
@@ -723,12 +777,7 @@ int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
   if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
     prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
   else prlabel(jdest); }
-int doifcarry() {int jdest;  nlabel++; jdest=nlabel;
-  prs("\n jae short @@");/*jnc*/ prs(fname);  pint1(jdest);
-  stmt(); prlabel(jdest); }
-int doifzero() {int jdest;  nlabel++; jdest=nlabel;
-  prs("\n jne short @@");        prs(fname);  pint1(jdest);
-  stmt(); prlabel(jdest); }
+
 int dodo() {int jdest; int jtemp;
   nlabel++; jdest=nlabel; prlabel(jdest); stmt();
   expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
@@ -779,18 +828,13 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
     if (eqstr(symbol,"void"    )) return T_VOID;
     if (eqstr(symbol,"int"     )) return T_INT;
-    if (eqstr(symbol,"short"   )) return T_SHORT;
     if (eqstr(symbol,"long"    )) return T_LONG;
-    if (eqstr(symbol,"uint32"  )) return T_UINT32;
-    if (eqstr(symbol,"inth"    )) return T_INTH;
     if (eqstr(symbol,"char"    )) return T_CHAR;
     if (eqstr(symbol,"asm"     )) return T_ASM;
     if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
     if (eqstr(symbol,"__emit__")) return T_EMIT;
     if (eqstr(symbol,"return"  )) return T_RETURN;
     if (eqstr(symbol,"if"      )) return T_IF;
-    if (eqstr(symbol,"ifcarry" )) return T_IFCARRY;
-    if (eqstr(symbol,"ifzero"  )) return T_IFZERO;
     if (eqstr(symbol,"else"    )) return T_ELSE;
     if (eqstr(symbol,"while"   )) return T_WHILE;
     if (eqstr(symbol,"do"      )) return T_DO;
