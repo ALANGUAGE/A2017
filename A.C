@@ -1,4 +1,4 @@
-//  @@ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
+//  .ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
 char Version1[]="A.COM V0.9";
 #define LSTART        200
 #define VARMAX        300
@@ -276,7 +276,7 @@ int dofunc() { int nloc; int i; int narg;
   if (LTop>LSTART){prs(";\n ENTER  "); 
     nloc=mkneg(nloc); pint1 (nloc); prs(",0"); }
   while(istoken('}')==0)   stmt();
-  if (nreturn) { prs("\n@@retn:");}
+  if (nreturn) { prs("\n .retn:");}
   if (LTop > LSTART) prs(" LEAVE");
   prs("\n ret"); prs("\n; ENDP"); 
   *cloc=0; prs(co); maxco1=strlen(co);
@@ -299,7 +299,7 @@ int pexpr() {expect('('); iscmp=0;
   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
     ireg1=checkreg();
     if (ireg1) { doreg1(1); return; }  }
-  exprstart(); if (iscmp==0) prs("\n or  al, al\n je @@");  prs(fname);
+  exprstart(); if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
   expect(')'); }           /*error1("Vergleich fehlt");*/
 
 int constantexpr() { int mode; int id1;int ids;
@@ -694,7 +694,7 @@ int stmt() { int c; char cha;
   else if(istoken(T_IF))    doif();
   else if(istoken(T_DO))    dodo();
   else if(istoken(T_WHILE)) dowhile();
-  else if(istoken(T_GOTO))  {prs("\n jmp @@");name1();prs(symbol);expect(';');}
+  else if(istoken(T_GOTO))  {prs("\n jmp .");name1();prs(symbol);expect(';');}
   else if(token==T_ASM)     {prs("\n"); c=next();
         while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
   else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();  
@@ -706,12 +706,12 @@ int stmt() { int c; char cha;
   else if(istoken(';'))      { }
   else if(istoken(T_RETURN)) {
         if (token!=';') exprstart();
-        prs("\n jmp @@retn"); 
+        prs("\n jmp .retn"); 
         nreturn++; 
         expect(';');
         }
   else if(thechar==':')      {
-        prs("\n@@"); // Label
+        prs("\n."); // Label
         prs(symbol); prc(':');  
         expect(T_NAME); 
         expect(':'); 
@@ -724,20 +724,20 @@ int doemit() {prs("\n db ");
     if (token== ',') {prc(','); goto L1;} expect(')'); }
 
 int cmpneg(int ids) {
-       if(iscmp==T_EQ) prs("\n jne @@");         //ZF=0
-  else if(iscmp==T_NE) prs("\n je  @@");         //ZF=1
-  else if(iscmp==T_LE) if (ids) prs("\n jg  @@");//ZF=0      SF =OF
-                           else prs("\n ja  @@");//ZF=0 CF=0
+       if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
+  else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
+  else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
+                           else prs("\n ja  .");//ZF=0 CF=0
   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jl  @@");}//          SF!=OF
+                               prs("\n jl  .");}//          SF!=OF
                            else{prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jb  @@");}//jb=jc=CF=1
-  else if(iscmp=='<' ) prs("\n jge @@");         //          SF =OF
-  else if(iscmp=='>' ) prs("\n jle @@");         //ZF=1 oder SF!=OF
+                               prs("\n jb  .");}//jb=jc=CF=1
+  else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
+  else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
   else error1("Vergleich unbekannt in CMPNEG()");  }
 
-int prlabel(int n) {prs("\n@@"); prs(fname); pint1(n); prc(':'); }
-int prjump (int n) {prs("\n jmp @@"); prs(fname); pint1(n); }
+int prlabel(int n) {prs("\n."); prs(fname); pint1(n); prc(':'); }
+int prjump (int n) {prs("\n jmp ."); prs(fname); pint1(n); }
 int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
   pint1(jdest); stmt();
   if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
