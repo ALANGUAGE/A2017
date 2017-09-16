@@ -273,11 +273,17 @@ int dofunc() { int nloc; int i; int narg;
   if (LTop>LSTART){prs(";\n ENTER  "); 
     nloc=mkneg(nloc); pint1 (nloc); prs(",0"); }
   while(istoken('}')==0)   stmt();
-  if (nreturn) { prs("\n .retn:");}
+  if (nreturn) { 
+        prs("\n .retn");
+        prs(fname);
+        prc(':');
+        }
   if (LTop > LSTART) prs(" LEAVE");
-  prs("\n ret"); prs("\n; ENDP"); 
-  *cloc=0; prs(co); maxco1=strlen(co);
+  prs("\n ret"); 
+  *cloc=0; prs(co); 
+  maxco1=strlen(co);
   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
+  prs("\n; ENDP"); 
 }
 int isvariable() {
     if(token==T_SIGNED)   goto v1;   
@@ -703,6 +709,7 @@ int stmt() { int c; char cha;
   else if(istoken(T_RETURN)) {
         if (token!=';') exprstart();
         prs("\n jmp .retn"); 
+        prs(fname);
         nreturn++; 
         expect(';');
         }
@@ -730,7 +737,7 @@ int cmpneg(int ids) {
                                prs("\n jb  .");}//jb=jc=CF=1
   else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
   else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
-  else error1("Vergleich unbekannt in CMPNEG()");  }
+  else error1("internal error compare unknown in CMPNEG()");  }
 
 int prlabel(int n) {prs("\n."); prs(fname); pint1(n); prc(':'); }
 int prjump (int n) {prs("\n jmp ."); prs(fname); pint1(n); }
