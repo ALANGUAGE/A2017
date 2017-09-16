@@ -1,6 +1,5 @@
 //  @@ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
-char Version1[]="A.COM CComp V0.9";
-#define ARCHIVE "AR.C"
+char Version1[]="A.COM V0.9";
 #define LSTART        200
 #define VARMAX        300
 #define GNAMEMAX     4800 // 16*VARMAX
@@ -53,7 +52,7 @@ char fname[CMDLENMAX];               char namein[CMDLENMAX];
 char namelst[CMDLENMAX];             char archivename[CMDLENMAX];
 int token=0;       char globC=0;     int spalte=0;
 char thechar=0;    int iscmp=0;      int nconst=0;
-int nreturn=0;     int nlabel=0;     int callrecursive=0;
+int nreturn=0;     int nlabel=0;    
 int GTop=1;        int LTop=150;
 unsigned int lexval=0;
 int typei;       char istype;  char GType [VARMAX]; // 0=V, 1=*, 2=&,#
@@ -614,7 +613,7 @@ int main() {
   CNameTop=0;
   getfirstchar();
   parse();
-  callrecursive=0; checkcalls(); epilog();
+  checkcalls(); epilog();
 }
 int getfirstchar() { fgetsp=&fgetsdest; *fgetsp=0; thechar=fgets1(); }
 char *arglen=0x80; char *argv=0x82;
@@ -658,44 +657,11 @@ int checkcalls() { int i; int j; int k;
       j++; } while (j < FTop);
     if (j == FTop) { k++; prs("\n; "); prs(NameA); }
     i++; }
-  if (k!=0) doar(k); else {prs(" All FUNCTIONs in place");
-    cputs("  All CALLs OK! "); }
-}
-char wasfunction;
-int doar(int k) { int i; int fdtemp; int fdout1; int used; int found;
-  cputs("  Open CALLs :"); pint(k);
   prs("\n; Number of unresolved CALLs :"); printint51(k);
-  fdin=openR (archivename);
-  if(DOS_ERR){cputs("Archive file missing: "); cputs(archivename); exitR(3); }
-  prs("\n;use archive file: "); prs(archivename);
-  fdtemp=fdout;
-  wasfunction=0;
-  getfirstchar();
-  do { fdout=0;do {found=getfunctionhead();}while (found==0); fdout=fdtemp;
-       if (found > 0) {
-         used=0; i=0;
-         while (i < CTop) {
-           pt=CAdr[i];
-           from_far(NameA, pt);
-           if (eqstr(symbol, NameA)) {
-             if (CType[i] == 0) {CType[i]=1; used++; } }  i++; }
-           if (used) {
-              prs("\n;Number of CALLs:"); printint51(used);
-              prs(" : "); prs(symbol); dofunc(); wasfunction=1; }
-        }
-     } while (token);
-  prs("\n;End of archive file. ");
-  callrecursive++; if (callrecursive < 5) checkcalls();
-    else {putch(10); cputs("***ERROR*** function(s) missing! ");
-    error1("At least 1 function is missing in archive file! "); }
+  if (k!=0) error1("At least 1 function is missing! "); 
+    else prs(" All FUNCTIONs in place");
 }
-int getfunctionhead() {
-  if (wasfunction) wasfunction=0; else token=getlex();
-  if (token == 0) return 0xFFFF;
-  if(istoken(T_INT))  { if (token != T_NAME) return 0;
-  token=getlex(); if (token == '(') return 1; }
-  return 0;
-}
+
 int doinclude() { int fdtemp;
   if (token==T_STRING) {  fdtemp=fdin;
   prs("\n;Use include file: "); prs(symbol);
