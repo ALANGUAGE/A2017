@@ -86,7 +86,6 @@ int openR (char *s) { dx=s;       ax=0x3D02; DosInt(); }
 int creatR(char *s) { dx=s; cx=0; ax=0x3C00; DosInt(); }
 int fcloseR(int fd) {bx=fd;       ax=0x3E00; DosInt(); }
 int exitR  (char c) {ah=0x4C; al=c;          DosInt(); }
-int readR (char *s, int fd) {dx=s; cx=1; bx=fd; ax=0x3F00; DosInt(); }
 int readRL(char *s, int fd, int len){dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
 int fputcR(char *n, int fd) { __asm{lea dx, [bp+4]}; /* = *n */
   cx=1; bx=fd; ax=0x4000; DosInt(); }
@@ -108,7 +107,6 @@ int digit(char c){
     return 1; 
 }
 int letter(char c) { 
-    if (digit(c)) return 1;   ////////
     if (c=='_') return 1;
     if (c=='.') return 1;
     if (c=='?') return 1;
@@ -632,7 +630,6 @@ int getarg() { int arglen1; int i; char *c;
   fdout=creatR(namelst);
   if(DOS_ERR){cputs("list file not creatable: ");cputs(namelst);exitR(2);}
   prs("\n; ");prs(Version1);
-  prs(", Arglen: "); pint1(arglen1); if(arglen1){prs(", Argv: "); prs(argv);}
   prs(", Source: "); prs(namein);  prs(", Output asm: "); prs(namelst);
   prs("\norg  256 \njmp main"); 
 }
@@ -786,9 +783,9 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (lexval==92) {lexval=next();
       if (lexval=='n') lexval=10; if (lexval=='t') lexval= 9;
       if (lexval=='0') lexval= 0; } next(); return T_CONST; }
-  if (letter(c)) { 
+  if (alnum(c)) { 
     strcpy(symboltemp, symbol); p=&symbol;  *p=c;  p++;
-    while(letter(thechar)) {c=next(); *p=c;  p++; } 
+    while(alnum(thechar)) {c=next(); *p=c;  p++; } 
       *p=0;
     if (eqstr(symbol,"signed"  )) return T_SIGNED;
     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
@@ -820,7 +817,7 @@ int convertdefine() { int i; int j;   i=0;
 int getdigit(char c) { int i;
     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
     if (thechar=='x') thechar='X'; if (thechar=='X') { next();
-      while(letter(thechar)) { c=next(); if(c>96) c=c-39;
+      while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
 	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
      i=0; i=c; lexval=lexval+i;}
     }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10; 
@@ -866,7 +863,7 @@ int fgets1() { char c; c=*fgetsp;
     fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
   fgetsp++; spalte++;  return c; }
 int printinputline() { fgetsp=&fgetsdest;
-  do {DOS_NoBytes=readR(&DOS_ByteRead, fdin);
+  do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
   if (DOS_NoBytes == 0) return; 
     *fgetsp=DOS_ByteRead; fgetsp++;} 
   while (DOS_ByteRead != 10); *fgetsp=0;
