@@ -96,7 +96,6 @@ int eqstr(char *p, char *q) { while(*p) {
     if (*p != *q) return 0; p++; q++; }
     if(*q) return 0; return 1; }
 int instr1(char *s, char c) { while(*s) {if (*s==c) return 1; s++;}return 0;}
-int instr2(char *s, char c) { while(*s) {if (*s==c)return &s; s++;}return 0;}
 int strcat1(char *s, char *t) { while (*s != 0) s++; strcpy(s, t);  }
 int toupper(char *s) {while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
 int pint (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
@@ -621,7 +620,7 @@ int getarg() { int arglen1; int i; char *c;
   else { cputs(Version1); cputs(" Usage: A.COM in_file[.C]: ");
     DOS_NoBytes=readRL(argv, 0, CMDLENMAX); c=DOS_NoBytes+128; *c=0; prnl(); }
   strcpy(namein, argv);
-  if (instr2(namein, '.') == 0) strcat1(namein, ".C");
+  if (instr1(namein, '.') == 0) strcat1(namein, ".C");
   toupper(namein);
   strcpy(namelst, namein); i=strlen(namelst); i--; c=&namelst+i; *c='S';
  
