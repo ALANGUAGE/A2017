@@ -98,8 +98,7 @@ int eqstr(char *p, char *q) { while(*p) {
 int instr1(char *s, char c) { while(*s) {if (*s==c) return 1; s++;}return 0;}
 int strcat1(char *s, char *t) { while (*s != 0) s++; strcpy(s, t);  }
 int toupper(char *s) {while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
-int pint (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
-  if (n >= 10) {e=n/10;  pint(e);}  n=n%10; n=n+'0'; putch(n); }
+
 int digit(char c){ 
     if(c<'0') return 0; 
     if(c>'9') return 0; 
@@ -138,12 +137,12 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
   if (istoken('[')) { istype='&';
     if (istoken(T_CONST)) {
       prs("\nsection .bss\nabsolute ");
-      prunsign1(orgData);
+      pint1(orgData);
       prs("\n"); prs(symbol); 
       if (iswidth==1) prs(" resb "); 
       if (iswidth==2) prs(" resw ");
       if (iswidth==4) prs(" resd ");
-      prunsign1(lexval); 
+      pint1(lexval); 
       prs("\nsection .text");
       orgData=orgData+lexval;
       if (iswidth==2) orgData=orgData+lexval;
@@ -159,7 +158,7 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
         i=strlen(symbol); GData[GTop]=i; }
       else if (istoken('{' )) { i=0;
         do { if(i) prc(','); 
-          expect(T_CONST); prunsign1(lexval); i=1; }
+          expect(T_CONST); pint1(lexval); i=1; }
         while (istoken(',')); expect('}'); }  
       else error1("String or number array expected");
       }; 
@@ -171,8 +170,8 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
       else                 prs(" dd ");
     }
     if(istoken('-')) prc('-');
-    if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
-    else prunsign1(0); }
+    if (istoken('=')) {expect(T_CONST); pint1(lexval); }
+    else pint1(0); }
   GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
   GAdr [GTop]=lineno-1; GUsed [GTop]=0;
   pt=adrofname(GTop);
@@ -312,7 +311,7 @@ int constantexpr() { int mode; int id1;int ids;
   expect(T_CONST);  prs(" ; constant expression");
   prs("\ncmp "); 
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
+  v(id1); prs(", "); pint1(lexval); cmpneg(ids);   prs(fname);
   expect(')');
 }  
 int exprstart() { if (eqstr(symbol, "_")) expr2(0); else expr(0); }
@@ -336,7 +335,7 @@ int expr2(int kind) {  int i;
     if (idw1 == 2) prs("word ");
     if (idw1 == 4) prs("dword ");
     v(idx1);
-    prs(", "); prunsign1(val2);
+    prs(", "); pint1(val2);
     if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
   
   mod1=typeName(); ireg2=checkreg();
@@ -375,7 +374,7 @@ int doreg1(int iscmp1) { int i;
       strcpy(ops, "cmp"); }
   prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
 
-  if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
+  if (istoken(T_CONST)) {pint1(lexval); goto reg1;}
   mod2=typeName(); ireg2=checkreg();
   if (ireg2) {printreg(ireg2); goto reg1;}
   i=searchname();  if (mod2 == 2) a(i); else v(i);
@@ -416,7 +415,7 @@ int expr(int isRight)
 { int mode; int id1;     int ixarr; int ixconst;
   int ids;  int isCONST; int i;     unsigned char *p;
   if (istoken(T_CONST)) { evalue=lexval;
-    prs("\n mov ax, "); prunsign1(lexval); return 4; }
+    prs("\n mov ax, "); pint1(lexval); return 4; }
   mode=typeName(); /*0=V,1=*,2=&*/
   ireg1=checkreg();
   if (ireg1) { doreg1(0); return; }
@@ -466,7 +465,7 @@ int compoundass(char *op, int mode, int id1) {
   prnl(); prs(op); prs("  "); 
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
   v(id1); prs(", ");
-  expect(T_CONST); prunsign1(lexval);
+  expect(T_CONST); pint1(lexval);
 }
 int dovar1(int mode, int op, int ixarr, int id1) { 
   gettypes(id1);
@@ -494,7 +493,7 @@ int rterm(char *op) {int mode; int opint; int ixarr; int id1;
     if (wi==1) prs(" al, ");
     if (wi==2) prs(" ax, ");
     if (wi==4) prs(" eax, ");
-    prunsign1(lexval); return;}
+    pint1(lexval); return;}
   mode=typeName(); id1=searchname(); ixarr=0;
   if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');  
     gettypes(ixarr);
@@ -522,7 +521,7 @@ int isreg() {
 }
 int doreg(char *dr) { int i; expect('=');
   prs("\n mov  "); prs(dr); prs(", ");
-       if (istoken(T_CONST)) prunsign1(lexval);
+       if (istoken(T_CONST)) pint1(lexval);
   else if (istoken(T_NAME )) { i=searchname(); v(i); }
   else error1("only number or var allowed"); }
 
@@ -533,7 +532,7 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
     else  prs("\n mov  [bx], al"); return;}
   if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
   if (ixarr) {  prs("\n mov bx, ");
-    if(ixconst) prunsign1(ixarr); else v(ixarr);
+    if(ixconst) pint1(ixarr); else v(ixarr);
     if (wi==2) prs("\n shl bx, 1");
     prs("\n mov ["); printName(i);
     if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
@@ -546,11 +545,11 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
 }
 int domul(int ids) {
   if (ids) rterm("imul"); else {
-  if (istoken(T_CONST)) {prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx"); }
+  if (istoken(T_CONST)) {prs("\n mov bx, "); pint1(lexval); prs("\n mul bx"); }
   else error1("with MUL only const number as multiplicator allowed"); } }
 int doidiv(int ids) { int mode; int id1;
   if (istoken(T_CONST)) {
-    prs("\n mov bx, "); prunsign1(lexval);
+    prs("\n mov bx, "); pint1(lexval);
     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
   else {
     mode=typeName(); id1=searchname();
@@ -723,7 +722,7 @@ int stmt() { int c; char cha;
 }
 
 int doemit() {prs("\n db ");
-  L1: token=getlex(); prunsign1(lexval); token=getlex();
+  L1: token=getlex(); pint1(lexval); token=getlex();
     if (token== ',') {prc(','); goto L1;} expect(')'); }
 
 int cmpneg(int ids) {
@@ -731,9 +730,9 @@ int cmpneg(int ids) {
   else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
   else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
                            else prs("\n ja  .");//ZF=0 CF=0
-  else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
+  else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); pint1(ids);
                                prs("\n jl  .");}//          SF!=OF
-                           else{prs(" ;unsigned : "); prunsign1(ids);
+                           else{prs(" ;unsigned : "); pint1(ids);
                                prs("\n jb  .");}//jb=jc=CF=1
   else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
   else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
@@ -856,13 +855,10 @@ int prs(unsigned char *s) {unsigned char c; int com; com=0;
 int eprnum(int n){int e; if(n<0) { eprc('-'); n=mkneg(n); }
   if (n >= 10) {e=n/10; eprnum(e);}  n=n%10; n=n+'0'; eprc(n); }
 int pint1 (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
-  if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n=n+'0'; prc(n); }
-int prunsign1(unsigned int n) { unsigned int e;
-  if ( _ n >= 10) {  e=n/10; /*DIV*/ prunsign1(e); }
-    n = n % 10; /*unsigned mod*/   n += '0'; prc(n); }
+  if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }
 int printint51(unsigned int j)  {
   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
-   if (j<10) prc(32);  prunsign1(j); }
+   if (j<10) prc(32);  pint1(j); }
 
 int fgets1() { char c; c=*fgetsp;
   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
@@ -873,23 +869,23 @@ int printinputline() { fgetsp=&fgetsdest;
   if (DOS_NoBytes == 0) return; 
     *fgetsp=DOS_ByteRead; fgetsp++;} 
   while (DOS_ByteRead != 10); *fgetsp=0;
-    if (fdout) { prs("\n\n;-"); prunsign1(lineno); prc(' '); lineno++;
+    if (fdout) { prs("\n\n;-"); pint1(lineno); prc(' '); lineno++;
       prscomment(&fgetsdest);}
 }
 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
 int error1(char *s) { 
   lineno--;
   prnl(); prscomment(&fgetsdest);
-  prs(";Line: "); prunsign1(lineno);
+  prs(";Line: "); pint1(lineno);
   prs(" ************** ERROR: "); prs(s);
   prs("  in column: "); pint1(spalte);
-  prs("\nToken: "); prunsign1(token); prs(", globC: "); prc(globC);
+  prs("\nToken: "); pint1(token); prs(", globC: "); prc(globC);
   prs(", thechar: "); pint1(thechar); prs(", symbol: "); prs(symbol);
   end1(1); }
 int listproc() {int i; 
   if (LTop > LSTART) {
   prs("\n;Function : "); prs(fname);
-  prs(", Number of local variables: "); i=LTop - LSTART; prunsign1(i);
+  prs(", Number of local variables: "); i=LTop - LSTART; pint1(i);
   prs("\n;   # type sign width addr used name   list of local variables");
     i=LSTART; 
     while (i < LTop) { listvar(i); i++; } } 
@@ -905,8 +901,8 @@ int listvar(unsigned int i) {unsigned int j; char c;
   j=GUsed[i]; if (j) printint51(j);
   else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
   prc(32);  pt=adrofname(i); prs(pt);
-  if(GType[i]=='#') { prc('='); j=GData[i]; prunsign1(j); }
-  if(GType[i]=='&') { prc('['); j=GData[i]; prunsign1(j); prc(']');}
+  if(GType[i]=='#') { prc('='); j=GData[i]; pint1(j); }
+  if(GType[i]=='&') { prc('['); j=GData[i]; pint1(j); prc(']');}
   if (i >= LSTART) { prs(" = bp"); j=GData[i];
     if (j > 0) prc('+'); pint1(j);  }
 }
@@ -966,7 +962,7 @@ int epilog() {unsigned int i;
   prs("\n;Code until     :"); printint51(i);
   prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
   printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
-  prs("\n;Data (HeapEnd) :"); prunsign1(orgData); i=MAXUI-orgData;
+  prs("\n;Data (HeapEnd) :"); pint1(orgData); i=MAXUI-orgData;
   prs(", resting stacksize: ");printint51(i);
   if (i <= 5000) prs(" *** Warning *** Stack too small");
   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
