@@ -159,7 +159,7 @@ maxco1 dw 0
 ;-49 char coname[CMDLENMAX];              char *cloc=0;
 
 section .bss
-absolute -32536
+absolute 33000
 coname resb 67
 section .text
 cloc dw 0
@@ -169,29 +169,29 @@ cloc dw 0
 fdin dw 0
 fdout dw 0
 section .bss
-absolute -32469
+absolute 33067
 symbol resb 128
 section .text
 
 ;-51 char fname[CMDLENMAX];               char namein[CMDLENMAX];
 
 section .bss
-absolute -32341
+absolute 33195
 fname resb 67
 section .text
 section .bss
-absolute -32274
+absolute 33262
 namein resb 67
 section .text
 
 ;-52 char namelst[CMDLENMAX];             char archivename[CMDLENMAX];
 
 section .bss
-absolute -32207
+absolute 33329
 namelst resb 67
 section .text
 section .bss
-absolute -32140
+absolute 33396
 archivename resb 67
 section .text
 
@@ -226,7 +226,7 @@ lexval dw 0
 typei dw 0
 istype db 0
 section .bss
-absolute -32073
+absolute 33463
 GType resb 300
 section .text
 
@@ -235,7 +235,7 @@ section .text
 signi dw 0
 issign db 0
 section .bss
-absolute -31773
+absolute 33763
 GSign resb 300
 section .text
 
@@ -244,18 +244,18 @@ section .text
 widthi dw 0
 iswidth db 0
 section .bss
-absolute -31473
+absolute 34063
 GWidth resb 300
 section .text
 
 ;-61              int GAdr[VARMAX]; int  GUsed [VARMAX];
 
 section .bss
-absolute -31173
+absolute 34363
 GAdr resw 300
 section .text
 section .bss
-absolute -30573
+absolute 34963
 GUsed resw 300
 section .text
 
@@ -263,11 +263,11 @@ section .text
 
 wi dw 0
 section .bss
-absolute -29973
+absolute 35563
 GData resw 300
 section .text
 section .bss
-absolute -29373
+absolute 36163
 GNameField resb 4800
 section .text
 
@@ -279,36 +279,36 @@ CTop dw 0
 ;-64 char FType [FUNCMAX];        char CType[CALLMAX];
 
 section .bss
-absolute -24573
+absolute 40963
 FType resb 300
 section .text
 section .bss
-absolute -24273
+absolute 41263
 CType resb 2000
 section .text
 
 ;-65 int  FAdr  [FUNCMAX];        int  CAdr [CALLMAX];
 
 section .bss
-absolute -22273
+absolute 43263
 FAdr resw 300
 section .text
 section .bss
-absolute -21673
+absolute 43863
 CAdr resw 2000
 section .text
 
 ;-66 int  FCalls[FUNCMAX];
 
 section .bss
-absolute -17673
+absolute 47863
 FCalls resw 300
 section .text
 
 ;-67 char FNameField[FNAMEMAX];   //char CNameField[CNAMEMAX];
 
 section .bss
-absolute -17073
+absolute 48463
 FNameField resb 4800
 section .text
 
@@ -319,7 +319,7 @@ NameA db "12345678901234567890123456789012",0
 ;-69 char fgetsdest[128];         unsigned char *CNameTop=0;
 
 section .bss
-absolute -12273
+absolute 53263
 fgetsdest resb 128
 section .text
 CNameTop dw 0
@@ -1004,7 +1004,7 @@ checknamelen:  ; *** PROC ***
 checknamelen_0 db "Item name is too long in characters)",0
 ; ENDP
 section .bss
-absolute -12145
+absolute 53391
 doglobName resb 15
 section .text
 
@@ -1079,10 +1079,10 @@ doglob:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-140       pint1(orgData);
+;-140       prunsign1(orgData);
 
  push word [orgData]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-141       prs("\n"); prs(symbol); 
@@ -1124,11 +1124,11 @@ doglob:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-145       pint1(lexval); 
+;-145       prunsign1(lexval); 
 
 .doglob43:
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-146       prs("\nsection .text");
@@ -1283,14 +1283,14 @@ doglob:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-161           expect(T_CONST); pint1(lexval); i=1; }
+;-161           expect(T_CONST); prunsign1(lexval); i=1; }
 
 .doglob52:
  push 257
  call expect
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  mov ax, 1
  mov [bp-2], ax
@@ -1393,7 +1393,7 @@ doglob:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-173     if (istoken('=')) {expect(T_CONST); pint1(lexval); }
+;-173     if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
 
 .doglob62:
  push 61
@@ -1405,15 +1405,15 @@ doglob:  ; *** PROC ***
  call expect
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-174     else pint1(0); }
+;-174     else prunsign1(0); }
 
  jmp .doglob64
 .doglob63:
  push 0
- call pint1
+ call prunsign1
  add  sp, 2
 .doglob64:
 
@@ -1988,7 +1988,7 @@ storecall:  ; *** PROC ***
 
 .storecall93:
  mov ax, [CNameTop]
- cmp ax, -68 ;unsigned : 0
+ cmp ax, 65468 ;unsigned : 0
  jb  .storecall94
  push storecall_1
  call error1
@@ -2423,14 +2423,14 @@ dofunc:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-273     nloc=mkneg(nloc); pint1 (nloc); prs(",0"); }
+;-273     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
 
  push word [bp-2]
  call mkneg
  add  sp, 2
  mov [bp-2], ax
  push word [bp-2]
- call pint1
+ call prunsign1
  add  sp, 2
  push dofunc_4
  call prs
@@ -2777,7 +2777,7 @@ constantexpr:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-314   v(id1); prs(", "); pint1(lexval); cmpneg(ids);   prs(fname);
+;-314   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
 
 .constantexpr129:
  push word [bp-4]
@@ -2787,7 +2787,7 @@ constantexpr:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  push word [bp-6]
  call cmpneg
@@ -3005,13 +3005,13 @@ expr2:  ; *** PROC ***
  call v
  add  sp, 2
 
-;-338     prs(", "); pint1(val2);
+;-338     prs(", "); prunsign1(val2);
 
  push expr2_9
  call prs
  add  sp, 2
  push word [val2]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-339     if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
@@ -3257,7 +3257,7 @@ expr2_21 db "; ",0
 expr2_22 db "Internal error: only const or reg allowed",0
 ; ENDP
 section .bss
-absolute -12130
+absolute 53406
 ops resb 5
 section .text
 
@@ -3416,7 +3416,7 @@ doreg1:  ; *** PROC ***
 ;-376 
 
 
-;-377   if (istoken(T_CONST)) {pint1(lexval); goto reg1;}
+;-377   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
 
  push 257
  call istoken
@@ -3424,7 +3424,7 @@ doreg1:  ; *** PROC ***
  or  al, al
  je .doreg1167
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  jmp .reg1
 
@@ -4042,13 +4042,13 @@ expr:  ; *** PROC ***
  mov ax, [lexval]
  mov word [evalue], ax
 
-;-418     prs("\n mov ax, "); pint1(lexval); return 4; }
+;-418     prs("\n mov ax, "); prunsign1(lexval); return 4; }
 
  push expr_0
  call prs
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  mov ax, 4
  jmp .retnexpr
@@ -4607,13 +4607,13 @@ compoundass:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-468   expect(T_CONST); pint1(lexval);
+;-468   expect(T_CONST); prunsign1(lexval);
 
  push 257
  call expect
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-469 }
@@ -4888,11 +4888,11 @@ rterm:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-496     pint1(lexval); return;}
+;-496     prunsign1(lexval); return;}
 
 .rterm264:
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  jmp .retnrterm
 
@@ -5272,7 +5272,7 @@ doreg:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-524        if (istoken(T_CONST)) pint1(lexval);
+;-524        if (istoken(T_CONST)) prunsign1(lexval);
 
  push 257
  call istoken
@@ -5280,7 +5280,7 @@ doreg:  ; *** PROC ***
  or  al, al
  je .doreg283
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-525   else if (istoken(T_NAME )) { i=searchname(); v(i); }
@@ -5392,13 +5392,13 @@ doassign:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-535     if(ixconst) pint1(ixarr); else v(ixarr);
+;-535     if(ixconst) prunsign1(ixarr); else v(ixarr);
 
  mov ax, [bp+10]
  or  al, al
  je .doassign292
  push word [bp+8]
- call pint1
+ call prunsign1
  add  sp, 2
  jmp .doassign293
 .doassign292:
@@ -5569,7 +5569,7 @@ domul:  ; *** PROC ***
  jmp .domul304
 .domul303:
 
-;-548   if (istoken(T_CONST)) {prs("\n mov bx, "); pint1(lexval); prs("\n mul bx"); }
+;-548   if (istoken(T_CONST)) {prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx"); }
 
  push 257
  call istoken
@@ -5580,7 +5580,7 @@ domul:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  push domul_2
  call prs
@@ -5621,13 +5621,13 @@ doidiv:  ; *** PROC ***
  or  al, al
  je .doidiv307
 
-;-552     prs("\n mov bx, "); pint1(lexval);
+;-552     prs("\n mov bx, "); prunsign1(lexval);
 
  push doidiv_0
  call prs
  add  sp, 2
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-553     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
@@ -5756,18 +5756,18 @@ domod:  ; *** PROC ***
 domod_0 db "\n mov ax, dx",0
 ; ENDP
 section .bss
-absolute -12125
+absolute 53411
 docalltype resw 10
 section .text
 section .bss
-absolute -12105
+absolute 53431
 docallvalue resw 10
 section .text
 
 ;-566 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
 
 section .bss
-absolute -12085
+absolute 53451
 procname resb 17
 section .text
 
@@ -6023,7 +6023,7 @@ docall1:  ; *** PROC ***
  mov ax, [docallvalue + bx]
  mov [bp-8], ax
 
-;-594       if(t0==1){ prs("\n push "); pint1(n0);}
+;-594       if(t0==1){ prs("\n push "); prunsign1(n0);}
 
  mov ax, [bp-6]
  cmp ax, 1
@@ -6032,7 +6032,7 @@ docall1:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [bp-8]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-595       if(t0==2){ prs("\n push "); 
@@ -6045,7 +6045,7 @@ docall1:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-596         prs(fname);prc(95);pint1(n0);}
+;-596         prs(fname);prc(95);prunsign1(n0);}
 
  lea  ax, [fname]
  push ax
@@ -6055,7 +6055,7 @@ docall1:  ; *** PROC ***
  call prc
  add  sp, 2
  push word [bp-8]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-597       if(t0==3){ prs("\n lea  ax, ");   v(n0);
@@ -6166,7 +6166,7 @@ docall1:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-607      narg=narg+narg; narg=narg+sz32; pint1(narg); } }
+;-607      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
 
  mov ax, [bp-4]
  add ax, [bp-4]
@@ -6175,7 +6175,7 @@ docall1:  ; *** PROC ***
  add ax, [bp-10]
  mov [bp-4], ax
  push word [bp-4]
- call pint1
+ call prunsign1
  add  sp, 2
 .docall1338:
 
@@ -7306,13 +7306,13 @@ doemit:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-725   L1: token=getlex(); pint1(lexval); token=getlex();
+;-725   L1: token=getlex(); prunsign1(lexval); token=getlex();
 
 .L1:
  call getlex
  mov word [token], ax
  push word [lexval]
- call pint1
+ call prunsign1
  add  sp, 2
  call getlex
  mov word [token], ax
@@ -7388,7 +7388,7 @@ cmpneg:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-733   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); pint1(ids);
+;-733   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
 
 .cmpneg412:
  jmp .cmpneg413
@@ -7403,7 +7403,7 @@ cmpneg:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [bp+4]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-734                                prs("\n jl  .");}//          SF!=OF
@@ -7412,7 +7412,7 @@ cmpneg:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-735                            else{prs(" ;unsigned : "); pint1(ids);
+;-735                            else{prs(" ;unsigned : "); prunsign1(ids);
 
  jmp .cmpneg416
 .cmpneg415:
@@ -7420,7 +7420,7 @@ cmpneg:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [bp+4]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-736                                prs("\n jb  .");}//jb=jc=CF=1
@@ -7469,7 +7469,7 @@ cmpneg:  ; *** PROC ***
 ;-740 
 
 
-;-741 int prlabel(int n) {prs("\n."); prs(fname); pint1(n); prc(':'); }
+;-741 int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
  LEAVE
  ret
 cmpneg_0 db "\n jne .",0
@@ -7498,13 +7498,13 @@ prlabel:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [bp+4]
- call pint1
+ call prunsign1
  add  sp, 2
  push 58
  call prc
  add  sp, 2
 
-;-742 int prjump (int n) {prs("\n jmp ."); prs(fname); pint1(n); }
+;-742 int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
  LEAVE
  ret
 prlabel_0 db "\n.",0
@@ -7523,7 +7523,7 @@ prjump:  ; *** PROC ***
  call prs
  add  sp, 2
  push word [bp+4]
- call pint1
+ call prunsign1
  add  sp, 2
 
 ;-743 int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
@@ -7735,7 +7735,7 @@ isrelational:  ; *** PROC ***
  ret
 ; ENDP
 section .bss
-absolute -12068
+absolute 53468
 symboltemp resb 80
 section .text
 
@@ -9024,7 +9024,7 @@ pint1:  ; *** PROC ***
  add  sp, 2
  mov [bp+4], ax
 
-;-858   if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }
+;-858   if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }  
 
 .pint1531:
  mov ax, [bp+4]
@@ -9050,58 +9050,97 @@ pint1:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-859 int printint51(unsigned int j)  {
+;-859 int prunsign1(unsigned int n) { unsigned int e;
+ LEAVE
+ ret
+; ENDP
+
+prunsign1:  ; *** PROC ***
+
+;-860   if ( _ n >= 10) {  e=n/10; prunsign1(e); }
+
+;Function : prunsign1, Number of local variables: 2
+;   # type sign width addr used name   list of local variables
+;  200 var unsg word   859 NULL n = bp+4
+;  201 var unsg word   859 NULL e = bp-2;
+ ENTER  2,0 ; constant expression
+cmp word[bp+4], 10 ;unsigned : 0
+ jb  .prunsign1533
+ mov ax, [bp+4]
+ mov bx, 10
+ mov dx, 0
+ div bx
+ mov [bp-2], ax
+ push word [bp-2]
+ call prunsign1
+ add  sp, 2
+
+;-861     n = n % 10; /*unsigned mod*/   n += '0'; prc(n); }  
+
+.prunsign1533:
+ mov ax, [bp+4]
+ mov bx, 10
+ mov dx, 0
+ div bx
+ mov ax, dx
+ mov [bp+4], ax
+ add  word[bp+4], 48
+ push word [bp+4]
+ call prc
+ add  sp, 2
+
+;-862 int printint51(unsigned int j)  {
  LEAVE
  ret
 ; ENDP
 
 printint51:  ; *** PROC ***
 
-;-860   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
+;-863   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
 
 ;Function : printint51, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var unsg word   859 NULL j = bp+4;
+;  200 var unsg word   862 NULL j = bp+4;
  ENTER  0,0
  mov ax, [bp+4]
  cmp ax, 10000
- jge .printint51533
- push 32
- call prc
- add  sp, 2
-.printint51533:
- mov ax, [bp+4]
- cmp ax, 1000
  jge .printint51534
  push 32
  call prc
  add  sp, 2
 .printint51534:
  mov ax, [bp+4]
- cmp ax, 100
+ cmp ax, 1000
  jge .printint51535
  push 32
  call prc
  add  sp, 2
-
-;-861    if (j<10) prc(32);  pint1(j); }
-
 .printint51535:
  mov ax, [bp+4]
- cmp ax, 10
+ cmp ax, 100
  jge .printint51536
  push 32
  call prc
  add  sp, 2
+
+;-864    if (j<10) prc(32);  prunsign1(j); }
+
 .printint51536:
+ mov ax, [bp+4]
+ cmp ax, 10
+ jge .printint51537
+ push 32
+ call prc
+ add  sp, 2
+.printint51537:
  push word [bp+4]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-862 
+;-865 
 
 
-;-863 int fgets1() { char c; c=*fgetsp;
+;-866 int fgets1() { char c; c=*fgetsp;
  LEAVE
  ret
 ; ENDP
@@ -9109,28 +9148,28 @@ printint51:  ; *** PROC ***
 fgets1:  ; *** PROC ***
 ;Function : fgets1, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var sign byte   863 NULL c = bp-2;
+;  200 var sign byte   866 NULL c = bp-2;
  ENTER  2,0
  mov bx, [fgetsp]
  mov al, [bx]
  mov ah, 0
  mov [bp-2], al
 
-;-864   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
+;-867   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
 
  mov al, [bp-2]
  cmp al, 0
- jne .fgets1537
+ jne .fgets1538
  call printinputline
  mov ax, [DOS_NoBytes]
  cmp ax, 0
- jne .fgets1538
+ jne .fgets1539
  mov ax, 0
  jmp .retnfgets1
 
-;-865     fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
+;-868     fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
 
-.fgets1538:
+.fgets1539:
  mov ax, fgetsdest
  mov word [fgetsp], ax
  mov bx, [fgetsp]
@@ -9140,15 +9179,15 @@ fgets1:  ; *** PROC ***
  mov ax, 0
  mov word [spalte], ax
 
-;-866   fgetsp++; spalte++;  return c; }
+;-869   fgetsp++; spalte++;  return c; }
 
-.fgets1537:
+.fgets1538:
  inc  word[fgetsp]
  inc  word[spalte]
  mov al, [bp-2]
  jmp .retnfgets1
 
-;-867 int printinputline() { fgetsp=&fgetsdest;
+;-870 int printinputline() { fgetsp=&fgetsdest;
 
  .retnfgets1: LEAVE
  ret
@@ -9158,9 +9197,9 @@ printinputline:  ; *** PROC ***
  mov ax, fgetsdest
  mov word [fgetsp], ax
 
-;-868   do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+;-871   do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
 
-.printinputline539:
+.printinputline540:
  push 1
  push word [fdin]
  lea  ax, [DOS_ByteRead]
@@ -9169,60 +9208,60 @@ printinputline:  ; *** PROC ***
  add  sp, 6
  mov word [DOS_NoBytes], ax
 
-;-869   if (DOS_NoBytes == 0) return; 
+;-872   if (DOS_NoBytes == 0) return; 
 
  mov ax, [DOS_NoBytes]
  cmp ax, 0
- jne .printinputline540
+ jne .printinputline541
  jmp .retnprintinputline
 
-;-870     *fgetsp=DOS_ByteRead; fgetsp++;} 
+;-873     *fgetsp=DOS_ByteRead; fgetsp++;} 
 
-.printinputline540:
+.printinputline541:
  mov al, [DOS_ByteRead]
  mov  bx, [fgetsp]
  mov  [bx], al
  inc  word[fgetsp]
 
-;-871   while (DOS_ByteRead != 10); *fgetsp=0;
+;-874   while (DOS_ByteRead != 10); *fgetsp=0;
 
  mov al, [DOS_ByteRead]
  cmp al, 10
- je  .printinputline541
- jmp .printinputline539
-.printinputline541:
+ je  .printinputline542
+ jmp .printinputline540
+.printinputline542:
  mov ax, 0
  mov  bx, [fgetsp]
  mov  [bx], al
 
-;-872     if (fdout) { prs("\n\n;-"); pint1(lineno); prc(' '); lineno++;
+;-875     if (fdout) { prs("\n\n;-"); prunsign1(lineno); prc(' '); lineno++;
 
  mov ax, [fdout]
  or  al, al
- je .printinputline542
+ je .printinputline543
  push printinputline_0
  call prs
  add  sp, 2
  push word [lineno]
- call pint1
+ call prunsign1
  add  sp, 2
  push 32
  call prc
  add  sp, 2
  inc  word[lineno]
 
-;-873       prscomment(&fgetsdest);}
+;-876       prscomment(&fgetsdest);}
 
  lea  ax, [fgetsdest]
  push ax
  call prscomment
  add  sp, 2
 
-;-874 }
+;-877 }
 
-.printinputline542:
+.printinputline543:
 
-;-875 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
+;-878 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
 
  .retnprintinputline:
  ret
@@ -9232,7 +9271,7 @@ printinputline_0 db "\n\n;-",0
 end1:  ; *** PROC ***
 ;Function : end1, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   875 NULL n = bp+4;
+;  200 var sign word   878 NULL n = bp+4;
  ENTER  0,0
  push word [fdin]
  call fcloseR
@@ -9244,22 +9283,22 @@ end1:  ; *** PROC ***
  call exitR
  add  sp, 2
 
-;-876 int error1(char *s) { 
+;-879 int error1(char *s) { 
  LEAVE
  ret
 ; ENDP
 
 error1:  ; *** PROC ***
 
-;-877   lineno--;
+;-880   lineno--;
 
 ;Function : error1, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 ptr sign byte   876 NULL s = bp+4;
+;  200 ptr sign byte   879 NULL s = bp+4;
  ENTER  0,0
  dec  word[lineno]
 
-;-878   prnl(); prscomment(&fgetsdest);
+;-881   prnl(); prscomment(&fgetsdest);
 
  call prnl
  lea  ax, [fgetsdest]
@@ -9267,16 +9306,16 @@ error1:  ; *** PROC ***
  call prscomment
  add  sp, 2
 
-;-879   prs(";Line: "); pint1(lineno);
+;-882   prs(";Line: "); prunsign1(lineno);
 
  push error1_0
  call prs
  add  sp, 2
  push word [lineno]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-880   prs(" ************** ERROR: "); prs(s);
+;-883   prs(" ************** ERROR: "); prs(s);
 
  push error1_1
  call prs
@@ -9285,22 +9324,22 @@ error1:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-881   prs("  in column: "); pint1(spalte);
+;-884   prs("  in column: "); prunsign1(spalte);
 
  push error1_2
  call prs
  add  sp, 2
  push word [spalte]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-882   prs("\nToken: "); pint1(token); prs(", globC: "); prc(globC);
+;-885   prs("\nToken: "); prunsign1(token); prs(", globC: "); prc(globC);
 
  push error1_3
  call prs
  add  sp, 2
  push word [token]
- call pint1
+ call prunsign1
  add  sp, 2
  push error1_4
  call prs
@@ -9311,7 +9350,7 @@ error1:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-883   prs(", thechar: "); pint1(thechar); prs(", symbol: "); prs(symbol);
+;-886   prs(", thechar: "); prunsign1(thechar); prs(", symbol: "); prs(symbol);
 
  push error1_5
  call prs
@@ -9319,7 +9358,7 @@ error1:  ; *** PROC ***
  mov al, byte [thechar]
  mov ah, 0
  push ax
- call pint1
+ call prunsign1
  add  sp, 2
  push error1_6
  call prs
@@ -9329,13 +9368,13 @@ error1:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-884   end1(1); }
+;-887   end1(1); }
 
  push 1
  call end1
  add  sp, 2
 
-;-885 int listproc() {int i; 
+;-888 int listproc() {int i; 
  LEAVE
  ret
 error1_0 db ";Line: ",0
@@ -9349,17 +9388,17 @@ error1_6 db ", symbol: ",0
 
 listproc:  ; *** PROC ***
 
-;-886   if (LTop > LSTART) {
+;-889   if (LTop > LSTART) {
 
 ;Function : listproc, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   885 NULL i = bp-2;
+;  200 var sign word   888 NULL i = bp-2;
  ENTER  2,0
  mov ax, [LTop]
  cmp ax, 200
- jle .listproc543
+ jle .listproc544
 
-;-887   prs("\n;Function : "); prs(fname);
+;-890   prs("\n;Function : "); prs(fname);
 
  push listproc_0
  call prs
@@ -9369,7 +9408,7 @@ listproc:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-888   prs(", Number of local variables: "); i=LTop - LSTART; pint1(i);
+;-891   prs(", Number of local variables: "); i=LTop - LSTART; prunsign1(i);
 
  push listproc_1
  call prs
@@ -9378,38 +9417,38 @@ listproc:  ; *** PROC ***
  sub ax, 200
  mov [bp-2], ax
  push word [bp-2]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-889   prs("\n;   # type sign width addr used name   list of local variables");
+;-892   prs("\n;   # type sign width addr used name   list of local variables");
 
  push listproc_2
  call prs
  add  sp, 2
 
-;-890     i=LSTART; 
+;-893     i=LSTART; 
 
  mov ax, 200
  mov [bp-2], ax
 
-;-891     while (i < LTop) { listvar(i); i++; } } 
+;-894     while (i < LTop) { listvar(i); i++; } } 
 
-.listproc544:
+.listproc545:
  mov ax, [bp-2]
  cmp ax, [LTop]
- jge .listproc545
+ jge .listproc546
  push word [bp-2]
  call listvar
  add  sp, 2
  inc  word[bp-2]
- jmp .listproc544
-.listproc545:
+ jmp .listproc545
+.listproc546:
 
-;-892 }
+;-895 }
 
-.listproc543:
+.listproc544:
 
-;-893 int listvar(unsigned int i) {unsigned int j; char c;
+;-896 int listvar(unsigned int i) {unsigned int j; char c;
  LEAVE
  ret
 listproc_0 db "\n;Function : ",0
@@ -9419,13 +9458,13 @@ listproc_2 db "\n;   # type sign width addr used name   list of local variables"
 
 listvar:  ; *** PROC ***
 
-;-894   prs("\n;"); printint51(i); prc(32);
+;-897   prs("\n;"); printint51(i); prc(32);
 
 ;Function : listvar, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
-;  200 var unsg word   893 NULL i = bp+4
-;  201 var unsg word   893 NULL j = bp-2
-;  202 var sign byte   893 NULL c = bp-4;
+;  200 var unsg word   896 NULL i = bp+4
+;  201 var unsg word   896 NULL j = bp-2
+;  202 var sign byte   896 NULL c = bp-4;
  ENTER  4,0
  push listvar_0
  call prs
@@ -9437,95 +9476,95 @@ listvar:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-895   c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
+;-898   c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
 
  mov bx, [bp+4]
  mov al, [GType + bx]
  mov [bp-4], al
  mov al, [bp-4]
  cmp al, 86
- jne .listvar546
+ jne .listvar547
  push listvar_1
  call prs
  add  sp, 2
-.listvar546:
+.listvar547:
  mov al, [bp-4]
  cmp al, 42
- jne .listvar547
+ jne .listvar548
  push listvar_2
  call prs
  add  sp, 2
 
-;-896                if(c=='&')prs("arr ");   if(c=='#')prs("def ");
+;-899                if(c=='&')prs("arr ");   if(c=='#')prs("def ");
 
-.listvar547:
+.listvar548:
  mov al, [bp-4]
  cmp al, 38
- jne .listvar548
+ jne .listvar549
  push listvar_3
  call prs
  add  sp, 2
-.listvar548:
+.listvar549:
  mov al, [bp-4]
  cmp al, 35
- jne .listvar549
+ jne .listvar550
  push listvar_4
  call prs
  add  sp, 2
 
-;-897   c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
+;-900   c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
 
-.listvar549:
+.listvar550:
  mov bx, [bp+4]
  mov al, [GSign + bx]
  mov [bp-4], al
  mov al, [bp-4]
  cmp al, 83
- jne .listvar550
+ jne .listvar551
  push listvar_5
  call prs
  add  sp, 2
-.listvar550:
+.listvar551:
  mov al, [bp-4]
  cmp al, 85
- jne .listvar551
+ jne .listvar552
  push listvar_6
  call prs
  add  sp, 2
 
-;-898   c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
+;-901   c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
 
-.listvar551:
+.listvar552:
  mov bx, [bp+4]
  mov al, [GWidth + bx]
  mov [bp-4], al
  mov al, [bp-4]
  cmp al, 1
- jne .listvar552
+ jne .listvar553
  push listvar_7
  call prs
  add  sp, 2
-.listvar552:
+.listvar553:
  mov al, [bp-4]
  cmp al, 2
- jne .listvar553
+ jne .listvar554
  push listvar_8
  call prs
  add  sp, 2
 
-;-899                if(c==  4)prs("dwrd " );
+;-902                if(c==  4)prs("dwrd " );
 
-.listvar553:
+.listvar554:
  mov al, [bp-4]
  cmp al, 4
- jne .listvar554
+ jne .listvar555
  push listvar_9
  call prs
  add  sp, 2
 
-;-900   j=GAdr[i]; printint51(j);
+;-903   j=GAdr[i]; printint51(j);
 
-.listvar554:
+.listvar555:
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [GAdr + bx]
@@ -9534,7 +9573,7 @@ listvar:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-901   j=GUsed[i]; if (j) printint51(j);
+;-904   j=GUsed[i]; if (j) printint51(j);
 
  mov bx, [bp+4]
  shl bx, 1
@@ -9542,32 +9581,32 @@ listvar:  ; *** PROC ***
  mov [bp-2], ax
  mov ax, [bp-2]
  or  al, al
- je .listvar555
+ je .listvar556
  push word [bp-2]
  call printint51
  add  sp, 2
 
-;-902   else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
+;-905   else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
 
- jmp .listvar556
-.listvar555:
+ jmp .listvar557
+.listvar556:
  mov bx, [bp+4]
  mov al, [GType + bx]
  cmp al, 35
- jne .listvar557
+ jne .listvar558
  push listvar_10
  call prs
  add  sp, 2
- jmp .listvar558
-.listvar557:
+ jmp .listvar559
+.listvar558:
  push listvar_11
  call prs
  add  sp, 2
-.listvar558:
+.listvar559:
 
-;-903   prc(32);  pt=adrofname(i); prs(pt);
+;-906   prc(32);  pt=adrofname(i); prs(pt);
 
-.listvar556:
+.listvar557:
  push 32
  call prc
  add  sp, 2
@@ -9579,12 +9618,12 @@ listvar:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-904   if(GType[i]=='#') { prc('='); j=GData[i]; pint1(j); }
+;-907   if(GType[i]=='#') { prc('='); j=GData[i]; prunsign1(j); }
 
  mov bx, [bp+4]
  mov al, [GType + bx]
  cmp al, 35
- jne .listvar559
+ jne .listvar560
  push 61
  call prc
  add  sp, 2
@@ -9593,16 +9632,16 @@ listvar:  ; *** PROC ***
  mov ax, [GData + bx]
  mov [bp-2], ax
  push word [bp-2]
- call pint1
+ call prunsign1
  add  sp, 2
 
-;-905   if(GType[i]=='&') { prc('['); j=GData[i]; pint1(j); prc(']');}
+;-908   if(GType[i]=='&') { prc('['); j=GData[i]; prunsign1(j); prc(']');}
 
-.listvar559:
+.listvar560:
  mov bx, [bp+4]
  mov al, [GType + bx]
  cmp al, 38
- jne .listvar560
+ jne .listvar561
  push 91
  call prc
  add  sp, 2
@@ -9611,18 +9650,18 @@ listvar:  ; *** PROC ***
  mov ax, [GData + bx]
  mov [bp-2], ax
  push word [bp-2]
- call pint1
+ call prunsign1
  add  sp, 2
  push 93
  call prc
  add  sp, 2
 
-;-906   if (i >= LSTART) { prs(" = bp"); j=GData[i];
+;-909   if (i >= LSTART) { prs(" = bp"); j=GData[i];
 
-.listvar560:
+.listvar561:
  mov ax, [bp+4]
  cmp ax, 200 ;unsigned : 0
- jb  .listvar561
+ jb  .listvar562
  push listvar_12
  call prs
  add  sp, 2
@@ -9631,24 +9670,24 @@ listvar:  ; *** PROC ***
  mov ax, [GData + bx]
  mov [bp-2], ax
 
-;-907     if (j > 0) prc('+'); pint1(j);  }
+;-910     if (j > 0) prc('+'); pint1(j);  }
 
  mov ax, [bp-2]
  cmp ax, 0
- jle .listvar562
+ jle .listvar563
  push 43
  call prc
  add  sp, 2
-.listvar562:
+.listvar563:
  push word [bp-2]
  call pint1
  add  sp, 2
 
-;-908 }
+;-911 }
 
-.listvar561:
+.listvar562:
 
-;-909 int listcall() { int i;
+;-912 int listcall() { int i;
  LEAVE
  ret
 listvar_0 db "\n;",0
@@ -9668,32 +9707,32 @@ listvar_12 db " = bp",0
 
 listcall:  ; *** PROC ***
 
-;-910   prs("\n\n;    #  addr name   list of CALLs\n");
+;-913   prs("\n\n;    #  addr name   list of CALLs\n");
 
 ;Function : listcall, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   909 NULL i = bp-2;
+;  200 var sign word   912 NULL i = bp-2;
  ENTER  2,0
  push listcall_0
  call prs
  add  sp, 2
 
-;-911   i=0;  while (i< CTop) { calllisting(i); i++; } }
+;-914   i=0;  while (i< CTop) { calllisting(i); i++; } }
 
  mov ax, 0
  mov [bp-2], ax
-.listcall563:
+.listcall564:
  mov ax, [bp-2]
  cmp ax, [CTop]
- jge .listcall564
+ jge .listcall565
  push word [bp-2]
  call calllisting
  add  sp, 2
  inc  word[bp-2]
- jmp .listcall563
-.listcall564:
+ jmp .listcall564
+.listcall565:
 
-;-912 int calllisting(int i) {char c; int j;
+;-915 int calllisting(int i) {char c; int j;
  LEAVE
  ret
 listcall_0 db "\n\n;    #  addr name   list of CALLs\n",0
@@ -9701,13 +9740,13 @@ listcall_0 db "\n\n;    #  addr name   list of CALLs\n",0
 
 calllisting:  ; *** PROC ***
 
-;-913   prs("\n;"); printint51(i); prc(32);
+;-916   prs("\n;"); printint51(i); prc(32);
 
 ;Function : calllisting, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   912 NULL i = bp+4
-;  201 var sign byte   912 NULL c = bp-2
-;  202 var sign word   912 NULL j = bp-4;
+;  200 var sign word   915 NULL i = bp+4
+;  201 var sign byte   915 NULL c = bp-2
+;  202 var sign word   915 NULL j = bp-4;
  ENTER  4,0
  push calllisting_0
  call prs
@@ -9719,21 +9758,21 @@ calllisting:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-914   c=CType [i]; if(c==0)prs("unresolved ");
+;-917   c=CType [i]; if(c==0)prs("unresolved ");
 
  mov bx, [bp+4]
  mov al, [CType + bx]
  mov [bp-2], al
  mov al, [bp-2]
  cmp al, 0
- jne .calllisting565
+ jne .calllisting566
  push calllisting_1
  call prs
  add  sp, 2
 
-;-915   j=CAdr[i];            printint51(j); prc(32);
+;-918   j=CAdr[i];            printint51(j); prc(32);
 
-.calllisting565:
+.calllisting566:
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [CAdr + bx]
@@ -9745,7 +9784,7 @@ calllisting:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-916   from_far(NameA, j);   prs(NameA);
+;-919   from_far(NameA, j);   prs(NameA);
 
  push word [bp-4]
  lea  ax, [NameA]
@@ -9757,10 +9796,10 @@ calllisting:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-917 }
+;-920 }
 
 
-;-918 int countcalls(int f) { unsigned int i;
+;-921 int countcalls(int f) { unsigned int i;
  LEAVE
  ret
 calllisting_0 db "\n;",0
@@ -9769,12 +9808,12 @@ calllisting_1 db "unresolved ",0
 
 countcalls:  ; *** PROC ***
 
-;-919   pt=adrF(FNameField, f);
+;-922   pt=adrF(FNameField, f);
 
 ;Function : countcalls, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   918 NULL f = bp+4
-;  201 var unsg word   918 NULL i = bp-2;
+;  200 var sign word   921 NULL f = bp+4
+;  201 var unsg word   921 NULL i = bp-2;
  ENTER  2,0
  push word [bp+4]
  lea  ax, [FNameField]
@@ -9783,23 +9822,23 @@ countcalls:  ; *** PROC ***
  add  sp, 4
  mov word [pt], ax
 
-;-920   i=0;  while (i < CTop) {
+;-923   i=0;  while (i < CTop) {
 
  mov ax, 0
  mov [bp-2], ax
-.countcalls566:
+.countcalls567:
  mov ax, [bp-2]
  cmp ax, [CTop]
- jge .countcalls567
+ jge .countcalls568
 
-;-921     p1=CAdr[i];
+;-924     p1=CAdr[i];
 
  mov bx, [bp-2]
  shl bx, 1
  mov ax, [CAdr + bx]
  mov word [p1], ax
 
-;-922     from_far(NameA, p1);
+;-925     from_far(NameA, p1);
 
  push word [p1]
  lea  ax, [NameA]
@@ -9807,7 +9846,7 @@ countcalls:  ; *** PROC ***
  call from_far
  add  sp, 4
 
-;-923     if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
+;-926     if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
 
  lea  ax, [NameA]
  push ax
@@ -9815,7 +9854,7 @@ countcalls:  ; *** PROC ***
  call eqstr
  add  sp, 4
  or  al, al
- je .countcalls568
+ je .countcalls569
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [FCalls + bx]
@@ -9824,64 +9863,64 @@ countcalls:  ; *** PROC ***
  shl bx, 1
  mov [FCalls+bx], ax
 
-;-924     i++; }
+;-927     i++; }
 
-.countcalls568:
+.countcalls569:
  inc  word[bp-2]
 
-;-925 }
+;-928 }
 
- jmp .countcalls566
-.countcalls567:
+ jmp .countcalls567
+.countcalls568:
 
-;-926 int listfunc() { int i;
+;-929 int listfunc() { int i;
  LEAVE
  ret
 ; ENDP
 
 listfunc:  ; *** PROC ***
 
-;-927   prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
+;-930   prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
 
 ;Function : listfunc, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   926 NULL i = bp-2;
+;  200 var sign word   929 NULL i = bp-2;
  ENTER  2,0
  push listfunc_0
  call prs
  add  sp, 2
 
-;-928   i=0;  while (i < FTop) { countcalls (i); i++; } 
+;-931   i=0;  while (i < FTop) { countcalls (i); i++; } 
 
  mov ax, 0
  mov [bp-2], ax
-.listfunc569:
+.listfunc570:
  mov ax, [bp-2]
  cmp ax, [FTop]
- jge .listfunc570
+ jge .listfunc571
  push word [bp-2]
  call countcalls
  add  sp, 2
  inc  word[bp-2]
 
-;-929   i=0;  while (i < FTop) { funclisting(i); i++; } }
+;-932   i=0;  while (i < FTop) { funclisting(i); i++; } }
 
- jmp .listfunc569
-.listfunc570:
+ jmp .listfunc570
+.listfunc571:
  mov ax, 0
  mov [bp-2], ax
-.listfunc571:
+.listfunc572:
  mov ax, [bp-2]
  cmp ax, [FTop]
- jge .listfunc572
+ jge .listfunc573
  push word [bp-2]
  call funclisting
  add  sp, 2
  inc  word[bp-2]
- jmp .listfunc571
-.listfunc572:
+ jmp .listfunc572
+.listfunc573:
 
-;-930 int funclisting(int i) {int j;  char c;
+;-933 int funclisting(int i) {int j;  char c;
  LEAVE
  ret
 listfunc_0 db "\n\n\n;   # Calls Line Width  Name   list of functions\n",0
@@ -9889,13 +9928,13 @@ listfunc_0 db "\n\n\n;   # Calls Line Width  Name   list of functions\n",0
 
 funclisting:  ; *** PROC ***
 
-;-931   prs("\n;");    printint51(i);
+;-934   prs("\n;");    printint51(i);
 
 ;Function : funclisting, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
-;  200 var sign word   930 NULL i = bp+4
-;  201 var sign word   930 NULL j = bp-2
-;  202 var sign byte   930 NULL c = bp-4;
+;  200 var sign word   933 NULL i = bp+4
+;  201 var sign word   933 NULL j = bp-2
+;  202 var sign byte   933 NULL c = bp-4;
  ENTER  4,0
  push funclisting_0
  call prs
@@ -9904,7 +9943,7 @@ funclisting:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-932   j = FCalls[i]; if (j) printint51(j); else prs(" NULL");
+;-935   j = FCalls[i]; if (j) printint51(j); else prs(" NULL");
 
  mov bx, [bp+4]
  shl bx, 1
@@ -9912,19 +9951,19 @@ funclisting:  ; *** PROC ***
  mov [bp-2], ax
  mov ax, [bp-2]
  or  al, al
- je .funclisting573
+ je .funclisting574
  push word [bp-2]
  call printint51
  add  sp, 2
- jmp .funclisting574
-.funclisting573:
+ jmp .funclisting575
+.funclisting574:
  push funclisting_1
  call prs
  add  sp, 2
 
-;-933   j = FAdr[i];   printint51(j); prc(32);
+;-936   j = FAdr[i];   printint51(j); prc(32);
 
-.funclisting574:
+.funclisting575:
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [FAdr + bx]
@@ -9936,48 +9975,48 @@ funclisting:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-934   c=FType[i];
+;-937   c=FType[i];
 
  mov bx, [bp+4]
  mov al, [FType + bx]
  mov [bp-4], al
 
-;-935   if(c=='V')prs("void " );    if(c=='B')prs("byte " );
+;-938   if(c=='V')prs("void " );    if(c=='B')prs("byte " );
 
  mov al, [bp-4]
  cmp al, 86
- jne .funclisting575
+ jne .funclisting576
  push funclisting_2
  call prs
  add  sp, 2
-.funclisting575:
+.funclisting576:
  mov al, [bp-4]
  cmp al, 66
- jne .funclisting576
+ jne .funclisting577
  push funclisting_3
  call prs
  add  sp, 2
 
-;-936   if(c=='W')prs("word " );    if(c=='D')prs("dwrd " );
+;-939   if(c=='W')prs("word " );    if(c=='D')prs("dwrd " );
 
-.funclisting576:
+.funclisting577:
  mov al, [bp-4]
  cmp al, 87
- jne .funclisting577
+ jne .funclisting578
  push funclisting_4
  call prs
  add  sp, 2
-.funclisting577:
+.funclisting578:
  mov al, [bp-4]
  cmp al, 68
- jne .funclisting578
+ jne .funclisting579
  push funclisting_5
  call prs
  add  sp, 2
 
-;-937   prc(32); prc(32);
+;-940   prc(32); prc(32);
 
-.funclisting578:
+.funclisting579:
  push 32
  call prc
  add  sp, 2
@@ -9985,7 +10024,7 @@ funclisting:  ; *** PROC ***
  call prc
  add  sp, 2
 
-;-938   pt=adrF(FNameField, i); prs(pt);
+;-941   pt=adrF(FNameField, i); prs(pt);
 
  push word [bp+4]
  lea  ax, [FNameField]
@@ -9997,10 +10036,10 @@ funclisting:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-939 }
+;-942 }
 
 
-;-940 unsigned int MAXUI=65535;
+;-943 unsigned int MAXUI=65535;
  LEAVE
  ret
 funclisting_0 db "\n;",0
@@ -10010,18 +10049,18 @@ funclisting_3 db "byte ",0
 funclisting_4 db "word ",0
 funclisting_5 db "dwrd ",0
 ; ENDP
-MAXUI dw -1
+MAXUI dw 65535
 
-;-941 int epilog() {unsigned int i; 
+;-944 int epilog() {unsigned int i; 
 
 
 epilog:  ; *** PROC ***
 
-;-942   strcpy(symbol, "LastFunctionByt");  storefunc();
+;-945   strcpy(symbol, "LastFunctionByt");  storefunc();
 
 ;Function : epilog, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var unsg word   941 NULL i = bp-2;
+;  200 var unsg word   944 NULL i = bp-2;
  ENTER  2,0
  push epilog_0
  lea  ax, [symbol]
@@ -10030,45 +10069,45 @@ epilog:  ; *** PROC ***
  add  sp, 4
  call storefunc
 
-;-943   prs("\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret");
+;-946   prs("\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret");
 
  push epilog_1
  call prs
  add  sp, 2
 
-;-944   prs("\n \n;   # type sign width  adr used name   list of global variables\n");
+;-947   prs("\n \n;   # type sign width  adr used name   list of global variables\n");
 
  push epilog_2
  call prs
  add  sp, 2
 
-;-945   i=1;
+;-948   i=1;
 
  mov ax, 1
  mov [bp-2], ax
 
-;-946   while (i< GTop) { listvar(i); i++; }
+;-949   while (i< GTop) { listvar(i); i++; }
 
-.epilog579:
+.epilog580:
  mov ax, [bp-2]
  cmp ax, [GTop]
- jge .epilog580
+ jge .epilog581
  push word [bp-2]
  call listvar
  add  sp, 2
  inc  word[bp-2]
 
-;-947   listfunc();   listcall();
+;-950   listfunc();   listcall();
 
- jmp .epilog579
-.epilog580:
+ jmp .epilog580
+.epilog581:
  call listfunc
  call listcall
 
-;-948 
+;-951 
 
 
-;-949   prs("\n;Input: "); prs(&namein);
+;-952   prs("\n;Input: "); prs(&namein);
 
  push epilog_3
  call prs
@@ -10078,7 +10117,7 @@ epilog:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-950   prs(", List: ");   prs(&namelst);
+;-953   prs(", List: ");   prs(&namelst);
 
  push epilog_4
  call prs
@@ -10088,7 +10127,7 @@ epilog:  ; *** PROC ***
  call prs
  add  sp, 2
 
-;-951   prs(",  Lines:"); printint51(lineno);
+;-954   prs(",  Lines:"); printint51(lineno);
 
  push epilog_5
  call prs
@@ -10097,7 +10136,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-952   prs("\n;Glob. variables:"); GTop--; printint51(GTop);
+;-955   prs("\n;Glob. variables:"); GTop--; printint51(GTop);
 
  push epilog_6
  call prs
@@ -10107,7 +10146,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-953   prs(" max.:"); printint51(LSTART);
+;-956   prs(" max.:"); printint51(LSTART);
 
  push epilog_7
  call prs
@@ -10116,7 +10155,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-954   prs("\n;Functions      :"); printint51(FTop);
+;-957   prs("\n;Functions      :"); printint51(FTop);
 
  push epilog_8
  call prs
@@ -10125,7 +10164,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-955   prs(" max.:"); printint51(FUNCMAX);
+;-958   prs(" max.:"); printint51(FUNCMAX);
 
  push epilog_9
  call prs
@@ -10134,7 +10173,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-956   prs("\n;Calls          :"); printint51(CTop);
+;-959   prs("\n;Calls          :"); printint51(CTop);
 
  push epilog_10
  call prs
@@ -10143,7 +10182,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-957   prs(" max.:"); printint51(CALLMAX);
+;-960   prs(" max.:"); printint51(CALLMAX);
 
  push epilog_11
  call prs
@@ -10152,7 +10191,7 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-958   prs(", NameField:"); printint51(CNameTop);
+;-961   prs(", NameField:"); printint51(CNameTop);
 
  push epilog_12
  call prs
@@ -10161,24 +10200,24 @@ epilog:  ; *** PROC ***
  call printint51
  add  sp, 2
 
-;-959   prs(" max.:"); printint51(65535);
+;-962   prs(" max.:"); printint51(65535);
 
  push epilog_13
  call prs
  add  sp, 2
- push -1
+ push 65535
  call printint51
  add  sp, 2
 
-;-960 //  prs(", segE:"); printint51(segE);
+;-963 //  prs(", segE:"); printint51(segE);
 
 
-;-961   __asm{call LastFunctionByt}  _ i=ax;
+;-964   __asm{call LastFunctionByt}  _ i=ax;
 
 call LastFunctionByt
 mov [bp-2], ax
 
-;-962   prs("\n;Code until     :"); printint51(i);
+;-965   prs("\n;Code until     :"); printint51(i);
 
  push epilog_14
  call prs
@@ -10187,7 +10226,7 @@ mov [bp-2], ax
  call printint51
  add  sp, 2
 
-;-963   prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
+;-966   prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
 
  push epilog_15
  call prs
@@ -10202,32 +10241,32 @@ mov [bp-2], ax
  call prs
  add  sp, 2
 
-;-964   printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
+;-967   printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
 
  push word [bp-2]
  call printint51
  add  sp, 2
  mov ax, [bp-2]
  cmp ax, 1000
- ja  .epilog581
+ ja  .epilog582
  push epilog_17
  call prs
  add  sp, 2
 
-;-965   prs("\n;Data (HeapEnd) :"); pint1(orgData); i=MAXUI-orgData;
+;-968   prs("\n;Data (HeapEnd) :"); prunsign1(orgData); i=MAXUI-orgData;
 
-.epilog581:
+.epilog582:
  push epilog_18
  call prs
  add  sp, 2
  push word [orgData]
- call pint1
+ call prunsign1
  add  sp, 2
  mov ax, [MAXUI]
  sub ax, [orgData]
  mov [bp-2], ax
 
-;-966   prs(", resting stacksize: ");printint51(i);
+;-969   prs(", resting stacksize: ");printint51(i);
 
  push epilog_19
  call prs
@@ -10236,18 +10275,18 @@ mov [bp-2], ax
  call printint51
  add  sp, 2
 
-;-967   if (i <= 5000) prs(" *** Warning *** Stack too small");
+;-970   if (i <= 5000) prs(" *** Warning *** Stack too small");
 
  mov ax, [bp-2]
  cmp ax, 5000
- ja  .epilog582
+ ja  .epilog583
  push epilog_20
  call prs
  add  sp, 2
 
-;-968   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
+;-971   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
 
-.epilog582:
+.epilog583:
  push epilog_21
  call prs
  add  sp, 2
@@ -10262,7 +10301,7 @@ mov [bp-2], ax
  call printint51
  add  sp, 2
 
-;-969   prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
+;-972   prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
 
  push epilog_23
  call prs
@@ -10279,29 +10318,29 @@ mov [bp-2], ax
  call prs
  add  sp, 2
 
-;-970   printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
+;-973   printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
 
  push word [bp-2]
  call printint51
  add  sp, 2
  mov ax, [bp-2]
  cmp ax, 1000
- ja  .epilog583
+ ja  .epilog584
  push epilog_25
  call prs
  add  sp, 2
 
-;-971   end1(0);}
+;-974   end1(0);}
 
-.epilog583:
+.epilog584:
  push 0
  call end1
  add  sp, 2
 
-;-972 // while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
+;-975 // while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
 
 
-;-973 int setblock(unsigned int i) {
+;-976 int setblock(unsigned int i) {
  LEAVE
  ret
 epilog_0 db "LastFunctionByt",0
@@ -10334,11 +10373,11 @@ epilog_25 db " *** Warning *** constant area too small",0
 
 setblock:  ; *** PROC ***
 
-;-974   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
+;-977   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
 
 ;Function : setblock, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
-;  200 var unsg word   973 NULL i = bp+4;
+;  200 var unsg word   976 NULL i = bp+4;
  ENTER  0,0
  mov ax, 0
  mov word [DOS_ERR], ax
@@ -10348,20 +10387,20 @@ setblock:  ; *** PROC ***
  mov  ax, 18944
  call DosInt
 
-;-975 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
+;-978 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
  LEAVE
  ret
 ; ENDP
 
 allocmem:  ; *** PROC ***
 
-;-976   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
+;-979   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
 
 ;Function : allocmem, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
-;  200 var unsg word   975 NULL i = bp+4
-;  201 var unsg word   975 NULL vAX = bp-2
-;  202 var unsg word   975 NULL vBX = bp-4;
+;  200 var unsg word   978 NULL i = bp+4
+;  201 var unsg word   978 NULL vAX = bp-2
+;  202 var unsg word   978 NULL vBX = bp-4;
  ENTER  4,0
  mov ax, 0
  mov word [DOS_ERR], ax
@@ -10371,21 +10410,21 @@ allocmem:  ; *** PROC ***
 mov [bp-2], ax
 mov [bp-4], bx
 
-;-977   if(DOS_ERR) return vBX;   return vAX;
+;-980   if(DOS_ERR) return vBX;   return vAX;
 
  mov ax, [DOS_ERR]
  or  al, al
- je .allocmem584
+ je .allocmem585
  mov ax, [bp-4]
  jmp .retnallocmem
-.allocmem584:
+.allocmem585:
  mov ax, [bp-2]
  jmp .retnallocmem
 
-;-978 }
+;-981 }
 
 
-;-979 int copyF(char *dest, char *src, unsigned int sz) {
+;-982 int copyF(char *dest, char *src, unsigned int sz) {
 
  .retnallocmem: LEAVE
  ret
@@ -10393,13 +10432,13 @@ mov [bp-4], bx
 
 copyF:  ; *** PROC ***
 
-;-980   segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
+;-983   segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
 
 ;Function : copyF, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
-;  200 ptr sign byte   979 NULL dest = bp+4
-;  201 ptr sign byte   979 NULL src = bp+6
-;  202 var unsg word   979 NULL sz = bp+8;
+;  200 ptr sign byte   982 NULL dest = bp+4
+;  201 ptr sign byte   982 NULL src = bp+6
+;  202 var unsg word   982 NULL sz = bp+8;
  ENTER  0,0
  mov ax, [segE]
  mov  es, ax
@@ -10407,113 +10446,113 @@ copyF:  ; *** PROC ***
  mov  di, [bp+4]
  mov  cx, [bp+8]
 
-;-981   asm cld
+;-984   asm cld
 
  cld
 
-;-982   asm rep movsb
+;-985   asm rep movsb
 
  rep movsb
 
-;-983   asm mov byte [es:di], 0
+;-986   asm mov byte [es:di], 0
 
  mov byte [es:di], 0
 
-;-984 }
+;-987 }
 
 
-;-985 int to_far(char *dest, char *src) {
+;-988 int to_far(char *dest, char *src) {
  LEAVE
  ret
 ; ENDP
 
 to_far:  ; *** PROC ***
 
-;-986   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
+;-989   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
 
 ;Function : to_far, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
-;  200 ptr sign byte   985 NULL dest = bp+4
-;  201 ptr sign byte   985 NULL src = bp+6;
+;  200 ptr sign byte   988 NULL dest = bp+4
+;  201 ptr sign byte   988 NULL src = bp+6;
  ENTER  0,0
  mov ax, [segE]
  mov  es, ax
  mov  si, [bp+6]
  mov  di, [bp+4]
 
-;-987   asm cld
+;-990   asm cld
 
  cld
 
-;-988   do{
+;-991   do{
 
-.to_far585:
+.to_far586:
 
-;-989   asm lodsb  ; inc si
+;-992   asm lodsb  ; inc si
 
  lodsb  ; inc si
 
-;-990   asm stosb  ; inc di
+;-993   asm stosb  ; inc di
 
  stosb  ; inc di
 
-;-991   } while (al != 0);
+;-994   } while (al != 0);
 
  cmp  al, 0
- je  .to_far586
- jmp .to_far585
-.to_far586:
+ je  .to_far587
+ jmp .to_far586
+.to_far587:
 
-;-992 }
+;-995 }
 
 
-;-993 int from_far(char *dest, char *src) {
+;-996 int from_far(char *dest, char *src) {
  LEAVE
  ret
 ; ENDP
 
 from_far:  ; *** PROC ***
 
-;-994   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
+;-997   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
 
 ;Function : from_far, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
-;  200 ptr sign byte   993 NULL dest = bp+4
-;  201 ptr sign byte   993 NULL src = bp+6;
+;  200 ptr sign byte   996 NULL dest = bp+4
+;  201 ptr sign byte   996 NULL src = bp+6;
  ENTER  0,0
  mov ax, [segE]
  mov  es, ax
  mov  si, [bp+6]
  mov  di, [bp+4]
 
-;-995   do{
+;-998   do{
 
-.from_far587:
+.from_far588:
 
-;-996   asm mov al, [es:si]
+;-999   asm mov al, [es:si]
 
  mov al, [es:si]
 
-;-997   asm inc si
+;-1000   asm inc si
 
  inc si
 
-;-998   asm mov [di], al
+;-1001   asm mov [di], al
 
  mov [di], al
 
-;-999   asm inc di
+;-1002   asm inc di
 
  inc di
 
-;-1000   } while (al != 0);
+;-1003   } while (al != 0);
 
  cmp  al, 0
- je  .from_far588
- jmp .from_far587
-.from_far588:
+ je  .from_far589
+ jmp .from_far588
+.from_far589:
 
-;-1001 }
+;-1004 }
  LEAVE
  ret
 ; ENDP
@@ -10654,7 +10693,7 @@ ret
 ;  126 ptr sign byte   621    1 arglen
 ;  127 ptr sign byte   621    2 argv
 ;  128 arr sign byte   762    2 symboltemp[80]
-;  129 var unsg word   940    1 MAXUI
+;  129 var unsg word   943    1 MAXUI
 
 
 ;   # Calls Line Width  Name   list of functions
@@ -10740,31 +10779,32 @@ ret
 ;   78   36  836   expect
 ;   79    6  839   eprc
 ;   80    5  840   eprs
-;   81   40  841   prc
+;   81   41  841   prc
 ;   82    3  846   prscomment
 ;   83    8  848   prnl
 ;   84  249  850   prs
 ;   85    2  855   eprnum
-;   86   41  857   pint1
-;   87   25  859   printint51
-;   88    2  863   fgets1
-;   89    1  867   printinputline
-;   90    2  875   end1
-;   91   50  876   error1
-;   92    2  885   listproc
-;   93    2  893   listvar
-;   94    1  909   listcall
-;   95    1  912   calllisting
-;   96    1  918   countcalls
-;   97    1  926   listfunc
-;   98    1  930   funclisting
-;   99    1  941   epilog
-;  100    1  973   setblock
-;  101    1  975   allocmem
-;  102 NULL  979   copyF
-;  103    1  985   to_far
-;  104    3  993   from_far
-;  105 NULL 1001   LastFunctionByt
+;   86    7  857   pint1
+;   87   35  859   prunsign1
+;   88   25  862   printint51
+;   89    2  866   fgets1
+;   90    1  870   printinputline
+;   91    2  878   end1
+;   92   50  879   error1
+;   93    2  888   listproc
+;   94    2  896   listvar
+;   95    1  912   listcall
+;   96    1  915   calllisting
+;   97    1  921   countcalls
+;   98    1  929   listfunc
+;   99    1  933   funclisting
+;  100    1  944   epilog
+;  101    1  976   setblock
+;  102    1  978   allocmem
+;  103 NULL  982   copyF
+;  104    1  988   to_far
+;  105    3  996   from_far
+;  106 NULL 1004   LastFunctionByt
 
 ;    #  addr name   list of CALLs
 
@@ -10794,943 +10834,945 @@ ret
 ;   23   172 istoken
 ;   24   180 istoken
 ;   25   188 prs
-;   26   192 pint1
-;   27   198 prs
-;   28   202 prs
-;   29   206 prs
-;   30   210 prs
-;   31   214 prs
-;   32   218 pint1
-;   33   224 prs
-;   34   228 expect
-;   35   235 expect
-;   36   242 error1
-;   37   249 prs
-;   38   253 prs
-;   39   257 prs
-;   40   261 strcpy
-;   41   268 expect
-;   42   275 istoken
-;   43   283 prc
-;   44   287 prscomment
-;   45   298 prc
-;   46   302 prs
-;   47   306 strlen
-;   48   313 istoken
-;   49   321 prc
-;   50   325 expect
-;   51   332 pint1
-;   52   338 istoken
-;   53   346 expect
-;   54   353 error1
-;   55   360 prs
-;   56   364 prs
-;   57   368 prs
-;   58   372 prs
-;   59   376 prs
-;   60   380 prs
-;   61   384 istoken
-;   62   392 prc
-;   63   396 istoken
-;   64   404 expect
-;   65   411 pint1
-;   66   417 pint1
-;   67   423 adrofname
-;   68   433 strcpy
-;   69   440 strcpy
-;   70   447 expect
-;   71   454 adrF
-;   72   459 adrofname
-;   73   469 prs
-;   74   473 prs
-;   75   477 prc
-;   76   481 pint1
-;   77   487 prc
-;   78   491 checkName
-;   79   501 error1
-;   80   508 adrofname
-;   81   518 eqstr
-;   82   524 adrofname
-;   83   534 eqstr
-;   84   540 istoken
-;   85   548 istoken
-;   86   556 istoken
-;   87   564 istoken
-;   88   572 istoken
-;   89   580 istoken
-;   90   588 istoken
-;   91   596 istoken
-;   92   604 name1
-;   93   610 error1
-;   94   617 getlex
-;   95   624 error1
-;   96   631 error1
-;   97   638 strlen
-;   98   645 to_far
-;   99   652 error1
-;  100   659 adrF
-;  101   664 strcpy
-;  102   671 error1
-;  103   678 checkName
-;  104   688 error1
-;  105   695 adrF
-;  106   700 strcpy
-;  107   707 adrF
-;  108   712 eqstr
-;  109   718 checknamelen
-;  110   731 strcpy
-;  111   738 checkFunction
-;  112   752 error1
-;  113   759 storefunc
-;  114   769 prs
-;  115   773 prs
-;  116   777 prs
-;  117   781 expect
-;  118   788 istoken
-;  119   796 typeName
-;  120   805 addlocal
-;  121   814 istoken
-;  122   822 expect
-;  123   829 expect
-;  124   836 isvariable
-;  125   847 typeName
-;  126   856 checknamelen
-;  127   869 addlocal
-;  128   878 istoken
-;  129   886 expect
-;  130   893 expect
-;  131   900 istoken
-;  132   908 expect
-;  133   915 listproc
-;  134   924 prs
-;  135   928 mkneg
-;  136   934 pint1
-;  137   940 prs
-;  138   944 istoken
-;  139   952 stmt
-;  140   957 prs
-;  141   961 prs
-;  142   965 prc
-;  143   969 prs
-;  144   973 prs
-;  145   977 prs
-;  146   981 strlen
-;  147   988 strcpy
-;  148   995 prs
-;  149   999 expect
-;  150  1006 eqstr
-;  151  1012 constantexpr
-;  152  1025 checkreg
-;  153  1034 doreg1
-;  154  1041 exprstart
-;  155  1051 prs
-;  156  1055 prs
-;  157  1059 expect
-;  158  1066 getlex
-;  159  1073 typeName
-;  160  1082 searchname
-;  161  1093 gettypes
-;  162  1102 isrelational
-;  163  1115 error1
-;  164  1122 expect
-;  165  1129 prs
-;  166  1133 prs
-;  167  1137 gettypes
-;  168  1146 prs
-;  169  1150 prs
-;  170  1154 v
-;  171  1156 prs
-;  172  1160 pint1
-;  173  1166 cmpneg
-;  174  1173 prs
-;  175  1177 expect
-;  176  1184 eqstr
-;  177  1190 expr2
-;  178  1196 expr
-;  179  1201 getlex
-;  180  1208 typeName
-;  181  1217 error1
-;  182  1224 checkreg
-;  183  1233 doreg1
-;  184  1240 searchname
-;  185  1251 gettypes
-;  186  1260 error1
-;  187  1267 isrelational
-;  188  1280 error1
-;  189  1287 istoken
-;  190  1295 error1
-;  191  1302 istoken
-;  192  1310 prs
-;  193  1314 prs
-;  194  1318 prs
-;  195  1322 prs
-;  196  1326 prs
-;  197  1330 v
-;  198  1332 prs
-;  199  1336 pint1
-;  200  1342 adrofname
-;  201  1352 prs
-;  202  1356 prs
-;  203  1360 typeName
-;  204  1369 checkreg
-;  205  1378 prs
-;  206  1382 printreg
-;  207  1391 v
-;  208  1393 prs
-;  209  1397 printreg
-;  210  1406 error1
-;  211  1413 searchname
-;  212  1424 gettypes
-;  213  1433 error1
-;  214  1440 prs
-;  215  1444 printreg
-;  216  1453 error1
-;  217  1460 prs
-;  218  1464 a
-;  219  1466 prs
-;  220  1470 prs
-;  221  1474 prs
-;  222  1478 v
-;  223  1480 adrofname
-;  224  1490 prs
-;  225  1494 prs
-;  226  1498 error1
-;  227  1505 istoken
-;  228  1513 strcpy
-;  229  1520 istoken
-;  230  1528 strcpy
-;  231  1535 istoken
-;  232  1543 strcpy
-;  233  1550 istoken
-;  234  1558 strcpy
-;  235  1565 istoken
-;  236  1573 strcpy
-;  237  1580 istoken
-;  238  1588 strcpy
-;  239  1595 istoken
-;  240  1603 strcpy
-;  241  1610 getlex
-;  242  1617 isrelational
-;  243  1630 error1
-;  244  1637 strcpy
-;  245  1644 prnl
-;  246  1649 prs
-;  247  1653 prs
-;  248  1657 printreg
-;  249  1666 prs
-;  250  1670 istoken
-;  251  1678 pint1
-;  252  1684 typeName
-;  253  1693 checkreg
-;  254  1702 printreg
-;  255  1711 searchname
-;  256  1722 a
-;  257  1724 v
-;  258  1726 cmpneg
-;  259  1733 prs
-;  260  1737 expect
-;  261  1744 strlen
-;  262  1751 eqstr
-;  263  1757 eqstr
-;  264  1763 eqstr
-;  265  1769 eqstr
-;  266  1775 eqstr
-;  267  1781 eqstr
-;  268  1787 eqstr
-;  269  1793 eqstr
-;  270  1799 eqstr
-;  271  1805 eqstr
-;  272  1811 eqstr
-;  273  1817 eqstr
-;  274  1823 eqstr
-;  275  1829 eqstr
-;  276  1835 eqstr
-;  277  1841 eqstr
-;  278  1847 eqstr
-;  279  1853 eqstr
-;  280  1859 eqstr
-;  281  1865 eqstr
-;  282  1871 eqstr
-;  283  1877 eqstr
-;  284  1883 strlen
-;  285  1890 eqstr
-;  286  1896 eqstr
-;  287  1902 eqstr
-;  288  1908 eqstr
-;  289  1914 eqstr
-;  290  1920 eqstr
-;  291  1926 eqstr
-;  292  1932 eqstr
-;  293  1938 eqstr
-;  294  1944 prc
-;  295  1948 prc
-;  296  1952 prc
-;  297  1956 istoken
-;  298  1964 prs
-;  299  1968 pint1
-;  300  1974 typeName
-;  301  1983 checkreg
-;  302  1992 doreg1
-;  303  1999 docall1
-;  304  2007 isreg
-;  305  2013 searchname
-;  306  2024 gettypes
-;  307  2033 istoken
-;  308  2041 istoken
-;  309  2049 expect
-;  310  2056 searchname
-;  311  2067 expect
-;  312  2074 expect
-;  313  2081 gettypes
-;  314  2090 error1
-;  315  2097 istoken
-;  316  2105 error1
-;  317  2112 prs
-;  318  2116 prs
-;  319  2120 prs
-;  320  2124 v
-;  321  2126 istoken
-;  322  2134 error1
-;  323  2141 prs
-;  324  2145 prs
-;  325  2149 prs
-;  326  2153 v
-;  327  2155 istoken
-;  328  2163 compoundass
-;  329  2175 istoken
-;  330  2183 compoundass
-;  331  2195 istoken
-;  332  2203 compoundass
-;  333  2215 istoken
-;  334  2223 compoundass
-;  335  2235 istoken
-;  336  2243 error1
-;  337  2250 istoken
-;  338  2258 error1
-;  339  2265 istoken
-;  340  2273 expr
-;  341  2278 doassign
-;  342  2287 dovar1
-;  343  2294 istoken
-;  344  2302 rterm
-;  345  2308 istoken
-;  346  2316 rterm
-;  347  2322 istoken
-;  348  2330 rterm
-;  349  2336 istoken
-;  350  2344 rterm
-;  351  2350 istoken
-;  352  2358 rterm
-;  353  2364 istoken
-;  354  2372 rterm
-;  355  2378 istoken
-;  356  2386 domul
-;  357  2392 istoken
-;  358  2400 doidiv
-;  359  2407 istoken
-;  360  2415 domod
-;  361  2421 isrelational
-;  362  2434 rterm
-;  363  2440 cmpneg
-;  364  2447 error1
-;  365  2454 prnl
-;  366  2459 prs
-;  367  2463 prs
-;  368  2467 gettypes
-;  369  2476 prs
-;  370  2480 prs
-;  371  2484 v
-;  372  2486 prs
-;  373  2490 expect
-;  374  2497 pint1
-;  375  2503 gettypes
-;  376  2512 prs
-;  377  2516 v
-;  378  2518 prnl
-;  379  2523 prs
-;  380  2527 prs
-;  381  2531 prs
-;  382  2535 prnl
-;  383  2540 prs
-;  384  2544 prs
-;  385  2548 a
-;  386  2550 prs
-;  387  2554 v
-;  388  2556 prs
-;  389  2560 prs
-;  390  2564 prs
-;  391  2568 prs
-;  392  2572 prs
-;  393  2576 prc
-;  394  2580 printName
-;  395  2590 prs
-;  396  2594 prnl
-;  397  2599 prs
-;  398  2603 prs
-;  399  2607 prs
-;  400  2611 prs
-;  401  2615 v
-;  402  2617 istoken
-;  403  2625 prnl
-;  404  2630 prs
-;  405  2634 prs
-;  406  2638 prs
-;  407  2642 prs
-;  408  2646 pint1
-;  409  2652 typeName
-;  410  2661 searchname
-;  411  2672 istoken
-;  412  2680 searchname
-;  413  2691 expect
-;  414  2698 expect
-;  415  2705 gettypes
-;  416  2714 error1
-;  417  2721 eqstr
-;  418  2727 dovar1
-;  419  2734 eqstr
-;  420  2740 doreg
-;  421  2746 eqstr
-;  422  2752 doreg
-;  423  2758 eqstr
-;  424  2764 doreg
-;  425  2770 eqstr
-;  426  2776 doreg
-;  427  2782 eqstr
-;  428  2788 doreg
-;  429  2794 eqstr
-;  430  2800 doreg
-;  431  2806 eqstr
-;  432  2812 doreg
-;  433  2818 eqstr
-;  434  2824 doreg
-;  435  2830 eqstr
-;  436  2836 doreg
-;  437  2842 eqstr
-;  438  2848 doreg
-;  439  2854 eqstr
-;  440  2860 doreg
-;  441  2866 eqstr
-;  442  2872 doreg
-;  443  2878 eqstr
-;  444  2884 doreg
-;  445  2890 eqstr
-;  446  2896 doreg
-;  447  2902 eqstr
-;  448  2908 doreg
-;  449  2914 expect
-;  450  2921 prs
-;  451  2925 prs
-;  452  2929 prs
-;  453  2933 istoken
-;  454  2941 pint1
-;  455  2947 istoken
-;  456  2955 searchname
-;  457  2966 v
-;  458  2968 error1
-;  459  2975 gettypes
-;  460  2984 prs
-;  461  2988 v
-;  462  2990 prs
-;  463  2994 prs
-;  464  2998 prs
-;  465  3002 a
-;  466  3004 prs
-;  467  3008 prs
-;  468  3012 pint1
-;  469  3018 v
-;  470  3020 prs
-;  471  3024 prs
-;  472  3028 printName
-;  473  3038 prs
-;  474  3042 prs
-;  475  3046 prs
-;  476  3050 prs
-;  477  3054 v
-;  478  3056 prs
-;  479  3060 prs
-;  480  3064 prs
-;  481  3068 v
-;  482  3070 prs
-;  483  3074 prs
-;  484  3078 prs
-;  485  3082 v
-;  486  3084 prs
-;  487  3088 rterm
-;  488  3094 istoken
-;  489  3102 prs
-;  490  3106 pint1
-;  491  3112 prs
-;  492  3116 error1
-;  493  3123 istoken
-;  494  3131 prs
-;  495  3135 pint1
-;  496  3141 prs
-;  497  3145 prs
-;  498  3149 typeName
-;  499  3158 searchname
-;  500  3169 error1
-;  501  3176 gettypes
-;  502  3185 error1
-;  503  3192 error1
-;  504  3199 prs
-;  505  3203 v
-;  506  3205 prs
-;  507  3209 prs
-;  508  3213 doidiv
-;  509  3220 prs
-;  510  3224 checknamelen
-;  511  3237 strcpy
-;  512  3244 storecall
-;  513  3254 expect
-;  514  3261 istoken
-;  515  3269 error1
-;  516  3276 istoken
-;  517  3284 istoken
-;  518  3292 eprs
-;  519  3297 eprs
-;  520  3302 eprc
-;  521  3307 eprnum
-;  522  3314 eprs
-;  523  3319 eprc
-;  524  3324 eprs
-;  525  3329 eprc
-;  526  3334 eprs
-;  527  3339 istoken
-;  528  3347 name1
-;  529  3353 searchname
-;  530  3364 istoken
-;  531  3372 checkreg
-;  532  3381 searchname
-;  533  3392 error1
-;  534  3399 istoken
-;  535  3407 expect
-;  536  3414 prs
-;  537  3418 pint1
-;  538  3424 prs
-;  539  3428 prs
-;  540  3432 prc
-;  541  3436 pint1
-;  542  3442 prs
-;  543  3446 v
-;  544  3448 prs
-;  545  3452 gettypes
-;  546  3461 prs
-;  547  3465 v
-;  548  3467 prs
-;  549  3471 v
-;  550  3473 prs
-;  551  3477 prs
-;  552  3481 printreg
-;  553  3490 prs
-;  554  3494 prs
-;  555  3498 prs
-;  556  3502 pint1
-;  557  3508 getarg
-;  558  3515 setblock
-;  559  3524 error1
-;  560  3531 allocmem
-;  561  3540 error1
-;  562  3547 getfirstchar
-;  563  3560 parse
-;  564  3566 checkcalls
-;  565  3577 epilog
-;  566  3584 fgets1
-;  567  3591 cputs
-;  568  3597 cputs
-;  569  3603 readRL
-;  570  3610 prnl
-;  571  3615 strcpy
-;  572  3622 instr1
-;  573  3629 strcat1
-;  574  3637 toupper
-;  575  3645 strcpy
-;  576  3652 strlen
-;  577  3659 openR
-;  578  3665 cputs
-;  579  3671 cputs
-;  580  3677 exitR
-;  581  3683 creatR
-;  582  3690 cputs
-;  583  3696 cputs
-;  584  3702 exitR
-;  585  3708 prs
-;  586  3712 prs
-;  587  3716 prs
-;  588  3720 prs
-;  589  3724 prs
-;  590  3728 prs
-;  591  3732 prs
-;  592  3736 getlex
-;  593  3743 istoken
-;  594  3751 istoken
-;  595  3759 dodefine
-;  596  3768 istoken
-;  597  3776 doinclude
-;  598  3786 error1
-;  599  3793 typeName
-;  600  3802 dofunc
-;  601  3809 doglob
-;  602  3816 prs
-;  603  3820 from_far
-;  604  3829 adrF
-;  605  3834 eqstr
-;  606  3840 prs
-;  607  3844 prs
-;  608  3848 prs
-;  609  3852 printint51
-;  610  3863 error1
-;  611  3870 prs
-;  612  3874 prs
-;  613  3878 prs
-;  614  3882 openR
-;  615  3888 prs
-;  616  3892 prs
-;  617  3896 error1
-;  618  3903 parse
-;  619  3909 prs
-;  620  3913 prs
-;  621  3917 getfirstchar
-;  622  3930 getlex
-;  623  3937 eqstr
-;  624  3943 getlex
-;  625  3950 eqstr
-;  626  3956 getlex
-;  627  3963 prs
-;  628  3967 strcpy
-;  629  3974 prs
-;  630  3978 error1
-;  631  3985 getlex
-;  632  3992 expect
-;  633  3999 error1
-;  634  4006 strlen
-;  635  4013 error1
-;  636  4020 adrofname
-;  637  4030 strcpy
-;  638  4037 expect
-;  639  4044 istoken
-;  640  4052 istoken
-;  641  4060 stmt
-;  642  4065 istoken
-;  643  4073 doif
-;  644  4078 istoken
-;  645  4086 dodo
-;  646  4091 istoken
-;  647  4099 dowhile
-;  648  4107 istoken
-;  649  4115 prs
-;  650  4119 name1
-;  651  4125 prs
-;  652  4129 expect
-;  653  4136 prs
-;  654  4140 next
-;  655  4145 prc
-;  656  4149 next
-;  657  4154 getlex
-;  658  4161 istoken
-;  659  4169 prs
-;  660  4173 next
-;  661  4178 prc
-;  662  4182 next
-;  663  4187 getlex
-;  664  4194 error1
-;  665  4201 istoken
-;  666  4209 doemit
-;  667  4216 istoken
-;  668  4224 istoken
-;  669  4232 exprstart
-;  670  4242 prs
-;  671  4246 prs
-;  672  4250 expect
-;  673  4257 prs
-;  674  4261 prs
-;  675  4265 prc
-;  676  4269 expect
-;  677  4276 expect
-;  678  4283 exprstart
-;  679  4293 expect
-;  680  4300 prs
-;  681  4304 getlex
-;  682  4311 pint1
-;  683  4317 getlex
-;  684  4324 prc
-;  685  4328 expect
-;  686  4335 prs
-;  687  4339 prs
-;  688  4343 prs
-;  689  4347 prs
-;  690  4351 prs
-;  691  4355 pint1
-;  692  4361 prs
-;  693  4365 prs
-;  694  4369 pint1
-;  695  4375 prs
-;  696  4379 prs
-;  697  4383 prs
-;  698  4387 error1
-;  699  4394 prs
-;  700  4398 prs
-;  701  4402 pint1
-;  702  4408 prc
-;  703  4412 prs
-;  704  4416 prs
-;  705  4420 pint1
-;  706  4426 pexpr
-;  707  4432 pint1
-;  708  4438 stmt
-;  709  4443 istoken
-;  710  4451 prjump
-;  711  4458 prlabel
-;  712  4466 stmt
-;  713  4471 prlabel
-;  714  4479 prlabel
-;  715  4487 prlabel
-;  716  4495 stmt
-;  717  4500 expect
-;  718  4507 pexpr
-;  719  4513 pint1
-;  720  4519 prjump
-;  721  4526 prlabel
-;  722  4534 prlabel
-;  723  4542 pexpr
-;  724  4548 pint1
-;  725  4554 stmt
-;  726  4559 prjump
-;  727  4566 prlabel
-;  728  4574 getlex
-;  729  4581 next
-;  730  4586 next
-;  731  4591 next
-;  732  4596 next
-;  733  4601 next
-;  734  4606 next
-;  735  4611 next
-;  736  4616 next
-;  737  4621 next
-;  738  4626 next
-;  739  4631 next
-;  740  4636 next
-;  741  4641 next
-;  742  4646 next
-;  743  4651 next
-;  744  4656 instr1
-;  745  4663 next
-;  746  4668 getlex
-;  747  4675 next
-;  748  4680 next
-;  749  4685 getlex
-;  750  4692 getstring
-;  751  4702 digit
-;  752  4708 getdigit
-;  753  4717 next
-;  754  4722 next
-;  755  4727 next
-;  756  4732 alnum
-;  757  4738 strcpy
-;  758  4745 alnum
-;  759  4751 next
-;  760  4756 eqstr
-;  761  4762 eqstr
-;  762  4768 eqstr
-;  763  4774 eqstr
-;  764  4780 eqstr
-;  765  4786 eqstr
-;  766  4792 eqstr
-;  767  4798 eqstr
-;  768  4804 eqstr
-;  769  4810 eqstr
-;  770  4816 eqstr
-;  771  4822 eqstr
-;  772  4828 eqstr
-;  773  4834 eqstr
-;  774  4840 eqstr
-;  775  4846 eqstr
-;  776  4852 eqstr
-;  777  4858 convertdefine
-;  778  4872 strcpy
-;  779  4879 error1
-;  780  4886 adrofname
-;  781  4896 eqstr
-;  782  4902 next
-;  783  4907 alnum
-;  784  4913 next
-;  785  4918 digit
-;  786  4924 next
-;  787  4929 next
-;  788  4934 next
-;  789  4939 fgets1
-;  790  4946 getlex
-;  791  4953 istoken
-;  792  4961 prs
-;  793  4965 listproc
-;  794  4974 prs
-;  795  4978 pint1
-;  796  4984 error1
-;  797  4991 eprc
-;  798  4996 writetty
-;  799  5005 writetty
-;  800  5014 fputcR
-;  801  5021 prc
-;  802  5025 prs
-;  803  5029 prc
-;  804  5033 eprc
-;  805  5038 mkneg
-;  806  5044 eprnum
-;  807  5051 eprc
-;  808  5056 prc
-;  809  5060 mkneg
-;  810  5066 pint1
-;  811  5072 prc
-;  812  5076 prc
-;  813  5080 prc
-;  814  5084 prc
-;  815  5088 prc
-;  816  5092 pint1
-;  817  5098 printinputline
-;  818  5113 readRL
-;  819  5120 prs
-;  820  5124 pint1
-;  821  5130 prc
-;  822  5134 prscomment
-;  823  5145 fcloseR
-;  824  5153 fcloseR
-;  825  5161 exitR
-;  826  5167 prnl
-;  827  5172 prscomment
-;  828  5183 prs
-;  829  5187 pint1
-;  830  5193 prs
-;  831  5197 prs
-;  832  5201 prs
-;  833  5205 pint1
-;  834  5211 prs
-;  835  5215 pint1
-;  836  5221 prs
-;  837  5225 prc
-;  838  5229 prs
-;  839  5233 pint1
-;  840  5239 prs
-;  841  5243 prs
-;  842  5247 end1
-;  843  5252 prs
-;  844  5256 prs
-;  845  5260 prs
-;  846  5264 pint1
-;  847  5270 prs
-;  848  5274 listvar
-;  849  5282 prs
-;  850  5286 printint51
-;  851  5297 prc
-;  852  5301 prs
-;  853  5305 prs
-;  854  5309 prs
-;  855  5313 prs
-;  856  5317 prs
-;  857  5321 prs
-;  858  5325 prs
-;  859  5329 prs
-;  860  5333 prs
-;  861  5337 printint51
-;  862  5348 printint51
-;  863  5359 prs
-;  864  5363 prs
-;  865  5367 prc
-;  866  5371 adrofname
-;  867  5381 prs
-;  868  5385 prc
-;  869  5389 pint1
-;  870  5395 prc
-;  871  5399 pint1
-;  872  5405 prc
-;  873  5409 prs
-;  874  5413 prc
-;  875  5417 pint1
-;  876  5423 prs
-;  877  5427 calllisting
-;  878  5439 prs
-;  879  5443 printint51
-;  880  5454 prc
-;  881  5458 prs
-;  882  5462 printint51
-;  883  5473 prc
-;  884  5477 from_far
-;  885  5486 prs
-;  886  5490 adrF
-;  887  5495 from_far
-;  888  5504 eqstr
-;  889  5510 prs
-;  890  5514 countcalls
-;  891  5525 funclisting
-;  892  5537 prs
-;  893  5541 printint51
-;  894  5552 printint51
-;  895  5563 prs
-;  896  5567 printint51
-;  897  5578 prc
-;  898  5582 prs
-;  899  5586 prs
-;  900  5590 prs
-;  901  5594 prs
-;  902  5598 prc
-;  903  5602 prc
-;  904  5606 adrF
-;  905  5611 prs
-;  906  5615 strcpy
-;  907  5622 storefunc
-;  908  5632 prs
-;  909  5636 prs
-;  910  5640 listvar
-;  911  5648 listfunc
-;  912  5657 listcall
-;  913  5666 prs
-;  914  5670 prs
-;  915  5674 prs
-;  916  5678 prs
-;  917  5682 prs
-;  918  5686 printint51
-;  919  5697 prs
-;  920  5701 printint51
-;  921  5712 prs
-;  922  5716 printint51
-;  923  5727 prs
-;  924  5731 printint51
-;  925  5742 prs
-;  926  5746 printint51
-;  927  5757 prs
-;  928  5761 printint51
-;  929  5772 prs
-;  930  5776 printint51
-;  931  5787 prs
-;  932  5791 printint51
-;  933  5802 prs
-;  934  5806 printint51
-;  935  5817 prs
-;  936  5821 printint51
-;  937  5832 prs
-;  938  5836 printint51
-;  939  5847 prs
-;  940  5851 printint51
-;  941  5862 prs
-;  942  5866 prs
-;  943  5870 pint1
-;  944  5876 prs
-;  945  5880 printint51
-;  946  5891 prs
-;  947  5895 prs
-;  948  5899 prs
-;  949  5903 prs
-;  950  5907 printint51
-;  951  5918 prs
-;  952  5922 printint51
-;  953  5933 prs
-;  954  5937 printint51
-;  955  5948 prs
-;  956  5952 end1
-;  957  5957 DosInt
-;  958  5964 DosInt
-;Input: A.C, List: A.S,  Lines: 1002
+;   26   192 prunsign1
+;   27   202 prs
+;   28   206 prs
+;   29   210 prs
+;   30   214 prs
+;   31   218 prs
+;   32   222 prunsign1
+;   33   232 prs
+;   34   236 expect
+;   35   243 expect
+;   36   250 error1
+;   37   257 prs
+;   38   261 prs
+;   39   265 prs
+;   40   269 strcpy
+;   41   276 expect
+;   42   283 istoken
+;   43   291 prc
+;   44   295 prscomment
+;   45   306 prc
+;   46   310 prs
+;   47   314 strlen
+;   48   321 istoken
+;   49   329 prc
+;   50   333 expect
+;   51   340 prunsign1
+;   52   350 istoken
+;   53   358 expect
+;   54   365 error1
+;   55   372 prs
+;   56   376 prs
+;   57   380 prs
+;   58   384 prs
+;   59   388 prs
+;   60   392 prs
+;   61   396 istoken
+;   62   404 prc
+;   63   408 istoken
+;   64   416 expect
+;   65   423 prunsign1
+;   66   433 prunsign1
+;   67   443 adrofname
+;   68   453 strcpy
+;   69   460 strcpy
+;   70   467 expect
+;   71   474 adrF
+;   72   479 adrofname
+;   73   489 prs
+;   74   493 prs
+;   75   497 prc
+;   76   501 pint1
+;   77   507 prc
+;   78   511 checkName
+;   79   521 error1
+;   80   528 adrofname
+;   81   538 eqstr
+;   82   544 adrofname
+;   83   554 eqstr
+;   84   560 istoken
+;   85   568 istoken
+;   86   576 istoken
+;   87   584 istoken
+;   88   592 istoken
+;   89   600 istoken
+;   90   608 istoken
+;   91   616 istoken
+;   92   624 name1
+;   93   630 error1
+;   94   637 getlex
+;   95   644 error1
+;   96   651 error1
+;   97   658 strlen
+;   98   665 to_far
+;   99   672 error1
+;  100   679 adrF
+;  101   684 strcpy
+;  102   691 error1
+;  103   698 checkName
+;  104   708 error1
+;  105   715 adrF
+;  106   720 strcpy
+;  107   727 adrF
+;  108   732 eqstr
+;  109   738 checknamelen
+;  110   751 strcpy
+;  111   758 checkFunction
+;  112   772 error1
+;  113   779 storefunc
+;  114   789 prs
+;  115   793 prs
+;  116   797 prs
+;  117   801 expect
+;  118   808 istoken
+;  119   816 typeName
+;  120   825 addlocal
+;  121   834 istoken
+;  122   842 expect
+;  123   849 expect
+;  124   856 isvariable
+;  125   867 typeName
+;  126   876 checknamelen
+;  127   889 addlocal
+;  128   898 istoken
+;  129   906 expect
+;  130   913 expect
+;  131   920 istoken
+;  132   928 expect
+;  133   935 listproc
+;  134   944 prs
+;  135   948 mkneg
+;  136   954 prunsign1
+;  137   964 prs
+;  138   968 istoken
+;  139   976 stmt
+;  140   981 prs
+;  141   985 prs
+;  142   989 prc
+;  143   993 prs
+;  144   997 prs
+;  145  1001 prs
+;  146  1005 strlen
+;  147  1012 strcpy
+;  148  1019 prs
+;  149  1023 expect
+;  150  1030 eqstr
+;  151  1036 constantexpr
+;  152  1049 checkreg
+;  153  1058 doreg1
+;  154  1065 exprstart
+;  155  1075 prs
+;  156  1079 prs
+;  157  1083 expect
+;  158  1090 getlex
+;  159  1097 typeName
+;  160  1106 searchname
+;  161  1117 gettypes
+;  162  1126 isrelational
+;  163  1139 error1
+;  164  1146 expect
+;  165  1153 prs
+;  166  1157 prs
+;  167  1161 gettypes
+;  168  1170 prs
+;  169  1174 prs
+;  170  1178 v
+;  171  1180 prs
+;  172  1184 prunsign1
+;  173  1194 cmpneg
+;  174  1201 prs
+;  175  1205 expect
+;  176  1212 eqstr
+;  177  1218 expr2
+;  178  1224 expr
+;  179  1229 getlex
+;  180  1236 typeName
+;  181  1245 error1
+;  182  1252 checkreg
+;  183  1261 doreg1
+;  184  1268 searchname
+;  185  1279 gettypes
+;  186  1288 error1
+;  187  1295 isrelational
+;  188  1308 error1
+;  189  1315 istoken
+;  190  1323 error1
+;  191  1330 istoken
+;  192  1338 prs
+;  193  1342 prs
+;  194  1346 prs
+;  195  1350 prs
+;  196  1354 prs
+;  197  1358 v
+;  198  1360 prs
+;  199  1364 prunsign1
+;  200  1374 adrofname
+;  201  1384 prs
+;  202  1388 prs
+;  203  1392 typeName
+;  204  1401 checkreg
+;  205  1410 prs
+;  206  1414 printreg
+;  207  1423 v
+;  208  1425 prs
+;  209  1429 printreg
+;  210  1438 error1
+;  211  1445 searchname
+;  212  1456 gettypes
+;  213  1465 error1
+;  214  1472 prs
+;  215  1476 printreg
+;  216  1485 error1
+;  217  1492 prs
+;  218  1496 a
+;  219  1498 prs
+;  220  1502 prs
+;  221  1506 prs
+;  222  1510 v
+;  223  1512 adrofname
+;  224  1522 prs
+;  225  1526 prs
+;  226  1530 error1
+;  227  1537 istoken
+;  228  1545 strcpy
+;  229  1552 istoken
+;  230  1560 strcpy
+;  231  1567 istoken
+;  232  1575 strcpy
+;  233  1582 istoken
+;  234  1590 strcpy
+;  235  1597 istoken
+;  236  1605 strcpy
+;  237  1612 istoken
+;  238  1620 strcpy
+;  239  1627 istoken
+;  240  1635 strcpy
+;  241  1642 getlex
+;  242  1649 isrelational
+;  243  1662 error1
+;  244  1669 strcpy
+;  245  1676 prnl
+;  246  1681 prs
+;  247  1685 prs
+;  248  1689 printreg
+;  249  1698 prs
+;  250  1702 istoken
+;  251  1710 prunsign1
+;  252  1720 typeName
+;  253  1729 checkreg
+;  254  1738 printreg
+;  255  1747 searchname
+;  256  1758 a
+;  257  1760 v
+;  258  1762 cmpneg
+;  259  1769 prs
+;  260  1773 expect
+;  261  1780 strlen
+;  262  1787 eqstr
+;  263  1793 eqstr
+;  264  1799 eqstr
+;  265  1805 eqstr
+;  266  1811 eqstr
+;  267  1817 eqstr
+;  268  1823 eqstr
+;  269  1829 eqstr
+;  270  1835 eqstr
+;  271  1841 eqstr
+;  272  1847 eqstr
+;  273  1853 eqstr
+;  274  1859 eqstr
+;  275  1865 eqstr
+;  276  1871 eqstr
+;  277  1877 eqstr
+;  278  1883 eqstr
+;  279  1889 eqstr
+;  280  1895 eqstr
+;  281  1901 eqstr
+;  282  1907 eqstr
+;  283  1913 eqstr
+;  284  1919 strlen
+;  285  1926 eqstr
+;  286  1932 eqstr
+;  287  1938 eqstr
+;  288  1944 eqstr
+;  289  1950 eqstr
+;  290  1956 eqstr
+;  291  1962 eqstr
+;  292  1968 eqstr
+;  293  1974 eqstr
+;  294  1980 prc
+;  295  1984 prc
+;  296  1988 prc
+;  297  1992 istoken
+;  298  2000 prs
+;  299  2004 prunsign1
+;  300  2014 typeName
+;  301  2023 checkreg
+;  302  2032 doreg1
+;  303  2039 docall1
+;  304  2047 isreg
+;  305  2053 searchname
+;  306  2064 gettypes
+;  307  2073 istoken
+;  308  2081 istoken
+;  309  2089 expect
+;  310  2096 searchname
+;  311  2107 expect
+;  312  2114 expect
+;  313  2121 gettypes
+;  314  2130 error1
+;  315  2137 istoken
+;  316  2145 error1
+;  317  2152 prs
+;  318  2156 prs
+;  319  2160 prs
+;  320  2164 v
+;  321  2166 istoken
+;  322  2174 error1
+;  323  2181 prs
+;  324  2185 prs
+;  325  2189 prs
+;  326  2193 v
+;  327  2195 istoken
+;  328  2203 compoundass
+;  329  2215 istoken
+;  330  2223 compoundass
+;  331  2235 istoken
+;  332  2243 compoundass
+;  333  2255 istoken
+;  334  2263 compoundass
+;  335  2275 istoken
+;  336  2283 error1
+;  337  2290 istoken
+;  338  2298 error1
+;  339  2305 istoken
+;  340  2313 expr
+;  341  2318 doassign
+;  342  2327 dovar1
+;  343  2334 istoken
+;  344  2342 rterm
+;  345  2348 istoken
+;  346  2356 rterm
+;  347  2362 istoken
+;  348  2370 rterm
+;  349  2376 istoken
+;  350  2384 rterm
+;  351  2390 istoken
+;  352  2398 rterm
+;  353  2404 istoken
+;  354  2412 rterm
+;  355  2418 istoken
+;  356  2426 domul
+;  357  2432 istoken
+;  358  2440 doidiv
+;  359  2447 istoken
+;  360  2455 domod
+;  361  2461 isrelational
+;  362  2474 rterm
+;  363  2480 cmpneg
+;  364  2487 error1
+;  365  2494 prnl
+;  366  2499 prs
+;  367  2503 prs
+;  368  2507 gettypes
+;  369  2516 prs
+;  370  2520 prs
+;  371  2524 v
+;  372  2526 prs
+;  373  2530 expect
+;  374  2537 prunsign1
+;  375  2547 gettypes
+;  376  2556 prs
+;  377  2560 v
+;  378  2562 prnl
+;  379  2567 prs
+;  380  2571 prs
+;  381  2575 prs
+;  382  2579 prnl
+;  383  2584 prs
+;  384  2588 prs
+;  385  2592 a
+;  386  2594 prs
+;  387  2598 v
+;  388  2600 prs
+;  389  2604 prs
+;  390  2608 prs
+;  391  2612 prs
+;  392  2616 prs
+;  393  2620 prc
+;  394  2624 printName
+;  395  2634 prs
+;  396  2638 prnl
+;  397  2643 prs
+;  398  2647 prs
+;  399  2651 prs
+;  400  2655 prs
+;  401  2659 v
+;  402  2661 istoken
+;  403  2669 prnl
+;  404  2674 prs
+;  405  2678 prs
+;  406  2682 prs
+;  407  2686 prs
+;  408  2690 prunsign1
+;  409  2700 typeName
+;  410  2709 searchname
+;  411  2720 istoken
+;  412  2728 searchname
+;  413  2739 expect
+;  414  2746 expect
+;  415  2753 gettypes
+;  416  2762 error1
+;  417  2769 eqstr
+;  418  2775 dovar1
+;  419  2782 eqstr
+;  420  2788 doreg
+;  421  2794 eqstr
+;  422  2800 doreg
+;  423  2806 eqstr
+;  424  2812 doreg
+;  425  2818 eqstr
+;  426  2824 doreg
+;  427  2830 eqstr
+;  428  2836 doreg
+;  429  2842 eqstr
+;  430  2848 doreg
+;  431  2854 eqstr
+;  432  2860 doreg
+;  433  2866 eqstr
+;  434  2872 doreg
+;  435  2878 eqstr
+;  436  2884 doreg
+;  437  2890 eqstr
+;  438  2896 doreg
+;  439  2902 eqstr
+;  440  2908 doreg
+;  441  2914 eqstr
+;  442  2920 doreg
+;  443  2926 eqstr
+;  444  2932 doreg
+;  445  2938 eqstr
+;  446  2944 doreg
+;  447  2950 eqstr
+;  448  2956 doreg
+;  449  2962 expect
+;  450  2969 prs
+;  451  2973 prs
+;  452  2977 prs
+;  453  2981 istoken
+;  454  2989 prunsign1
+;  455  2999 istoken
+;  456  3007 searchname
+;  457  3018 v
+;  458  3020 error1
+;  459  3027 gettypes
+;  460  3036 prs
+;  461  3040 v
+;  462  3042 prs
+;  463  3046 prs
+;  464  3050 prs
+;  465  3054 a
+;  466  3056 prs
+;  467  3060 prs
+;  468  3064 prunsign1
+;  469  3074 v
+;  470  3076 prs
+;  471  3080 prs
+;  472  3084 printName
+;  473  3094 prs
+;  474  3098 prs
+;  475  3102 prs
+;  476  3106 prs
+;  477  3110 v
+;  478  3112 prs
+;  479  3116 prs
+;  480  3120 prs
+;  481  3124 v
+;  482  3126 prs
+;  483  3130 prs
+;  484  3134 prs
+;  485  3138 v
+;  486  3140 prs
+;  487  3144 rterm
+;  488  3150 istoken
+;  489  3158 prs
+;  490  3162 prunsign1
+;  491  3172 prs
+;  492  3176 error1
+;  493  3183 istoken
+;  494  3191 prs
+;  495  3195 prunsign1
+;  496  3205 prs
+;  497  3209 prs
+;  498  3213 typeName
+;  499  3222 searchname
+;  500  3233 error1
+;  501  3240 gettypes
+;  502  3249 error1
+;  503  3256 error1
+;  504  3263 prs
+;  505  3267 v
+;  506  3269 prs
+;  507  3273 prs
+;  508  3277 doidiv
+;  509  3284 prs
+;  510  3288 checknamelen
+;  511  3301 strcpy
+;  512  3308 storecall
+;  513  3318 expect
+;  514  3325 istoken
+;  515  3333 error1
+;  516  3340 istoken
+;  517  3348 istoken
+;  518  3356 eprs
+;  519  3361 eprs
+;  520  3366 eprc
+;  521  3371 eprnum
+;  522  3378 eprs
+;  523  3383 eprc
+;  524  3388 eprs
+;  525  3393 eprc
+;  526  3398 eprs
+;  527  3403 istoken
+;  528  3411 name1
+;  529  3417 searchname
+;  530  3428 istoken
+;  531  3436 checkreg
+;  532  3445 searchname
+;  533  3456 error1
+;  534  3463 istoken
+;  535  3471 expect
+;  536  3478 prs
+;  537  3482 prunsign1
+;  538  3492 prs
+;  539  3496 prs
+;  540  3500 prc
+;  541  3504 prunsign1
+;  542  3514 prs
+;  543  3518 v
+;  544  3520 prs
+;  545  3524 gettypes
+;  546  3533 prs
+;  547  3537 v
+;  548  3539 prs
+;  549  3543 v
+;  550  3545 prs
+;  551  3549 prs
+;  552  3553 printreg
+;  553  3562 prs
+;  554  3566 prs
+;  555  3570 prs
+;  556  3574 prunsign1
+;  557  3584 getarg
+;  558  3591 setblock
+;  559  3600 error1
+;  560  3607 allocmem
+;  561  3616 error1
+;  562  3623 getfirstchar
+;  563  3636 parse
+;  564  3642 checkcalls
+;  565  3653 epilog
+;  566  3660 fgets1
+;  567  3667 cputs
+;  568  3673 cputs
+;  569  3679 readRL
+;  570  3686 prnl
+;  571  3691 strcpy
+;  572  3698 instr1
+;  573  3705 strcat1
+;  574  3713 toupper
+;  575  3721 strcpy
+;  576  3728 strlen
+;  577  3735 openR
+;  578  3741 cputs
+;  579  3747 cputs
+;  580  3753 exitR
+;  581  3759 creatR
+;  582  3766 cputs
+;  583  3772 cputs
+;  584  3778 exitR
+;  585  3784 prs
+;  586  3788 prs
+;  587  3792 prs
+;  588  3796 prs
+;  589  3800 prs
+;  590  3804 prs
+;  591  3808 prs
+;  592  3812 getlex
+;  593  3819 istoken
+;  594  3827 istoken
+;  595  3835 dodefine
+;  596  3844 istoken
+;  597  3852 doinclude
+;  598  3862 error1
+;  599  3869 typeName
+;  600  3878 dofunc
+;  601  3885 doglob
+;  602  3892 prs
+;  603  3896 from_far
+;  604  3905 adrF
+;  605  3910 eqstr
+;  606  3916 prs
+;  607  3920 prs
+;  608  3924 prs
+;  609  3928 printint51
+;  610  3939 error1
+;  611  3946 prs
+;  612  3950 prs
+;  613  3954 prs
+;  614  3958 openR
+;  615  3964 prs
+;  616  3968 prs
+;  617  3972 error1
+;  618  3979 parse
+;  619  3985 prs
+;  620  3989 prs
+;  621  3993 getfirstchar
+;  622  4006 getlex
+;  623  4013 eqstr
+;  624  4019 getlex
+;  625  4026 eqstr
+;  626  4032 getlex
+;  627  4039 prs
+;  628  4043 strcpy
+;  629  4050 prs
+;  630  4054 error1
+;  631  4061 getlex
+;  632  4068 expect
+;  633  4075 error1
+;  634  4082 strlen
+;  635  4089 error1
+;  636  4096 adrofname
+;  637  4106 strcpy
+;  638  4113 expect
+;  639  4120 istoken
+;  640  4128 istoken
+;  641  4136 stmt
+;  642  4141 istoken
+;  643  4149 doif
+;  644  4154 istoken
+;  645  4162 dodo
+;  646  4167 istoken
+;  647  4175 dowhile
+;  648  4183 istoken
+;  649  4191 prs
+;  650  4195 name1
+;  651  4201 prs
+;  652  4205 expect
+;  653  4212 prs
+;  654  4216 next
+;  655  4221 prc
+;  656  4225 next
+;  657  4230 getlex
+;  658  4237 istoken
+;  659  4245 prs
+;  660  4249 next
+;  661  4254 prc
+;  662  4258 next
+;  663  4263 getlex
+;  664  4270 error1
+;  665  4277 istoken
+;  666  4285 doemit
+;  667  4292 istoken
+;  668  4300 istoken
+;  669  4308 exprstart
+;  670  4318 prs
+;  671  4322 prs
+;  672  4326 expect
+;  673  4333 prs
+;  674  4337 prs
+;  675  4341 prc
+;  676  4345 expect
+;  677  4352 expect
+;  678  4359 exprstart
+;  679  4369 expect
+;  680  4376 prs
+;  681  4380 getlex
+;  682  4387 prunsign1
+;  683  4397 getlex
+;  684  4404 prc
+;  685  4408 expect
+;  686  4415 prs
+;  687  4419 prs
+;  688  4423 prs
+;  689  4427 prs
+;  690  4431 prs
+;  691  4435 prunsign1
+;  692  4445 prs
+;  693  4449 prs
+;  694  4453 prunsign1
+;  695  4463 prs
+;  696  4467 prs
+;  697  4471 prs
+;  698  4475 error1
+;  699  4482 prs
+;  700  4486 prs
+;  701  4490 prunsign1
+;  702  4500 prc
+;  703  4504 prs
+;  704  4508 prs
+;  705  4512 prunsign1
+;  706  4522 pexpr
+;  707  4528 pint1
+;  708  4534 stmt
+;  709  4539 istoken
+;  710  4547 prjump
+;  711  4554 prlabel
+;  712  4562 stmt
+;  713  4567 prlabel
+;  714  4575 prlabel
+;  715  4583 prlabel
+;  716  4591 stmt
+;  717  4596 expect
+;  718  4603 pexpr
+;  719  4609 pint1
+;  720  4615 prjump
+;  721  4622 prlabel
+;  722  4630 prlabel
+;  723  4638 pexpr
+;  724  4644 pint1
+;  725  4650 stmt
+;  726  4655 prjump
+;  727  4662 prlabel
+;  728  4670 getlex
+;  729  4677 next
+;  730  4682 next
+;  731  4687 next
+;  732  4692 next
+;  733  4697 next
+;  734  4702 next
+;  735  4707 next
+;  736  4712 next
+;  737  4717 next
+;  738  4722 next
+;  739  4727 next
+;  740  4732 next
+;  741  4737 next
+;  742  4742 next
+;  743  4747 next
+;  744  4752 instr1
+;  745  4759 next
+;  746  4764 getlex
+;  747  4771 next
+;  748  4776 next
+;  749  4781 getlex
+;  750  4788 getstring
+;  751  4798 digit
+;  752  4804 getdigit
+;  753  4813 next
+;  754  4818 next
+;  755  4823 next
+;  756  4828 alnum
+;  757  4834 strcpy
+;  758  4841 alnum
+;  759  4847 next
+;  760  4852 eqstr
+;  761  4858 eqstr
+;  762  4864 eqstr
+;  763  4870 eqstr
+;  764  4876 eqstr
+;  765  4882 eqstr
+;  766  4888 eqstr
+;  767  4894 eqstr
+;  768  4900 eqstr
+;  769  4906 eqstr
+;  770  4912 eqstr
+;  771  4918 eqstr
+;  772  4924 eqstr
+;  773  4930 eqstr
+;  774  4936 eqstr
+;  775  4942 eqstr
+;  776  4948 eqstr
+;  777  4954 convertdefine
+;  778  4968 strcpy
+;  779  4975 error1
+;  780  4982 adrofname
+;  781  4992 eqstr
+;  782  4998 next
+;  783  5003 alnum
+;  784  5009 next
+;  785  5014 digit
+;  786  5020 next
+;  787  5025 next
+;  788  5030 next
+;  789  5035 fgets1
+;  790  5042 getlex
+;  791  5049 istoken
+;  792  5057 prs
+;  793  5061 listproc
+;  794  5070 prs
+;  795  5074 pint1
+;  796  5080 error1
+;  797  5087 eprc
+;  798  5092 writetty
+;  799  5101 writetty
+;  800  5110 fputcR
+;  801  5117 prc
+;  802  5121 prs
+;  803  5125 prc
+;  804  5129 eprc
+;  805  5134 mkneg
+;  806  5140 eprnum
+;  807  5147 eprc
+;  808  5152 prc
+;  809  5156 mkneg
+;  810  5162 pint1
+;  811  5168 prc
+;  812  5172 prunsign1
+;  813  5182 prc
+;  814  5186 prc
+;  815  5190 prc
+;  816  5194 prc
+;  817  5198 prc
+;  818  5202 prunsign1
+;  819  5212 printinputline
+;  820  5227 readRL
+;  821  5234 prs
+;  822  5238 prunsign1
+;  823  5248 prc
+;  824  5252 prscomment
+;  825  5263 fcloseR
+;  826  5271 fcloseR
+;  827  5279 exitR
+;  828  5285 prnl
+;  829  5290 prscomment
+;  830  5301 prs
+;  831  5305 prunsign1
+;  832  5315 prs
+;  833  5319 prs
+;  834  5323 prs
+;  835  5327 prunsign1
+;  836  5337 prs
+;  837  5341 prunsign1
+;  838  5351 prs
+;  839  5355 prc
+;  840  5359 prs
+;  841  5363 prunsign1
+;  842  5373 prs
+;  843  5377 prs
+;  844  5381 end1
+;  845  5386 prs
+;  846  5390 prs
+;  847  5394 prs
+;  848  5398 prunsign1
+;  849  5408 prs
+;  850  5412 listvar
+;  851  5420 prs
+;  852  5424 printint51
+;  853  5435 prc
+;  854  5439 prs
+;  855  5443 prs
+;  856  5447 prs
+;  857  5451 prs
+;  858  5455 prs
+;  859  5459 prs
+;  860  5463 prs
+;  861  5467 prs
+;  862  5471 prs
+;  863  5475 printint51
+;  864  5486 printint51
+;  865  5497 prs
+;  866  5501 prs
+;  867  5505 prc
+;  868  5509 adrofname
+;  869  5519 prs
+;  870  5523 prc
+;  871  5527 prunsign1
+;  872  5537 prc
+;  873  5541 prunsign1
+;  874  5551 prc
+;  875  5555 prs
+;  876  5559 prc
+;  877  5563 pint1
+;  878  5569 prs
+;  879  5573 calllisting
+;  880  5585 prs
+;  881  5589 printint51
+;  882  5600 prc
+;  883  5604 prs
+;  884  5608 printint51
+;  885  5619 prc
+;  886  5623 from_far
+;  887  5632 prs
+;  888  5636 adrF
+;  889  5641 from_far
+;  890  5650 eqstr
+;  891  5656 prs
+;  892  5660 countcalls
+;  893  5671 funclisting
+;  894  5683 prs
+;  895  5687 printint51
+;  896  5698 printint51
+;  897  5709 prs
+;  898  5713 printint51
+;  899  5724 prc
+;  900  5728 prs
+;  901  5732 prs
+;  902  5736 prs
+;  903  5740 prs
+;  904  5744 prc
+;  905  5748 prc
+;  906  5752 adrF
+;  907  5757 prs
+;  908  5761 strcpy
+;  909  5768 storefunc
+;  910  5778 prs
+;  911  5782 prs
+;  912  5786 listvar
+;  913  5794 listfunc
+;  914  5803 listcall
+;  915  5812 prs
+;  916  5816 prs
+;  917  5820 prs
+;  918  5824 prs
+;  919  5828 prs
+;  920  5832 printint51
+;  921  5843 prs
+;  922  5847 printint51
+;  923  5858 prs
+;  924  5862 printint51
+;  925  5873 prs
+;  926  5877 printint51
+;  927  5888 prs
+;  928  5892 printint51
+;  929  5903 prs
+;  930  5907 printint51
+;  931  5918 prs
+;  932  5922 printint51
+;  933  5933 prs
+;  934  5937 printint51
+;  935  5948 prs
+;  936  5952 printint51
+;  937  5963 prs
+;  938  5967 printint51
+;  939  5978 prs
+;  940  5982 printint51
+;  941  5993 prs
+;  942  5997 printint51
+;  943  6008 prs
+;  944  6012 prs
+;  945  6016 prunsign1
+;  946  6026 prs
+;  947  6030 printint51
+;  948  6041 prs
+;  949  6045 prs
+;  950  6049 prs
+;  951  6053 prs
+;  952  6057 printint51
+;  953  6068 prs
+;  954  6072 printint51
+;  955  6083 prs
+;  956  6087 printint51
+;  957  6098 prs
+;  958  6102 end1
+;  959  6107 DosInt
+;  960  6114 DosInt
+;Input: A.C, List: A.S,  Lines: 1005
 ;Glob. variables:  129 max.:  200
-;Functions      :  106 max.:  300
-;Calls          :  959 max.: 2000, NameField: 5971 max.:    -1
-;Code until     :21541 max.: 30000, free: 8459
-;Data (HeapEnd) :-11988, resting stacksize: 11987
+;Functions      :  107 max.:  300
+;Calls          :  961 max.: 2000, NameField: 6121 max.:    65535
+;Code until     :21608 max.: 30000, free: 8392
+;Data (HeapEnd) :53548, resting stacksize: 11987
 ;Max. Const in 'epilog' :  947 max. 3000, free: 2053

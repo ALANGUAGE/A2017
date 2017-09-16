@@ -160,8 +160,8 @@
    160                                  ;-49 char coname[CMDLENMAX];              char *cloc=0;
    161                                  
    162                                  section .bss
-   163                                  absolute -32536
-   164 FFFF80E8 <res 00000043>          coname resb 67
+   163                                  absolute 33000
+   164 000080E8 <res 00000043>          coname resb 67
    165                                  section .text
    166 00000016 0000                    cloc dw 0
    167                                  
@@ -170,30 +170,30 @@
    170 00000018 0000                    fdin dw 0
    171 0000001A 0000                    fdout dw 0
    172                                  section .bss
-   173                                  absolute -32469
-   174 FFFF812B <res 00000080>          symbol resb 128
+   173                                  absolute 33067
+   174 0000812B <res 00000080>          symbol resb 128
    175                                  section .text
    176                                  
    177                                  ;-51 char fname[CMDLENMAX];               char namein[CMDLENMAX];
    178                                  
    179                                  section .bss
-   180                                  absolute -32341
-   181 FFFF81AB <res 00000043>          fname resb 67
+   180                                  absolute 33195
+   181 000081AB <res 00000043>          fname resb 67
    182                                  section .text
    183                                  section .bss
-   184                                  absolute -32274
-   185 FFFF81EE <res 00000043>          namein resb 67
+   184                                  absolute 33262
+   185 000081EE <res 00000043>          namein resb 67
    186                                  section .text
    187                                  
    188                                  ;-52 char namelst[CMDLENMAX];             char archivename[CMDLENMAX];
    189                                  
    190                                  section .bss
-   191                                  absolute -32207
-   192 FFFF8231 <res 00000043>          namelst resb 67
+   191                                  absolute 33329
+   192 00008231 <res 00000043>          namelst resb 67
    193                                  section .text
    194                                  section .bss
-   195                                  absolute -32140
-   196 FFFF8274 <res 00000043>          archivename resb 67
+   195                                  absolute 33396
+   196 00008274 <res 00000043>          archivename resb 67
    197                                  section .text
    198                                  
    199                                  ;-53 int token=0;       char globC=0;     int spalte=0;
@@ -227,8 +227,8 @@
    227 00000030 0000                    typei dw 0
    228 00000032 00                      istype db 0
    229                                  section .bss
-   230                                  absolute -32073
-   231 FFFF82B7 <res 0000012C>          GType resb 300
+   230                                  absolute 33463
+   231 000082B7 <res 0000012C>          GType resb 300
    232                                  section .text
    233                                  
    234                                  ;-59 int signi;       char issign;  char GSign [VARMAX]; // 0=U, 1=S
@@ -236,8 +236,8 @@
    236 00000033 0000                    signi dw 0
    237 00000035 00                      issign db 0
    238                                  section .bss
-   239                                  absolute -31773
-   240 FFFF83E3 <res 0000012C>          GSign resb 300
+   239                                  absolute 33763
+   240 000083E3 <res 0000012C>          GSign resb 300
    241                                  section .text
    242                                  
    243                                  ;-60 int widthi;      char iswidth; char GWidth[VARMAX]; // 0, 1, 2, 4
@@ -245,31 +245,31 @@
    245 00000036 0000                    widthi dw 0
    246 00000038 00                      iswidth db 0
    247                                  section .bss
-   248                                  absolute -31473
-   249 FFFF850F <res 0000012C>          GWidth resb 300
+   248                                  absolute 34063
+   249 0000850F <res 0000012C>          GWidth resb 300
    250                                  section .text
    251                                  
    252                                  ;-61              int GAdr[VARMAX]; int  GUsed [VARMAX];
    253                                  
    254                                  section .bss
-   255                                  absolute -31173
-   256 FFFF863B <res 00000258>          GAdr resw 300
+   255                                  absolute 34363
+   256 0000863B <res 00000258>          GAdr resw 300
    257                                  section .text
    258                                  section .bss
-   259                                  absolute -30573
-   260 FFFF8893 <res 00000258>          GUsed resw 300
+   259                                  absolute 34963
+   260 00008893 <res 00000258>          GUsed resw 300
    261                                  section .text
    262                                  
    263                                  ;-62 int wi=0;   int GData[VARMAX];  char GNameField[GNAMEMAX];
    264                                  
    265 00000039 0000                    wi dw 0
    266                                  section .bss
-   267                                  absolute -29973
-   268 FFFF8AEB <res 00000258>          GData resw 300
+   267                                  absolute 35563
+   268 00008AEB <res 00000258>          GData resw 300
    269                                  section .text
    270                                  section .bss
-   271                                  absolute -29373
-   272 FFFF8D43 <res 000012C0>          GNameField resb 4800
+   271                                  absolute 36163
+   272 00008D43 <res 000012C0>          GNameField resb 4800
    273                                  section .text
    274                                  
    275                                  ;-63 int  FTop=0;                 int  CTop=0;
@@ -280,37 +280,37 @@
    280                                  ;-64 char FType [FUNCMAX];        char CType[CALLMAX];
    281                                  
    282                                  section .bss
-   283                                  absolute -24573
-   284 FFFFA003 <res 0000012C>          FType resb 300
+   283                                  absolute 40963
+   284 0000A003 <res 0000012C>          FType resb 300
    285                                  section .text
    286                                  section .bss
-   287                                  absolute -24273
-   288 FFFFA12F <res 000007D0>          CType resb 2000
+   287                                  absolute 41263
+   288 0000A12F <res 000007D0>          CType resb 2000
    289                                  section .text
    290                                  
    291                                  ;-65 int  FAdr  [FUNCMAX];        int  CAdr [CALLMAX];
    292                                  
    293                                  section .bss
-   294                                  absolute -22273
-   295 FFFFA8FF <res 00000258>          FAdr resw 300
+   294                                  absolute 43263
+   295 0000A8FF <res 00000258>          FAdr resw 300
    296                                  section .text
    297                                  section .bss
-   298                                  absolute -21673
-   299 FFFFAB57 <res 00000FA0>          CAdr resw 2000
+   298                                  absolute 43863
+   299 0000AB57 <res 00000FA0>          CAdr resw 2000
    300                                  section .text
    301                                  
    302                                  ;-66 int  FCalls[FUNCMAX];
    303                                  
    304                                  section .bss
-   305                                  absolute -17673
-   306 FFFFBAF7 <res 00000258>          FCalls resw 300
+   305                                  absolute 47863
+   306 0000BAF7 <res 00000258>          FCalls resw 300
    307                                  section .text
    308                                  
    309                                  ;-67 char FNameField[FNAMEMAX];   //char CNameField[CNAMEMAX];
    310                                  
    311                                  section .bss
-   312                                  absolute -17073
-   313 FFFFBD4F <res 000012C0>          FNameField resb 4800
+   312                                  absolute 48463
+   313 0000BD4F <res 000012C0>          FNameField resb 4800
    314                                  section .text
    315                                  
    316                                  ;-68 char NameA[]="12345678901234567890123456789012"; //must be in low memory
@@ -323,8 +323,8 @@
    323                                  ;-69 char fgetsdest[128];         unsigned char *CNameTop=0;
    324                                  
    325                                  section .bss
-   326                                  absolute -12273
-   327 FFFFD00F <res 00000080>          fgetsdest resb 128
+   326                                  absolute 53263
+   327 0000D00F <res 00000080>          fgetsdest resb 128
    328                                  section .text
    329 00000060 0000                    CNameTop dw 0
    330                                  
@@ -995,7 +995,7 @@
    995 000003B7 83F80F                   cmp ax, 15
    996 000003BA 0F8E0900                 jle .checknamelen35
    997 000003BE 68[C903]                 push checknamelen_0
-   998 000003C1 E8C943                   call error1
+   998 000003C1 E80B44                   call error1
    999 000003C4 83C402                   add  sp, 2
   1000                                  
   1001                                  ;-130 }
@@ -1012,8 +1012,8 @@
   1012 000003ED 00                 
   1013                                  ; ENDP
   1014                                  section .bss
-  1015                                  absolute -12145
-  1016 FFFFD08F <res 0000000F>          doglobName resb 15
+  1015                                  absolute 53391
+  1016 0000D08F <res 0000000F>          doglobName resb 15
   1017                                  section .text
   1018                                  
   1019                                  ;-132 int doglob() { int i; int j; int isstrarr; isstrarr=0;
@@ -1035,7 +1035,7 @@
   1035 000003FB 3DC800                   cmp ax, 200 ;unsigned : 1
   1036 000003FE 0F8C0900                 jl  .doglob36
   1037 00000402 68[4307]                 push doglob_0
-  1038 00000405 E88543                   call error1
+  1038 00000405 E8C743                   call error1
   1039 00000408 83C402                   add  sp, 2
   1040                                  
   1041                                  ;-134   if (iswidth == 0) error1("no VOID as var type");
@@ -1045,7 +1045,7 @@
   1045 0000040E 3C00                     cmp al, 0
   1046 00000410 0F850900                 jne .doglob37
   1047 00000414 68[5507]                 push doglob_1
-  1048 00000417 E87343                   call error1
+  1048 00000417 E8B543                   call error1
   1049 0000041A 83C402                   add  sp, 2
   1050                                  
   1051                                  ;-135   checknamelen();
@@ -1059,7 +1059,7 @@
   1059 00000423 3C00                     cmp al, 0
   1060 00000425 0F840900                 je  .doglob38
   1061 00000429 68[6907]                 push doglob_2
-  1062 0000042C E85E43                   call error1
+  1062 0000042C E8A043                   call error1
   1063 0000042F 83C402                   add  sp, 2
   1064                                  
   1065                                  ;-137   if (istoken('[')) { istype='&';
@@ -1087,10 +1087,10 @@
   1087 00000458 E88E40                   call prs
   1088 0000045B 83C402                   add  sp, 2
   1089                                  
-  1090                                  ;-140       pint1(orgData);
+  1090                                  ;-140       prunsign1(orgData);
   1091                                  
   1092 0000045E FF36[1000]               push word [orgData]
-  1093 00000462 E87B41                   call pint1
+  1093 00000462 E8D941                   call prunsign1
   1094 00000465 83C402                   add  sp, 2
   1095                                  
   1096                                  ;-141       prs("\n"); prs(symbol); 
@@ -1132,11 +1132,11 @@
   1132 000004AC E83A40                   call prs
   1133 000004AF 83C402                   add  sp, 2
   1134                                  
-  1135                                  ;-145       pint1(lexval); 
+  1135                                  ;-145       prunsign1(lexval); 
   1136                                  
   1137                                  .doglob43:
   1138 000004B2 FF36[2E00]               push word [lexval]
-  1139 000004B6 E82741                   call pint1
+  1139 000004B6 E88541                   call prunsign1
   1140 000004B9 83C402                   add  sp, 2
   1141                                  
   1142                                  ;-146       prs("\nsection .text");
@@ -1199,7 +1199,7 @@
   1199 00000522 3C01                     cmp al, 1
   1200 00000524 0F840900                 je  .doglob47
   1201 00000528 68[C407]                 push doglob_9
-  1202 0000052B E85F42                   call error1
+  1202 0000052B E8A142                   call error1
   1203 0000052E 83C402                   add  sp, 2
   1204                                  
   1205                                  ;-153       prs("\n"); prs(symbol); prs(" db "); 
@@ -1291,14 +1291,14 @@
   1291 000005DC E8A33E                   call prc
   1292 000005DF 83C402                   add  sp, 2
   1293                                  
-  1294                                  ;-161           expect(T_CONST); pint1(lexval); i=1; }
+  1294                                  ;-161           expect(T_CONST); prunsign1(lexval); i=1; }
   1295                                  
   1296                                  .doglob52:
   1297 000005E2 680101                   push 257
   1298 000005E5 E8EE3D                   call expect
   1299 000005E8 83C402                   add  sp, 2
   1300 000005EB FF36[2E00]               push word [lexval]
-  1301 000005EF E8EE3F                   call pint1
+  1301 000005EF E84C40                   call prunsign1
   1302 000005F2 83C402                   add  sp, 2
   1303 000005F5 B80100                   mov ax, 1
   1304 000005F8 8946FE                   mov [bp-2], ax
@@ -1321,7 +1321,7 @@
   1321 00000613 E90900                   jmp .doglob54
   1322                                  .doglob50:
   1323 00000616 68[E607]                 push doglob_13
-  1324 00000619 E87141                   call error1
+  1324 00000619 E8B341                   call error1
   1325 0000061C 83C402                   add  sp, 2
   1326                                  
   1327                                  ;-164       }; 
@@ -1401,7 +1401,7 @@
   1401 0000068E E8F13D                   call prc
   1402 00000691 83C402                   add  sp, 2
   1403                                  
-  1404                                  ;-173     if (istoken('=')) {expect(T_CONST); pint1(lexval); }
+  1404                                  ;-173     if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
   1405                                  
   1406                                  .doglob62:
   1407 00000694 6A3D                     push 61
@@ -1413,15 +1413,15 @@
   1413 000006A5 E82E3D                   call expect
   1414 000006A8 83C402                   add  sp, 2
   1415 000006AB FF36[2E00]               push word [lexval]
-  1416 000006AF E82E3F                   call pint1
+  1416 000006AF E88C3F                   call prunsign1
   1417 000006B2 83C402                   add  sp, 2
   1418                                  
-  1419                                  ;-174     else pint1(0); }
+  1419                                  ;-174     else prunsign1(0); }
   1420                                  
   1421 000006B5 E90800                   jmp .doglob64
   1422                                  .doglob63:
   1423 000006B8 6A00                     push 0
-  1424 000006BA E8233F                   call pint1
+  1424 000006BA E8813F                   call prunsign1
   1425 000006BD 83C402                   add  sp, 2
   1426                                  .doglob64:
   1427                                  
@@ -1729,7 +1729,7 @@
   1729 00000968 83F800                   cmp ax, 0
   1730 0000096B 0F850900                 jne .searchname77
   1731 0000096F 68[9509]                 push searchname_0
-  1732 00000972 E8183E                   call error1
+  1732 00000972 E85A3E                   call error1
   1733 00000975 83C402                   add  sp, 2
   1734                                  
   1735                                  ;-199   GUsed[i]=GUsed[i] + 1; return i;
@@ -1973,7 +1973,7 @@
   1973 00000B06 3D0001                   cmp ax, 256
   1974 00000B09 0F840900                 je  .name192
   1975 00000B0D 68[1D0B]                 push name1_0
-  1976 00000B10 E87A3C                   call error1
+  1976 00000B10 E8BC3C                   call error1
   1977 00000B13 83C402                   add  sp, 2
   1978                                  
   1979                                  ;-224     token=getlex(); 
@@ -2004,17 +2004,17 @@
   2004 00000B32 3DD007                   cmp ax, 2000 ;unsigned : 1
   2005 00000B35 0F8C0900                 jl  .storecall93
   2006 00000B39 68[9D0B]                 push storecall_0
-  2007 00000B3C E84E3C                   call error1
+  2007 00000B3C E8903C                   call error1
   2008 00000B3F 83C402                   add  sp, 2
   2009                                  
   2010                                  ;-228   if (CNameTop >= 65468) error1("Call name table fuill");
   2011                                  
   2012                                  .storecall93:
   2013 00000B42 A1[6000]                 mov ax, [CNameTop]
-  2014 00000B45 83F8BC                   cmp ax, -68 ;unsigned : 0
+  2014 00000B45 3DBCFF                   cmp ax, 65468 ;unsigned : 0
   2015 00000B48 0F820900                 jb  .storecall94
   2016 00000B4C 68[AD0B]                 push storecall_1
-  2017 00000B4F E83B3C                   call error1
+  2017 00000B4F E87D3C                   call error1
   2018 00000B52 83C402                   add  sp, 2
   2019                                  
   2020                                  ;-229     CType[CTop]=0;  CAdr [CTop]=CNameTop; i=strlen(symbol);
@@ -2038,7 +2038,7 @@
   2038 00000B7B 8D062B81                 lea  ax, [symbol]
   2039 00000B7F 50                       push ax
   2040 00000B80 FF36[6000]               push word [CNameTop]
-  2041 00000B84 E85F47                   call to_far
+  2041 00000B84 E8A247                   call to_far
   2042 00000B87 83C404                   add  sp, 4
   2043                                  
   2044                                  ;-231     CNameTop=CNameTop+i; CNameTop++; CTop++;
@@ -2067,7 +2067,7 @@
   2067 00000BC6 3D2C01                   cmp ax, 300 ;unsigned : 1
   2068 00000BC9 0F8C0900                 jl  .storefunc95
   2069 00000BCD 68[240C]                 push storefunc_0
-  2070 00000BD0 E8BA3B                   call error1
+  2070 00000BD0 E8FC3B                   call error1
   2071 00000BD3 83C402                   add  sp, 2
   2072                                  
   2073                                  ;-234     FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
@@ -2117,7 +2117,7 @@
   2117 00000C3B 3D2C01                   cmp ax, 300 ;unsigned : 1
   2118 00000C3E 0F8C0900                 jl  .addlocal96
   2119 00000C42 68[BE0C]                 push addlocal_0
-  2120 00000C45 E8453B                   call error1
+  2120 00000C45 E8873B                   call error1
   2121 00000C48 83C402                   add  sp, 2
   2122                                  
   2123                                  ;-238   if (checkName() != 0) error1("Variable already defined");
@@ -2127,7 +2127,7 @@
   2127 00000C4E 83F800                   cmp ax, 0
   2128 00000C51 0F840900                 je  .addlocal97
   2129 00000C55 68[D80C]                 push addlocal_1
-  2130 00000C58 E8323B                   call error1
+  2130 00000C58 E8743B                   call error1
   2131 00000C5B 83C402                   add  sp, 2
   2132                                  
   2133                                  ;-239   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
@@ -2261,7 +2261,7 @@
   2261 00000D5E 08C0                     or  al, al
   2262 00000D60 0F840900                 je .dofunc101
   2263 00000D64 68[880F]                 push dofunc_0
-  2264 00000D67 E8233A                   call error1
+  2264 00000D67 E8653A                   call error1
   2265 00000D6A 83C402                   add  sp, 2
   2266                                  
   2267                                  ;-251   storefunc();
@@ -2444,7 +2444,7 @@
   2444                                  
   2445 00000EAE E965FF                   jmp .dofunc106
   2446                                  .dofunc107:
-  2447 00000EB1 E8DB39                   call listproc
+  2447 00000EB1 E81D3A                   call listproc
   2448                                  
   2449                                  ;-272   if (LTop>LSTART){prs(";\n ENTER  "); 
   2450                                  
@@ -2455,14 +2455,14 @@
   2455 00000EC1 E82536                   call prs
   2456 00000EC4 83C402                   add  sp, 2
   2457                                  
-  2458                                  ;-273     nloc=mkneg(nloc); pint1 (nloc); prs(",0"); }
+  2458                                  ;-273     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
   2459                                  
   2460 00000EC7 FF76FE                   push word [bp-2]
   2461 00000ECA E8F5F1                   call mkneg
   2462 00000ECD 83C402                   add  sp, 2
   2463 00000ED0 8946FE                   mov [bp-2], ax
   2464 00000ED3 FF76FE                   push word [bp-2]
-  2465 00000ED6 E80737                   call pint1
+  2465 00000ED6 E86537                   call prunsign1
   2466 00000ED9 83C402                   add  sp, 2
   2467 00000EDC 68[C40F]                 push dofunc_4
   2468 00000EDF E80736                   call prs
@@ -2779,7 +2779,7 @@
   2779 00001106 83F800                   cmp ax, 0
   2780 00001109 0F850900                 jne .constantexpr127
   2781 0000110D 68[9311]                 push constantexpr_0
-  2782 00001110 E87A36                   call error1
+  2782 00001110 E8BC36                   call error1
   2783 00001113 83C402                   add  sp, 2
   2784                                  
   2785                                  ;-311   expect(T_CONST);  prs(" ; constant expression");
@@ -2815,7 +2815,7 @@
   2815 00001153 E89333                   call prs
   2816 00001156 83C402                   add  sp, 2
   2817                                  
-  2818                                  ;-314   v(id1); prs(", "); pint1(lexval); cmpneg(ids);   prs(fname);
+  2818                                  ;-314   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
   2819                                  
   2820                                  .constantexpr129:
   2821 00001159 FF76FC                   push word [bp-4]
@@ -2825,7 +2825,7 @@
   2825 00001165 E88133                   call prs
   2826 00001168 83C402                   add  sp, 2
   2827 0000116B FF36[2E00]               push word [lexval]
-  2828 0000116F E86E34                   call pint1
+  2828 0000116F E8CC34                   call prunsign1
   2829 00001172 83C402                   add  sp, 2
   2830 00001175 FF76FA                   push word [bp-6]
   2831 00001178 E8F027                   call cmpneg
@@ -2914,7 +2914,7 @@
   2914 00001224 08C0                     or  al, al
   2915 00001226 0F840900                 je .expr2133
   2916 0000122A 68[BF14]                 push expr2_0
-  2917 0000122D E85D35                   call error1
+  2917 0000122D E89F35                   call error1
   2918 00001230 83C402                   add  sp, 2
   2919                                  
   2920                                  ;-323   ireg1=checkreg();
@@ -2960,7 +2960,7 @@
   2960 0000127C 08C0                     or  al, al
   2961 0000127E 0F840900                 je .expr2136
   2962 00001282 68[EE14]                 push expr2_1
-  2963 00001285 E80535                   call error1
+  2963 00001285 E84735                   call error1
   2964 00001288 83C402                   add  sp, 2
   2965                                  .expr2136:
   2966                                  
@@ -2974,7 +2974,7 @@
   2974 0000128E 08C0                     or  al, al
   2975 00001290 0F840900                 je .expr2137
   2976 00001294 68[1915]                 push expr2_2
-  2977 00001297 E8F334                   call error1
+  2977 00001297 E83535                   call error1
   2978 0000129A 83C402                   add  sp, 2
   2979                                  
   2980                                  ;-330   }
@@ -2989,7 +2989,7 @@
   2989 000012A5 83F800                   cmp ax, 0
   2990 000012A8 0F850900                 jne .expr2138
   2991 000012AC 68[3C15]                 push expr2_3
-  2992 000012AF E8DB34                   call error1
+  2992 000012AF E81D35                   call error1
   2993 000012B2 83C402                   add  sp, 2
   2994                                  
   2995                                  ;-332   if (istoken(T_CONST) ) { val2=lexval; prs(" ; constant expression");
@@ -3048,13 +3048,13 @@
   3048 00001319 E853F0                   call v
   3049 0000131C 83C402                   add  sp, 2
   3050                                  
-  3051                                  ;-338     prs(", "); pint1(val2);
+  3051                                  ;-338     prs(", "); prunsign1(val2);
   3052                                  
   3053 0000131F 68[7D15]                 push expr2_9
   3054 00001322 E8C431                   call prs
   3055 00001325 83C402                   add  sp, 2
   3056 00001328 FF36[4F10]               push word [val2]
-  3057 0000132C E8B132                   call pint1
+  3057 0000132C E80F33                   call prunsign1
   3058 0000132F 83C402                   add  sp, 2
   3059                                  
   3060                                  ;-339     if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
@@ -3128,7 +3128,7 @@
   3128 000013B8 83F801                   cmp ax, 1
   3129 000013BB 0F850900                 jne .expr2148
   3130 000013BF 68[8D15]                 push expr2_13
-  3131 000013C2 E8C833                   call error1
+  3131 000013C2 E80A34                   call error1
   3132 000013C5 83C402                   add  sp, 2
   3133                                  
   3134                                  ;-346     
@@ -3158,7 +3158,7 @@
   3158 000013ED 83F801                   cmp ax, 1
   3159 000013F0 0F850900                 jne .expr2149
   3160 000013F4 68[A915]                 push expr2_14
-  3161 000013F7 E89333                   call error1
+  3161 000013F7 E8D533                   call error1
   3162 000013FA 83C402                   add  sp, 2
   3163                                  
   3164                                  ;-350     prs("\nmov ");
@@ -3179,7 +3179,7 @@
   3179 00001419 E90900                   jmp .expr2151
   3180                                  .expr2150:
   3181 0000141C 68[CF15]                 push expr2_16
-  3182 0000141F E86B33                   call error1
+  3182 0000141F E8AD33                   call error1
   3183 00001422 83C402                   add  sp, 2
   3184                                  
   3185                                  ;-352     prs(", ");
@@ -3265,7 +3265,7 @@
   3265                                  
   3266                                  .expr2147:
   3267 000014B4 68[0A16]                 push expr2_22
-  3268 000014B7 E8D332                   call error1
+  3268 000014B7 E81533                   call error1
   3269 000014BA 83C402                   add  sp, 2
   3270                                  
   3271                                  ;-362 }
@@ -3328,8 +3328,8 @@
   3328 0000162E 6C6F77656400       
   3329                                  ; ENDP
   3330                                  section .bss
-  3331                                  absolute -12130
-  3332 FFFFD09E <res 00000005>          ops resb 5
+  3331                                  absolute 53406
+  3332 0000D09E <res 00000005>          ops resb 5
   3333                                  section .text
   3334                                  
   3335                                  ;-364 int doreg1(int iscmp1) { int i;
@@ -3454,7 +3454,7 @@
   3454 00001715 83F800                   cmp ax, 0
   3455 00001718 0F850900                 jne .doreg1166
   3456 0000171C 68[0218]                 push doreg1_7
-  3457 0000171F E86B30                   call error1
+  3457 0000171F E8AD30                   call error1
   3458 00001722 83C402                   add  sp, 2
   3459                                  
   3460                                  ;-374       strcpy(ops, "cmp"); }
@@ -3487,7 +3487,7 @@
   3487                                  ;-376 
   3488                                  
   3489                                  
-  3490                                  ;-377   if (istoken(T_CONST)) {pint1(lexval); goto reg1;}
+  3490                                  ;-377   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
   3491                                  
   3492 0000175D 680101                   push 257
   3493 00001760 E8512C                   call istoken
@@ -3495,7 +3495,7 @@
   3495 00001766 08C0                     or  al, al
   3496 00001768 0F840D00                 je .doreg1167
   3497 0000176C FF36[2E00]               push word [lexval]
-  3498 00001770 E86D2E                   call pint1
+  3498 00001770 E8CB2E                   call prunsign1
   3499 00001773 83C402                   add  sp, 2
   3500 00001776 E94700                   jmp .reg1
   3501                                  
@@ -4123,13 +4123,13 @@
   4123 00001CB2 A1[2E00]                 mov ax, [lexval]
   4124 00001CB5 A3[9B1C]                 mov word [evalue], ax
   4125                                  
-  4126                                  ;-418     prs("\n mov ax, "); pint1(lexval); return 4; }
+  4126                                  ;-418     prs("\n mov ax, "); prunsign1(lexval); return 4; }
   4127                                  
   4128 00001CB8 68[3F20]                 push expr_0
   4129 00001CBB E82B28                   call prs
   4130 00001CBE 83C402                   add  sp, 2
   4131 00001CC1 FF36[2E00]               push word [lexval]
-  4132 00001CC5 E81829                   call pint1
+  4132 00001CC5 E87629                   call prunsign1
   4133 00001CC8 83C402                   add  sp, 2
   4134 00001CCB B80400                   mov ax, 4
   4135 00001CCE E96C03                   jmp .retnexpr
@@ -4241,7 +4241,7 @@
   4241 00001D85 83F802                   cmp ax, 2
   4242 00001D88 0F840900                 je  .expr213
   4243 00001D8C 68[4B20]                 push expr_1
-  4244 00001D8F E8FB29                   call error1
+  4244 00001D8F E83D2A                   call error1
   4245 00001D92 83C402                   add  sp, 2
   4246                                  .expr213:
   4247                                  .expr212:
@@ -4258,7 +4258,7 @@
   4258 00001DA7 08C0                     or  al, al
   4259 00001DA9 0F840900                 je .expr215
   4260 00001DAD 68[6E20]                 push expr_2
-  4261 00001DB0 E8DA29                   call error1
+  4261 00001DB0 E81C2A                   call error1
   4262 00001DB3 83C402                   add  sp, 2
   4263                                  
   4264                                  ;-433      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
@@ -4299,7 +4299,7 @@
   4299 00001DFC 08C0                     or  al, al
   4300 00001DFE 0F840900                 je .expr219
   4301 00001E02 68[9120]                 push expr_6
-  4302 00001E05 E88529                   call error1
+  4302 00001E05 E8C729                   call error1
   4303 00001E08 83C402                   add  sp, 2
   4304                                  
   4305                                  ;-436      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
@@ -4400,7 +4400,7 @@
   4400 00001ECC 08C0                     or  al, al
   4401 00001ECE 0F840900                 je .expr226
   4402 00001ED2 68[C320]                 push expr_14
-  4403 00001ED5 E8B528                   call error1
+  4403 00001ED5 E8F728                   call error1
   4404 00001ED8 83C402                   add  sp, 2
   4405                                  
   4406                                  ;-444   if (istoken(T_DIVASS    )) {error1("not implemented");}
@@ -4412,7 +4412,7 @@
   4412 00001EE4 08C0                     or  al, al
   4413 00001EE6 0F840900                 je .expr227
   4414 00001EEA 68[D320]                 push expr_15
-  4415 00001EED E89D28                   call error1
+  4415 00001EED E8DF28                   call error1
   4416 00001EF0 83C402                   add  sp, 2
   4417                                  
   4418                                  ;-445 
@@ -4655,7 +4655,7 @@
   4655 00002109 08C0                     or  al, al
   4656 0000210B 0F840900                 je .compoundass247
   4657 0000210F 68[7C21]                 push compoundass_0
-  4658 00002112 E87826                   call error1
+  4658 00002112 E8BA26                   call error1
   4659 00002115 83C402                   add  sp, 2
   4660                                  
   4661                                  ;-465   prnl(); prs(op); prs("  "); 
@@ -4696,13 +4696,13 @@
   4696 00002161 E88523                   call prs
   4697 00002164 83C402                   add  sp, 2
   4698                                  
-  4699                                  ;-468   expect(T_CONST); pint1(lexval);
+  4699                                  ;-468   expect(T_CONST); prunsign1(lexval);
   4700                                  
   4701 00002167 680101                   push 257
   4702 0000216A E86922                   call expect
   4703 0000216D 83C402                   add  sp, 2
   4704 00002170 FF36[2E00]               push word [lexval]
-  4705 00002174 E86924                   call pint1
+  4705 00002174 E8C724                   call prunsign1
   4706 00002177 83C402                   add  sp, 2
   4707                                  
   4708                                  ;-469 }
@@ -4985,11 +4985,11 @@
   4985 000023C0 E82621                   call prs
   4986 000023C3 83C402                   add  sp, 2
   4987                                  
-  4988                                  ;-496     pint1(lexval); return;}
+  4988                                  ;-496     prunsign1(lexval); return;}
   4989                                  
   4990                                  .rterm264:
   4991 000023C6 FF36[2E00]               push word [lexval]
-  4992 000023CA E81322                   call pint1
+  4992 000023CA E87122                   call prunsign1
   4993 000023CD 83C402                   add  sp, 2
   4994 000023D0 E98200                   jmp .retnrterm
   4995                                  
@@ -5031,7 +5031,7 @@
   5031 00002416 83F802                   cmp ax, 2
   5032 00002419 0F840900                 je  .rterm266
   5033 0000241D 68[6A24]                 push rterm_3
-  5034 00002420 E86A23                   call error1
+  5034 00002420 E8AC23                   call error1
   5035 00002423 83C402                   add  sp, 2
   5036                                  .rterm266:
   5037                                  
@@ -5371,7 +5371,7 @@
   5371 00002704 E8E21D                   call prs
   5372 00002707 83C402                   add  sp, 2
   5373                                  
-  5374                                  ;-524        if (istoken(T_CONST)) pint1(lexval);
+  5374                                  ;-524        if (istoken(T_CONST)) prunsign1(lexval);
   5375                                  
   5376 0000270A 680101                   push 257
   5377 0000270D E8A41C                   call istoken
@@ -5379,7 +5379,7 @@
   5379 00002713 08C0                     or  al, al
   5380 00002715 0F840D00                 je .doreg283
   5381 00002719 FF36[2E00]               push word [lexval]
-  5382 0000271D E8C01E                   call pint1
+  5382 0000271D E81E1F                   call prunsign1
   5383 00002720 83C402                   add  sp, 2
   5384                                  
   5385                                  ;-525   else if (istoken(T_NAME )) { i=searchname(); v(i); }
@@ -5402,7 +5402,7 @@
   5402 00002744 E90900                   jmp .doreg286
   5403                                  .doreg285:
   5404 00002747 68[5E27]                 push doreg_2
-  5405 0000274A E84020                   call error1
+  5405 0000274A E88220                   call error1
   5406 0000274D 83C402                   add  sp, 2
   5407                                  .doreg286:
   5408                                  .doreg284:
@@ -5493,13 +5493,13 @@
   5493 000027F8 E8EE1C                   call prs
   5494 000027FB 83C402                   add  sp, 2
   5495                                  
-  5496                                  ;-535     if(ixconst) pint1(ixarr); else v(ixarr);
+  5496                                  ;-535     if(ixconst) prunsign1(ixarr); else v(ixarr);
   5497                                  
   5498 000027FE 8B460A                   mov ax, [bp+10]
   5499 00002801 08C0                     or  al, al
   5500 00002803 0F840C00                 je .doassign292
   5501 00002807 FF7608                   push word [bp+8]
-  5502 0000280A E8D31D                   call pint1
+  5502 0000280A E8311E                   call prunsign1
   5503 0000280D 83C402                   add  sp, 2
   5504 00002810 E90900                   jmp .doassign293
   5505                                  .doassign292:
@@ -5675,7 +5675,7 @@
   5675 000029D8 E93700                   jmp .domul304
   5676                                  .domul303:
   5677                                  
-  5678                                  ;-548   if (istoken(T_CONST)) {prs("\n mov bx, "); pint1(lexval); prs("\n mul bx"); }
+  5678                                  ;-548   if (istoken(T_CONST)) {prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx"); }
   5679                                  
   5680 000029DB 680101                   push 257
   5681 000029DE E8D319                   call istoken
@@ -5686,7 +5686,7 @@
   5686 000029ED E8F91A                   call prs
   5687 000029F0 83C402                   add  sp, 2
   5688 000029F3 FF36[2E00]               push word [lexval]
-  5689 000029F7 E8E61B                   call pint1
+  5689 000029F7 E8441C                   call prunsign1
   5690 000029FA 83C402                   add  sp, 2
   5691 000029FD 68[252A]                 push domul_2
   5692 00002A00 E8E61A                   call prs
@@ -5697,7 +5697,7 @@
   5697 00002A06 E90900                   jmp .domul306
   5698                                  .domul305:
   5699 00002A09 68[2F2A]                 push domul_3
-  5700 00002A0C E87E1D                   call error1
+  5700 00002A0C E8C01D                   call error1
   5701 00002A0F 83C402                   add  sp, 2
   5702                                  .domul306:
   5703                                  .domul304:
@@ -5734,13 +5734,13 @@
   5734 00002A70 08C0                     or  al, al
   5735 00002A72 0F843400                 je .doidiv307
   5736                                  
-  5737                                  ;-552     prs("\n mov bx, "); pint1(lexval);
+  5737                                  ;-552     prs("\n mov bx, "); prunsign1(lexval);
   5738                                  
   5739 00002A76 68[282B]                 push doidiv_0
   5740 00002A79 E86D1A                   call prs
   5741 00002A7C 83C402                   add  sp, 2
   5742 00002A7F FF36[2E00]               push word [lexval]
-  5743 00002A83 E85A1B                   call pint1
+  5743 00002A83 E8B81B                   call prunsign1
   5744 00002A86 83C402                   add  sp, 2
   5745                                  
   5746                                  ;-553     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
@@ -5776,7 +5776,7 @@
   5776 00002AB9 08C0                     or  al, al
   5777 00002ABB 0F840900                 je .doidiv311
   5778 00002ABF 68[5B2B]                 push doidiv_3
-  5779 00002AC2 E8C81C                   call error1
+  5779 00002AC2 E80A1D                   call error1
   5780 00002AC5 83C402                   add  sp, 2
   5781                                  
   5782                                  ;-557     gettypes(id1);
@@ -5792,7 +5792,7 @@
   5792 00002AD4 08C0                     or  al, al
   5793 00002AD6 0F840900                 je .doidiv312
   5794 00002ADA 68[872B]                 push doidiv_4
-  5795 00002ADD E8AD1C                   call error1
+  5795 00002ADD E8EF1C                   call error1
   5796 00002AE0 83C402                   add  sp, 2
   5797                                  
   5798                                  ;-559     if (wi!=2) error1("only int, no byte as divisor allowed");
@@ -5802,7 +5802,7 @@
   5802 00002AE6 83F802                   cmp ax, 2
   5803 00002AE9 0F840900                 je  .doidiv313
   5804 00002AED 68[AE2B]                 push doidiv_5
-  5805 00002AF0 E89A1C                   call error1
+  5805 00002AF0 E8DC1C                   call error1
   5806 00002AF3 83C402                   add  sp, 2
   5807                                  
   5808                                  ;-560     prs("\n mov bx, "); v(id1);
@@ -5890,19 +5890,19 @@
   5890 00002C27 2C20647800         
   5891                                  ; ENDP
   5892                                  section .bss
-  5893                                  absolute -12125
-  5894 FFFFD0A3 <res 00000014>          docalltype resw 10
+  5893                                  absolute 53411
+  5894 0000D0A3 <res 00000014>          docalltype resw 10
   5895                                  section .text
   5896                                  section .bss
-  5897                                  absolute -12105
-  5898 FFFFD0B7 <res 00000014>          docallvalue resw 10
+  5897                                  absolute 53431
+  5898 0000D0B7 <res 00000014>          docallvalue resw 10
   5899                                  section .text
   5900                                  
   5901                                  ;-566 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
   5902                                  
   5903                                  section .bss
-  5904                                  absolute -12085
-  5905 FFFFD0CB <res 00000011>          procname resb 17
+  5904                                  absolute 53451
+  5905 0000D0CB <res 00000011>          procname resb 17
   5906                                  section .text
   5907                                  
   5908                                  ;-567 int docall1() {int i; int narg; int t0; int n0;  int sz32;
@@ -5967,7 +5967,7 @@
   5967 00002C6F 83F809                   cmp ax, 9
   5968 00002C72 0F8E0900                 jle .docall1318
   5969 00002C76 68[252F]                 push docall1_0
-  5970 00002C79 E8111B                   call error1
+  5970 00002C79 E8531B                   call error1
   5971 00002C7C 83C402                   add  sp, 2
   5972                                  .docall1318:
   5973 00002C7F B80000                   mov ax, 0
@@ -6100,7 +6100,7 @@
   6100 00002D89 83F800                   cmp ax, 0
   6101 00002D8C 0F850900                 jne .docall1326
   6102 00002D90 68[422F]                 push docall1_4
-  6103 00002D93 E8F719                   call error1
+  6103 00002D93 E8391A                   call error1
   6104 00002D96 83C402                   add  sp, 2
   6105                                  
   6106                                  ;-586       docalltype [narg] = t0;
@@ -6157,7 +6157,7 @@
   6157 00002DE1 8B87B7D0                 mov ax, [docallvalue + bx]
   6158 00002DE5 8946F8                   mov [bp-8], ax
   6159                                  
-  6160                                  ;-594       if(t0==1){ prs("\n push "); pint1(n0);}
+  6160                                  ;-594       if(t0==1){ prs("\n push "); prunsign1(n0);}
   6161                                  
   6162 00002DE8 8B46FA                   mov ax, [bp-6]
   6163 00002DEB 83F801                   cmp ax, 1
@@ -6166,7 +6166,7 @@
   6166 00002DF5 E8F116                   call prs
   6167 00002DF8 83C402                   add  sp, 2
   6168 00002DFB FF76F8                   push word [bp-8]
-  6169 00002DFE E8DF17                   call pint1
+  6169 00002DFE E83D18                   call prunsign1
   6170 00002E01 83C402                   add  sp, 2
   6171                                  
   6172                                  ;-595       if(t0==2){ prs("\n push "); 
@@ -6179,7 +6179,7 @@
   6179 00002E11 E8D516                   call prs
   6180 00002E14 83C402                   add  sp, 2
   6181                                  
-  6182                                  ;-596         prs(fname);prc(95);pint1(n0);}
+  6182                                  ;-596         prs(fname);prc(95);prunsign1(n0);}
   6183                                  
   6184 00002E17 8D06AB81                 lea  ax, [fname]
   6185 00002E1B 50                       push ax
@@ -6189,7 +6189,7 @@
   6189 00002E24 E85B16                   call prc
   6190 00002E27 83C402                   add  sp, 2
   6191 00002E2A FF76F8                   push word [bp-8]
-  6192 00002E2D E8B017                   call pint1
+  6192 00002E2D E80E18                   call prunsign1
   6193 00002E30 83C402                   add  sp, 2
   6194                                  
   6195                                  ;-597       if(t0==3){ prs("\n lea  ax, ");   v(n0);
@@ -6300,7 +6300,7 @@
   6300 00002F02 E8E415                   call prs
   6301 00002F05 83C402                   add  sp, 2
   6302                                  
-  6303                                  ;-607      narg=narg+narg; narg=narg+sz32; pint1(narg); } }
+  6303                                  ;-607      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
   6304                                  
   6305 00002F08 8B46FC                   mov ax, [bp-4]
   6306 00002F0B 0346FC                   add ax, [bp-4]
@@ -6309,7 +6309,7 @@
   6309 00002F14 0346F6                   add ax, [bp-10]
   6310 00002F17 8946FC                   mov [bp-4], ax
   6311 00002F1A FF76FC                   push word [bp-4]
-  6312 00002F1D E8C016                   call pint1
+  6312 00002F1D E81E17                   call prunsign1
   6313 00002F20 83C402                   add  sp, 2
   6314                                  .docall1338:
   6315                                  
@@ -6357,7 +6357,7 @@
   6357                                  ;-611   setblock(4096);
   6358                                  
   6359 00002FEC 680010                   push 4096
-  6360 00002FEF E89022                   call setblock
+  6360 00002FEF E8D322                   call setblock
   6361 00002FF2 83C402                   add  sp, 2
   6362                                  
   6363                                  ;-612   if (DOS_ERR) error1("SetBlock , AX=");
@@ -6366,14 +6366,14 @@
   6366 00002FF8 08C0                     or  al, al
   6367 00002FFA 0F840900                 je .main339
   6368 00002FFE 68[3830]                 push main_0
-  6369 00003001 E88917                   call error1
+  6369 00003001 E8CB17                   call error1
   6370 00003004 83C402                   add  sp, 2
   6371                                  
   6372                                  ;-613   segE=allocmem(4096);
   6373                                  
   6374                                  .main339:
   6375 00003007 680010                   push 4096
-  6376 0000300A E88E22                   call allocmem
+  6376 0000300A E8D122                   call allocmem
   6377 0000300D 83C402                   add  sp, 2
   6378 00003010 A3[6400]                 mov word [segE], ax
   6379                                  
@@ -6383,7 +6383,7 @@
   6383 00003016 08C0                     or  al, al
   6384 00003018 0F840900                 je .main340
   6385 0000301C 68[4730]                 push main_1
-  6386 0000301F E86B17                   call error1
+  6386 0000301F E8AD17                   call error1
   6387 00003022 83C402                   add  sp, 2
   6388                                  
   6389                                  ;-615   CNameTop=0;
@@ -6403,7 +6403,7 @@
   6403                                  ;-618   checkcalls(); epilog();
   6404                                  
   6405 00003031 E8DF02                   call checkcalls
-  6406 00003034 E8311E                   call epilog
+  6406 00003034 E8731E                   call epilog
   6407                                  
   6408                                  ;-619 }
   6409                                  
@@ -6423,7 +6423,7 @@
   6423 0000305F B80000                   mov ax, 0
   6424 00003062 8B1E[6200]               mov  bx, [fgetsp]
   6425 00003066 8807                     mov  [bx], al
-  6426 00003068 E82A16                   call fgets1
+  6426 00003068 E86C16                   call fgets1
   6427 0000306B A2[2100]                 mov byte [thechar], al
   6428                                  
   6429                                  ;-621 char *arglen=0x80; char *argv=0x82;
@@ -6704,7 +6704,7 @@
   6704 000032C7 E90900                   jmp .parse352
   6705                                  .parse351:
   6706 000032CA 68[F832]                 push parse_0
-  6707 000032CD E8BD14                   call error1
+  6707 000032CD E8FF14                   call error1
   6708 000032D0 83C402                   add  sp, 2
   6709                                  .parse352:
   6710                                  .parse350:
@@ -6784,7 +6784,7 @@
   6784 00003343 FF36[6A00]               push word [pt]
   6785 00003347 8D06[3F00]               lea  ax, [NameA]
   6786 0000334B 50                       push ax
-  6787 0000334C E8B31F                   call from_far
+  6787 0000334C E8F61F                   call from_far
   6788 0000334F 83C404                   add  sp, 4
   6789                                  
   6790                                  ;-655     j=0;
@@ -6854,7 +6854,7 @@
   6854 000033C9 E81D11                   call prs
   6855 000033CC 83C402                   add  sp, 2
   6856 000033CF FF76FA                   push word [bp-6]
-  6857 000033D2 E86912                   call printint51
+  6857 000033D2 E8AB12                   call printint51
   6858 000033D5 83C402                   add  sp, 2
   6859                                  
   6860                                  ;-662   if (k!=0) error1("At least 1 function is missing! "); 
@@ -6863,7 +6863,7 @@
   6863 000033DB 83F800                   cmp ax, 0
   6864 000033DE 0F840C00                 je  .checkcalls363
   6865 000033E2 68[3A34]                 push checkcalls_3
-  6866 000033E5 E8A513                   call error1
+  6866 000033E5 E8E713                   call error1
   6867 000033E8 83C402                   add  sp, 2
   6868                                  
   6869                                  ;-663     else prs(" All FUNCTIONs in place");
@@ -6949,7 +6949,7 @@
   6949                                  ;-671     error1(" Stop!!"); }
   6950                                  
   6951 000034C7 68[3735]                 push doinclude_2
-  6952 000034CA E8C012                   call error1
+  6952 000034CA E80213                   call error1
   6953 000034CD 83C402                   add  sp, 2
   6954                                  
   6955                                  ;-672   linenoinclude=lineno; lineno=1;
@@ -7071,7 +7071,7 @@
   7071 000035CE E90900                   jmp .dodefine370
   7072                                  .dodefine369:
   7073 000035D1 68[C636]                 push dodefine_3
-  7074 000035D4 E8B611                   call error1
+  7074 000035D4 E8F811                   call error1
   7075 000035D7 83C402                   add  sp, 2
   7076                                  .dodefine370:
   7077 000035DA E8B306                   call getlex
@@ -7097,7 +7097,7 @@
   7097 000035F9 3DC800                   cmp ax, 200 ;unsigned : 1
   7098 000035FC 0F8C0900                 jl  .dodefine372
   7099 00003600 68[E336]                 push dodefine_4
-  7100 00003603 E88711                   call error1
+  7100 00003603 E8C911                   call error1
   7101 00003606 83C402                   add  sp, 2
   7102                                  
   7103                                  ;-687     i=strlen(symbol); if (i>15) error1("Define name longer 15 char");
@@ -7112,7 +7112,7 @@
   7112 0000361A 83F80F                   cmp ax, 15
   7113 0000361D 0F8E0900                 jle .dodefine373
   7114 00003621 68[FE36]                 push dodefine_5
-  7115 00003624 E86611                   call error1
+  7115 00003624 E8A811                   call error1
   7116 00003627 83C402                   add  sp, 2
   7117                                  
   7118                                  ;-688     GSign [GTop]='U'; GWidth[GTop]=1; GType [GTop]='#';
@@ -7339,7 +7339,7 @@
   7339 0000383A E90900                   jmp .stmt394
   7340                                  .stmt391:
   7341 0000383D 68[0339]                 push stmt_3
-  7342 00003840 E84A0F                   call error1
+  7342 00003840 E88C0F                   call error1
   7343 00003843 83C402                   add  sp, 2
   7344                                  
   7345                                  ;-705         }
@@ -7495,13 +7495,13 @@
   7495 0000392B E8BB0B                   call prs
   7496 0000392E 83C402                   add  sp, 2
   7497                                  
-  7498                                  ;-725   L1: token=getlex(); pint1(lexval); token=getlex();
+  7498                                  ;-725   L1: token=getlex(); prunsign1(lexval); token=getlex();
   7499                                  
   7500                                  .L1:
   7501 00003931 E85C03                   call getlex
   7502 00003934 A3[1C00]                 mov word [token], ax
   7503 00003937 FF36[2E00]               push word [lexval]
-  7504 0000393B E8A20C                   call pint1
+  7504 0000393B E8000D                   call prunsign1
   7505 0000393E 83C402                   add  sp, 2
   7506 00003941 E84C03                   call getlex
   7507 00003944 A3[1C00]                 mov word [token], ax
@@ -7577,7 +7577,7 @@
   7577 000039BD E8290B                   call prs
   7578 000039C0 83C402                   add  sp, 2
   7579                                  
-  7580                                  ;-733   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); pint1(ids);
+  7580                                  ;-733   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
   7581                                  
   7582                                  .cmpneg412:
   7583 000039C3 E98400                   jmp .cmpneg413
@@ -7592,7 +7592,7 @@
   7592 000039DC E80A0B                   call prs
   7593 000039DF 83C402                   add  sp, 2
   7594 000039E2 FF7604                   push word [bp+4]
-  7595 000039E5 E8F80B                   call pint1
+  7595 000039E5 E8560C                   call prunsign1
   7596 000039E8 83C402                   add  sp, 2
   7597                                  
   7598                                  ;-734                                prs("\n jl  .");}//          SF!=OF
@@ -7601,7 +7601,7 @@
   7601 000039EE E8F80A                   call prs
   7602 000039F1 83C402                   add  sp, 2
   7603                                  
-  7604                                  ;-735                            else{prs(" ;unsigned : "); pint1(ids);
+  7604                                  ;-735                            else{prs(" ;unsigned : "); prunsign1(ids);
   7605                                  
   7606 000039F4 E91B00                   jmp .cmpneg416
   7607                                  .cmpneg415:
@@ -7609,7 +7609,7 @@
   7609 000039FA E8EC0A                   call prs
   7610 000039FD 83C402                   add  sp, 2
   7611 00003A00 FF7604                   push word [bp+4]
-  7612 00003A03 E8DA0B                   call pint1
+  7612 00003A03 E8380C                   call prunsign1
   7613 00003A06 83C402                   add  sp, 2
   7614                                  
   7615                                  ;-736                                prs("\n jb  .");}//jb=jc=CF=1
@@ -7646,7 +7646,7 @@
   7646 00003A3E E90900                   jmp .cmpneg421
   7647                                  .cmpneg420:
   7648 00003A41 68[B03A]                 push cmpneg_10
-  7649 00003A44 E8460D                   call error1
+  7649 00003A44 E8880D                   call error1
   7650 00003A47 83C402                   add  sp, 2
   7651                                  .cmpneg421:
   7652                                  .cmpneg419:
@@ -7658,7 +7658,7 @@
   7658                                  ;-740 
   7659                                  
   7660                                  
-  7661                                  ;-741 int prlabel(int n) {prs("\n."); prs(fname); pint1(n); prc(':'); }
+  7661                                  ;-741 int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
   7662 00003A4A C9                       LEAVE
   7663 00003A4B C3                       ret
   7664 00003A4C 5C6E206A6E65202E00      cmpneg_0 db "\n jne .",0
@@ -7693,13 +7693,13 @@
   7693 00003AED E8F909                   call prs
   7694 00003AF0 83C402                   add  sp, 2
   7695 00003AF3 FF7604                   push word [bp+4]
-  7696 00003AF6 E8E70A                   call pint1
+  7696 00003AF6 E8450B                   call prunsign1
   7697 00003AF9 83C402                   add  sp, 2
   7698 00003AFC 6A3A                     push 58
   7699 00003AFE E88109                   call prc
   7700 00003B01 83C402                   add  sp, 2
   7701                                  
-  7702                                  ;-742 int prjump (int n) {prs("\n jmp ."); prs(fname); pint1(n); }
+  7702                                  ;-742 int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
   7703 00003B04 C9                       LEAVE
   7704 00003B05 C3                       ret
   7705 00003B06 5C6E2E00                prlabel_0 db "\n.",0
@@ -7718,7 +7718,7 @@
   7718 00003B1C E8CA09                   call prs
   7719 00003B1F 83C402                   add  sp, 2
   7720 00003B22 FF7604                   push word [bp+4]
-  7721 00003B25 E8B80A                   call pint1
+  7721 00003B25 E8160B                   call prunsign1
   7722 00003B28 83C402                   add  sp, 2
   7723                                  
   7724                                  ;-743 int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
@@ -7930,8 +7930,8 @@
   7930 00003C8F C3                       ret
   7931                                  ; ENDP
   7932                                  section .bss
-  7933                                  absolute -12068
-  7934 FFFFD0DC <res 00000050>          symboltemp resb 80
+  7933                                  absolute 53468
+  7934 0000D0DC <res 00000050>          symboltemp resb 80
   7935                                  section .text
   7936                                  
   7937                                  ;-763 int getlex() { char c; char *p; 
@@ -8602,7 +8602,7 @@
   8602 00004188 E90900                   jmp .retngetlex
   8603                                  .getlex477:
   8604 0000418B 68[0E42]                 push getlex_18
-  8605 0000418E E8FC05                   call error1
+  8605 0000418E E83E06                   call error1
   8606 00004191 83C402                   add  sp, 2
   8607                                  
   8608                                  ;-814 
@@ -8868,7 +8868,7 @@
   8868 0000439D 8846FE                   mov [bp-2], al
   8869 000043A0 8A46FE                   mov al, [bp-2]
   8870 000043A3 A2[1E00]                 mov byte [globC], al
-  8871 000043A6 E8EC02                   call fgets1
+  8871 000043A6 E82E03                   call fgets1
   8872 000043A9 A2[2100]                 mov byte [thechar], al
   8873 000043AC 8A46FE                   mov al, [bp-2]
   8874 000043AF E90000                   jmp .retnnext
@@ -8918,7 +8918,7 @@
   8918 000043F7 50                       push ax
   8919 000043F8 E8EE00                   call prs
   8920 000043FB 83C402                   add  sp, 2
-  8921 000043FE E88E04                   call listproc
+  8921 000043FE E8D004                   call listproc
   8922                                  
   8923                                  ;-837   prs("\nExpected ASCII(dez): "); pint1(t); error1(" not found"); } }
   8924                                  
@@ -8929,7 +8929,7 @@
   8929 0000440D E8D001                   call pint1
   8930 00004410 83C402                   add  sp, 2
   8931 00004413 68[3644]                 push expect_1
-  8932 00004416 E87403                   call error1
+  8932 00004416 E8B603                   call error1
   8933 00004419 83C402                   add  sp, 2
   8934                                  .expect514:
   8935                                  
@@ -9226,7 +9226,7 @@
   9226 000045FC 83C402                   add  sp, 2
   9227 000045FF 894604                   mov [bp+4], ax
   9228                                  
-  9229                                  ;-858   if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }
+  9229                                  ;-858   if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }  
   9230                                  
   9231                                  .pint1531:
   9232 00004602 8B4604                   mov ax, [bp+4]
@@ -9252,2756 +9252,2798 @@
   9252 00004636 E849FE                   call prc
   9253 00004639 83C402                   add  sp, 2
   9254                                  
-  9255                                  ;-859 int printint51(unsigned int j)  {
+  9255                                  ;-859 int prunsign1(unsigned int n) { unsigned int e;
   9256 0000463C C9                       LEAVE
   9257 0000463D C3                       ret
   9258                                  ; ENDP
   9259                                  
-  9260                                  printint51:  ; *** PROC ***
+  9260                                  prunsign1:  ; *** PROC ***
   9261                                  
-  9262                                  ;-860   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
+  9262                                  ;-860   if ( _ n >= 10) {  e=n/10; prunsign1(e); }
   9263                                  
-  9264                                  ;Function : printint51, Number of local variables: 1
+  9264                                  ;Function : prunsign1, Number of local variables: 2
   9265                                  ;   # type sign width addr used name   list of local variables
-  9266                                  ;  200 var unsg word   859 NULL j = bp+4;
-  9267 0000463E C8000000                 ENTER  0,0
-  9268 00004642 8B4604                   mov ax, [bp+4]
-  9269 00004645 3D1027                   cmp ax, 10000
-  9270 00004648 0F8D0800                 jge .printint51533
-  9271 0000464C 6A20                     push 32
-  9272 0000464E E831FE                   call prc
-  9273 00004651 83C402                   add  sp, 2
-  9274                                  .printint51533:
-  9275 00004654 8B4604                   mov ax, [bp+4]
-  9276 00004657 3DE803                   cmp ax, 1000
-  9277 0000465A 0F8D0800                 jge .printint51534
-  9278 0000465E 6A20                     push 32
-  9279 00004660 E81FFE                   call prc
-  9280 00004663 83C402                   add  sp, 2
-  9281                                  .printint51534:
-  9282 00004666 8B4604                   mov ax, [bp+4]
-  9283 00004669 83F864                   cmp ax, 100
-  9284 0000466C 0F8D0800                 jge .printint51535
-  9285 00004670 6A20                     push 32
-  9286 00004672 E80DFE                   call prc
-  9287 00004675 83C402                   add  sp, 2
-  9288                                  
-  9289                                  ;-861    if (j<10) prc(32);  pint1(j); }
-  9290                                  
-  9291                                  .printint51535:
-  9292 00004678 8B4604                   mov ax, [bp+4]
-  9293 0000467B 83F80A                   cmp ax, 10
-  9294 0000467E 0F8D0800                 jge .printint51536
-  9295 00004682 6A20                     push 32
-  9296 00004684 E8FBFD                   call prc
-  9297 00004687 83C402                   add  sp, 2
-  9298                                  .printint51536:
-  9299 0000468A FF7604                   push word [bp+4]
-  9300 0000468D E850FF                   call pint1
-  9301 00004690 83C402                   add  sp, 2
+  9266                                  ;  200 var unsg word   859 NULL n = bp+4
+  9267                                  ;  201 var unsg word   859 NULL e = bp-2;
+  9268 0000463E C8020000                 ENTER  2,0 ; constant expression
+  9269 00004642 837E040A                cmp word[bp+4], 10 ;unsigned : 0
+  9270 00004646 0F821700                 jb  .prunsign1533
+  9271 0000464A 8B4604                   mov ax, [bp+4]
+  9272 0000464D BB0A00                   mov bx, 10
+  9273 00004650 BA0000                   mov dx, 0
+  9274 00004653 F7F3                     div bx
+  9275 00004655 8946FE                   mov [bp-2], ax
+  9276 00004658 FF76FE                   push word [bp-2]
+  9277 0000465B E8E0FF                   call prunsign1
+  9278 0000465E 83C402                   add  sp, 2
+  9279                                  
+  9280                                  ;-861     n = n % 10; /*unsigned mod*/   n += '0'; prc(n); }  
+  9281                                  
+  9282                                  .prunsign1533:
+  9283 00004661 8B4604                   mov ax, [bp+4]
+  9284 00004664 BB0A00                   mov bx, 10
+  9285 00004667 BA0000                   mov dx, 0
+  9286 0000466A F7F3                     div bx
+  9287 0000466C 89D0                     mov ax, dx
+  9288 0000466E 894604                   mov [bp+4], ax
+  9289 00004671 83460430                 add  word[bp+4], 48
+  9290 00004675 FF7604                   push word [bp+4]
+  9291 00004678 E807FE                   call prc
+  9292 0000467B 83C402                   add  sp, 2
+  9293                                  
+  9294                                  ;-862 int printint51(unsigned int j)  {
+  9295 0000467E C9                       LEAVE
+  9296 0000467F C3                       ret
+  9297                                  ; ENDP
+  9298                                  
+  9299                                  printint51:  ; *** PROC ***
+  9300                                  
+  9301                                  ;-863   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
   9302                                  
-  9303                                  ;-862 
-  9304                                  
-  9305                                  
-  9306                                  ;-863 int fgets1() { char c; c=*fgetsp;
-  9307 00004693 C9                       LEAVE
-  9308 00004694 C3                       ret
-  9309                                  ; ENDP
-  9310                                  
-  9311                                  fgets1:  ; *** PROC ***
-  9312                                  ;Function : fgets1, Number of local variables: 1
-  9313                                  ;   # type sign width addr used name   list of local variables
-  9314                                  ;  200 var sign byte   863 NULL c = bp-2;
-  9315 00004695 C8020000                 ENTER  2,0
-  9316 00004699 8B1E[6200]               mov bx, [fgetsp]
-  9317 0000469D 8A07                     mov al, [bx]
-  9318 0000469F B400                     mov ah, 0
-  9319 000046A1 8846FE                   mov [bp-2], al
-  9320                                  
-  9321                                  ;-864   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
-  9322                                  
-  9323 000046A4 8A46FE                   mov al, [bp-2]
-  9324 000046A7 3C00                     cmp al, 0
-  9325 000046A9 0F852A00                 jne .fgets1537
-  9326 000046AD E83700                   call printinputline
-  9327 000046B0 A1[7000]                 mov ax, [DOS_NoBytes]
-  9328 000046B3 83F800                   cmp ax, 0
-  9329 000046B6 0F850600                 jne .fgets1538
-  9330 000046BA B80000                   mov ax, 0
-  9331 000046BD E92500                   jmp .retnfgets1
-  9332                                  
-  9333                                  ;-865     fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
-  9334                                  
-  9335                                  .fgets1538:
-  9336 000046C0 B80FD0                   mov ax, fgetsdest
-  9337 000046C3 A3[6200]                 mov word [fgetsp], ax
-  9338 000046C6 8B1E[6200]               mov bx, [fgetsp]
-  9339 000046CA 8A07                     mov al, [bx]
-  9340 000046CC B400                     mov ah, 0
-  9341 000046CE 8846FE                   mov [bp-2], al
-  9342 000046D1 B80000                   mov ax, 0
-  9343 000046D4 A3[1F00]                 mov word [spalte], ax
+  9303                                  ;Function : printint51, Number of local variables: 1
+  9304                                  ;   # type sign width addr used name   list of local variables
+  9305                                  ;  200 var unsg word   862 NULL j = bp+4;
+  9306 00004680 C8000000                 ENTER  0,0
+  9307 00004684 8B4604                   mov ax, [bp+4]
+  9308 00004687 3D1027                   cmp ax, 10000
+  9309 0000468A 0F8D0800                 jge .printint51534
+  9310 0000468E 6A20                     push 32
+  9311 00004690 E8EFFD                   call prc
+  9312 00004693 83C402                   add  sp, 2
+  9313                                  .printint51534:
+  9314 00004696 8B4604                   mov ax, [bp+4]
+  9315 00004699 3DE803                   cmp ax, 1000
+  9316 0000469C 0F8D0800                 jge .printint51535
+  9317 000046A0 6A20                     push 32
+  9318 000046A2 E8DDFD                   call prc
+  9319 000046A5 83C402                   add  sp, 2
+  9320                                  .printint51535:
+  9321 000046A8 8B4604                   mov ax, [bp+4]
+  9322 000046AB 83F864                   cmp ax, 100
+  9323 000046AE 0F8D0800                 jge .printint51536
+  9324 000046B2 6A20                     push 32
+  9325 000046B4 E8CBFD                   call prc
+  9326 000046B7 83C402                   add  sp, 2
+  9327                                  
+  9328                                  ;-864    if (j<10) prc(32);  prunsign1(j); }
+  9329                                  
+  9330                                  .printint51536:
+  9331 000046BA 8B4604                   mov ax, [bp+4]
+  9332 000046BD 83F80A                   cmp ax, 10
+  9333 000046C0 0F8D0800                 jge .printint51537
+  9334 000046C4 6A20                     push 32
+  9335 000046C6 E8B9FD                   call prc
+  9336 000046C9 83C402                   add  sp, 2
+  9337                                  .printint51537:
+  9338 000046CC FF7604                   push word [bp+4]
+  9339 000046CF E86CFF                   call prunsign1
+  9340 000046D2 83C402                   add  sp, 2
+  9341                                  
+  9342                                  ;-865 
+  9343                                  
   9344                                  
-  9345                                  ;-866   fgetsp++; spalte++;  return c; }
-  9346                                  
-  9347                                  .fgets1537:
-  9348 000046D7 FF06[6200]               inc  word[fgetsp]
-  9349 000046DB FF06[1F00]               inc  word[spalte]
-  9350 000046DF 8A46FE                   mov al, [bp-2]
-  9351 000046E2 E90000                   jmp .retnfgets1
-  9352                                  
-  9353                                  ;-867 int printinputline() { fgetsp=&fgetsdest;
-  9354                                  
-  9355 000046E5 C9                       .retnfgets1: LEAVE
-  9356 000046E6 C3                       ret
-  9357                                  ; ENDP
-  9358                                  
-  9359                                  printinputline:  ; *** PROC ***
-  9360 000046E7 B80FD0                   mov ax, fgetsdest
-  9361 000046EA A3[6200]                 mov word [fgetsp], ax
-  9362                                  
-  9363                                  ;-868   do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
-  9364                                  
-  9365                                  .printinputline539:
-  9366 000046ED 6A01                     push 1
-  9367 000046EF FF36[1800]               push word [fdin]
-  9368 000046F3 8D06[7200]               lea  ax, [DOS_ByteRead]
-  9369 000046F7 50                       push ax
-  9370 000046F8 E819BA                   call readRL
-  9371 000046FB 83C406                   add  sp, 6
-  9372 000046FE A3[7000]                 mov word [DOS_NoBytes], ax
+  9345                                  ;-866 int fgets1() { char c; c=*fgetsp;
+  9346 000046D5 C9                       LEAVE
+  9347 000046D6 C3                       ret
+  9348                                  ; ENDP
+  9349                                  
+  9350                                  fgets1:  ; *** PROC ***
+  9351                                  ;Function : fgets1, Number of local variables: 1
+  9352                                  ;   # type sign width addr used name   list of local variables
+  9353                                  ;  200 var sign byte   866 NULL c = bp-2;
+  9354 000046D7 C8020000                 ENTER  2,0
+  9355 000046DB 8B1E[6200]               mov bx, [fgetsp]
+  9356 000046DF 8A07                     mov al, [bx]
+  9357 000046E1 B400                     mov ah, 0
+  9358 000046E3 8846FE                   mov [bp-2], al
+  9359                                  
+  9360                                  ;-867   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
+  9361                                  
+  9362 000046E6 8A46FE                   mov al, [bp-2]
+  9363 000046E9 3C00                     cmp al, 0
+  9364 000046EB 0F852A00                 jne .fgets1538
+  9365 000046EF E83700                   call printinputline
+  9366 000046F2 A1[7000]                 mov ax, [DOS_NoBytes]
+  9367 000046F5 83F800                   cmp ax, 0
+  9368 000046F8 0F850600                 jne .fgets1539
+  9369 000046FC B80000                   mov ax, 0
+  9370 000046FF E92500                   jmp .retnfgets1
+  9371                                  
+  9372                                  ;-868     fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
   9373                                  
-  9374                                  ;-869   if (DOS_NoBytes == 0) return; 
-  9375                                  
-  9376 00004701 A1[7000]                 mov ax, [DOS_NoBytes]
-  9377 00004704 83F800                   cmp ax, 0
-  9378 00004707 0F850300                 jne .printinputline540
-  9379 0000470B E95400                   jmp .retnprintinputline
-  9380                                  
-  9381                                  ;-870     *fgetsp=DOS_ByteRead; fgetsp++;} 
-  9382                                  
-  9383                                  .printinputline540:
-  9384 0000470E A0[7200]                 mov al, [DOS_ByteRead]
-  9385 00004711 8B1E[6200]               mov  bx, [fgetsp]
-  9386 00004715 8807                     mov  [bx], al
-  9387 00004717 FF06[6200]               inc  word[fgetsp]
-  9388                                  
-  9389                                  ;-871   while (DOS_ByteRead != 10); *fgetsp=0;
-  9390                                  
-  9391 0000471B A0[7200]                 mov al, [DOS_ByteRead]
-  9392 0000471E 3C0A                     cmp al, 10
-  9393 00004720 0F840200                 je  .printinputline541
-  9394 00004724 EBC7                     jmp .printinputline539
-  9395                                  .printinputline541:
-  9396 00004726 B80000                   mov ax, 0
-  9397 00004729 8B1E[6200]               mov  bx, [fgetsp]
-  9398 0000472D 8807                     mov  [bx], al
-  9399                                  
-  9400                                  ;-872     if (fdout) { prs("\n\n;-"); pint1(lineno); prc(' '); lineno++;
+  9374                                  .fgets1539:
+  9375 00004702 B80FD0                   mov ax, fgetsdest
+  9376 00004705 A3[6200]                 mov word [fgetsp], ax
+  9377 00004708 8B1E[6200]               mov bx, [fgetsp]
+  9378 0000470C 8A07                     mov al, [bx]
+  9379 0000470E B400                     mov ah, 0
+  9380 00004710 8846FE                   mov [bp-2], al
+  9381 00004713 B80000                   mov ax, 0
+  9382 00004716 A3[1F00]                 mov word [spalte], ax
+  9383                                  
+  9384                                  ;-869   fgetsp++; spalte++;  return c; }
+  9385                                  
+  9386                                  .fgets1538:
+  9387 00004719 FF06[6200]               inc  word[fgetsp]
+  9388 0000471D FF06[1F00]               inc  word[spalte]
+  9389 00004721 8A46FE                   mov al, [bp-2]
+  9390 00004724 E90000                   jmp .retnfgets1
+  9391                                  
+  9392                                  ;-870 int printinputline() { fgetsp=&fgetsdest;
+  9393                                  
+  9394 00004727 C9                       .retnfgets1: LEAVE
+  9395 00004728 C3                       ret
+  9396                                  ; ENDP
+  9397                                  
+  9398                                  printinputline:  ; *** PROC ***
+  9399 00004729 B80FD0                   mov ax, fgetsdest
+  9400 0000472C A3[6200]                 mov word [fgetsp], ax
   9401                                  
-  9402 0000472F A1[1A00]                 mov ax, [fdout]
-  9403 00004732 08C0                     or  al, al
-  9404 00004734 0F842A00                 je .printinputline542
-  9405 00004738 68[6347]                 push printinputline_0
-  9406 0000473B E8ABFD                   call prs
-  9407 0000473E 83C402                   add  sp, 2
-  9408 00004741 FF36[6600]               push word [lineno]
-  9409 00004745 E898FE                   call pint1
-  9410 00004748 83C402                   add  sp, 2
-  9411 0000474B 6A20                     push 32
-  9412 0000474D E832FD                   call prc
-  9413 00004750 83C402                   add  sp, 2
-  9414 00004753 FF06[6600]               inc  word[lineno]
-  9415                                  
-  9416                                  ;-873       prscomment(&fgetsdest);}
-  9417                                  
-  9418 00004757 8D060FD0                 lea  ax, [fgetsdest]
-  9419 0000475B 50                       push ax
-  9420 0000475C E84EFD                   call prscomment
-  9421 0000475F 83C402                   add  sp, 2
-  9422                                  
-  9423                                  ;-874 }
-  9424                                  
-  9425                                  .printinputline542:
-  9426                                  
-  9427                                  ;-875 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
-  9428                                  
-  9429                                   .retnprintinputline:
-  9430 00004762 C3                       ret
-  9431 00004763 5C6E5C6E3B2D00          printinputline_0 db "\n\n;-",0
-  9432                                  ; ENDP
-  9433                                  
-  9434                                  end1:  ; *** PROC ***
-  9435                                  ;Function : end1, Number of local variables: 1
-  9436                                  ;   # type sign width addr used name   list of local variables
-  9437                                  ;  200 var sign word   875 NULL n = bp+4;
-  9438 0000476A C8000000                 ENTER  0,0
-  9439 0000476E FF36[1800]               push word [fdin]
-  9440 00004772 E882B9                   call fcloseR
-  9441 00004775 83C402                   add  sp, 2
-  9442 00004778 FF36[1A00]               push word [fdout]
-  9443 0000477C E878B9                   call fcloseR
-  9444 0000477F 83C402                   add  sp, 2
-  9445 00004782 FF7604                   push word [bp+4]
-  9446 00004785 E87EB9                   call exitR
-  9447 00004788 83C402                   add  sp, 2
-  9448                                  
-  9449                                  ;-876 int error1(char *s) { 
-  9450 0000478B C9                       LEAVE
-  9451 0000478C C3                       ret
-  9452                                  ; ENDP
-  9453                                  
-  9454                                  error1:  ; *** PROC ***
-  9455                                  
-  9456                                  ;-877   lineno--;
-  9457                                  
-  9458                                  ;Function : error1, Number of local variables: 1
-  9459                                  ;   # type sign width addr used name   list of local variables
-  9460                                  ;  200 ptr sign byte   876 NULL s = bp+4;
-  9461 0000478D C8000000                 ENTER  0,0
-  9462 00004791 FF0E[6600]               dec  word[lineno]
+  9402                                  ;-871   do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+  9403                                  
+  9404                                  .printinputline540:
+  9405 0000472F 6A01                     push 1
+  9406 00004731 FF36[1800]               push word [fdin]
+  9407 00004735 8D06[7200]               lea  ax, [DOS_ByteRead]
+  9408 00004739 50                       push ax
+  9409 0000473A E8D7B9                   call readRL
+  9410 0000473D 83C406                   add  sp, 6
+  9411 00004740 A3[7000]                 mov word [DOS_NoBytes], ax
+  9412                                  
+  9413                                  ;-872   if (DOS_NoBytes == 0) return; 
+  9414                                  
+  9415 00004743 A1[7000]                 mov ax, [DOS_NoBytes]
+  9416 00004746 83F800                   cmp ax, 0
+  9417 00004749 0F850300                 jne .printinputline541
+  9418 0000474D E95400                   jmp .retnprintinputline
+  9419                                  
+  9420                                  ;-873     *fgetsp=DOS_ByteRead; fgetsp++;} 
+  9421                                  
+  9422                                  .printinputline541:
+  9423 00004750 A0[7200]                 mov al, [DOS_ByteRead]
+  9424 00004753 8B1E[6200]               mov  bx, [fgetsp]
+  9425 00004757 8807                     mov  [bx], al
+  9426 00004759 FF06[6200]               inc  word[fgetsp]
+  9427                                  
+  9428                                  ;-874   while (DOS_ByteRead != 10); *fgetsp=0;
+  9429                                  
+  9430 0000475D A0[7200]                 mov al, [DOS_ByteRead]
+  9431 00004760 3C0A                     cmp al, 10
+  9432 00004762 0F840200                 je  .printinputline542
+  9433 00004766 EBC7                     jmp .printinputline540
+  9434                                  .printinputline542:
+  9435 00004768 B80000                   mov ax, 0
+  9436 0000476B 8B1E[6200]               mov  bx, [fgetsp]
+  9437 0000476F 8807                     mov  [bx], al
+  9438                                  
+  9439                                  ;-875     if (fdout) { prs("\n\n;-"); prunsign1(lineno); prc(' '); lineno++;
+  9440                                  
+  9441 00004771 A1[1A00]                 mov ax, [fdout]
+  9442 00004774 08C0                     or  al, al
+  9443 00004776 0F842A00                 je .printinputline543
+  9444 0000477A 68[A547]                 push printinputline_0
+  9445 0000477D E869FD                   call prs
+  9446 00004780 83C402                   add  sp, 2
+  9447 00004783 FF36[6600]               push word [lineno]
+  9448 00004787 E8B4FE                   call prunsign1
+  9449 0000478A 83C402                   add  sp, 2
+  9450 0000478D 6A20                     push 32
+  9451 0000478F E8F0FC                   call prc
+  9452 00004792 83C402                   add  sp, 2
+  9453 00004795 FF06[6600]               inc  word[lineno]
+  9454                                  
+  9455                                  ;-876       prscomment(&fgetsdest);}
+  9456                                  
+  9457 00004799 8D060FD0                 lea  ax, [fgetsdest]
+  9458 0000479D 50                       push ax
+  9459 0000479E E80CFD                   call prscomment
+  9460 000047A1 83C402                   add  sp, 2
+  9461                                  
+  9462                                  ;-877 }
   9463                                  
-  9464                                  ;-878   prnl(); prscomment(&fgetsdest);
+  9464                                  .printinputline543:
   9465                                  
-  9466 00004795 E843FD                   call prnl
-  9467 00004798 8D060FD0                 lea  ax, [fgetsdest]
-  9468 0000479C 50                       push ax
-  9469 0000479D E80DFD                   call prscomment
-  9470 000047A0 83C402                   add  sp, 2
-  9471                                  
-  9472                                  ;-879   prs(";Line: "); pint1(lineno);
-  9473                                  
-  9474 000047A3 68[3648]                 push error1_0
-  9475 000047A6 E840FD                   call prs
-  9476 000047A9 83C402                   add  sp, 2
-  9477 000047AC FF36[6600]               push word [lineno]
-  9478 000047B0 E82DFE                   call pint1
-  9479 000047B3 83C402                   add  sp, 2
-  9480                                  
-  9481                                  ;-880   prs(" ************** ERROR: "); prs(s);
-  9482                                  
-  9483 000047B6 68[3E48]                 push error1_1
-  9484 000047B9 E82DFD                   call prs
-  9485 000047BC 83C402                   add  sp, 2
-  9486 000047BF FF7604                   push word [bp+4]
-  9487 000047C2 E824FD                   call prs
-  9488 000047C5 83C402                   add  sp, 2
-  9489                                  
-  9490                                  ;-881   prs("  in column: "); pint1(spalte);
-  9491                                  
-  9492 000047C8 68[5648]                 push error1_2
-  9493 000047CB E81BFD                   call prs
-  9494 000047CE 83C402                   add  sp, 2
-  9495 000047D1 FF36[1F00]               push word [spalte]
-  9496 000047D5 E808FE                   call pint1
-  9497 000047D8 83C402                   add  sp, 2
-  9498                                  
-  9499                                  ;-882   prs("\nToken: "); pint1(token); prs(", globC: "); prc(globC);
-  9500                                  
-  9501 000047DB 68[6448]                 push error1_3
-  9502 000047DE E808FD                   call prs
-  9503 000047E1 83C402                   add  sp, 2
-  9504 000047E4 FF36[1C00]               push word [token]
-  9505 000047E8 E8F5FD                   call pint1
-  9506 000047EB 83C402                   add  sp, 2
-  9507 000047EE 68[6E48]                 push error1_4
-  9508 000047F1 E8F5FC                   call prs
-  9509 000047F4 83C402                   add  sp, 2
-  9510 000047F7 A0[1E00]                 mov al, byte [globC]
-  9511 000047FA B400                     mov ah, 0
-  9512 000047FC 50                       push ax
-  9513 000047FD E882FC                   call prc
-  9514 00004800 83C402                   add  sp, 2
-  9515                                  
-  9516                                  ;-883   prs(", thechar: "); pint1(thechar); prs(", symbol: "); prs(symbol);
-  9517                                  
-  9518 00004803 68[7848]                 push error1_5
-  9519 00004806 E8E0FC                   call prs
-  9520 00004809 83C402                   add  sp, 2
-  9521 0000480C A0[2100]                 mov al, byte [thechar]
-  9522 0000480F B400                     mov ah, 0
-  9523 00004811 50                       push ax
-  9524 00004812 E8CBFD                   call pint1
-  9525 00004815 83C402                   add  sp, 2
-  9526 00004818 68[8448]                 push error1_6
-  9527 0000481B E8CBFC                   call prs
-  9528 0000481E 83C402                   add  sp, 2
-  9529 00004821 8D062B81                 lea  ax, [symbol]
-  9530 00004825 50                       push ax
-  9531 00004826 E8C0FC                   call prs
-  9532 00004829 83C402                   add  sp, 2
-  9533                                  
-  9534                                  ;-884   end1(1); }
-  9535                                  
-  9536 0000482C 6A01                     push 1
-  9537 0000482E E839FF                   call end1
-  9538 00004831 83C402                   add  sp, 2
+  9466                                  ;-878 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
+  9467                                  
+  9468                                   .retnprintinputline:
+  9469 000047A4 C3                       ret
+  9470 000047A5 5C6E5C6E3B2D00          printinputline_0 db "\n\n;-",0
+  9471                                  ; ENDP
+  9472                                  
+  9473                                  end1:  ; *** PROC ***
+  9474                                  ;Function : end1, Number of local variables: 1
+  9475                                  ;   # type sign width addr used name   list of local variables
+  9476                                  ;  200 var sign word   878 NULL n = bp+4;
+  9477 000047AC C8000000                 ENTER  0,0
+  9478 000047B0 FF36[1800]               push word [fdin]
+  9479 000047B4 E840B9                   call fcloseR
+  9480 000047B7 83C402                   add  sp, 2
+  9481 000047BA FF36[1A00]               push word [fdout]
+  9482 000047BE E836B9                   call fcloseR
+  9483 000047C1 83C402                   add  sp, 2
+  9484 000047C4 FF7604                   push word [bp+4]
+  9485 000047C7 E83CB9                   call exitR
+  9486 000047CA 83C402                   add  sp, 2
+  9487                                  
+  9488                                  ;-879 int error1(char *s) { 
+  9489 000047CD C9                       LEAVE
+  9490 000047CE C3                       ret
+  9491                                  ; ENDP
+  9492                                  
+  9493                                  error1:  ; *** PROC ***
+  9494                                  
+  9495                                  ;-880   lineno--;
+  9496                                  
+  9497                                  ;Function : error1, Number of local variables: 1
+  9498                                  ;   # type sign width addr used name   list of local variables
+  9499                                  ;  200 ptr sign byte   879 NULL s = bp+4;
+  9500 000047CF C8000000                 ENTER  0,0
+  9501 000047D3 FF0E[6600]               dec  word[lineno]
+  9502                                  
+  9503                                  ;-881   prnl(); prscomment(&fgetsdest);
+  9504                                  
+  9505 000047D7 E801FD                   call prnl
+  9506 000047DA 8D060FD0                 lea  ax, [fgetsdest]
+  9507 000047DE 50                       push ax
+  9508 000047DF E8CBFC                   call prscomment
+  9509 000047E2 83C402                   add  sp, 2
+  9510                                  
+  9511                                  ;-882   prs(";Line: "); prunsign1(lineno);
+  9512                                  
+  9513 000047E5 68[7848]                 push error1_0
+  9514 000047E8 E8FEFC                   call prs
+  9515 000047EB 83C402                   add  sp, 2
+  9516 000047EE FF36[6600]               push word [lineno]
+  9517 000047F2 E849FE                   call prunsign1
+  9518 000047F5 83C402                   add  sp, 2
+  9519                                  
+  9520                                  ;-883   prs(" ************** ERROR: "); prs(s);
+  9521                                  
+  9522 000047F8 68[8048]                 push error1_1
+  9523 000047FB E8EBFC                   call prs
+  9524 000047FE 83C402                   add  sp, 2
+  9525 00004801 FF7604                   push word [bp+4]
+  9526 00004804 E8E2FC                   call prs
+  9527 00004807 83C402                   add  sp, 2
+  9528                                  
+  9529                                  ;-884   prs("  in column: "); prunsign1(spalte);
+  9530                                  
+  9531 0000480A 68[9848]                 push error1_2
+  9532 0000480D E8D9FC                   call prs
+  9533 00004810 83C402                   add  sp, 2
+  9534 00004813 FF36[1F00]               push word [spalte]
+  9535 00004817 E824FE                   call prunsign1
+  9536 0000481A 83C402                   add  sp, 2
+  9537                                  
+  9538                                  ;-885   prs("\nToken: "); prunsign1(token); prs(", globC: "); prc(globC);
   9539                                  
-  9540                                  ;-885 int listproc() {int i; 
-  9541 00004834 C9                       LEAVE
-  9542 00004835 C3                       ret
-  9543 00004836 3B4C696E653A2000        error1_0 db ";Line: ",0
-  9544 0000483E 202A2A2A2A2A2A2A2A-     error1_1 db " ************** ERROR: ",0
-  9545 00004847 2A2A2A2A2A2A204552-
-  9546 00004850 524F523A2000       
-  9547 00004856 2020696E20636F6C75-     error1_2 db "  in column: ",0
-  9548 0000485F 6D6E3A2000         
-  9549 00004864 5C6E546F6B656E3A20-     error1_3 db "\nToken: ",0
-  9550 0000486D 00                 
-  9551 0000486E 2C20676C6F62433A20-     error1_4 db ", globC: ",0
-  9552 00004877 00                 
-  9553 00004878 2C2074686563686172-     error1_5 db ", thechar: ",0
-  9554 00004881 3A2000             
-  9555 00004884 2C2073796D626F6C3A-     error1_6 db ", symbol: ",0
-  9556 0000488D 2000               
-  9557                                  ; ENDP
-  9558                                  
-  9559                                  listproc:  ; *** PROC ***
-  9560                                  
-  9561                                  ;-886   if (LTop > LSTART) {
-  9562                                  
-  9563                                  ;Function : listproc, Number of local variables: 1
-  9564                                  ;   # type sign width addr used name   list of local variables
-  9565                                  ;  200 var sign word   885 NULL i = bp-2;
-  9566 0000488F C8020000                 ENTER  2,0
-  9567 00004893 A1[2C00]                 mov ax, [LTop]
-  9568 00004896 3DC800                   cmp ax, 200
-  9569 00004899 0F8E5700                 jle .listproc543
-  9570                                  
-  9571                                  ;-887   prs("\n;Function : "); prs(fname);
+  9540 0000481D 68[A648]                 push error1_3
+  9541 00004820 E8C6FC                   call prs
+  9542 00004823 83C402                   add  sp, 2
+  9543 00004826 FF36[1C00]               push word [token]
+  9544 0000482A E811FE                   call prunsign1
+  9545 0000482D 83C402                   add  sp, 2
+  9546 00004830 68[B048]                 push error1_4
+  9547 00004833 E8B3FC                   call prs
+  9548 00004836 83C402                   add  sp, 2
+  9549 00004839 A0[1E00]                 mov al, byte [globC]
+  9550 0000483C B400                     mov ah, 0
+  9551 0000483E 50                       push ax
+  9552 0000483F E840FC                   call prc
+  9553 00004842 83C402                   add  sp, 2
+  9554                                  
+  9555                                  ;-886   prs(", thechar: "); prunsign1(thechar); prs(", symbol: "); prs(symbol);
+  9556                                  
+  9557 00004845 68[BA48]                 push error1_5
+  9558 00004848 E89EFC                   call prs
+  9559 0000484B 83C402                   add  sp, 2
+  9560 0000484E A0[2100]                 mov al, byte [thechar]
+  9561 00004851 B400                     mov ah, 0
+  9562 00004853 50                       push ax
+  9563 00004854 E8E7FD                   call prunsign1
+  9564 00004857 83C402                   add  sp, 2
+  9565 0000485A 68[C648]                 push error1_6
+  9566 0000485D E889FC                   call prs
+  9567 00004860 83C402                   add  sp, 2
+  9568 00004863 8D062B81                 lea  ax, [symbol]
+  9569 00004867 50                       push ax
+  9570 00004868 E87EFC                   call prs
+  9571 0000486B 83C402                   add  sp, 2
   9572                                  
-  9573 0000489D 68[F648]                 push listproc_0
-  9574 000048A0 E846FC                   call prs
-  9575 000048A3 83C402                   add  sp, 2
-  9576 000048A6 8D06AB81                 lea  ax, [fname]
-  9577 000048AA 50                       push ax
-  9578 000048AB E83BFC                   call prs
-  9579 000048AE 83C402                   add  sp, 2
-  9580                                  
-  9581                                  ;-888   prs(", Number of local variables: "); i=LTop - LSTART; pint1(i);
-  9582                                  
-  9583 000048B1 68[0549]                 push listproc_1
-  9584 000048B4 E832FC                   call prs
-  9585 000048B7 83C402                   add  sp, 2
-  9586 000048BA A1[2C00]                 mov ax, [LTop]
-  9587 000048BD 2DC800                   sub ax, 200
-  9588 000048C0 8946FE                   mov [bp-2], ax
-  9589 000048C3 FF76FE                   push word [bp-2]
-  9590 000048C6 E817FD                   call pint1
-  9591 000048C9 83C402                   add  sp, 2
-  9592                                  
-  9593                                  ;-889   prs("\n;   # type sign width addr used name   list of local variables");
-  9594                                  
-  9595 000048CC 68[2349]                 push listproc_2
-  9596 000048CF E817FC                   call prs
-  9597 000048D2 83C402                   add  sp, 2
-  9598                                  
-  9599                                  ;-890     i=LSTART; 
-  9600                                  
-  9601 000048D5 B8C800                   mov ax, 200
-  9602 000048D8 8946FE                   mov [bp-2], ax
-  9603                                  
-  9604                                  ;-891     while (i < LTop) { listvar(i); i++; } } 
-  9605                                  
-  9606                                  .listproc544:
-  9607 000048DB 8B46FE                   mov ax, [bp-2]
-  9608 000048DE 3B06[2C00]               cmp ax, [LTop]
-  9609 000048E2 0F8D0E00                 jge .listproc545
-  9610 000048E6 FF76FE                   push word [bp-2]
-  9611 000048E9 E87800                   call listvar
-  9612 000048EC 83C402                   add  sp, 2
-  9613 000048EF FF46FE                   inc  word[bp-2]
-  9614 000048F2 EBE7                     jmp .listproc544
-  9615                                  .listproc545:
-  9616                                  
-  9617                                  ;-892 }
-  9618                                  
-  9619                                  .listproc543:
-  9620                                  
-  9621                                  ;-893 int listvar(unsigned int i) {unsigned int j; char c;
-  9622 000048F4 C9                       LEAVE
-  9623 000048F5 C3                       ret
-  9624 000048F6 5C6E3B46756E637469-     listproc_0 db "\n;Function : ",0
-  9625 000048FF 6F6E203A2000       
-  9626 00004905 2C204E756D62657220-     listproc_1 db ", Number of local variables: ",0
-  9627 0000490E 6F66206C6F63616C20-
-  9628 00004917 7661726961626C6573-
-  9629 00004920 3A2000             
-  9630 00004923 5C6E3B202020232074-     listproc_2 db "\n;   # type sign width addr used name   list of local variables",0
-  9631 0000492C 797065207369676E20-
-  9632 00004935 776964746820616464-
-  9633 0000493E 722075736564206E61-
-  9634 00004947 6D652020206C697374-
-  9635 00004950 206F66206C6F63616C-
-  9636 00004959 207661726961626C65-
-  9637 00004962 7300               
-  9638                                  ; ENDP
+  9573                                  ;-887   end1(1); }
+  9574                                  
+  9575 0000486E 6A01                     push 1
+  9576 00004870 E839FF                   call end1
+  9577 00004873 83C402                   add  sp, 2
+  9578                                  
+  9579                                  ;-888 int listproc() {int i; 
+  9580 00004876 C9                       LEAVE
+  9581 00004877 C3                       ret
+  9582 00004878 3B4C696E653A2000        error1_0 db ";Line: ",0
+  9583 00004880 202A2A2A2A2A2A2A2A-     error1_1 db " ************** ERROR: ",0
+  9584 00004889 2A2A2A2A2A2A204552-
+  9585 00004892 524F523A2000       
+  9586 00004898 2020696E20636F6C75-     error1_2 db "  in column: ",0
+  9587 000048A1 6D6E3A2000         
+  9588 000048A6 5C6E546F6B656E3A20-     error1_3 db "\nToken: ",0
+  9589 000048AF 00                 
+  9590 000048B0 2C20676C6F62433A20-     error1_4 db ", globC: ",0
+  9591 000048B9 00                 
+  9592 000048BA 2C2074686563686172-     error1_5 db ", thechar: ",0
+  9593 000048C3 3A2000             
+  9594 000048C6 2C2073796D626F6C3A-     error1_6 db ", symbol: ",0
+  9595 000048CF 2000               
+  9596                                  ; ENDP
+  9597                                  
+  9598                                  listproc:  ; *** PROC ***
+  9599                                  
+  9600                                  ;-889   if (LTop > LSTART) {
+  9601                                  
+  9602                                  ;Function : listproc, Number of local variables: 1
+  9603                                  ;   # type sign width addr used name   list of local variables
+  9604                                  ;  200 var sign word   888 NULL i = bp-2;
+  9605 000048D1 C8020000                 ENTER  2,0
+  9606 000048D5 A1[2C00]                 mov ax, [LTop]
+  9607 000048D8 3DC800                   cmp ax, 200
+  9608 000048DB 0F8E5700                 jle .listproc544
+  9609                                  
+  9610                                  ;-890   prs("\n;Function : "); prs(fname);
+  9611                                  
+  9612 000048DF 68[3849]                 push listproc_0
+  9613 000048E2 E804FC                   call prs
+  9614 000048E5 83C402                   add  sp, 2
+  9615 000048E8 8D06AB81                 lea  ax, [fname]
+  9616 000048EC 50                       push ax
+  9617 000048ED E8F9FB                   call prs
+  9618 000048F0 83C402                   add  sp, 2
+  9619                                  
+  9620                                  ;-891   prs(", Number of local variables: "); i=LTop - LSTART; prunsign1(i);
+  9621                                  
+  9622 000048F3 68[4749]                 push listproc_1
+  9623 000048F6 E8F0FB                   call prs
+  9624 000048F9 83C402                   add  sp, 2
+  9625 000048FC A1[2C00]                 mov ax, [LTop]
+  9626 000048FF 2DC800                   sub ax, 200
+  9627 00004902 8946FE                   mov [bp-2], ax
+  9628 00004905 FF76FE                   push word [bp-2]
+  9629 00004908 E833FD                   call prunsign1
+  9630 0000490B 83C402                   add  sp, 2
+  9631                                  
+  9632                                  ;-892   prs("\n;   # type sign width addr used name   list of local variables");
+  9633                                  
+  9634 0000490E 68[6549]                 push listproc_2
+  9635 00004911 E8D5FB                   call prs
+  9636 00004914 83C402                   add  sp, 2
+  9637                                  
+  9638                                  ;-893     i=LSTART; 
   9639                                  
-  9640                                  listvar:  ; *** PROC ***
-  9641                                  
-  9642                                  ;-894   prs("\n;"); printint51(i); prc(32);
-  9643                                  
-  9644                                  ;Function : listvar, Number of local variables: 3
-  9645                                  ;   # type sign width addr used name   list of local variables
-  9646                                  ;  200 var unsg word   893 NULL i = bp+4
-  9647                                  ;  201 var unsg word   893 NULL j = bp-2
-  9648                                  ;  202 var sign byte   893 NULL c = bp-4;
-  9649 00004964 C8040000                 ENTER  4,0
-  9650 00004968 68[504B]                 push listvar_0
-  9651 0000496B E87BFB                   call prs
-  9652 0000496E 83C402                   add  sp, 2
-  9653 00004971 FF7604                   push word [bp+4]
-  9654 00004974 E8C7FC                   call printint51
-  9655 00004977 83C402                   add  sp, 2
-  9656 0000497A 6A20                     push 32
-  9657 0000497C E803FB                   call prc
-  9658 0000497F 83C402                   add  sp, 2
+  9640 00004917 B8C800                   mov ax, 200
+  9641 0000491A 8946FE                   mov [bp-2], ax
+  9642                                  
+  9643                                  ;-894     while (i < LTop) { listvar(i); i++; } } 
+  9644                                  
+  9645                                  .listproc545:
+  9646 0000491D 8B46FE                   mov ax, [bp-2]
+  9647 00004920 3B06[2C00]               cmp ax, [LTop]
+  9648 00004924 0F8D0E00                 jge .listproc546
+  9649 00004928 FF76FE                   push word [bp-2]
+  9650 0000492B E87800                   call listvar
+  9651 0000492E 83C402                   add  sp, 2
+  9652 00004931 FF46FE                   inc  word[bp-2]
+  9653 00004934 EBE7                     jmp .listproc545
+  9654                                  .listproc546:
+  9655                                  
+  9656                                  ;-895 }
+  9657                                  
+  9658                                  .listproc544:
   9659                                  
-  9660                                  ;-895   c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
-  9661                                  
-  9662 00004982 8B5E04                   mov bx, [bp+4]
-  9663 00004985 8A87B782                 mov al, [GType + bx]
-  9664 00004989 8846FC                   mov [bp-4], al
-  9665 0000498C 8A46FC                   mov al, [bp-4]
-  9666 0000498F 3C56                     cmp al, 86
-  9667 00004991 0F850900                 jne .listvar546
-  9668 00004995 68[544B]                 push listvar_1
-  9669 00004998 E84EFB                   call prs
-  9670 0000499B 83C402                   add  sp, 2
-  9671                                  .listvar546:
-  9672 0000499E 8A46FC                   mov al, [bp-4]
-  9673 000049A1 3C2A                     cmp al, 42
-  9674 000049A3 0F850900                 jne .listvar547
-  9675 000049A7 68[594B]                 push listvar_2
-  9676 000049AA E83CFB                   call prs
-  9677 000049AD 83C402                   add  sp, 2
+  9660                                  ;-896 int listvar(unsigned int i) {unsigned int j; char c;
+  9661 00004936 C9                       LEAVE
+  9662 00004937 C3                       ret
+  9663 00004938 5C6E3B46756E637469-     listproc_0 db "\n;Function : ",0
+  9664 00004941 6F6E203A2000       
+  9665 00004947 2C204E756D62657220-     listproc_1 db ", Number of local variables: ",0
+  9666 00004950 6F66206C6F63616C20-
+  9667 00004959 7661726961626C6573-
+  9668 00004962 3A2000             
+  9669 00004965 5C6E3B202020232074-     listproc_2 db "\n;   # type sign width addr used name   list of local variables",0
+  9670 0000496E 797065207369676E20-
+  9671 00004977 776964746820616464-
+  9672 00004980 722075736564206E61-
+  9673 00004989 6D652020206C697374-
+  9674 00004992 206F66206C6F63616C-
+  9675 0000499B 207661726961626C65-
+  9676 000049A4 7300               
+  9677                                  ; ENDP
   9678                                  
-  9679                                  ;-896                if(c=='&')prs("arr ");   if(c=='#')prs("def ");
+  9679                                  listvar:  ; *** PROC ***
   9680                                  
-  9681                                  .listvar547:
-  9682 000049B0 8A46FC                   mov al, [bp-4]
-  9683 000049B3 3C26                     cmp al, 38
-  9684 000049B5 0F850900                 jne .listvar548
-  9685 000049B9 68[5E4B]                 push listvar_3
-  9686 000049BC E82AFB                   call prs
-  9687 000049BF 83C402                   add  sp, 2
-  9688                                  .listvar548:
-  9689 000049C2 8A46FC                   mov al, [bp-4]
-  9690 000049C5 3C23                     cmp al, 35
-  9691 000049C7 0F850900                 jne .listvar549
-  9692 000049CB 68[634B]                 push listvar_4
-  9693 000049CE E818FB                   call prs
-  9694 000049D1 83C402                   add  sp, 2
-  9695                                  
-  9696                                  ;-897   c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
-  9697                                  
-  9698                                  .listvar549:
-  9699 000049D4 8B5E04                   mov bx, [bp+4]
-  9700 000049D7 8A87E383                 mov al, [GSign + bx]
-  9701 000049DB 8846FC                   mov [bp-4], al
-  9702 000049DE 8A46FC                   mov al, [bp-4]
-  9703 000049E1 3C53                     cmp al, 83
-  9704 000049E3 0F850900                 jne .listvar550
-  9705 000049E7 68[684B]                 push listvar_5
-  9706 000049EA E8FCFA                   call prs
-  9707 000049ED 83C402                   add  sp, 2
-  9708                                  .listvar550:
-  9709 000049F0 8A46FC                   mov al, [bp-4]
-  9710 000049F3 3C55                     cmp al, 85
-  9711 000049F5 0F850900                 jne .listvar551
-  9712 000049F9 68[6E4B]                 push listvar_6
-  9713 000049FC E8EAFA                   call prs
-  9714 000049FF 83C402                   add  sp, 2
-  9715                                  
-  9716                                  ;-898   c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
+  9681                                  ;-897   prs("\n;"); printint51(i); prc(32);
+  9682                                  
+  9683                                  ;Function : listvar, Number of local variables: 3
+  9684                                  ;   # type sign width addr used name   list of local variables
+  9685                                  ;  200 var unsg word   896 NULL i = bp+4
+  9686                                  ;  201 var unsg word   896 NULL j = bp-2
+  9687                                  ;  202 var sign byte   896 NULL c = bp-4;
+  9688 000049A6 C8040000                 ENTER  4,0
+  9689 000049AA 68[924B]                 push listvar_0
+  9690 000049AD E839FB                   call prs
+  9691 000049B0 83C402                   add  sp, 2
+  9692 000049B3 FF7604                   push word [bp+4]
+  9693 000049B6 E8C7FC                   call printint51
+  9694 000049B9 83C402                   add  sp, 2
+  9695 000049BC 6A20                     push 32
+  9696 000049BE E8C1FA                   call prc
+  9697 000049C1 83C402                   add  sp, 2
+  9698                                  
+  9699                                  ;-898   c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
+  9700                                  
+  9701 000049C4 8B5E04                   mov bx, [bp+4]
+  9702 000049C7 8A87B782                 mov al, [GType + bx]
+  9703 000049CB 8846FC                   mov [bp-4], al
+  9704 000049CE 8A46FC                   mov al, [bp-4]
+  9705 000049D1 3C56                     cmp al, 86
+  9706 000049D3 0F850900                 jne .listvar547
+  9707 000049D7 68[964B]                 push listvar_1
+  9708 000049DA E80CFB                   call prs
+  9709 000049DD 83C402                   add  sp, 2
+  9710                                  .listvar547:
+  9711 000049E0 8A46FC                   mov al, [bp-4]
+  9712 000049E3 3C2A                     cmp al, 42
+  9713 000049E5 0F850900                 jne .listvar548
+  9714 000049E9 68[9B4B]                 push listvar_2
+  9715 000049EC E8FAFA                   call prs
+  9716 000049EF 83C402                   add  sp, 2
   9717                                  
-  9718                                  .listvar551:
-  9719 00004A02 8B5E04                   mov bx, [bp+4]
-  9720 00004A05 8A870F85                 mov al, [GWidth + bx]
-  9721 00004A09 8846FC                   mov [bp-4], al
-  9722 00004A0C 8A46FC                   mov al, [bp-4]
-  9723 00004A0F 3C01                     cmp al, 1
-  9724 00004A11 0F850900                 jne .listvar552
-  9725 00004A15 68[744B]                 push listvar_7
-  9726 00004A18 E8CEFA                   call prs
-  9727 00004A1B 83C402                   add  sp, 2
-  9728                                  .listvar552:
-  9729 00004A1E 8A46FC                   mov al, [bp-4]
-  9730 00004A21 3C02                     cmp al, 2
-  9731 00004A23 0F850900                 jne .listvar553
-  9732 00004A27 68[7A4B]                 push listvar_8
-  9733 00004A2A E8BCFA                   call prs
-  9734 00004A2D 83C402                   add  sp, 2
-  9735                                  
-  9736                                  ;-899                if(c==  4)prs("dwrd " );
-  9737                                  
-  9738                                  .listvar553:
-  9739 00004A30 8A46FC                   mov al, [bp-4]
-  9740 00004A33 3C04                     cmp al, 4
-  9741 00004A35 0F850900                 jne .listvar554
-  9742 00004A39 68[804B]                 push listvar_9
-  9743 00004A3C E8AAFA                   call prs
-  9744 00004A3F 83C402                   add  sp, 2
-  9745                                  
-  9746                                  ;-900   j=GAdr[i]; printint51(j);
-  9747                                  
-  9748                                  .listvar554:
-  9749 00004A42 8B5E04                   mov bx, [bp+4]
-  9750 00004A45 D1E3                     shl bx, 1
-  9751 00004A47 8B873B86                 mov ax, [GAdr + bx]
-  9752 00004A4B 8946FE                   mov [bp-2], ax
-  9753 00004A4E FF76FE                   push word [bp-2]
-  9754 00004A51 E8EAFB                   call printint51
-  9755 00004A54 83C402                   add  sp, 2
+  9718                                  ;-899                if(c=='&')prs("arr ");   if(c=='#')prs("def ");
+  9719                                  
+  9720                                  .listvar548:
+  9721 000049F2 8A46FC                   mov al, [bp-4]
+  9722 000049F5 3C26                     cmp al, 38
+  9723 000049F7 0F850900                 jne .listvar549
+  9724 000049FB 68[A04B]                 push listvar_3
+  9725 000049FE E8E8FA                   call prs
+  9726 00004A01 83C402                   add  sp, 2
+  9727                                  .listvar549:
+  9728 00004A04 8A46FC                   mov al, [bp-4]
+  9729 00004A07 3C23                     cmp al, 35
+  9730 00004A09 0F850900                 jne .listvar550
+  9731 00004A0D 68[A54B]                 push listvar_4
+  9732 00004A10 E8D6FA                   call prs
+  9733 00004A13 83C402                   add  sp, 2
+  9734                                  
+  9735                                  ;-900   c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
+  9736                                  
+  9737                                  .listvar550:
+  9738 00004A16 8B5E04                   mov bx, [bp+4]
+  9739 00004A19 8A87E383                 mov al, [GSign + bx]
+  9740 00004A1D 8846FC                   mov [bp-4], al
+  9741 00004A20 8A46FC                   mov al, [bp-4]
+  9742 00004A23 3C53                     cmp al, 83
+  9743 00004A25 0F850900                 jne .listvar551
+  9744 00004A29 68[AA4B]                 push listvar_5
+  9745 00004A2C E8BAFA                   call prs
+  9746 00004A2F 83C402                   add  sp, 2
+  9747                                  .listvar551:
+  9748 00004A32 8A46FC                   mov al, [bp-4]
+  9749 00004A35 3C55                     cmp al, 85
+  9750 00004A37 0F850900                 jne .listvar552
+  9751 00004A3B 68[B04B]                 push listvar_6
+  9752 00004A3E E8A8FA                   call prs
+  9753 00004A41 83C402                   add  sp, 2
+  9754                                  
+  9755                                  ;-901   c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
   9756                                  
-  9757                                  ;-901   j=GUsed[i]; if (j) printint51(j);
-  9758                                  
-  9759 00004A57 8B5E04                   mov bx, [bp+4]
-  9760 00004A5A D1E3                     shl bx, 1
-  9761 00004A5C 8B879388                 mov ax, [GUsed + bx]
-  9762 00004A60 8946FE                   mov [bp-2], ax
-  9763 00004A63 8B46FE                   mov ax, [bp-2]
-  9764 00004A66 08C0                     or  al, al
-  9765 00004A68 0F840C00                 je .listvar555
-  9766 00004A6C FF76FE                   push word [bp-2]
-  9767 00004A6F E8CCFB                   call printint51
-  9768 00004A72 83C402                   add  sp, 2
-  9769                                  
-  9770                                  ;-902   else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
-  9771                                  
-  9772 00004A75 E92200                   jmp .listvar556
-  9773                                  .listvar555:
-  9774 00004A78 8B5E04                   mov bx, [bp+4]
-  9775 00004A7B 8A87B782                 mov al, [GType + bx]
-  9776 00004A7F 3C23                     cmp al, 35
-  9777 00004A81 0F850C00                 jne .listvar557
-  9778 00004A85 68[864B]                 push listvar_10
-  9779 00004A88 E85EFA                   call prs
-  9780 00004A8B 83C402                   add  sp, 2
-  9781 00004A8E E90900                   jmp .listvar558
-  9782                                  .listvar557:
-  9783 00004A91 68[8C4B]                 push listvar_11
-  9784 00004A94 E852FA                   call prs
-  9785 00004A97 83C402                   add  sp, 2
-  9786                                  .listvar558:
-  9787                                  
-  9788                                  ;-903   prc(32);  pt=adrofname(i); prs(pt);
-  9789                                  
-  9790                                  .listvar556:
-  9791 00004A9A 6A20                     push 32
-  9792 00004A9C E8E3F9                   call prc
-  9793 00004A9F 83C402                   add  sp, 2
-  9794 00004AA2 FF7604                   push word [bp+4]
-  9795 00004AA5 E82CBE                   call adrofname
-  9796 00004AA8 83C402                   add  sp, 2
-  9797 00004AAB A3[6A00]                 mov word [pt], ax
-  9798 00004AAE FF36[6A00]               push word [pt]
-  9799 00004AB2 E834FA                   call prs
-  9800 00004AB5 83C402                   add  sp, 2
-  9801                                  
-  9802                                  ;-904   if(GType[i]=='#') { prc('='); j=GData[i]; pint1(j); }
-  9803                                  
-  9804 00004AB8 8B5E04                   mov bx, [bp+4]
-  9805 00004ABB 8A87B782                 mov al, [GType + bx]
-  9806 00004ABF 3C23                     cmp al, 35
-  9807 00004AC1 0F851D00                 jne .listvar559
-  9808 00004AC5 6A3D                     push 61
-  9809 00004AC7 E8B8F9                   call prc
-  9810 00004ACA 83C402                   add  sp, 2
-  9811 00004ACD 8B5E04                   mov bx, [bp+4]
-  9812 00004AD0 D1E3                     shl bx, 1
-  9813 00004AD2 8B87EB8A                 mov ax, [GData + bx]
-  9814 00004AD6 8946FE                   mov [bp-2], ax
-  9815 00004AD9 FF76FE                   push word [bp-2]
-  9816 00004ADC E801FB                   call pint1
-  9817 00004ADF 83C402                   add  sp, 2
-  9818                                  
-  9819                                  ;-905   if(GType[i]=='&') { prc('['); j=GData[i]; pint1(j); prc(']');}
-  9820                                  
-  9821                                  .listvar559:
-  9822 00004AE2 8B5E04                   mov bx, [bp+4]
-  9823 00004AE5 8A87B782                 mov al, [GType + bx]
-  9824 00004AE9 3C26                     cmp al, 38
-  9825 00004AEB 0F852500                 jne .listvar560
-  9826 00004AEF 6A5B                     push 91
-  9827 00004AF1 E88EF9                   call prc
-  9828 00004AF4 83C402                   add  sp, 2
-  9829 00004AF7 8B5E04                   mov bx, [bp+4]
-  9830 00004AFA D1E3                     shl bx, 1
-  9831 00004AFC 8B87EB8A                 mov ax, [GData + bx]
-  9832 00004B00 8946FE                   mov [bp-2], ax
-  9833 00004B03 FF76FE                   push word [bp-2]
-  9834 00004B06 E8D7FA                   call pint1
-  9835 00004B09 83C402                   add  sp, 2
-  9836 00004B0C 6A5D                     push 93
-  9837 00004B0E E871F9                   call prc
-  9838 00004B11 83C402                   add  sp, 2
-  9839                                  
-  9840                                  ;-906   if (i >= LSTART) { prs(" = bp"); j=GData[i];
-  9841                                  
-  9842                                  .listvar560:
-  9843 00004B14 8B4604                   mov ax, [bp+4]
-  9844 00004B17 3DC800                   cmp ax, 200 ;unsigned : 0
-  9845 00004B1A 0F823000                 jb  .listvar561
-  9846 00004B1E 68[924B]                 push listvar_12
-  9847 00004B21 E8C5F9                   call prs
-  9848 00004B24 83C402                   add  sp, 2
-  9849 00004B27 8B5E04                   mov bx, [bp+4]
-  9850 00004B2A D1E3                     shl bx, 1
-  9851 00004B2C 8B87EB8A                 mov ax, [GData + bx]
-  9852 00004B30 8946FE                   mov [bp-2], ax
-  9853                                  
-  9854                                  ;-907     if (j > 0) prc('+'); pint1(j);  }
-  9855                                  
-  9856 00004B33 8B46FE                   mov ax, [bp-2]
-  9857 00004B36 83F800                   cmp ax, 0
-  9858 00004B39 0F8E0800                 jle .listvar562
-  9859 00004B3D 6A2B                     push 43
-  9860 00004B3F E840F9                   call prc
-  9861 00004B42 83C402                   add  sp, 2
-  9862                                  .listvar562:
-  9863 00004B45 FF76FE                   push word [bp-2]
-  9864 00004B48 E895FA                   call pint1
-  9865 00004B4B 83C402                   add  sp, 2
-  9866                                  
-  9867                                  ;-908 }
-  9868                                  
-  9869                                  .listvar561:
-  9870                                  
-  9871                                  ;-909 int listcall() { int i;
-  9872 00004B4E C9                       LEAVE
-  9873 00004B4F C3                       ret
-  9874 00004B50 5C6E3B00                listvar_0 db "\n;",0
-  9875 00004B54 7661722000              listvar_1 db "var ",0
-  9876 00004B59 7074722000              listvar_2 db "ptr ",0
-  9877 00004B5E 6172722000              listvar_3 db "arr ",0
-  9878 00004B63 6465662000              listvar_4 db "def ",0
-  9879 00004B68 7369676E2000            listvar_5 db "sign ",0
-  9880 00004B6E 756E73672000            listvar_6 db "unsg ",0
-  9881 00004B74 627974652000            listvar_7 db "byte ",0
-  9882 00004B7A 776F72642000            listvar_8 db "word ",0
-  9883 00004B80 647772642000            listvar_9 db "dwrd ",0
-  9884 00004B86 202020202D00            listvar_10 db "    -",0
-  9885 00004B8C 204E554C4C00            listvar_11 db " NULL",0
-  9886 00004B92 203D20627000            listvar_12 db " = bp",0
-  9887                                  ; ENDP
-  9888                                  
-  9889                                  listcall:  ; *** PROC ***
-  9890                                  
-  9891                                  ;-910   prs("\n\n;    #  addr name   list of CALLs\n");
+  9757                                  .listvar552:
+  9758 00004A44 8B5E04                   mov bx, [bp+4]
+  9759 00004A47 8A870F85                 mov al, [GWidth + bx]
+  9760 00004A4B 8846FC                   mov [bp-4], al
+  9761 00004A4E 8A46FC                   mov al, [bp-4]
+  9762 00004A51 3C01                     cmp al, 1
+  9763 00004A53 0F850900                 jne .listvar553
+  9764 00004A57 68[B64B]                 push listvar_7
+  9765 00004A5A E88CFA                   call prs
+  9766 00004A5D 83C402                   add  sp, 2
+  9767                                  .listvar553:
+  9768 00004A60 8A46FC                   mov al, [bp-4]
+  9769 00004A63 3C02                     cmp al, 2
+  9770 00004A65 0F850900                 jne .listvar554
+  9771 00004A69 68[BC4B]                 push listvar_8
+  9772 00004A6C E87AFA                   call prs
+  9773 00004A6F 83C402                   add  sp, 2
+  9774                                  
+  9775                                  ;-902                if(c==  4)prs("dwrd " );
+  9776                                  
+  9777                                  .listvar554:
+  9778 00004A72 8A46FC                   mov al, [bp-4]
+  9779 00004A75 3C04                     cmp al, 4
+  9780 00004A77 0F850900                 jne .listvar555
+  9781 00004A7B 68[C24B]                 push listvar_9
+  9782 00004A7E E868FA                   call prs
+  9783 00004A81 83C402                   add  sp, 2
+  9784                                  
+  9785                                  ;-903   j=GAdr[i]; printint51(j);
+  9786                                  
+  9787                                  .listvar555:
+  9788 00004A84 8B5E04                   mov bx, [bp+4]
+  9789 00004A87 D1E3                     shl bx, 1
+  9790 00004A89 8B873B86                 mov ax, [GAdr + bx]
+  9791 00004A8D 8946FE                   mov [bp-2], ax
+  9792 00004A90 FF76FE                   push word [bp-2]
+  9793 00004A93 E8EAFB                   call printint51
+  9794 00004A96 83C402                   add  sp, 2
+  9795                                  
+  9796                                  ;-904   j=GUsed[i]; if (j) printint51(j);
+  9797                                  
+  9798 00004A99 8B5E04                   mov bx, [bp+4]
+  9799 00004A9C D1E3                     shl bx, 1
+  9800 00004A9E 8B879388                 mov ax, [GUsed + bx]
+  9801 00004AA2 8946FE                   mov [bp-2], ax
+  9802 00004AA5 8B46FE                   mov ax, [bp-2]
+  9803 00004AA8 08C0                     or  al, al
+  9804 00004AAA 0F840C00                 je .listvar556
+  9805 00004AAE FF76FE                   push word [bp-2]
+  9806 00004AB1 E8CCFB                   call printint51
+  9807 00004AB4 83C402                   add  sp, 2
+  9808                                  
+  9809                                  ;-905   else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
+  9810                                  
+  9811 00004AB7 E92200                   jmp .listvar557
+  9812                                  .listvar556:
+  9813 00004ABA 8B5E04                   mov bx, [bp+4]
+  9814 00004ABD 8A87B782                 mov al, [GType + bx]
+  9815 00004AC1 3C23                     cmp al, 35
+  9816 00004AC3 0F850C00                 jne .listvar558
+  9817 00004AC7 68[C84B]                 push listvar_10
+  9818 00004ACA E81CFA                   call prs
+  9819 00004ACD 83C402                   add  sp, 2
+  9820 00004AD0 E90900                   jmp .listvar559
+  9821                                  .listvar558:
+  9822 00004AD3 68[CE4B]                 push listvar_11
+  9823 00004AD6 E810FA                   call prs
+  9824 00004AD9 83C402                   add  sp, 2
+  9825                                  .listvar559:
+  9826                                  
+  9827                                  ;-906   prc(32);  pt=adrofname(i); prs(pt);
+  9828                                  
+  9829                                  .listvar557:
+  9830 00004ADC 6A20                     push 32
+  9831 00004ADE E8A1F9                   call prc
+  9832 00004AE1 83C402                   add  sp, 2
+  9833 00004AE4 FF7604                   push word [bp+4]
+  9834 00004AE7 E8EABD                   call adrofname
+  9835 00004AEA 83C402                   add  sp, 2
+  9836 00004AED A3[6A00]                 mov word [pt], ax
+  9837 00004AF0 FF36[6A00]               push word [pt]
+  9838 00004AF4 E8F2F9                   call prs
+  9839 00004AF7 83C402                   add  sp, 2
+  9840                                  
+  9841                                  ;-907   if(GType[i]=='#') { prc('='); j=GData[i]; prunsign1(j); }
+  9842                                  
+  9843 00004AFA 8B5E04                   mov bx, [bp+4]
+  9844 00004AFD 8A87B782                 mov al, [GType + bx]
+  9845 00004B01 3C23                     cmp al, 35
+  9846 00004B03 0F851D00                 jne .listvar560
+  9847 00004B07 6A3D                     push 61
+  9848 00004B09 E876F9                   call prc
+  9849 00004B0C 83C402                   add  sp, 2
+  9850 00004B0F 8B5E04                   mov bx, [bp+4]
+  9851 00004B12 D1E3                     shl bx, 1
+  9852 00004B14 8B87EB8A                 mov ax, [GData + bx]
+  9853 00004B18 8946FE                   mov [bp-2], ax
+  9854 00004B1B FF76FE                   push word [bp-2]
+  9855 00004B1E E81DFB                   call prunsign1
+  9856 00004B21 83C402                   add  sp, 2
+  9857                                  
+  9858                                  ;-908   if(GType[i]=='&') { prc('['); j=GData[i]; prunsign1(j); prc(']');}
+  9859                                  
+  9860                                  .listvar560:
+  9861 00004B24 8B5E04                   mov bx, [bp+4]
+  9862 00004B27 8A87B782                 mov al, [GType + bx]
+  9863 00004B2B 3C26                     cmp al, 38
+  9864 00004B2D 0F852500                 jne .listvar561
+  9865 00004B31 6A5B                     push 91
+  9866 00004B33 E84CF9                   call prc
+  9867 00004B36 83C402                   add  sp, 2
+  9868 00004B39 8B5E04                   mov bx, [bp+4]
+  9869 00004B3C D1E3                     shl bx, 1
+  9870 00004B3E 8B87EB8A                 mov ax, [GData + bx]
+  9871 00004B42 8946FE                   mov [bp-2], ax
+  9872 00004B45 FF76FE                   push word [bp-2]
+  9873 00004B48 E8F3FA                   call prunsign1
+  9874 00004B4B 83C402                   add  sp, 2
+  9875 00004B4E 6A5D                     push 93
+  9876 00004B50 E82FF9                   call prc
+  9877 00004B53 83C402                   add  sp, 2
+  9878                                  
+  9879                                  ;-909   if (i >= LSTART) { prs(" = bp"); j=GData[i];
+  9880                                  
+  9881                                  .listvar561:
+  9882 00004B56 8B4604                   mov ax, [bp+4]
+  9883 00004B59 3DC800                   cmp ax, 200 ;unsigned : 0
+  9884 00004B5C 0F823000                 jb  .listvar562
+  9885 00004B60 68[D44B]                 push listvar_12
+  9886 00004B63 E883F9                   call prs
+  9887 00004B66 83C402                   add  sp, 2
+  9888 00004B69 8B5E04                   mov bx, [bp+4]
+  9889 00004B6C D1E3                     shl bx, 1
+  9890 00004B6E 8B87EB8A                 mov ax, [GData + bx]
+  9891 00004B72 8946FE                   mov [bp-2], ax
   9892                                  
-  9893                                  ;Function : listcall, Number of local variables: 1
-  9894                                  ;   # type sign width addr used name   list of local variables
-  9895                                  ;  200 var sign word   909 NULL i = bp-2;
-  9896 00004B98 C8020000                 ENTER  2,0
-  9897 00004B9C 68[C64B]                 push listcall_0
-  9898 00004B9F E847F9                   call prs
-  9899 00004BA2 83C402                   add  sp, 2
-  9900                                  
-  9901                                  ;-911   i=0;  while (i< CTop) { calllisting(i); i++; } }
-  9902                                  
-  9903 00004BA5 B80000                   mov ax, 0
-  9904 00004BA8 8946FE                   mov [bp-2], ax
-  9905                                  .listcall563:
-  9906 00004BAB 8B46FE                   mov ax, [bp-2]
-  9907 00004BAE 3B06[3D00]               cmp ax, [CTop]
-  9908 00004BB2 0F8D0E00                 jge .listcall564
-  9909 00004BB6 FF76FE                   push word [bp-2]
-  9910 00004BB9 E83200                   call calllisting
-  9911 00004BBC 83C402                   add  sp, 2
-  9912 00004BBF FF46FE                   inc  word[bp-2]
-  9913 00004BC2 EBE7                     jmp .listcall563
-  9914                                  .listcall564:
-  9915                                  
-  9916                                  ;-912 int calllisting(int i) {char c; int j;
-  9917 00004BC4 C9                       LEAVE
-  9918 00004BC5 C3                       ret
-  9919 00004BC6 5C6E5C6E3B20202020-     listcall_0 db "\n\n;    #  addr name   list of CALLs\n",0
-  9920 00004BCF 23202061646472206E-
-  9921 00004BD8 616D652020206C6973-
-  9922 00004BE1 74206F662043414C4C-
-  9923 00004BEA 735C6E00           
-  9924                                  ; ENDP
-  9925                                  
-  9926                                  calllisting:  ; *** PROC ***
+  9893                                  ;-910     if (j > 0) prc('+'); pint1(j);  }
+  9894                                  
+  9895 00004B75 8B46FE                   mov ax, [bp-2]
+  9896 00004B78 83F800                   cmp ax, 0
+  9897 00004B7B 0F8E0800                 jle .listvar563
+  9898 00004B7F 6A2B                     push 43
+  9899 00004B81 E8FEF8                   call prc
+  9900 00004B84 83C402                   add  sp, 2
+  9901                                  .listvar563:
+  9902 00004B87 FF76FE                   push word [bp-2]
+  9903 00004B8A E853FA                   call pint1
+  9904 00004B8D 83C402                   add  sp, 2
+  9905                                  
+  9906                                  ;-911 }
+  9907                                  
+  9908                                  .listvar562:
+  9909                                  
+  9910                                  ;-912 int listcall() { int i;
+  9911 00004B90 C9                       LEAVE
+  9912 00004B91 C3                       ret
+  9913 00004B92 5C6E3B00                listvar_0 db "\n;",0
+  9914 00004B96 7661722000              listvar_1 db "var ",0
+  9915 00004B9B 7074722000              listvar_2 db "ptr ",0
+  9916 00004BA0 6172722000              listvar_3 db "arr ",0
+  9917 00004BA5 6465662000              listvar_4 db "def ",0
+  9918 00004BAA 7369676E2000            listvar_5 db "sign ",0
+  9919 00004BB0 756E73672000            listvar_6 db "unsg ",0
+  9920 00004BB6 627974652000            listvar_7 db "byte ",0
+  9921 00004BBC 776F72642000            listvar_8 db "word ",0
+  9922 00004BC2 647772642000            listvar_9 db "dwrd ",0
+  9923 00004BC8 202020202D00            listvar_10 db "    -",0
+  9924 00004BCE 204E554C4C00            listvar_11 db " NULL",0
+  9925 00004BD4 203D20627000            listvar_12 db " = bp",0
+  9926                                  ; ENDP
   9927                                  
-  9928                                  ;-913   prs("\n;"); printint51(i); prc(32);
+  9928                                  listcall:  ; *** PROC ***
   9929                                  
-  9930                                  ;Function : calllisting, Number of local variables: 3
-  9931                                  ;   # type sign width addr used name   list of local variables
-  9932                                  ;  200 var sign word   912 NULL i = bp+4
-  9933                                  ;  201 var sign byte   912 NULL c = bp-2
-  9934                                  ;  202 var sign word   912 NULL j = bp-4;
-  9935 00004BEE C8040000                 ENTER  4,0
-  9936 00004BF2 68[604C]                 push calllisting_0
-  9937 00004BF5 E8F1F8                   call prs
-  9938 00004BF8 83C402                   add  sp, 2
-  9939 00004BFB FF7604                   push word [bp+4]
-  9940 00004BFE E83DFA                   call printint51
-  9941 00004C01 83C402                   add  sp, 2
-  9942 00004C04 6A20                     push 32
-  9943 00004C06 E879F8                   call prc
-  9944 00004C09 83C402                   add  sp, 2
-  9945                                  
-  9946                                  ;-914   c=CType [i]; if(c==0)prs("unresolved ");
-  9947                                  
-  9948 00004C0C 8B5E04                   mov bx, [bp+4]
-  9949 00004C0F 8A872FA1                 mov al, [CType + bx]
-  9950 00004C13 8846FE                   mov [bp-2], al
-  9951 00004C16 8A46FE                   mov al, [bp-2]
-  9952 00004C19 3C00                     cmp al, 0
-  9953 00004C1B 0F850900                 jne .calllisting565
-  9954 00004C1F 68[644C]                 push calllisting_1
-  9955 00004C22 E8C4F8                   call prs
-  9956 00004C25 83C402                   add  sp, 2
-  9957                                  
-  9958                                  ;-915   j=CAdr[i];            printint51(j); prc(32);
-  9959                                  
-  9960                                  .calllisting565:
-  9961 00004C28 8B5E04                   mov bx, [bp+4]
-  9962 00004C2B D1E3                     shl bx, 1
-  9963 00004C2D 8B8757AB                 mov ax, [CAdr + bx]
-  9964 00004C31 8946FC                   mov [bp-4], ax
-  9965 00004C34 FF76FC                   push word [bp-4]
-  9966 00004C37 E804FA                   call printint51
-  9967 00004C3A 83C402                   add  sp, 2
-  9968 00004C3D 6A20                     push 32
-  9969 00004C3F E840F8                   call prc
-  9970 00004C42 83C402                   add  sp, 2
-  9971                                  
-  9972                                  ;-916   from_far(NameA, j);   prs(NameA);
-  9973                                  
-  9974 00004C45 FF76FC                   push word [bp-4]
-  9975 00004C48 8D06[3F00]               lea  ax, [NameA]
-  9976 00004C4C 50                       push ax
-  9977 00004C4D E8B206                   call from_far
-  9978 00004C50 83C404                   add  sp, 4
-  9979 00004C53 8D06[3F00]               lea  ax, [NameA]
-  9980 00004C57 50                       push ax
-  9981 00004C58 E88EF8                   call prs
-  9982 00004C5B 83C402                   add  sp, 2
-  9983                                  
-  9984                                  ;-917 }
-  9985                                  
+  9930                                  ;-913   prs("\n\n;    #  addr name   list of CALLs\n");
+  9931                                  
+  9932                                  ;Function : listcall, Number of local variables: 1
+  9933                                  ;   # type sign width addr used name   list of local variables
+  9934                                  ;  200 var sign word   912 NULL i = bp-2;
+  9935 00004BDA C8020000                 ENTER  2,0
+  9936 00004BDE 68[084C]                 push listcall_0
+  9937 00004BE1 E805F9                   call prs
+  9938 00004BE4 83C402                   add  sp, 2
+  9939                                  
+  9940                                  ;-914   i=0;  while (i< CTop) { calllisting(i); i++; } }
+  9941                                  
+  9942 00004BE7 B80000                   mov ax, 0
+  9943 00004BEA 8946FE                   mov [bp-2], ax
+  9944                                  .listcall564:
+  9945 00004BED 8B46FE                   mov ax, [bp-2]
+  9946 00004BF0 3B06[3D00]               cmp ax, [CTop]
+  9947 00004BF4 0F8D0E00                 jge .listcall565
+  9948 00004BF8 FF76FE                   push word [bp-2]
+  9949 00004BFB E83200                   call calllisting
+  9950 00004BFE 83C402                   add  sp, 2
+  9951 00004C01 FF46FE                   inc  word[bp-2]
+  9952 00004C04 EBE7                     jmp .listcall564
+  9953                                  .listcall565:
+  9954                                  
+  9955                                  ;-915 int calllisting(int i) {char c; int j;
+  9956 00004C06 C9                       LEAVE
+  9957 00004C07 C3                       ret
+  9958 00004C08 5C6E5C6E3B20202020-     listcall_0 db "\n\n;    #  addr name   list of CALLs\n",0
+  9959 00004C11 23202061646472206E-
+  9960 00004C1A 616D652020206C6973-
+  9961 00004C23 74206F662043414C4C-
+  9962 00004C2C 735C6E00           
+  9963                                  ; ENDP
+  9964                                  
+  9965                                  calllisting:  ; *** PROC ***
+  9966                                  
+  9967                                  ;-916   prs("\n;"); printint51(i); prc(32);
+  9968                                  
+  9969                                  ;Function : calllisting, Number of local variables: 3
+  9970                                  ;   # type sign width addr used name   list of local variables
+  9971                                  ;  200 var sign word   915 NULL i = bp+4
+  9972                                  ;  201 var sign byte   915 NULL c = bp-2
+  9973                                  ;  202 var sign word   915 NULL j = bp-4;
+  9974 00004C30 C8040000                 ENTER  4,0
+  9975 00004C34 68[A24C]                 push calllisting_0
+  9976 00004C37 E8AFF8                   call prs
+  9977 00004C3A 83C402                   add  sp, 2
+  9978 00004C3D FF7604                   push word [bp+4]
+  9979 00004C40 E83DFA                   call printint51
+  9980 00004C43 83C402                   add  sp, 2
+  9981 00004C46 6A20                     push 32
+  9982 00004C48 E837F8                   call prc
+  9983 00004C4B 83C402                   add  sp, 2
+  9984                                  
+  9985                                  ;-917   c=CType [i]; if(c==0)prs("unresolved ");
   9986                                  
-  9987                                  ;-918 int countcalls(int f) { unsigned int i;
-  9988 00004C5E C9                       LEAVE
-  9989 00004C5F C3                       ret
-  9990 00004C60 5C6E3B00                calllisting_0 db "\n;",0
-  9991 00004C64 756E7265736F6C7665-     calllisting_1 db "unresolved ",0
-  9992 00004C6D 642000             
-  9993                                  ; ENDP
-  9994                                  
-  9995                                  countcalls:  ; *** PROC ***
+  9987 00004C4E 8B5E04                   mov bx, [bp+4]
+  9988 00004C51 8A872FA1                 mov al, [CType + bx]
+  9989 00004C55 8846FE                   mov [bp-2], al
+  9990 00004C58 8A46FE                   mov al, [bp-2]
+  9991 00004C5B 3C00                     cmp al, 0
+  9992 00004C5D 0F850900                 jne .calllisting566
+  9993 00004C61 68[A64C]                 push calllisting_1
+  9994 00004C64 E882F8                   call prs
+  9995 00004C67 83C402                   add  sp, 2
   9996                                  
-  9997                                  ;-919   pt=adrF(FNameField, f);
+  9997                                  ;-918   j=CAdr[i];            printint51(j); prc(32);
   9998                                  
-  9999                                  ;Function : countcalls, Number of local variables: 2
- 10000                                  ;   # type sign width addr used name   list of local variables
- 10001                                  ;  200 var sign word   918 NULL f = bp+4
- 10002                                  ;  201 var unsg word   918 NULL i = bp-2;
- 10003 00004C70 C8020000                 ENTER  2,0
- 10004 00004C74 FF7604                   push word [bp+4]
- 10005 00004C77 8D064FBD                 lea  ax, [FNameField]
- 10006 00004C7B 50                       push ax
- 10007 00004C7C E869BC                   call adrF
- 10008 00004C7F 83C404                   add  sp, 4
- 10009 00004C82 A3[6A00]                 mov word [pt], ax
+  9999                                  .calllisting566:
+ 10000 00004C6A 8B5E04                   mov bx, [bp+4]
+ 10001 00004C6D D1E3                     shl bx, 1
+ 10002 00004C6F 8B8757AB                 mov ax, [CAdr + bx]
+ 10003 00004C73 8946FC                   mov [bp-4], ax
+ 10004 00004C76 FF76FC                   push word [bp-4]
+ 10005 00004C79 E804FA                   call printint51
+ 10006 00004C7C 83C402                   add  sp, 2
+ 10007 00004C7F 6A20                     push 32
+ 10008 00004C81 E8FEF7                   call prc
+ 10009 00004C84 83C402                   add  sp, 2
  10010                                  
- 10011                                  ;-920   i=0;  while (i < CTop) {
+ 10011                                  ;-919   from_far(NameA, j);   prs(NameA);
  10012                                  
- 10013 00004C85 B80000                   mov ax, 0
- 10014 00004C88 8946FE                   mov [bp-2], ax
- 10015                                  .countcalls566:
- 10016 00004C8B 8B46FE                   mov ax, [bp-2]
- 10017 00004C8E 3B06[3D00]               cmp ax, [CTop]
- 10018 00004C92 0F8D4A00                 jge .countcalls567
- 10019                                  
- 10020                                  ;-921     p1=CAdr[i];
- 10021                                  
- 10022 00004C96 8B5EFE                   mov bx, [bp-2]
- 10023 00004C99 D1E3                     shl bx, 1
- 10024 00004C9B 8B8757AB                 mov ax, [CAdr + bx]
- 10025 00004C9F A3[6C00]                 mov word [p1], ax
- 10026                                  
- 10027                                  ;-922     from_far(NameA, p1);
- 10028                                  
- 10029 00004CA2 FF36[6C00]               push word [p1]
- 10030 00004CA6 8D06[3F00]               lea  ax, [NameA]
- 10031 00004CAA 50                       push ax
- 10032 00004CAB E85406                   call from_far
- 10033 00004CAE 83C404                   add  sp, 4
- 10034                                  
- 10035                                  ;-923     if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
- 10036                                  
- 10037 00004CB1 8D06[3F00]               lea  ax, [NameA]
- 10038 00004CB5 50                       push ax
- 10039 00004CB6 FF36[6A00]               push word [pt]
- 10040 00004CBA E8D9B4                   call eqstr
- 10041 00004CBD 83C404                   add  sp, 4
- 10042 00004CC0 08C0                     or  al, al
- 10043 00004CC2 0F841500                 je .countcalls568
- 10044 00004CC6 8B5E04                   mov bx, [bp+4]
- 10045 00004CC9 D1E3                     shl bx, 1
- 10046 00004CCB 8B87F7BA                 mov ax, [FCalls + bx]
- 10047 00004CCF 83C001                   add ax, 1
- 10048 00004CD2 8B5E04                   mov bx, [bp+4]
- 10049 00004CD5 D1E3                     shl bx, 1
- 10050 00004CD7 8987F7BA                 mov [FCalls+bx], ax
+ 10013 00004C87 FF76FC                   push word [bp-4]
+ 10014 00004C8A 8D06[3F00]               lea  ax, [NameA]
+ 10015 00004C8E 50                       push ax
+ 10016 00004C8F E8B306                   call from_far
+ 10017 00004C92 83C404                   add  sp, 4
+ 10018 00004C95 8D06[3F00]               lea  ax, [NameA]
+ 10019 00004C99 50                       push ax
+ 10020 00004C9A E84CF8                   call prs
+ 10021 00004C9D 83C402                   add  sp, 2
+ 10022                                  
+ 10023                                  ;-920 }
+ 10024                                  
+ 10025                                  
+ 10026                                  ;-921 int countcalls(int f) { unsigned int i;
+ 10027 00004CA0 C9                       LEAVE
+ 10028 00004CA1 C3                       ret
+ 10029 00004CA2 5C6E3B00                calllisting_0 db "\n;",0
+ 10030 00004CA6 756E7265736F6C7665-     calllisting_1 db "unresolved ",0
+ 10031 00004CAF 642000             
+ 10032                                  ; ENDP
+ 10033                                  
+ 10034                                  countcalls:  ; *** PROC ***
+ 10035                                  
+ 10036                                  ;-922   pt=adrF(FNameField, f);
+ 10037                                  
+ 10038                                  ;Function : countcalls, Number of local variables: 2
+ 10039                                  ;   # type sign width addr used name   list of local variables
+ 10040                                  ;  200 var sign word   921 NULL f = bp+4
+ 10041                                  ;  201 var unsg word   921 NULL i = bp-2;
+ 10042 00004CB2 C8020000                 ENTER  2,0
+ 10043 00004CB6 FF7604                   push word [bp+4]
+ 10044 00004CB9 8D064FBD                 lea  ax, [FNameField]
+ 10045 00004CBD 50                       push ax
+ 10046 00004CBE E827BC                   call adrF
+ 10047 00004CC1 83C404                   add  sp, 4
+ 10048 00004CC4 A3[6A00]                 mov word [pt], ax
+ 10049                                  
+ 10050                                  ;-923   i=0;  while (i < CTop) {
  10051                                  
- 10052                                  ;-924     i++; }
- 10053                                  
- 10054                                  .countcalls568:
- 10055 00004CDB FF46FE                   inc  word[bp-2]
- 10056                                  
- 10057                                  ;-925 }
+ 10052 00004CC7 B80000                   mov ax, 0
+ 10053 00004CCA 8946FE                   mov [bp-2], ax
+ 10054                                  .countcalls567:
+ 10055 00004CCD 8B46FE                   mov ax, [bp-2]
+ 10056 00004CD0 3B06[3D00]               cmp ax, [CTop]
+ 10057 00004CD4 0F8D4A00                 jge .countcalls568
  10058                                  
- 10059 00004CDE EBAB                     jmp .countcalls566
- 10060                                  .countcalls567:
- 10061                                  
- 10062                                  ;-926 int listfunc() { int i;
- 10063 00004CE0 C9                       LEAVE
- 10064 00004CE1 C3                       ret
- 10065                                  ; ENDP
- 10066                                  
- 10067                                  listfunc:  ; *** PROC ***
- 10068                                  
- 10069                                  ;-927   prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
- 10070                                  
- 10071                                  ;Function : listfunc, Number of local variables: 1
- 10072                                  ;   # type sign width addr used name   list of local variables
- 10073                                  ;  200 var sign word   926 NULL i = bp-2;
- 10074 00004CE2 C8020000                 ENTER  2,0
- 10075 00004CE6 68[2F4D]                 push listfunc_0
- 10076 00004CE9 E8FDF7                   call prs
- 10077 00004CEC 83C402                   add  sp, 2
- 10078                                  
- 10079                                  ;-928   i=0;  while (i < FTop) { countcalls (i); i++; } 
- 10080                                  
- 10081 00004CEF B80000                   mov ax, 0
- 10082 00004CF2 8946FE                   mov [bp-2], ax
- 10083                                  .listfunc569:
- 10084 00004CF5 8B46FE                   mov ax, [bp-2]
- 10085 00004CF8 3B06[3B00]               cmp ax, [FTop]
- 10086 00004CFC 0F8D0E00                 jge .listfunc570
- 10087 00004D00 FF76FE                   push word [bp-2]
- 10088 00004D03 E86AFF                   call countcalls
- 10089 00004D06 83C402                   add  sp, 2
- 10090 00004D09 FF46FE                   inc  word[bp-2]
- 10091                                  
- 10092                                  ;-929   i=0;  while (i < FTop) { funclisting(i); i++; } }
- 10093                                  
- 10094 00004D0C EBE7                     jmp .listfunc569
- 10095                                  .listfunc570:
- 10096 00004D0E B80000                   mov ax, 0
- 10097 00004D11 8946FE                   mov [bp-2], ax
- 10098                                  .listfunc571:
- 10099 00004D14 8B46FE                   mov ax, [bp-2]
- 10100 00004D17 3B06[3B00]               cmp ax, [FTop]
- 10101 00004D1B 0F8D0E00                 jge .listfunc572
- 10102 00004D1F FF76FE                   push word [bp-2]
- 10103 00004D22 E84300                   call funclisting
- 10104 00004D25 83C402                   add  sp, 2
- 10105 00004D28 FF46FE                   inc  word[bp-2]
- 10106 00004D2B EBE7                     jmp .listfunc571
- 10107                                  .listfunc572:
- 10108                                  
- 10109                                  ;-930 int funclisting(int i) {int j;  char c;
- 10110 00004D2D C9                       LEAVE
- 10111 00004D2E C3                       ret
- 10112 00004D2F 5C6E5C6E5C6E3B2020-     listfunc_0 db "\n\n\n;   # Calls Line Width  Name   list of functions\n",0
- 10113 00004D38 20232043616C6C7320-
- 10114 00004D41 4C696E652057696474-
- 10115 00004D4A 6820204E616D652020-
- 10116 00004D53 206C697374206F6620-
- 10117 00004D5C 66756E6374696F6E73-
- 10118 00004D65 5C6E00             
- 10119                                  ; ENDP
- 10120                                  
- 10121                                  funclisting:  ; *** PROC ***
- 10122                                  
- 10123                                  ;-931   prs("\n;");    printint51(i);
- 10124                                  
- 10125                                  ;Function : funclisting, Number of local variables: 3
- 10126                                  ;   # type sign width addr used name   list of local variables
- 10127                                  ;  200 var sign word   930 NULL i = bp+4
- 10128                                  ;  201 var sign word   930 NULL j = bp-2
- 10129                                  ;  202 var sign byte   930 NULL c = bp-4;
- 10130 00004D68 C8040000                 ENTER  4,0
- 10131 00004D6C 68[444E]                 push funclisting_0
- 10132 00004D6F E877F7                   call prs
- 10133 00004D72 83C402                   add  sp, 2
- 10134 00004D75 FF7604                   push word [bp+4]
- 10135 00004D78 E8C3F8                   call printint51
- 10136 00004D7B 83C402                   add  sp, 2
- 10137                                  
- 10138                                  ;-932   j = FCalls[i]; if (j) printint51(j); else prs(" NULL");
- 10139                                  
- 10140 00004D7E 8B5E04                   mov bx, [bp+4]
- 10141 00004D81 D1E3                     shl bx, 1
- 10142 00004D83 8B87F7BA                 mov ax, [FCalls + bx]
- 10143 00004D87 8946FE                   mov [bp-2], ax
- 10144 00004D8A 8B46FE                   mov ax, [bp-2]
- 10145 00004D8D 08C0                     or  al, al
- 10146 00004D8F 0F840C00                 je .funclisting573
- 10147 00004D93 FF76FE                   push word [bp-2]
- 10148 00004D96 E8A5F8                   call printint51
- 10149 00004D99 83C402                   add  sp, 2
- 10150 00004D9C E90900                   jmp .funclisting574
- 10151                                  .funclisting573:
- 10152 00004D9F 68[484E]                 push funclisting_1
- 10153 00004DA2 E844F7                   call prs
- 10154 00004DA5 83C402                   add  sp, 2
- 10155                                  
- 10156                                  ;-933   j = FAdr[i];   printint51(j); prc(32);
- 10157                                  
- 10158                                  .funclisting574:
- 10159 00004DA8 8B5E04                   mov bx, [bp+4]
- 10160 00004DAB D1E3                     shl bx, 1
- 10161 00004DAD 8B87FFA8                 mov ax, [FAdr + bx]
- 10162 00004DB1 8946FE                   mov [bp-2], ax
- 10163 00004DB4 FF76FE                   push word [bp-2]
- 10164 00004DB7 E884F8                   call printint51
- 10165 00004DBA 83C402                   add  sp, 2
- 10166 00004DBD 6A20                     push 32
- 10167 00004DBF E8C0F6                   call prc
- 10168 00004DC2 83C402                   add  sp, 2
- 10169                                  
- 10170                                  ;-934   c=FType[i];
- 10171                                  
- 10172 00004DC5 8B5E04                   mov bx, [bp+4]
- 10173 00004DC8 8A8703A0                 mov al, [FType + bx]
- 10174 00004DCC 8846FC                   mov [bp-4], al
- 10175                                  
- 10176                                  ;-935   if(c=='V')prs("void " );    if(c=='B')prs("byte " );
- 10177                                  
- 10178 00004DCF 8A46FC                   mov al, [bp-4]
- 10179 00004DD2 3C56                     cmp al, 86
- 10180 00004DD4 0F850900                 jne .funclisting575
- 10181 00004DD8 68[4E4E]                 push funclisting_2
- 10182 00004DDB E80BF7                   call prs
- 10183 00004DDE 83C402                   add  sp, 2
- 10184                                  .funclisting575:
- 10185 00004DE1 8A46FC                   mov al, [bp-4]
- 10186 00004DE4 3C42                     cmp al, 66
- 10187 00004DE6 0F850900                 jne .funclisting576
- 10188 00004DEA 68[544E]                 push funclisting_3
- 10189 00004DED E8F9F6                   call prs
- 10190 00004DF0 83C402                   add  sp, 2
- 10191                                  
- 10192                                  ;-936   if(c=='W')prs("word " );    if(c=='D')prs("dwrd " );
- 10193                                  
- 10194                                  .funclisting576:
- 10195 00004DF3 8A46FC                   mov al, [bp-4]
- 10196 00004DF6 3C57                     cmp al, 87
- 10197 00004DF8 0F850900                 jne .funclisting577
- 10198 00004DFC 68[5A4E]                 push funclisting_4
- 10199 00004DFF E8E7F6                   call prs
- 10200 00004E02 83C402                   add  sp, 2
- 10201                                  .funclisting577:
- 10202 00004E05 8A46FC                   mov al, [bp-4]
- 10203 00004E08 3C44                     cmp al, 68
- 10204 00004E0A 0F850900                 jne .funclisting578
- 10205 00004E0E 68[604E]                 push funclisting_5
- 10206 00004E11 E8D5F6                   call prs
- 10207 00004E14 83C402                   add  sp, 2
+ 10059                                  ;-924     p1=CAdr[i];
+ 10060                                  
+ 10061 00004CD8 8B5EFE                   mov bx, [bp-2]
+ 10062 00004CDB D1E3                     shl bx, 1
+ 10063 00004CDD 8B8757AB                 mov ax, [CAdr + bx]
+ 10064 00004CE1 A3[6C00]                 mov word [p1], ax
+ 10065                                  
+ 10066                                  ;-925     from_far(NameA, p1);
+ 10067                                  
+ 10068 00004CE4 FF36[6C00]               push word [p1]
+ 10069 00004CE8 8D06[3F00]               lea  ax, [NameA]
+ 10070 00004CEC 50                       push ax
+ 10071 00004CED E85506                   call from_far
+ 10072 00004CF0 83C404                   add  sp, 4
+ 10073                                  
+ 10074                                  ;-926     if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
+ 10075                                  
+ 10076 00004CF3 8D06[3F00]               lea  ax, [NameA]
+ 10077 00004CF7 50                       push ax
+ 10078 00004CF8 FF36[6A00]               push word [pt]
+ 10079 00004CFC E897B4                   call eqstr
+ 10080 00004CFF 83C404                   add  sp, 4
+ 10081 00004D02 08C0                     or  al, al
+ 10082 00004D04 0F841500                 je .countcalls569
+ 10083 00004D08 8B5E04                   mov bx, [bp+4]
+ 10084 00004D0B D1E3                     shl bx, 1
+ 10085 00004D0D 8B87F7BA                 mov ax, [FCalls + bx]
+ 10086 00004D11 83C001                   add ax, 1
+ 10087 00004D14 8B5E04                   mov bx, [bp+4]
+ 10088 00004D17 D1E3                     shl bx, 1
+ 10089 00004D19 8987F7BA                 mov [FCalls+bx], ax
+ 10090                                  
+ 10091                                  ;-927     i++; }
+ 10092                                  
+ 10093                                  .countcalls569:
+ 10094 00004D1D FF46FE                   inc  word[bp-2]
+ 10095                                  
+ 10096                                  ;-928 }
+ 10097                                  
+ 10098 00004D20 EBAB                     jmp .countcalls567
+ 10099                                  .countcalls568:
+ 10100                                  
+ 10101                                  ;-929 int listfunc() { int i;
+ 10102 00004D22 C9                       LEAVE
+ 10103 00004D23 C3                       ret
+ 10104                                  ; ENDP
+ 10105                                  
+ 10106                                  listfunc:  ; *** PROC ***
+ 10107                                  
+ 10108                                  ;-930   prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
+ 10109                                  
+ 10110                                  ;Function : listfunc, Number of local variables: 1
+ 10111                                  ;   # type sign width addr used name   list of local variables
+ 10112                                  ;  200 var sign word   929 NULL i = bp-2;
+ 10113 00004D24 C8020000                 ENTER  2,0
+ 10114 00004D28 68[714D]                 push listfunc_0
+ 10115 00004D2B E8BBF7                   call prs
+ 10116 00004D2E 83C402                   add  sp, 2
+ 10117                                  
+ 10118                                  ;-931   i=0;  while (i < FTop) { countcalls (i); i++; } 
+ 10119                                  
+ 10120 00004D31 B80000                   mov ax, 0
+ 10121 00004D34 8946FE                   mov [bp-2], ax
+ 10122                                  .listfunc570:
+ 10123 00004D37 8B46FE                   mov ax, [bp-2]
+ 10124 00004D3A 3B06[3B00]               cmp ax, [FTop]
+ 10125 00004D3E 0F8D0E00                 jge .listfunc571
+ 10126 00004D42 FF76FE                   push word [bp-2]
+ 10127 00004D45 E86AFF                   call countcalls
+ 10128 00004D48 83C402                   add  sp, 2
+ 10129 00004D4B FF46FE                   inc  word[bp-2]
+ 10130                                  
+ 10131                                  ;-932   i=0;  while (i < FTop) { funclisting(i); i++; } }
+ 10132                                  
+ 10133 00004D4E EBE7                     jmp .listfunc570
+ 10134                                  .listfunc571:
+ 10135 00004D50 B80000                   mov ax, 0
+ 10136 00004D53 8946FE                   mov [bp-2], ax
+ 10137                                  .listfunc572:
+ 10138 00004D56 8B46FE                   mov ax, [bp-2]
+ 10139 00004D59 3B06[3B00]               cmp ax, [FTop]
+ 10140 00004D5D 0F8D0E00                 jge .listfunc573
+ 10141 00004D61 FF76FE                   push word [bp-2]
+ 10142 00004D64 E84300                   call funclisting
+ 10143 00004D67 83C402                   add  sp, 2
+ 10144 00004D6A FF46FE                   inc  word[bp-2]
+ 10145 00004D6D EBE7                     jmp .listfunc572
+ 10146                                  .listfunc573:
+ 10147                                  
+ 10148                                  ;-933 int funclisting(int i) {int j;  char c;
+ 10149 00004D6F C9                       LEAVE
+ 10150 00004D70 C3                       ret
+ 10151 00004D71 5C6E5C6E5C6E3B2020-     listfunc_0 db "\n\n\n;   # Calls Line Width  Name   list of functions\n",0
+ 10152 00004D7A 20232043616C6C7320-
+ 10153 00004D83 4C696E652057696474-
+ 10154 00004D8C 6820204E616D652020-
+ 10155 00004D95 206C697374206F6620-
+ 10156 00004D9E 66756E6374696F6E73-
+ 10157 00004DA7 5C6E00             
+ 10158                                  ; ENDP
+ 10159                                  
+ 10160                                  funclisting:  ; *** PROC ***
+ 10161                                  
+ 10162                                  ;-934   prs("\n;");    printint51(i);
+ 10163                                  
+ 10164                                  ;Function : funclisting, Number of local variables: 3
+ 10165                                  ;   # type sign width addr used name   list of local variables
+ 10166                                  ;  200 var sign word   933 NULL i = bp+4
+ 10167                                  ;  201 var sign word   933 NULL j = bp-2
+ 10168                                  ;  202 var sign byte   933 NULL c = bp-4;
+ 10169 00004DAA C8040000                 ENTER  4,0
+ 10170 00004DAE 68[864E]                 push funclisting_0
+ 10171 00004DB1 E835F7                   call prs
+ 10172 00004DB4 83C402                   add  sp, 2
+ 10173 00004DB7 FF7604                   push word [bp+4]
+ 10174 00004DBA E8C3F8                   call printint51
+ 10175 00004DBD 83C402                   add  sp, 2
+ 10176                                  
+ 10177                                  ;-935   j = FCalls[i]; if (j) printint51(j); else prs(" NULL");
+ 10178                                  
+ 10179 00004DC0 8B5E04                   mov bx, [bp+4]
+ 10180 00004DC3 D1E3                     shl bx, 1
+ 10181 00004DC5 8B87F7BA                 mov ax, [FCalls + bx]
+ 10182 00004DC9 8946FE                   mov [bp-2], ax
+ 10183 00004DCC 8B46FE                   mov ax, [bp-2]
+ 10184 00004DCF 08C0                     or  al, al
+ 10185 00004DD1 0F840C00                 je .funclisting574
+ 10186 00004DD5 FF76FE                   push word [bp-2]
+ 10187 00004DD8 E8A5F8                   call printint51
+ 10188 00004DDB 83C402                   add  sp, 2
+ 10189 00004DDE E90900                   jmp .funclisting575
+ 10190                                  .funclisting574:
+ 10191 00004DE1 68[8A4E]                 push funclisting_1
+ 10192 00004DE4 E802F7                   call prs
+ 10193 00004DE7 83C402                   add  sp, 2
+ 10194                                  
+ 10195                                  ;-936   j = FAdr[i];   printint51(j); prc(32);
+ 10196                                  
+ 10197                                  .funclisting575:
+ 10198 00004DEA 8B5E04                   mov bx, [bp+4]
+ 10199 00004DED D1E3                     shl bx, 1
+ 10200 00004DEF 8B87FFA8                 mov ax, [FAdr + bx]
+ 10201 00004DF3 8946FE                   mov [bp-2], ax
+ 10202 00004DF6 FF76FE                   push word [bp-2]
+ 10203 00004DF9 E884F8                   call printint51
+ 10204 00004DFC 83C402                   add  sp, 2
+ 10205 00004DFF 6A20                     push 32
+ 10206 00004E01 E87EF6                   call prc
+ 10207 00004E04 83C402                   add  sp, 2
  10208                                  
- 10209                                  ;-937   prc(32); prc(32);
+ 10209                                  ;-937   c=FType[i];
  10210                                  
- 10211                                  .funclisting578:
- 10212 00004E17 6A20                     push 32
- 10213 00004E19 E866F6                   call prc
- 10214 00004E1C 83C402                   add  sp, 2
- 10215 00004E1F 6A20                     push 32
- 10216 00004E21 E85EF6                   call prc
- 10217 00004E24 83C402                   add  sp, 2
- 10218                                  
- 10219                                  ;-938   pt=adrF(FNameField, i); prs(pt);
- 10220                                  
- 10221 00004E27 FF7604                   push word [bp+4]
- 10222 00004E2A 8D064FBD                 lea  ax, [FNameField]
- 10223 00004E2E 50                       push ax
- 10224 00004E2F E8B6BA                   call adrF
- 10225 00004E32 83C404                   add  sp, 4
- 10226 00004E35 A3[6A00]                 mov word [pt], ax
- 10227 00004E38 FF36[6A00]               push word [pt]
- 10228 00004E3C E8AAF6                   call prs
- 10229 00004E3F 83C402                   add  sp, 2
+ 10211 00004E07 8B5E04                   mov bx, [bp+4]
+ 10212 00004E0A 8A8703A0                 mov al, [FType + bx]
+ 10213 00004E0E 8846FC                   mov [bp-4], al
+ 10214                                  
+ 10215                                  ;-938   if(c=='V')prs("void " );    if(c=='B')prs("byte " );
+ 10216                                  
+ 10217 00004E11 8A46FC                   mov al, [bp-4]
+ 10218 00004E14 3C56                     cmp al, 86
+ 10219 00004E16 0F850900                 jne .funclisting576
+ 10220 00004E1A 68[904E]                 push funclisting_2
+ 10221 00004E1D E8C9F6                   call prs
+ 10222 00004E20 83C402                   add  sp, 2
+ 10223                                  .funclisting576:
+ 10224 00004E23 8A46FC                   mov al, [bp-4]
+ 10225 00004E26 3C42                     cmp al, 66
+ 10226 00004E28 0F850900                 jne .funclisting577
+ 10227 00004E2C 68[964E]                 push funclisting_3
+ 10228 00004E2F E8B7F6                   call prs
+ 10229 00004E32 83C402                   add  sp, 2
  10230                                  
- 10231                                  ;-939 }
+ 10231                                  ;-939   if(c=='W')prs("word " );    if(c=='D')prs("dwrd " );
  10232                                  
- 10233                                  
- 10234                                  ;-940 unsigned int MAXUI=65535;
- 10235 00004E42 C9                       LEAVE
- 10236 00004E43 C3                       ret
- 10237 00004E44 5C6E3B00                funclisting_0 db "\n;",0
- 10238 00004E48 204E554C4C00            funclisting_1 db " NULL",0
- 10239 00004E4E 766F69642000            funclisting_2 db "void ",0
- 10240 00004E54 627974652000            funclisting_3 db "byte ",0
- 10241 00004E5A 776F72642000            funclisting_4 db "word ",0
- 10242 00004E60 647772642000            funclisting_5 db "dwrd ",0
- 10243                                  ; ENDP
- 10244 00004E66 FFFF                    MAXUI dw -1
- 10245                                  
- 10246                                  ;-941 int epilog() {unsigned int i; 
+ 10233                                  .funclisting577:
+ 10234 00004E35 8A46FC                   mov al, [bp-4]
+ 10235 00004E38 3C57                     cmp al, 87
+ 10236 00004E3A 0F850900                 jne .funclisting578
+ 10237 00004E3E 68[9C4E]                 push funclisting_4
+ 10238 00004E41 E8A5F6                   call prs
+ 10239 00004E44 83C402                   add  sp, 2
+ 10240                                  .funclisting578:
+ 10241 00004E47 8A46FC                   mov al, [bp-4]
+ 10242 00004E4A 3C44                     cmp al, 68
+ 10243 00004E4C 0F850900                 jne .funclisting579
+ 10244 00004E50 68[A24E]                 push funclisting_5
+ 10245 00004E53 E893F6                   call prs
+ 10246 00004E56 83C402                   add  sp, 2
  10247                                  
- 10248                                  
- 10249                                  epilog:  ; *** PROC ***
- 10250                                  
- 10251                                  ;-942   strcpy(symbol, "LastFunctionByt");  storefunc();
- 10252                                  
- 10253                                  ;Function : epilog, Number of local variables: 1
- 10254                                  ;   # type sign width addr used name   list of local variables
- 10255                                  ;  200 var unsg word   941 NULL i = bp-2;
- 10256 00004E68 C8020000                 ENTER  2,0
- 10257 00004E6C 68[9950]                 push epilog_0
- 10258 00004E6F 8D062B81                 lea  ax, [symbol]
- 10259 00004E73 50                       push ax
- 10260 00004E74 E8EFB2                   call strcpy
- 10261 00004E77 83C404                   add  sp, 4
- 10262 00004E7A E846BD                   call storefunc
- 10263                                  
- 10264                                  ;-943   prs("\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret");
- 10265                                  
- 10266 00004E7D 68[A950]                 push epilog_1
- 10267 00004E80 E866F6                   call prs
- 10268 00004E83 83C402                   add  sp, 2
+ 10248                                  ;-940   prc(32); prc(32);
+ 10249                                  
+ 10250                                  .funclisting579:
+ 10251 00004E59 6A20                     push 32
+ 10252 00004E5B E824F6                   call prc
+ 10253 00004E5E 83C402                   add  sp, 2
+ 10254 00004E61 6A20                     push 32
+ 10255 00004E63 E81CF6                   call prc
+ 10256 00004E66 83C402                   add  sp, 2
+ 10257                                  
+ 10258                                  ;-941   pt=adrF(FNameField, i); prs(pt);
+ 10259                                  
+ 10260 00004E69 FF7604                   push word [bp+4]
+ 10261 00004E6C 8D064FBD                 lea  ax, [FNameField]
+ 10262 00004E70 50                       push ax
+ 10263 00004E71 E874BA                   call adrF
+ 10264 00004E74 83C404                   add  sp, 4
+ 10265 00004E77 A3[6A00]                 mov word [pt], ax
+ 10266 00004E7A FF36[6A00]               push word [pt]
+ 10267 00004E7E E868F6                   call prs
+ 10268 00004E81 83C402                   add  sp, 2
  10269                                  
- 10270                                  ;-944   prs("\n \n;   # type sign width  adr used name   list of global variables\n");
+ 10270                                  ;-942 }
  10271                                  
- 10272 00004E86 68[D650]                 push epilog_2
- 10273 00004E89 E85DF6                   call prs
- 10274 00004E8C 83C402                   add  sp, 2
- 10275                                  
- 10276                                  ;-945   i=1;
- 10277                                  
- 10278 00004E8F B80100                   mov ax, 1
- 10279 00004E92 8946FE                   mov [bp-2], ax
- 10280                                  
- 10281                                  ;-946   while (i< GTop) { listvar(i); i++; }
- 10282                                  
- 10283                                  .epilog579:
- 10284 00004E95 8B46FE                   mov ax, [bp-2]
- 10285 00004E98 3B06[2A00]               cmp ax, [GTop]
- 10286 00004E9C 0F8D0E00                 jge .epilog580
- 10287 00004EA0 FF76FE                   push word [bp-2]
- 10288 00004EA3 E8BEFA                   call listvar
- 10289 00004EA6 83C402                   add  sp, 2
- 10290 00004EA9 FF46FE                   inc  word[bp-2]
+ 10272                                  
+ 10273                                  ;-943 unsigned int MAXUI=65535;
+ 10274 00004E84 C9                       LEAVE
+ 10275 00004E85 C3                       ret
+ 10276 00004E86 5C6E3B00                funclisting_0 db "\n;",0
+ 10277 00004E8A 204E554C4C00            funclisting_1 db " NULL",0
+ 10278 00004E90 766F69642000            funclisting_2 db "void ",0
+ 10279 00004E96 627974652000            funclisting_3 db "byte ",0
+ 10280 00004E9C 776F72642000            funclisting_4 db "word ",0
+ 10281 00004EA2 647772642000            funclisting_5 db "dwrd ",0
+ 10282                                  ; ENDP
+ 10283 00004EA8 FFFF                    MAXUI dw 65535
+ 10284                                  
+ 10285                                  ;-944 int epilog() {unsigned int i; 
+ 10286                                  
+ 10287                                  
+ 10288                                  epilog:  ; *** PROC ***
+ 10289                                  
+ 10290                                  ;-945   strcpy(symbol, "LastFunctionByt");  storefunc();
  10291                                  
- 10292                                  ;-947   listfunc();   listcall();
- 10293                                  
- 10294 00004EAC EBE7                     jmp .epilog579
- 10295                                  .epilog580:
- 10296 00004EAE E831FE                   call listfunc
- 10297 00004EB1 E8E4FC                   call listcall
- 10298                                  
- 10299                                  ;-948 
- 10300                                  
- 10301                                  
- 10302                                  ;-949   prs("\n;Input: "); prs(&namein);
- 10303                                  
- 10304 00004EB4 68[1D51]                 push epilog_3
- 10305 00004EB7 E82FF6                   call prs
- 10306 00004EBA 83C402                   add  sp, 2
- 10307 00004EBD 8D06EE81                 lea  ax, [namein]
- 10308 00004EC1 50                       push ax
- 10309 00004EC2 E824F6                   call prs
- 10310 00004EC5 83C402                   add  sp, 2
- 10311                                  
- 10312                                  ;-950   prs(", List: ");   prs(&namelst);
- 10313                                  
- 10314 00004EC8 68[2851]                 push epilog_4
- 10315 00004ECB E81BF6                   call prs
- 10316 00004ECE 83C402                   add  sp, 2
- 10317 00004ED1 8D063182                 lea  ax, [namelst]
- 10318 00004ED5 50                       push ax
- 10319 00004ED6 E810F6                   call prs
- 10320 00004ED9 83C402                   add  sp, 2
+ 10292                                  ;Function : epilog, Number of local variables: 1
+ 10293                                  ;   # type sign width addr used name   list of local variables
+ 10294                                  ;  200 var unsg word   944 NULL i = bp-2;
+ 10295 00004EAA C8020000                 ENTER  2,0
+ 10296 00004EAE 68[DC50]                 push epilog_0
+ 10297 00004EB1 8D062B81                 lea  ax, [symbol]
+ 10298 00004EB5 50                       push ax
+ 10299 00004EB6 E8ADB2                   call strcpy
+ 10300 00004EB9 83C404                   add  sp, 4
+ 10301 00004EBC E804BD                   call storefunc
+ 10302                                  
+ 10303                                  ;-946   prs("\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret");
+ 10304                                  
+ 10305 00004EBF 68[EC50]                 push epilog_1
+ 10306 00004EC2 E824F6                   call prs
+ 10307 00004EC5 83C402                   add  sp, 2
+ 10308                                  
+ 10309                                  ;-947   prs("\n \n;   # type sign width  adr used name   list of global variables\n");
+ 10310                                  
+ 10311 00004EC8 68[1951]                 push epilog_2
+ 10312 00004ECB E81BF6                   call prs
+ 10313 00004ECE 83C402                   add  sp, 2
+ 10314                                  
+ 10315                                  ;-948   i=1;
+ 10316                                  
+ 10317 00004ED1 B80100                   mov ax, 1
+ 10318 00004ED4 8946FE                   mov [bp-2], ax
+ 10319                                  
+ 10320                                  ;-949   while (i< GTop) { listvar(i); i++; }
  10321                                  
- 10322                                  ;-951   prs(",  Lines:"); printint51(lineno);
- 10323                                  
- 10324 00004EDC 68[3151]                 push epilog_5
- 10325 00004EDF E807F6                   call prs
- 10326 00004EE2 83C402                   add  sp, 2
- 10327 00004EE5 FF36[6600]               push word [lineno]
- 10328 00004EE9 E852F7                   call printint51
- 10329 00004EEC 83C402                   add  sp, 2
+ 10322                                  .epilog580:
+ 10323 00004ED7 8B46FE                   mov ax, [bp-2]
+ 10324 00004EDA 3B06[2A00]               cmp ax, [GTop]
+ 10325 00004EDE 0F8D0E00                 jge .epilog581
+ 10326 00004EE2 FF76FE                   push word [bp-2]
+ 10327 00004EE5 E8BEFA                   call listvar
+ 10328 00004EE8 83C402                   add  sp, 2
+ 10329 00004EEB FF46FE                   inc  word[bp-2]
  10330                                  
- 10331                                  ;-952   prs("\n;Glob. variables:"); GTop--; printint51(GTop);
+ 10331                                  ;-950   listfunc();   listcall();
  10332                                  
- 10333 00004EEF 68[3B51]                 push epilog_6
- 10334 00004EF2 E8F4F5                   call prs
- 10335 00004EF5 83C402                   add  sp, 2
- 10336 00004EF8 FF0E[2A00]               dec  word[GTop]
- 10337 00004EFC FF36[2A00]               push word [GTop]
- 10338 00004F00 E83BF7                   call printint51
- 10339 00004F03 83C402                   add  sp, 2
+ 10333 00004EEE EBE7                     jmp .epilog580
+ 10334                                  .epilog581:
+ 10335 00004EF0 E831FE                   call listfunc
+ 10336 00004EF3 E8E4FC                   call listcall
+ 10337                                  
+ 10338                                  ;-951 
+ 10339                                  
  10340                                  
- 10341                                  ;-953   prs(" max.:"); printint51(LSTART);
+ 10341                                  ;-952   prs("\n;Input: "); prs(&namein);
  10342                                  
- 10343 00004F06 68[4F51]                 push epilog_7
- 10344 00004F09 E8DDF5                   call prs
- 10345 00004F0C 83C402                   add  sp, 2
- 10346 00004F0F 68C800                   push 200
- 10347 00004F12 E829F7                   call printint51
- 10348 00004F15 83C402                   add  sp, 2
- 10349                                  
- 10350                                  ;-954   prs("\n;Functions      :"); printint51(FTop);
- 10351                                  
- 10352 00004F18 68[5651]                 push epilog_8
- 10353 00004F1B E8CBF5                   call prs
- 10354 00004F1E 83C402                   add  sp, 2
- 10355 00004F21 FF36[3B00]               push word [FTop]
- 10356 00004F25 E816F7                   call printint51
- 10357 00004F28 83C402                   add  sp, 2
- 10358                                  
- 10359                                  ;-955   prs(" max.:"); printint51(FUNCMAX);
+ 10343 00004EF6 68[6051]                 push epilog_3
+ 10344 00004EF9 E8EDF5                   call prs
+ 10345 00004EFC 83C402                   add  sp, 2
+ 10346 00004EFF 8D06EE81                 lea  ax, [namein]
+ 10347 00004F03 50                       push ax
+ 10348 00004F04 E8E2F5                   call prs
+ 10349 00004F07 83C402                   add  sp, 2
+ 10350                                  
+ 10351                                  ;-953   prs(", List: ");   prs(&namelst);
+ 10352                                  
+ 10353 00004F0A 68[6B51]                 push epilog_4
+ 10354 00004F0D E8D9F5                   call prs
+ 10355 00004F10 83C402                   add  sp, 2
+ 10356 00004F13 8D063182                 lea  ax, [namelst]
+ 10357 00004F17 50                       push ax
+ 10358 00004F18 E8CEF5                   call prs
+ 10359 00004F1B 83C402                   add  sp, 2
  10360                                  
- 10361 00004F2B 68[6A51]                 push epilog_9
- 10362 00004F2E E8B8F5                   call prs
- 10363 00004F31 83C402                   add  sp, 2
- 10364 00004F34 682C01                   push 300
- 10365 00004F37 E804F7                   call printint51
- 10366 00004F3A 83C402                   add  sp, 2
- 10367                                  
- 10368                                  ;-956   prs("\n;Calls          :"); printint51(CTop);
+ 10361                                  ;-954   prs(",  Lines:"); printint51(lineno);
+ 10362                                  
+ 10363 00004F1E 68[7451]                 push epilog_5
+ 10364 00004F21 E8C5F5                   call prs
+ 10365 00004F24 83C402                   add  sp, 2
+ 10366 00004F27 FF36[6600]               push word [lineno]
+ 10367 00004F2B E852F7                   call printint51
+ 10368 00004F2E 83C402                   add  sp, 2
  10369                                  
- 10370 00004F3D 68[7151]                 push epilog_10
- 10371 00004F40 E8A6F5                   call prs
- 10372 00004F43 83C402                   add  sp, 2
- 10373 00004F46 FF36[3D00]               push word [CTop]
- 10374 00004F4A E8F1F6                   call printint51
- 10375 00004F4D 83C402                   add  sp, 2
- 10376                                  
- 10377                                  ;-957   prs(" max.:"); printint51(CALLMAX);
- 10378                                  
- 10379 00004F50 68[8551]                 push epilog_11
- 10380 00004F53 E893F5                   call prs
- 10381 00004F56 83C402                   add  sp, 2
- 10382 00004F59 68D007                   push 2000
- 10383 00004F5C E8DFF6                   call printint51
- 10384 00004F5F 83C402                   add  sp, 2
- 10385                                  
- 10386                                  ;-958   prs(", NameField:"); printint51(CNameTop);
- 10387                                  
- 10388 00004F62 68[8C51]                 push epilog_12
- 10389 00004F65 E881F5                   call prs
- 10390 00004F68 83C402                   add  sp, 2
- 10391 00004F6B FF36[6000]               push word [CNameTop]
- 10392 00004F6F E8CCF6                   call printint51
- 10393 00004F72 83C402                   add  sp, 2
- 10394                                  
- 10395                                  ;-959   prs(" max.:"); printint51(65535);
- 10396                                  
- 10397 00004F75 68[9951]                 push epilog_13
- 10398 00004F78 E86EF5                   call prs
- 10399 00004F7B 83C402                   add  sp, 2
- 10400 00004F7E 6AFF                     push -1
- 10401 00004F80 E8BBF6                   call printint51
- 10402 00004F83 83C402                   add  sp, 2
- 10403                                  
- 10404                                  ;-960 //  prs(", segE:"); printint51(segE);
- 10405                                  
+ 10370                                  ;-955   prs("\n;Glob. variables:"); GTop--; printint51(GTop);
+ 10371                                  
+ 10372 00004F31 68[7E51]                 push epilog_6
+ 10373 00004F34 E8B2F5                   call prs
+ 10374 00004F37 83C402                   add  sp, 2
+ 10375 00004F3A FF0E[2A00]               dec  word[GTop]
+ 10376 00004F3E FF36[2A00]               push word [GTop]
+ 10377 00004F42 E83BF7                   call printint51
+ 10378 00004F45 83C402                   add  sp, 2
+ 10379                                  
+ 10380                                  ;-956   prs(" max.:"); printint51(LSTART);
+ 10381                                  
+ 10382 00004F48 68[9251]                 push epilog_7
+ 10383 00004F4B E89BF5                   call prs
+ 10384 00004F4E 83C402                   add  sp, 2
+ 10385 00004F51 68C800                   push 200
+ 10386 00004F54 E829F7                   call printint51
+ 10387 00004F57 83C402                   add  sp, 2
+ 10388                                  
+ 10389                                  ;-957   prs("\n;Functions      :"); printint51(FTop);
+ 10390                                  
+ 10391 00004F5A 68[9951]                 push epilog_8
+ 10392 00004F5D E889F5                   call prs
+ 10393 00004F60 83C402                   add  sp, 2
+ 10394 00004F63 FF36[3B00]               push word [FTop]
+ 10395 00004F67 E816F7                   call printint51
+ 10396 00004F6A 83C402                   add  sp, 2
+ 10397                                  
+ 10398                                  ;-958   prs(" max.:"); printint51(FUNCMAX);
+ 10399                                  
+ 10400 00004F6D 68[AD51]                 push epilog_9
+ 10401 00004F70 E876F5                   call prs
+ 10402 00004F73 83C402                   add  sp, 2
+ 10403 00004F76 682C01                   push 300
+ 10404 00004F79 E804F7                   call printint51
+ 10405 00004F7C 83C402                   add  sp, 2
  10406                                  
- 10407                                  ;-961   __asm{call LastFunctionByt}  _ i=ax;
+ 10407                                  ;-959   prs("\n;Calls          :"); printint51(CTop);
  10408                                  
- 10409 00004F86 E89903                  call LastFunctionByt
- 10410 00004F89 8946FE                  mov [bp-2], ax
- 10411                                  
- 10412                                  ;-962   prs("\n;Code until     :"); printint51(i);
- 10413                                  
- 10414 00004F8C 68[A051]                 push epilog_14
- 10415 00004F8F E857F5                   call prs
- 10416 00004F92 83C402                   add  sp, 2
- 10417 00004F95 FF76FE                   push word [bp-2]
- 10418 00004F98 E8A3F6                   call printint51
- 10419 00004F9B 83C402                   add  sp, 2
- 10420                                  
- 10421                                  ;-963   prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
- 10422                                  
- 10423 00004F9E 68[B451]                 push epilog_15
- 10424 00004FA1 E845F5                   call prs
- 10425 00004FA4 83C402                   add  sp, 2
- 10426 00004FA7 FF36[0E00]               push word [ORGDATAORIG]
- 10427 00004FAB E890F6                   call printint51
- 10428 00004FAE 83C402                   add  sp, 2
- 10429 00004FB1 A1[0E00]                 mov ax, [ORGDATAORIG]
- 10430 00004FB4 2B46FE                   sub ax, [bp-2]
- 10431 00004FB7 8946FE                   mov [bp-2], ax
- 10432 00004FBA 68[BC51]                 push epilog_16
- 10433 00004FBD E829F5                   call prs
- 10434 00004FC0 83C402                   add  sp, 2
+ 10409 00004F7F 68[B451]                 push epilog_10
+ 10410 00004F82 E864F5                   call prs
+ 10411 00004F85 83C402                   add  sp, 2
+ 10412 00004F88 FF36[3D00]               push word [CTop]
+ 10413 00004F8C E8F1F6                   call printint51
+ 10414 00004F8F 83C402                   add  sp, 2
+ 10415                                  
+ 10416                                  ;-960   prs(" max.:"); printint51(CALLMAX);
+ 10417                                  
+ 10418 00004F92 68[C851]                 push epilog_11
+ 10419 00004F95 E851F5                   call prs
+ 10420 00004F98 83C402                   add  sp, 2
+ 10421 00004F9B 68D007                   push 2000
+ 10422 00004F9E E8DFF6                   call printint51
+ 10423 00004FA1 83C402                   add  sp, 2
+ 10424                                  
+ 10425                                  ;-961   prs(", NameField:"); printint51(CNameTop);
+ 10426                                  
+ 10427 00004FA4 68[CF51]                 push epilog_12
+ 10428 00004FA7 E83FF5                   call prs
+ 10429 00004FAA 83C402                   add  sp, 2
+ 10430 00004FAD FF36[6000]               push word [CNameTop]
+ 10431 00004FB1 E8CCF6                   call printint51
+ 10432 00004FB4 83C402                   add  sp, 2
+ 10433                                  
+ 10434                                  ;-962   prs(" max.:"); printint51(65535);
  10435                                  
- 10436                                  ;-964   printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
- 10437                                  
- 10438 00004FC3 FF76FE                   push word [bp-2]
- 10439 00004FC6 E875F6                   call printint51
- 10440 00004FC9 83C402                   add  sp, 2
- 10441 00004FCC 8B46FE                   mov ax, [bp-2]
- 10442 00004FCF 3DE803                   cmp ax, 1000
- 10443 00004FD2 0F870900                 ja  .epilog581
- 10444 00004FD6 68[C451]                 push epilog_17
- 10445 00004FD9 E80DF5                   call prs
- 10446 00004FDC 83C402                   add  sp, 2
+ 10436 00004FB7 68[DC51]                 push epilog_13
+ 10437 00004FBA E82CF5                   call prs
+ 10438 00004FBD 83C402                   add  sp, 2
+ 10439 00004FC0 68FFFF                   push 65535
+ 10440 00004FC3 E8BAF6                   call printint51
+ 10441 00004FC6 83C402                   add  sp, 2
+ 10442                                  
+ 10443                                  ;-963 //  prs(", segE:"); printint51(segE);
+ 10444                                  
+ 10445                                  
+ 10446                                  ;-964   __asm{call LastFunctionByt}  _ i=ax;
  10447                                  
- 10448                                  ;-965   prs("\n;Data (HeapEnd) :"); pint1(orgData); i=MAXUI-orgData;
- 10449                                  
- 10450                                  .epilog581:
- 10451 00004FDF 68[E951]                 push epilog_18
- 10452 00004FE2 E804F5                   call prs
- 10453 00004FE5 83C402                   add  sp, 2
- 10454 00004FE8 FF36[1000]               push word [orgData]
- 10455 00004FEC E8F1F5                   call pint1
- 10456 00004FEF 83C402                   add  sp, 2
- 10457 00004FF2 A1[664E]                 mov ax, [MAXUI]
- 10458 00004FF5 2B06[1000]               sub ax, [orgData]
- 10459 00004FF9 8946FE                   mov [bp-2], ax
- 10460                                  
- 10461                                  ;-966   prs(", resting stacksize: ");printint51(i);
- 10462                                  
- 10463 00004FFC 68[FD51]                 push epilog_19
- 10464 00004FFF E8E7F4                   call prs
- 10465 00005002 83C402                   add  sp, 2
- 10466 00005005 FF76FE                   push word [bp-2]
- 10467 00005008 E833F6                   call printint51
- 10468 0000500B 83C402                   add  sp, 2
- 10469                                  
- 10470                                  ;-967   if (i <= 5000) prs(" *** Warning *** Stack too small");
- 10471                                  
- 10472 0000500E 8B46FE                   mov ax, [bp-2]
- 10473 00005011 3D8813                   cmp ax, 5000
- 10474 00005014 0F870900                 ja  .epilog582
- 10475 00005018 68[1352]                 push epilog_20
- 10476 0000501B E8CBF4                   call prs
- 10477 0000501E 83C402                   add  sp, 2
- 10478                                  
- 10479                                  ;-968   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
- 10480                                  
- 10481                                  .epilog582:
- 10482 00005021 68[3452]                 push epilog_21
- 10483 00005024 E8C2F4                   call prs
- 10484 00005027 83C402                   add  sp, 2
- 10485 0000502A 8D06E880                 lea  ax, [coname]
- 10486 0000502E 50                       push ax
- 10487 0000502F E8B7F4                   call prs
- 10488 00005032 83C402                   add  sp, 2
- 10489 00005035 68[4752]                 push epilog_22
- 10490 00005038 E8AEF4                   call prs
- 10491 0000503B 83C402                   add  sp, 2
- 10492 0000503E FF36[1200]               push word [maxco]
- 10493 00005042 E8F9F5                   call printint51
- 10494 00005045 83C402                   add  sp, 2
- 10495                                  
- 10496                                  ;-969   prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
- 10497                                  
- 10498 00005048 68[4B52]                 push epilog_23
- 10499 0000504B E89BF4                   call prs
- 10500 0000504E 83C402                   add  sp, 2
- 10501 00005051 68B80B                   push 3000
- 10502 00005054 E8E7F5                   call printint51
- 10503 00005057 83C402                   add  sp, 2
- 10504 0000505A B8B80B                   mov ax, 3000
- 10505 0000505D 8946FE                   mov [bp-2], ax
- 10506 00005060 8B46FE                   mov ax, [bp-2]
- 10507 00005063 2B06[1200]               sub ax, [maxco]
- 10508 00005067 8946FE                   mov [bp-2], ax
- 10509 0000506A 68[5152]                 push epilog_24
- 10510 0000506D E879F4                   call prs
- 10511 00005070 83C402                   add  sp, 2
- 10512                                  
- 10513                                  ;-970   printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
- 10514                                  
- 10515 00005073 FF76FE                   push word [bp-2]
- 10516 00005076 E8C5F5                   call printint51
- 10517 00005079 83C402                   add  sp, 2
- 10518 0000507C 8B46FE                   mov ax, [bp-2]
- 10519 0000507F 3DE803                   cmp ax, 1000
- 10520 00005082 0F870900                 ja  .epilog583
- 10521 00005086 68[5952]                 push epilog_25
- 10522 00005089 E85DF4                   call prs
- 10523 0000508C 83C402                   add  sp, 2
- 10524                                  
- 10525                                  ;-971   end1(0);}
- 10526                                  
- 10527                                  .epilog583:
- 10528 0000508F 6A00                     push 0
- 10529 00005091 E8D6F6                   call end1
- 10530 00005094 83C402                   add  sp, 2
- 10531                                  
- 10532                                  ;-972 // while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
- 10533                                  
+ 10448 00004FC9 E89903                  call LastFunctionByt
+ 10449 00004FCC 8946FE                  mov [bp-2], ax
+ 10450                                  
+ 10451                                  ;-965   prs("\n;Code until     :"); printint51(i);
+ 10452                                  
+ 10453 00004FCF 68[E351]                 push epilog_14
+ 10454 00004FD2 E814F5                   call prs
+ 10455 00004FD5 83C402                   add  sp, 2
+ 10456 00004FD8 FF76FE                   push word [bp-2]
+ 10457 00004FDB E8A2F6                   call printint51
+ 10458 00004FDE 83C402                   add  sp, 2
+ 10459                                  
+ 10460                                  ;-966   prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
+ 10461                                  
+ 10462 00004FE1 68[F751]                 push epilog_15
+ 10463 00004FE4 E802F5                   call prs
+ 10464 00004FE7 83C402                   add  sp, 2
+ 10465 00004FEA FF36[0E00]               push word [ORGDATAORIG]
+ 10466 00004FEE E88FF6                   call printint51
+ 10467 00004FF1 83C402                   add  sp, 2
+ 10468 00004FF4 A1[0E00]                 mov ax, [ORGDATAORIG]
+ 10469 00004FF7 2B46FE                   sub ax, [bp-2]
+ 10470 00004FFA 8946FE                   mov [bp-2], ax
+ 10471 00004FFD 68[FF51]                 push epilog_16
+ 10472 00005000 E8E6F4                   call prs
+ 10473 00005003 83C402                   add  sp, 2
+ 10474                                  
+ 10475                                  ;-967   printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
+ 10476                                  
+ 10477 00005006 FF76FE                   push word [bp-2]
+ 10478 00005009 E874F6                   call printint51
+ 10479 0000500C 83C402                   add  sp, 2
+ 10480 0000500F 8B46FE                   mov ax, [bp-2]
+ 10481 00005012 3DE803                   cmp ax, 1000
+ 10482 00005015 0F870900                 ja  .epilog582
+ 10483 00005019 68[0752]                 push epilog_17
+ 10484 0000501C E8CAF4                   call prs
+ 10485 0000501F 83C402                   add  sp, 2
+ 10486                                  
+ 10487                                  ;-968   prs("\n;Data (HeapEnd) :"); prunsign1(orgData); i=MAXUI-orgData;
+ 10488                                  
+ 10489                                  .epilog582:
+ 10490 00005022 68[2C52]                 push epilog_18
+ 10491 00005025 E8C1F4                   call prs
+ 10492 00005028 83C402                   add  sp, 2
+ 10493 0000502B FF36[1000]               push word [orgData]
+ 10494 0000502F E80CF6                   call prunsign1
+ 10495 00005032 83C402                   add  sp, 2
+ 10496 00005035 A1[A84E]                 mov ax, [MAXUI]
+ 10497 00005038 2B06[1000]               sub ax, [orgData]
+ 10498 0000503C 8946FE                   mov [bp-2], ax
+ 10499                                  
+ 10500                                  ;-969   prs(", resting stacksize: ");printint51(i);
+ 10501                                  
+ 10502 0000503F 68[4052]                 push epilog_19
+ 10503 00005042 E8A4F4                   call prs
+ 10504 00005045 83C402                   add  sp, 2
+ 10505 00005048 FF76FE                   push word [bp-2]
+ 10506 0000504B E832F6                   call printint51
+ 10507 0000504E 83C402                   add  sp, 2
+ 10508                                  
+ 10509                                  ;-970   if (i <= 5000) prs(" *** Warning *** Stack too small");
+ 10510                                  
+ 10511 00005051 8B46FE                   mov ax, [bp-2]
+ 10512 00005054 3D8813                   cmp ax, 5000
+ 10513 00005057 0F870900                 ja  .epilog583
+ 10514 0000505B 68[5652]                 push epilog_20
+ 10515 0000505E E888F4                   call prs
+ 10516 00005061 83C402                   add  sp, 2
+ 10517                                  
+ 10518                                  ;-971   prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
+ 10519                                  
+ 10520                                  .epilog583:
+ 10521 00005064 68[7752]                 push epilog_21
+ 10522 00005067 E87FF4                   call prs
+ 10523 0000506A 83C402                   add  sp, 2
+ 10524 0000506D 8D06E880                 lea  ax, [coname]
+ 10525 00005071 50                       push ax
+ 10526 00005072 E874F4                   call prs
+ 10527 00005075 83C402                   add  sp, 2
+ 10528 00005078 68[8A52]                 push epilog_22
+ 10529 0000507B E86BF4                   call prs
+ 10530 0000507E 83C402                   add  sp, 2
+ 10531 00005081 FF36[1200]               push word [maxco]
+ 10532 00005085 E8F8F5                   call printint51
+ 10533 00005088 83C402                   add  sp, 2
  10534                                  
- 10535                                  ;-973 int setblock(unsigned int i) {
- 10536 00005097 C9                       LEAVE
- 10537 00005098 C3                       ret
- 10538 00005099 4C61737446756E6374-     epilog_0 db "LastFunctionByt",0
- 10539 000050A2 696F6E42797400     
- 10540 000050A9 5C6E4C61737446756E-     epilog_1 db "\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret",0
- 10541 000050B2 6374696F6E4279743A-
- 10542 000050BB 646220304538682C20-
- 10543 000050C4 302C20305C6E706F70-
- 10544 000050CD 2061785C6E72657400 
- 10545 000050D6 5C6E205C6E3B202020-     epilog_2 db "\n \n;   # type sign width  adr used name   list of global variables\n",0
- 10546 000050DF 232074797065207369-
- 10547 000050E8 676E20776964746820-
- 10548 000050F1 206164722075736564-
- 10549 000050FA 206E616D652020206C-
- 10550 00005103 697374206F6620676C-
- 10551 0000510C 6F62616C2076617269-
- 10552 00005115 61626C65735C6E00   
- 10553 0000511D 5C6E3B496E7075743A-     epilog_3 db "\n;Input: ",0
- 10554 00005126 2000               
- 10555 00005128 2C204C6973743A2000      epilog_4 db ", List: ",0
- 10556 00005131 2C20204C696E65733A-     epilog_5 db ",  Lines:",0
- 10557 0000513A 00                 
- 10558 0000513B 5C6E3B476C6F622E20-     epilog_6 db "\n;Glob. variables:",0
- 10559 00005144 7661726961626C6573-
- 10560 0000514D 3A00               
- 10561 0000514F 206D61782E3A00          epilog_7 db " max.:",0
- 10562 00005156 5C6E3B46756E637469-     epilog_8 db "\n;Functions      :",0
- 10563 0000515F 6F6E73202020202020-
- 10564 00005168 3A00               
- 10565 0000516A 206D61782E3A00          epilog_9 db " max.:",0
- 10566 00005171 5C6E3B43616C6C7320-     epilog_10 db "\n;Calls          :",0
- 10567 0000517A 202020202020202020-
- 10568 00005183 3A00               
- 10569 00005185 206D61782E3A00          epilog_11 db " max.:",0
- 10570 0000518C 2C204E616D65466965-     epilog_12 db ", NameField:",0
- 10571 00005195 6C643A00           
- 10572 00005199 206D61782E3A00          epilog_13 db " max.:",0
- 10573 000051A0 5C6E3B436F64652075-     epilog_14 db "\n;Code until     :",0
- 10574 000051A9 6E74696C2020202020-
- 10575 000051B2 3A00               
- 10576 000051B4 206D61782E3A2000        epilog_15 db " max.: ",0
- 10577 000051BC 2C20667265653A00        epilog_16 db ", free:",0
- 10578 000051C4 202A2A2A205761726E-     epilog_17 db " *** Warning *** Code area too small",0
- 10579 000051CD 696E67202A2A2A2043-
- 10580 000051D6 6F6465206172656120-
- 10581 000051DF 746F6F20736D616C6C-
- 10582 000051E8 00                 
- 10583 000051E9 5C6E3B446174612028-     epilog_18 db "\n;Data (HeapEnd) :",0
- 10584 000051F2 48656170456E642920-
- 10585 000051FB 3A00               
- 10586 000051FD 2C2072657374696E67-     epilog_19 db ", resting stacksize: ",0
- 10587 00005206 20737461636B73697A-
- 10588 0000520F 653A2000           
- 10589 00005213 202A2A2A205761726E-     epilog_20 db " *** Warning *** Stack too small",0
- 10590 0000521C 696E67202A2A2A2053-
- 10591 00005225 7461636B20746F6F20-
- 10592 0000522E 736D616C6C00       
- 10593 00005234 5C6E3B4D61782E2043-     epilog_21 db "\n;Max. Const in '",0
- 10594 0000523D 6F6E737420696E2027-
- 10595 00005246 00                 
- 10596 00005247 27203A00                epilog_22 db "' :",0
- 10597 0000524B 206D61782E00            epilog_23 db " max.",0
- 10598 00005251 2C20667265653A00        epilog_24 db ", free:",0
- 10599 00005259 202A2A2A205761726E-     epilog_25 db " *** Warning *** constant area too small",0
- 10600 00005262 696E67202A2A2A2063-
- 10601 0000526B 6F6E7374616E742061-
- 10602 00005274 72656120746F6F2073-
- 10603 0000527D 6D616C6C00         
- 10604                                  ; ENDP
- 10605                                  
- 10606                                  setblock:  ; *** PROC ***
- 10607                                  
- 10608                                  ;-974   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
- 10609                                  
- 10610                                  ;Function : setblock, Number of local variables: 1
- 10611                                  ;   # type sign width addr used name   list of local variables
- 10612                                  ;  200 var unsg word   973 NULL i = bp+4;
- 10613 00005282 C8000000                 ENTER  0,0
- 10614 00005286 B80000                   mov ax, 0
- 10615 00005289 A3[6E00]                 mov word [DOS_ERR], ax
- 10616 0000528C 8B5E04                   mov  bx, [bp+4]
- 10617 0000528F 8CC8                     mov  ax, cs
- 10618 00005291 8EC0                     mov  es, ax
- 10619 00005293 B8004A                   mov  ax, 18944
- 10620 00005296 E834AE                   call DosInt
- 10621                                  
- 10622                                  ;-975 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
- 10623 00005299 C9                       LEAVE
- 10624 0000529A C3                       ret
- 10625                                  ; ENDP
- 10626                                  
- 10627                                  allocmem:  ; *** PROC ***
- 10628                                  
- 10629                                  ;-976   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
- 10630                                  
- 10631                                  ;Function : allocmem, Number of local variables: 3
- 10632                                  ;   # type sign width addr used name   list of local variables
- 10633                                  ;  200 var unsg word   975 NULL i = bp+4
- 10634                                  ;  201 var unsg word   975 NULL vAX = bp-2
- 10635                                  ;  202 var unsg word   975 NULL vBX = bp-4;
- 10636 0000529B C8040000                 ENTER  4,0
- 10637 0000529F B80000                   mov ax, 0
- 10638 000052A2 A3[6E00]                 mov word [DOS_ERR], ax
- 10639 000052A5 8B5E04                   mov  bx, [bp+4]
- 10640 000052A8 B80048                   mov  ax, 18432
- 10641 000052AB E81FAE                   call DosInt
- 10642 000052AE 8946FE                  mov [bp-2], ax
- 10643 000052B1 895EFC                  mov [bp-4], bx
+ 10535                                  ;-972   prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
+ 10536                                  
+ 10537 0000508B 68[8E52]                 push epilog_23
+ 10538 0000508E E858F4                   call prs
+ 10539 00005091 83C402                   add  sp, 2
+ 10540 00005094 68B80B                   push 3000
+ 10541 00005097 E8E6F5                   call printint51
+ 10542 0000509A 83C402                   add  sp, 2
+ 10543 0000509D B8B80B                   mov ax, 3000
+ 10544 000050A0 8946FE                   mov [bp-2], ax
+ 10545 000050A3 8B46FE                   mov ax, [bp-2]
+ 10546 000050A6 2B06[1200]               sub ax, [maxco]
+ 10547 000050AA 8946FE                   mov [bp-2], ax
+ 10548 000050AD 68[9452]                 push epilog_24
+ 10549 000050B0 E836F4                   call prs
+ 10550 000050B3 83C402                   add  sp, 2
+ 10551                                  
+ 10552                                  ;-973   printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
+ 10553                                  
+ 10554 000050B6 FF76FE                   push word [bp-2]
+ 10555 000050B9 E8C4F5                   call printint51
+ 10556 000050BC 83C402                   add  sp, 2
+ 10557 000050BF 8B46FE                   mov ax, [bp-2]
+ 10558 000050C2 3DE803                   cmp ax, 1000
+ 10559 000050C5 0F870900                 ja  .epilog584
+ 10560 000050C9 68[9C52]                 push epilog_25
+ 10561 000050CC E81AF4                   call prs
+ 10562 000050CF 83C402                   add  sp, 2
+ 10563                                  
+ 10564                                  ;-974   end1(0);}
+ 10565                                  
+ 10566                                  .epilog584:
+ 10567 000050D2 6A00                     push 0
+ 10568 000050D4 E8D5F6                   call end1
+ 10569 000050D7 83C402                   add  sp, 2
+ 10570                                  
+ 10571                                  ;-975 // while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
+ 10572                                  
+ 10573                                  
+ 10574                                  ;-976 int setblock(unsigned int i) {
+ 10575 000050DA C9                       LEAVE
+ 10576 000050DB C3                       ret
+ 10577 000050DC 4C61737446756E6374-     epilog_0 db "LastFunctionByt",0
+ 10578 000050E5 696F6E42797400     
+ 10579 000050EC 5C6E4C61737446756E-     epilog_1 db "\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret",0
+ 10580 000050F5 6374696F6E4279743A-
+ 10581 000050FE 646220304538682C20-
+ 10582 00005107 302C20305C6E706F70-
+ 10583 00005110 2061785C6E72657400 
+ 10584 00005119 5C6E205C6E3B202020-     epilog_2 db "\n \n;   # type sign width  adr used name   list of global variables\n",0
+ 10585 00005122 232074797065207369-
+ 10586 0000512B 676E20776964746820-
+ 10587 00005134 206164722075736564-
+ 10588 0000513D 206E616D652020206C-
+ 10589 00005146 697374206F6620676C-
+ 10590 0000514F 6F62616C2076617269-
+ 10591 00005158 61626C65735C6E00   
+ 10592 00005160 5C6E3B496E7075743A-     epilog_3 db "\n;Input: ",0
+ 10593 00005169 2000               
+ 10594 0000516B 2C204C6973743A2000      epilog_4 db ", List: ",0
+ 10595 00005174 2C20204C696E65733A-     epilog_5 db ",  Lines:",0
+ 10596 0000517D 00                 
+ 10597 0000517E 5C6E3B476C6F622E20-     epilog_6 db "\n;Glob. variables:",0
+ 10598 00005187 7661726961626C6573-
+ 10599 00005190 3A00               
+ 10600 00005192 206D61782E3A00          epilog_7 db " max.:",0
+ 10601 00005199 5C6E3B46756E637469-     epilog_8 db "\n;Functions      :",0
+ 10602 000051A2 6F6E73202020202020-
+ 10603 000051AB 3A00               
+ 10604 000051AD 206D61782E3A00          epilog_9 db " max.:",0
+ 10605 000051B4 5C6E3B43616C6C7320-     epilog_10 db "\n;Calls          :",0
+ 10606 000051BD 202020202020202020-
+ 10607 000051C6 3A00               
+ 10608 000051C8 206D61782E3A00          epilog_11 db " max.:",0
+ 10609 000051CF 2C204E616D65466965-     epilog_12 db ", NameField:",0
+ 10610 000051D8 6C643A00           
+ 10611 000051DC 206D61782E3A00          epilog_13 db " max.:",0
+ 10612 000051E3 5C6E3B436F64652075-     epilog_14 db "\n;Code until     :",0
+ 10613 000051EC 6E74696C2020202020-
+ 10614 000051F5 3A00               
+ 10615 000051F7 206D61782E3A2000        epilog_15 db " max.: ",0
+ 10616 000051FF 2C20667265653A00        epilog_16 db ", free:",0
+ 10617 00005207 202A2A2A205761726E-     epilog_17 db " *** Warning *** Code area too small",0
+ 10618 00005210 696E67202A2A2A2043-
+ 10619 00005219 6F6465206172656120-
+ 10620 00005222 746F6F20736D616C6C-
+ 10621 0000522B 00                 
+ 10622 0000522C 5C6E3B446174612028-     epilog_18 db "\n;Data (HeapEnd) :",0
+ 10623 00005235 48656170456E642920-
+ 10624 0000523E 3A00               
+ 10625 00005240 2C2072657374696E67-     epilog_19 db ", resting stacksize: ",0
+ 10626 00005249 20737461636B73697A-
+ 10627 00005252 653A2000           
+ 10628 00005256 202A2A2A205761726E-     epilog_20 db " *** Warning *** Stack too small",0
+ 10629 0000525F 696E67202A2A2A2053-
+ 10630 00005268 7461636B20746F6F20-
+ 10631 00005271 736D616C6C00       
+ 10632 00005277 5C6E3B4D61782E2043-     epilog_21 db "\n;Max. Const in '",0
+ 10633 00005280 6F6E737420696E2027-
+ 10634 00005289 00                 
+ 10635 0000528A 27203A00                epilog_22 db "' :",0
+ 10636 0000528E 206D61782E00            epilog_23 db " max.",0
+ 10637 00005294 2C20667265653A00        epilog_24 db ", free:",0
+ 10638 0000529C 202A2A2A205761726E-     epilog_25 db " *** Warning *** constant area too small",0
+ 10639 000052A5 696E67202A2A2A2063-
+ 10640 000052AE 6F6E7374616E742061-
+ 10641 000052B7 72656120746F6F2073-
+ 10642 000052C0 6D616C6C00         
+ 10643                                  ; ENDP
  10644                                  
- 10645                                  ;-977   if(DOS_ERR) return vBX;   return vAX;
+ 10645                                  setblock:  ; *** PROC ***
  10646                                  
- 10647 000052B4 A1[6E00]                 mov ax, [DOS_ERR]
- 10648 000052B7 08C0                     or  al, al
- 10649 000052B9 0F840600                 je .allocmem584
- 10650 000052BD 8B46FC                   mov ax, [bp-4]
- 10651 000052C0 E90600                   jmp .retnallocmem
- 10652                                  .allocmem584:
- 10653 000052C3 8B46FE                   mov ax, [bp-2]
- 10654 000052C6 E90000                   jmp .retnallocmem
- 10655                                  
- 10656                                  ;-978 }
- 10657                                  
- 10658                                  
- 10659                                  ;-979 int copyF(char *dest, char *src, unsigned int sz) {
+ 10647                                  ;-977   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
+ 10648                                  
+ 10649                                  ;Function : setblock, Number of local variables: 1
+ 10650                                  ;   # type sign width addr used name   list of local variables
+ 10651                                  ;  200 var unsg word   976 NULL i = bp+4;
+ 10652 000052C5 C8000000                 ENTER  0,0
+ 10653 000052C9 B80000                   mov ax, 0
+ 10654 000052CC A3[6E00]                 mov word [DOS_ERR], ax
+ 10655 000052CF 8B5E04                   mov  bx, [bp+4]
+ 10656 000052D2 8CC8                     mov  ax, cs
+ 10657 000052D4 8EC0                     mov  es, ax
+ 10658 000052D6 B8004A                   mov  ax, 18944
+ 10659 000052D9 E8F1AD                   call DosInt
  10660                                  
- 10661 000052C9 C9                       .retnallocmem: LEAVE
- 10662 000052CA C3                       ret
- 10663                                  ; ENDP
- 10664                                  
- 10665                                  copyF:  ; *** PROC ***
- 10666                                  
- 10667                                  ;-980   segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
- 10668                                  
- 10669                                  ;Function : copyF, Number of local variables: 3
- 10670                                  ;   # type sign width addr used name   list of local variables
- 10671                                  ;  200 ptr sign byte   979 NULL dest = bp+4
- 10672                                  ;  201 ptr sign byte   979 NULL src = bp+6
- 10673                                  ;  202 var unsg word   979 NULL sz = bp+8;
- 10674 000052CB C8000000                 ENTER  0,0
- 10675 000052CF A1[6400]                 mov ax, [segE]
- 10676 000052D2 8EC0                     mov  es, ax
- 10677 000052D4 8B7606                   mov  si, [bp+6]
- 10678 000052D7 8B7E04                   mov  di, [bp+4]
- 10679 000052DA 8B4E08                   mov  cx, [bp+8]
- 10680                                  
- 10681                                  ;-981   asm cld
- 10682                                  
- 10683 000052DD FC                       cld
- 10684                                  
- 10685                                  ;-982   asm rep movsb
- 10686                                  
- 10687 000052DE F3A4                     rep movsb
- 10688                                  
- 10689                                  ;-983   asm mov byte [es:di], 0
- 10690                                  
- 10691 000052E0 26C60500                 mov byte [es:di], 0
- 10692                                  
- 10693                                  ;-984 }
+ 10661                                  ;-978 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
+ 10662 000052DC C9                       LEAVE
+ 10663 000052DD C3                       ret
+ 10664                                  ; ENDP
+ 10665                                  
+ 10666                                  allocmem:  ; *** PROC ***
+ 10667                                  
+ 10668                                  ;-979   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
+ 10669                                  
+ 10670                                  ;Function : allocmem, Number of local variables: 3
+ 10671                                  ;   # type sign width addr used name   list of local variables
+ 10672                                  ;  200 var unsg word   978 NULL i = bp+4
+ 10673                                  ;  201 var unsg word   978 NULL vAX = bp-2
+ 10674                                  ;  202 var unsg word   978 NULL vBX = bp-4;
+ 10675 000052DE C8040000                 ENTER  4,0
+ 10676 000052E2 B80000                   mov ax, 0
+ 10677 000052E5 A3[6E00]                 mov word [DOS_ERR], ax
+ 10678 000052E8 8B5E04                   mov  bx, [bp+4]
+ 10679 000052EB B80048                   mov  ax, 18432
+ 10680 000052EE E8DCAD                   call DosInt
+ 10681 000052F1 8946FE                  mov [bp-2], ax
+ 10682 000052F4 895EFC                  mov [bp-4], bx
+ 10683                                  
+ 10684                                  ;-980   if(DOS_ERR) return vBX;   return vAX;
+ 10685                                  
+ 10686 000052F7 A1[6E00]                 mov ax, [DOS_ERR]
+ 10687 000052FA 08C0                     or  al, al
+ 10688 000052FC 0F840600                 je .allocmem585
+ 10689 00005300 8B46FC                   mov ax, [bp-4]
+ 10690 00005303 E90600                   jmp .retnallocmem
+ 10691                                  .allocmem585:
+ 10692 00005306 8B46FE                   mov ax, [bp-2]
+ 10693 00005309 E90000                   jmp .retnallocmem
  10694                                  
- 10695                                  
- 10696                                  ;-985 int to_far(char *dest, char *src) {
- 10697 000052E4 C9                       LEAVE
- 10698 000052E5 C3                       ret
- 10699                                  ; ENDP
- 10700                                  
- 10701                                  to_far:  ; *** PROC ***
- 10702                                  
- 10703                                  ;-986   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
- 10704                                  
- 10705                                  ;Function : to_far, Number of local variables: 2
- 10706                                  ;   # type sign width addr used name   list of local variables
- 10707                                  ;  200 ptr sign byte   985 NULL dest = bp+4
- 10708                                  ;  201 ptr sign byte   985 NULL src = bp+6;
- 10709 000052E6 C8000000                 ENTER  0,0
- 10710 000052EA A1[6400]                 mov ax, [segE]
- 10711 000052ED 8EC0                     mov  es, ax
- 10712 000052EF 8B7606                   mov  si, [bp+6]
- 10713 000052F2 8B7E04                   mov  di, [bp+4]
- 10714                                  
- 10715                                  ;-987   asm cld
- 10716                                  
- 10717 000052F5 FC                       cld
- 10718                                  
- 10719                                  ;-988   do{
- 10720                                  
- 10721                                  .to_far585:
- 10722                                  
- 10723                                  ;-989   asm lodsb  ; inc si
- 10724                                  
- 10725 000052F6 AC                       lodsb  ; inc si
- 10726                                  
- 10727                                  ;-990   asm stosb  ; inc di
- 10728                                  
- 10729 000052F7 AA                       stosb  ; inc di
- 10730                                  
- 10731                                  ;-991   } while (al != 0);
- 10732                                  
- 10733 000052F8 3C00                     cmp  al, 0
- 10734 000052FA 0F840200                 je  .to_far586
- 10735 000052FE EBF6                     jmp .to_far585
- 10736                                  .to_far586:
- 10737                                  
- 10738                                  ;-992 }
+ 10695                                  ;-981 }
+ 10696                                  
+ 10697                                  
+ 10698                                  ;-982 int copyF(char *dest, char *src, unsigned int sz) {
+ 10699                                  
+ 10700 0000530C C9                       .retnallocmem: LEAVE
+ 10701 0000530D C3                       ret
+ 10702                                  ; ENDP
+ 10703                                  
+ 10704                                  copyF:  ; *** PROC ***
+ 10705                                  
+ 10706                                  ;-983   segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
+ 10707                                  
+ 10708                                  ;Function : copyF, Number of local variables: 3
+ 10709                                  ;   # type sign width addr used name   list of local variables
+ 10710                                  ;  200 ptr sign byte   982 NULL dest = bp+4
+ 10711                                  ;  201 ptr sign byte   982 NULL src = bp+6
+ 10712                                  ;  202 var unsg word   982 NULL sz = bp+8;
+ 10713 0000530E C8000000                 ENTER  0,0
+ 10714 00005312 A1[6400]                 mov ax, [segE]
+ 10715 00005315 8EC0                     mov  es, ax
+ 10716 00005317 8B7606                   mov  si, [bp+6]
+ 10717 0000531A 8B7E04                   mov  di, [bp+4]
+ 10718 0000531D 8B4E08                   mov  cx, [bp+8]
+ 10719                                  
+ 10720                                  ;-984   asm cld
+ 10721                                  
+ 10722 00005320 FC                       cld
+ 10723                                  
+ 10724                                  ;-985   asm rep movsb
+ 10725                                  
+ 10726 00005321 F3A4                     rep movsb
+ 10727                                  
+ 10728                                  ;-986   asm mov byte [es:di], 0
+ 10729                                  
+ 10730 00005323 26C60500                 mov byte [es:di], 0
+ 10731                                  
+ 10732                                  ;-987 }
+ 10733                                  
+ 10734                                  
+ 10735                                  ;-988 int to_far(char *dest, char *src) {
+ 10736 00005327 C9                       LEAVE
+ 10737 00005328 C3                       ret
+ 10738                                  ; ENDP
  10739                                  
- 10740                                  
- 10741                                  ;-993 int from_far(char *dest, char *src) {
- 10742 00005300 C9                       LEAVE
- 10743 00005301 C3                       ret
- 10744                                  ; ENDP
- 10745                                  
- 10746                                  from_far:  ; *** PROC ***
- 10747                                  
- 10748                                  ;-994   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
- 10749                                  
- 10750                                  ;Function : from_far, Number of local variables: 2
- 10751                                  ;   # type sign width addr used name   list of local variables
- 10752                                  ;  200 ptr sign byte   993 NULL dest = bp+4
- 10753                                  ;  201 ptr sign byte   993 NULL src = bp+6;
- 10754 00005302 C8000000                 ENTER  0,0
- 10755 00005306 A1[6400]                 mov ax, [segE]
- 10756 00005309 8EC0                     mov  es, ax
- 10757 0000530B 8B7606                   mov  si, [bp+6]
- 10758 0000530E 8B7E04                   mov  di, [bp+4]
+ 10740                                  to_far:  ; *** PROC ***
+ 10741                                  
+ 10742                                  ;-989   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
+ 10743                                  
+ 10744                                  ;Function : to_far, Number of local variables: 2
+ 10745                                  ;   # type sign width addr used name   list of local variables
+ 10746                                  ;  200 ptr sign byte   988 NULL dest = bp+4
+ 10747                                  ;  201 ptr sign byte   988 NULL src = bp+6;
+ 10748 00005329 C8000000                 ENTER  0,0
+ 10749 0000532D A1[6400]                 mov ax, [segE]
+ 10750 00005330 8EC0                     mov  es, ax
+ 10751 00005332 8B7606                   mov  si, [bp+6]
+ 10752 00005335 8B7E04                   mov  di, [bp+4]
+ 10753                                  
+ 10754                                  ;-990   asm cld
+ 10755                                  
+ 10756 00005338 FC                       cld
+ 10757                                  
+ 10758                                  ;-991   do{
  10759                                  
- 10760                                  ;-995   do{
+ 10760                                  .to_far586:
  10761                                  
- 10762                                  .from_far587:
+ 10762                                  ;-992   asm lodsb  ; inc si
  10763                                  
- 10764                                  ;-996   asm mov al, [es:si]
+ 10764 00005339 AC                       lodsb  ; inc si
  10765                                  
- 10766 00005311 268A04                   mov al, [es:si]
+ 10766                                  ;-993   asm stosb  ; inc di
  10767                                  
- 10768                                  ;-997   asm inc si
+ 10768 0000533A AA                       stosb  ; inc di
  10769                                  
- 10770 00005314 46                       inc si
+ 10770                                  ;-994   } while (al != 0);
  10771                                  
- 10772                                  ;-998   asm mov [di], al
- 10773                                  
- 10774 00005315 8805                     mov [di], al
- 10775                                  
- 10776                                  ;-999   asm inc di
- 10777                                  
- 10778 00005317 47                       inc di
+ 10772 0000533B 3C00                     cmp  al, 0
+ 10773 0000533D 0F840200                 je  .to_far587
+ 10774 00005341 EBF6                     jmp .to_far586
+ 10775                                  .to_far587:
+ 10776                                  
+ 10777                                  ;-995 }
+ 10778                                  
  10779                                  
- 10780                                  ;-1000   } while (al != 0);
- 10781                                  
- 10782 00005318 3C00                     cmp  al, 0
- 10783 0000531A 0F840200                 je  .from_far588
- 10784 0000531E EBF1                     jmp .from_far587
- 10785                                  .from_far588:
+ 10780                                  ;-996 int from_far(char *dest, char *src) {
+ 10781 00005343 C9                       LEAVE
+ 10782 00005344 C3                       ret
+ 10783                                  ; ENDP
+ 10784                                  
+ 10785                                  from_far:  ; *** PROC ***
  10786                                  
- 10787                                  ;-1001 }
- 10788 00005320 C9                       LEAVE
- 10789 00005321 C3                       ret
- 10790                                  ; ENDP
- 10791                                   
- 10792                                  ; missing functions: 
- 10793                                  ; Number of unresolved CALLs :    0 All FUNCTIONs in place
- 10794 00005322 E80000                  LastFunctionByt:db 0E8h, 0, 0
- 10795 00005325 58                      pop ax
- 10796 00005326 C3                      ret
- 10797                                   
- 10798                                  ;   # type sign width  adr used name   list of global variables
- 10799                                  
- 10800                                  ;    1 arr sign byte     2    2 Version1[10]
- 10801                                  ;    2 def unsg byte     3    - LSTART=200
- 10802                                  ;    3 def unsg byte     4    - VARMAX=300
- 10803                                  ;    4 def unsg byte     5    - GNAMEMAX=4800
- 10804                                  ;    5 def unsg byte     6    - FUNCMAX=300
- 10805                                  ;    6 def unsg byte     7    - FNAMEMAX=4800
- 10806                                  ;    7 def unsg byte     8    - CALLMAX=2000
- 10807                                  ;    8 def unsg byte     9    - IDLENMAX=15
- 10808                                  ;    9 def unsg byte    11    - T_NAME=256
- 10809                                  ;   10 def unsg byte    12    - T_CONST=257
- 10810                                  ;   11 def unsg byte    13    - T_STRING=258
- 10811                                  ;   12 def unsg byte    14    - T_INCLUDE=510
- 10812                                  ;   13 def unsg byte    15    - T_DEFINE=511
- 10813                                  ;   14 def unsg byte    16    - T_RETURN=512
- 10814                                  ;   15 def unsg byte    17    - T_IF=513
- 10815                                  ;   16 def unsg byte    18    - T_ELSE=514
- 10816                                  ;   17 def unsg byte    19    - T_WHILE=515
- 10817                                  ;   18 def unsg byte    20    - T_DO=516
- 10818                                  ;   19 def unsg byte    21    - T_INT=517
- 10819                                  ;   20 def unsg byte    22    - T_ASM=518
- 10820                                  ;   21 def unsg byte    23    - T_ASMBLOCK=519
- 10821                                  ;   22 def unsg byte    24    - T_EMIT=520
- 10822                                  ;   23 def unsg byte    25    - T_GOTO=521
- 10823                                  ;   24 def unsg byte    26    - T_VOID=529
- 10824                                  ;   25 def unsg byte    27    - T_CHAR=530
- 10825                                  ;   26 def unsg byte    28    - T_SIGNED=531
- 10826                                  ;   27 def unsg byte    29    - T_UNSIGNED=532
- 10827                                  ;   28 def unsg byte    30    - T_LONG=533
- 10828                                  ;   29 def unsg byte    31    - T_EQ=806
- 10829                                  ;   30 def unsg byte    32    - T_NE=807
- 10830                                  ;   31 def unsg byte    33    - T_GE=811
- 10831                                  ;   32 def unsg byte    34    - T_LE=824
- 10832                                  ;   33 def unsg byte    35    - T_PLUSPLUS=1219
- 10833                                  ;   34 def unsg byte    36    - T_MINUSMINUS=1225
- 10834                                  ;   35 def unsg byte    37    - T_PLUSASS=1230
- 10835                                  ;   36 def unsg byte    38    - T_MINUSASS=1231
- 10836                                  ;   37 def unsg byte    39    - T_MULASS=1232
- 10837                                  ;   38 def unsg byte    40    - T_DIVASS=1233
- 10838                                  ;   39 def unsg byte    41    - T_ANDASS=1234
- 10839                                  ;   40 def unsg byte    42    - T_ORASS=1235
- 10840                                  ;   41 def unsg byte    43    - T_LESSLESS=1240
- 10841                                  ;   42 def unsg byte    44    - T_GREATGREAT=1241
- 10842                                  ;   43 def unsg byte    45    - COMAX=3000
- 10843                                  ;   44 def unsg byte    46    - CMDLENMAX=67
- 10844                                  ;   45 var unsg word    47    3 ORGDATAORIG
- 10845                                  ;   46 var unsg word    47   10 orgData
- 10846                                  ;   47 arr sign byte    48    4 co[3000]
- 10847                                  ;   48 var sign word    48    4 maxco
- 10848                                  ;   49 var sign word    48    3 maxco1
- 10849                                  ;   50 arr sign byte    49    2 coname[67]
- 10850                                  ;   51 ptr sign byte    49    5 cloc
- 10851                                  ;   52 var sign word    50    6 fdin
- 10852                                  ;   53 var sign word    50    4 fdout
- 10853                                  ;   54 arr sign byte    50  104 symbol[128]
- 10854                                  ;   55 arr sign byte    51   12 fname[67]
- 10855                                  ;   56 arr sign byte    51   10 namein[67]
- 10856                                  ;   57 arr sign byte    52    7 namelst[67]
- 10857                                  ;   58 arr sign byte    52    2 archivename[67]
- 10858                                  ;   59 var sign word    53   41 token
- 10859                                  ;   60 var sign byte    53    2 globC
- 10860                                  ;   61 var sign word    53    3 spalte
- 10861                                  ;   62 var sign byte    54   28 thechar
- 10862                                  ;   63 var sign word    54    9 iscmp
- 10863                                  ;   64 var sign word    54    4 nconst
- 10864                                  ;   65 var sign word    55    3 nreturn
- 10865                                  ;   66 var sign word    55   12 nlabel
- 10866                                  ;   67 var sign word    56   24 GTop
- 10867                                  ;   68 var sign word    56   20 LTop
- 10868                                  ;   69 var unsg word    57   44 lexval
- 10869                                  ;   70 var sign word    58    6 typei
- 10870                                  ;   71 var sign byte    58    8 istype
- 10871                                  ;   72 arr sign byte    58   11 GType[300]
- 10872                                  ;   73 var sign word    59    6 signi
- 10873                                  ;   74 var sign byte    59    5 issign
- 10874                                  ;   75 arr sign byte    59    5 GSign[300]
- 10875                                  ;   76 var sign word    60    9 widthi
- 10876                                  ;   77 var sign byte    60   19 iswidth
- 10877                                  ;   78 arr sign byte    60    5 GWidth[300]
- 10878                                  ;   79 arr sign word    61    4 GAdr[300]
- 10879                                  ;   80 arr sign word    61    6 GUsed[300]
- 10880                                  ;   81 var sign word    62   26 wi
- 10881                                  ;   82 arr sign word    62   11 GData[300]
- 10882                                  ;   83 arr sign byte    62    2 GNameField[4800]
- 10883                                  ;   84 var sign word    63   13 FTop
- 10884                                  ;   85 var sign word    63    8 CTop
- 10885                                  ;   86 arr sign byte    64    2 FType[300]
- 10886                                  ;   87 arr sign byte    64    3 CType[2000]
- 10887                                  ;   88 arr sign word    65    2 FAdr[300]
- 10888                                  ;   89 arr sign word    65    4 CAdr[2000]
- 10889                                  ;   90 arr sign word    66    4 FCalls[300]
- 10890                                  ;   91 arr sign byte    67    5 FNameField[4800]
- 10891                                  ;   92 arr sign byte    68    7 NameA[32]
- 10892                                  ;   93 arr sign byte    69    5 fgetsdest[128]
- 10893                                  ;   94 ptr unsg byte    69    8 CNameTop
- 10894                                  ;   95 ptr unsg byte    70   10 fgetsp
- 10895                                  ;   96 var unsg word    70    4 segE
- 10896                                  ;   97 var unsg word    71   12 lineno
- 10897                                  ;   98 var unsg word    71    2 linenoinclude
- 10898                                  ;   99 ptr unsg byte    72   17 pt
- 10899                                  ;  100 ptr unsg byte    72    8 p1
- 10900                                  ;  101 var sign word    73    9 DOS_ERR
- 10901                                  ;  102 var sign word    73    5 DOS_NoBytes
- 10902                                  ;  103 var sign byte    73    3 DOS_ByteRead
- 10903                                  ;  104 arr sign byte   131    2 doglobName[15]
- 10904                                  ;  105 var sign word   297    5 mod1
- 10905                                  ;  106 var sign word   297   12 ireg1
- 10906                                  ;  107 var sign word   297    6 idx1
- 10907                                  ;  108 var sign word   297    1 ids1
- 10908                                  ;  109 var sign word   297    4 idw1
- 10909                                  ;  110 var sign word   297    2 idt1
- 10910                                  ;  111 var sign word   297 NULL val1
- 10911                                  ;  112 var sign word   298    2 mod2
- 10912                                  ;  113 var sign word   298    6 ireg2
- 10913                                  ;  114 var sign word   298    6 idx2
- 10914                                  ;  115 var sign word   298    1 ids2
- 10915                                  ;  116 var sign word   298    4 idw2
- 10916                                  ;  117 var sign word   298    2 idt2
- 10917                                  ;  118 var sign word   298    2 val2
- 10918                                  ;  119 arr sign byte   363    9 ops[5]
- 10919                                  ;  120 arr sign byte   405    3 printregstr[74]
- 10920                                  ;  121 var sign word   413    1 evalue
- 10921                                  ;  122 var sign word   413    1 exprtype
- 10922                                  ;  123 arr sign word   565    2 docalltype[10]
- 10923                                  ;  124 arr sign word   565    2 docallvalue[10]
- 10924                                  ;  125 arr sign byte   566    2 procname[17]
- 10925                                  ;  126 ptr sign byte   621    1 arglen
- 10926                                  ;  127 ptr sign byte   621    2 argv
- 10927                                  ;  128 arr sign byte   762    2 symboltemp[80]
- 10928                                  ;  129 var unsg word   940    1 MAXUI
- 10929                                  
- 10930                                  
- 10931                                  ;   # Calls Line Width  Name   list of functions
- 10932                                  
- 10933                                  ;    0    4   75   writetty
- 10934                                  ;    1    1   76   putch
- 10935                                  ;    2    6   77   cputs
- 10936                                  ;    3    3   78   mkneg
- 10937                                  ;    4    8   80   DosInt
- 10938                                  ;    5    2   85   openR
- 10939                                  ;    6    1   86   creatR
- 10940                                  ;    7    2   87   fcloseR
- 10941                                  ;    8    3   88   exitR
- 10942                                  ;    9    2   89   readRL
- 10943                                  ;   10    1   90   fputcR
- 10944                                  ;   11    8   93   strlen
- 10945                                  ;   12   24   94   strcpy
- 10946                                  ;   13   74   95   eqstr
- 10947                                  ;   14    2   98   instr1
- 10948                                  ;   15    1   99   strcat1
- 10949                                  ;   16    1  100   toupper
- 10950                                  ;   17    3  102   digit
- 10951                                  ;   18    1  107   letter
- 10952                                  ;   19    3  117   alnum
- 10953                                  ;   20    4  122   a
- 10954                                  ;   21   21  123   v
- 10955                                  ;   22    4  128   checknamelen
- 10956                                  ;   23    1  132   doglob
- 10957                                  ;   24   12  181   gettypes
- 10958                                  ;   25    9  190   adrofname
- 10959                                  ;   26    7  191   adrF
- 10960                                  ;   27    4  193   printName
- 10961                                  ;   28   12  197   searchname
- 10962                                  ;   29    3  201   checkName
- 10963                                  ;   30   10  206   typeName
- 10964                                  ;   31    3  222   name1
- 10965                                  ;   32    1  227   storecall
- 10966                                  ;   33    2  233   storefunc
- 10967                                  ;   34    2  237   addlocal
- 10968                                  ;   35    1  243   checkFunction
- 10969                                  ;   36    1  246   dofunc
- 10970                                  ;   37    1  287   isvariable
- 10971                                  ;   38    3  300   pexpr
- 10972                                  ;   39    1  307   constantexpr
- 10973                                  ;   40    3  317   exprstart
- 10974                                  ;   41    1  319   expr2
- 10975                                  ;   42    3  364   doreg1
- 10976                                  ;   43    6  383   checkreg
- 10977                                  ;   44    6  408   printreg
- 10978                                  ;   45    2  414   expr
- 10979                                  ;   46    4  463   compoundass
- 10980                                  ;   47    2  470   dovar1
- 10981                                  ;   48    8  491   rterm
- 10982                                  ;   49    1  504   isreg
- 10983                                  ;   50   15  522   doreg
- 10984                                  ;   51    1  528   doassign
- 10985                                  ;   52    1  546   domul
- 10986                                  ;   53    2  550   doidiv
- 10987                                  ;   54    1  563   domod
- 10988                                  ;   55    1  567   docall1
- 10989                                  ;   56 NULL  609   main
- 10990                                  ;   57    2  620   getfirstchar
- 10991                                  ;   58    1  622   getarg
- 10992                                  ;   59    2  640   parse
- 10993                                  ;   60    1  649   checkcalls
- 10994                                  ;   61    1  666   doinclude
- 10995                                  ;   62    1  677   dodefine
- 10996                                  ;   63    6  693   stmt
- 10997                                  ;   64    1  724   doemit
- 10998                                  ;   65    3  728   cmpneg
- 10999                                  ;   66    7  741   prlabel
- 11000                                  ;   67    3  742   prjump
- 11001                                  ;   68    1  743   doif
- 11002                                  ;   69    1  749   dodo
- 11003                                  ;   70    1  753   dowhile
- 11004                                  ;   71    4  756   isrelational
- 11005                                  ;   72   17  763   getlex
- 11006                                  ;   73    1  815   convertdefine
- 11007                                  ;   74    1  822   getdigit
- 11008                                  ;   75    1  831   getstring
- 11009                                  ;   76   31  834   next
- 11010                                  ;   77   78  835   istoken
- 11011                                  ;   78   36  836   expect
- 11012                                  ;   79    6  839   eprc
- 11013                                  ;   80    5  840   eprs
- 11014                                  ;   81   40  841   prc
- 11015                                  ;   82    3  846   prscomment
- 11016                                  ;   83    8  848   prnl
- 11017                                  ;   84  249  850   prs
- 11018                                  ;   85    2  855   eprnum
- 11019                                  ;   86   41  857   pint1
- 11020                                  ;   87   25  859   printint51
- 11021                                  ;   88    2  863   fgets1
- 11022                                  ;   89    1  867   printinputline
- 11023                                  ;   90    2  875   end1
- 11024                                  ;   91   50  876   error1
- 11025                                  ;   92    2  885   listproc
- 11026                                  ;   93    2  893   listvar
- 11027                                  ;   94    1  909   listcall
- 11028                                  ;   95    1  912   calllisting
- 11029                                  ;   96    1  918   countcalls
- 11030                                  ;   97    1  926   listfunc
- 11031                                  ;   98    1  930   funclisting
- 11032                                  ;   99    1  941   epilog
- 11033                                  ;  100    1  973   setblock
- 11034                                  ;  101    1  975   allocmem
- 11035                                  ;  102 NULL  979   copyF
- 11036                                  ;  103    1  985   to_far
- 11037                                  ;  104    3  993   from_far
- 11038                                  ;  105 NULL 1001   LastFunctionByt
- 11039                                  
- 11040                                  ;    #  addr name   list of CALLs
- 11041                                  
- 11042                                  ;    0     0 writetty
- 11043                                  ;    1     9 writetty
- 11044                                  ;    2    18 putch
- 11045                                  ;    3    24 DosInt
- 11046                                  ;    4    31 DosInt
- 11047                                  ;    5    38 DosInt
- 11048                                  ;    6    45 DosInt
- 11049                                  ;    7    52 DosInt
- 11050                                  ;    8    59 DosInt
- 11051                                  ;    9    66 strcpy
- 11052                                  ;   10    73 digit
- 11053                                  ;   11    79 letter
- 11054                                  ;   12    86 printName
- 11055                                  ;   13    96 prc
- 11056                                  ;   14   100 printName
- 11057                                  ;   15   110 prc
- 11058                                  ;   16   114 strlen
- 11059                                  ;   17   121 error1
- 11060                                  ;   18   128 error1
- 11061                                  ;   19   135 error1
- 11062                                  ;   20   142 checknamelen
- 11063                                  ;   21   155 checkName
- 11064                                  ;   22   165 error1
- 11065                                  ;   23   172 istoken
- 11066                                  ;   24   180 istoken
- 11067                                  ;   25   188 prs
- 11068                                  ;   26   192 pint1
- 11069                                  ;   27   198 prs
- 11070                                  ;   28   202 prs
- 11071                                  ;   29   206 prs
- 11072                                  ;   30   210 prs
- 11073                                  ;   31   214 prs
- 11074                                  ;   32   218 pint1
- 11075                                  ;   33   224 prs
- 11076                                  ;   34   228 expect
- 11077                                  ;   35   235 expect
- 11078                                  ;   36   242 error1
- 11079                                  ;   37   249 prs
- 11080                                  ;   38   253 prs
- 11081                                  ;   39   257 prs
- 11082                                  ;   40   261 strcpy
- 11083                                  ;   41   268 expect
- 11084                                  ;   42   275 istoken
- 11085                                  ;   43   283 prc
- 11086                                  ;   44   287 prscomment
- 11087                                  ;   45   298 prc
- 11088                                  ;   46   302 prs
- 11089                                  ;   47   306 strlen
- 11090                                  ;   48   313 istoken
- 11091                                  ;   49   321 prc
- 11092                                  ;   50   325 expect
- 11093                                  ;   51   332 pint1
- 11094                                  ;   52   338 istoken
- 11095                                  ;   53   346 expect
- 11096                                  ;   54   353 error1
- 11097                                  ;   55   360 prs
- 11098                                  ;   56   364 prs
- 11099                                  ;   57   368 prs
- 11100                                  ;   58   372 prs
- 11101                                  ;   59   376 prs
- 11102                                  ;   60   380 prs
- 11103                                  ;   61   384 istoken
- 11104                                  ;   62   392 prc
- 11105                                  ;   63   396 istoken
- 11106                                  ;   64   404 expect
- 11107                                  ;   65   411 pint1
- 11108                                  ;   66   417 pint1
- 11109                                  ;   67   423 adrofname
- 11110                                  ;   68   433 strcpy
- 11111                                  ;   69   440 strcpy
- 11112                                  ;   70   447 expect
- 11113                                  ;   71   454 adrF
- 11114                                  ;   72   459 adrofname
- 11115                                  ;   73   469 prs
- 11116                                  ;   74   473 prs
- 11117                                  ;   75   477 prc
- 11118                                  ;   76   481 pint1
- 11119                                  ;   77   487 prc
- 11120                                  ;   78   491 checkName
- 11121                                  ;   79   501 error1
- 11122                                  ;   80   508 adrofname
- 11123                                  ;   81   518 eqstr
- 11124                                  ;   82   524 adrofname
- 11125                                  ;   83   534 eqstr
- 11126                                  ;   84   540 istoken
- 11127                                  ;   85   548 istoken
- 11128                                  ;   86   556 istoken
- 11129                                  ;   87   564 istoken
- 11130                                  ;   88   572 istoken
- 11131                                  ;   89   580 istoken
- 11132                                  ;   90   588 istoken
- 11133                                  ;   91   596 istoken
- 11134                                  ;   92   604 name1
- 11135                                  ;   93   610 error1
- 11136                                  ;   94   617 getlex
- 11137                                  ;   95   624 error1
- 11138                                  ;   96   631 error1
- 11139                                  ;   97   638 strlen
- 11140                                  ;   98   645 to_far
- 11141                                  ;   99   652 error1
- 11142                                  ;  100   659 adrF
- 11143                                  ;  101   664 strcpy
- 11144                                  ;  102   671 error1
- 11145                                  ;  103   678 checkName
- 11146                                  ;  104   688 error1
- 11147                                  ;  105   695 adrF
- 11148                                  ;  106   700 strcpy
- 11149                                  ;  107   707 adrF
- 11150                                  ;  108   712 eqstr
- 11151                                  ;  109   718 checknamelen
- 11152                                  ;  110   731 strcpy
- 11153                                  ;  111   738 checkFunction
- 11154                                  ;  112   752 error1
- 11155                                  ;  113   759 storefunc
- 11156                                  ;  114   769 prs
- 11157                                  ;  115   773 prs
- 11158                                  ;  116   777 prs
- 11159                                  ;  117   781 expect
- 11160                                  ;  118   788 istoken
- 11161                                  ;  119   796 typeName
- 11162                                  ;  120   805 addlocal
- 11163                                  ;  121   814 istoken
- 11164                                  ;  122   822 expect
- 11165                                  ;  123   829 expect
- 11166                                  ;  124   836 isvariable
- 11167                                  ;  125   847 typeName
- 11168                                  ;  126   856 checknamelen
- 11169                                  ;  127   869 addlocal
- 11170                                  ;  128   878 istoken
- 11171                                  ;  129   886 expect
- 11172                                  ;  130   893 expect
- 11173                                  ;  131   900 istoken
- 11174                                  ;  132   908 expect
- 11175                                  ;  133   915 listproc
- 11176                                  ;  134   924 prs
- 11177                                  ;  135   928 mkneg
- 11178                                  ;  136   934 pint1
- 11179                                  ;  137   940 prs
- 11180                                  ;  138   944 istoken
- 11181                                  ;  139   952 stmt
- 11182                                  ;  140   957 prs
- 11183                                  ;  141   961 prs
- 11184                                  ;  142   965 prc
- 11185                                  ;  143   969 prs
- 11186                                  ;  144   973 prs
- 11187                                  ;  145   977 prs
- 11188                                  ;  146   981 strlen
- 11189                                  ;  147   988 strcpy
- 11190                                  ;  148   995 prs
- 11191                                  ;  149   999 expect
- 11192                                  ;  150  1006 eqstr
- 11193                                  ;  151  1012 constantexpr
- 11194                                  ;  152  1025 checkreg
- 11195                                  ;  153  1034 doreg1
- 11196                                  ;  154  1041 exprstart
- 11197                                  ;  155  1051 prs
- 11198                                  ;  156  1055 prs
- 11199                                  ;  157  1059 expect
- 11200                                  ;  158  1066 getlex
- 11201                                  ;  159  1073 typeName
- 11202                                  ;  160  1082 searchname
- 11203                                  ;  161  1093 gettypes
- 11204                                  ;  162  1102 isrelational
- 11205                                  ;  163  1115 error1
- 11206                                  ;  164  1122 expect
- 11207                                  ;  165  1129 prs
- 11208                                  ;  166  1133 prs
- 11209                                  ;  167  1137 gettypes
- 11210                                  ;  168  1146 prs
- 11211                                  ;  169  1150 prs
- 11212                                  ;  170  1154 v
- 11213                                  ;  171  1156 prs
- 11214                                  ;  172  1160 pint1
- 11215                                  ;  173  1166 cmpneg
- 11216                                  ;  174  1173 prs
- 11217                                  ;  175  1177 expect
- 11218                                  ;  176  1184 eqstr
- 11219                                  ;  177  1190 expr2
- 11220                                  ;  178  1196 expr
- 11221                                  ;  179  1201 getlex
- 11222                                  ;  180  1208 typeName
- 11223                                  ;  181  1217 error1
- 11224                                  ;  182  1224 checkreg
- 11225                                  ;  183  1233 doreg1
- 11226                                  ;  184  1240 searchname
- 11227                                  ;  185  1251 gettypes
- 11228                                  ;  186  1260 error1
- 11229                                  ;  187  1267 isrelational
- 11230                                  ;  188  1280 error1
- 11231                                  ;  189  1287 istoken
- 11232                                  ;  190  1295 error1
- 11233                                  ;  191  1302 istoken
- 11234                                  ;  192  1310 prs
- 11235                                  ;  193  1314 prs
- 11236                                  ;  194  1318 prs
- 11237                                  ;  195  1322 prs
- 11238                                  ;  196  1326 prs
- 11239                                  ;  197  1330 v
- 11240                                  ;  198  1332 prs
- 11241                                  ;  199  1336 pint1
- 11242                                  ;  200  1342 adrofname
- 11243                                  ;  201  1352 prs
- 11244                                  ;  202  1356 prs
- 11245                                  ;  203  1360 typeName
- 11246                                  ;  204  1369 checkreg
- 11247                                  ;  205  1378 prs
- 11248                                  ;  206  1382 printreg
- 11249                                  ;  207  1391 v
- 11250                                  ;  208  1393 prs
- 11251                                  ;  209  1397 printreg
- 11252                                  ;  210  1406 error1
- 11253                                  ;  211  1413 searchname
- 11254                                  ;  212  1424 gettypes
- 11255                                  ;  213  1433 error1
- 11256                                  ;  214  1440 prs
- 11257                                  ;  215  1444 printreg
- 11258                                  ;  216  1453 error1
- 11259                                  ;  217  1460 prs
- 11260                                  ;  218  1464 a
- 11261                                  ;  219  1466 prs
- 11262                                  ;  220  1470 prs
- 11263                                  ;  221  1474 prs
- 11264                                  ;  222  1478 v
- 11265                                  ;  223  1480 adrofname
- 11266                                  ;  224  1490 prs
- 11267                                  ;  225  1494 prs
- 11268                                  ;  226  1498 error1
- 11269                                  ;  227  1505 istoken
- 11270                                  ;  228  1513 strcpy
- 11271                                  ;  229  1520 istoken
- 11272                                  ;  230  1528 strcpy
- 11273                                  ;  231  1535 istoken
- 11274                                  ;  232  1543 strcpy
- 11275                                  ;  233  1550 istoken
- 11276                                  ;  234  1558 strcpy
- 11277                                  ;  235  1565 istoken
- 11278                                  ;  236  1573 strcpy
- 11279                                  ;  237  1580 istoken
- 11280                                  ;  238  1588 strcpy
- 11281                                  ;  239  1595 istoken
- 11282                                  ;  240  1603 strcpy
- 11283                                  ;  241  1610 getlex
- 11284                                  ;  242  1617 isrelational
- 11285                                  ;  243  1630 error1
- 11286                                  ;  244  1637 strcpy
- 11287                                  ;  245  1644 prnl
- 11288                                  ;  246  1649 prs
- 11289                                  ;  247  1653 prs
- 11290                                  ;  248  1657 printreg
- 11291                                  ;  249  1666 prs
- 11292                                  ;  250  1670 istoken
- 11293                                  ;  251  1678 pint1
- 11294                                  ;  252  1684 typeName
- 11295                                  ;  253  1693 checkreg
- 11296                                  ;  254  1702 printreg
- 11297                                  ;  255  1711 searchname
- 11298                                  ;  256  1722 a
- 11299                                  ;  257  1724 v
- 11300                                  ;  258  1726 cmpneg
- 11301                                  ;  259  1733 prs
- 11302                                  ;  260  1737 expect
- 11303                                  ;  261  1744 strlen
- 11304                                  ;  262  1751 eqstr
- 11305                                  ;  263  1757 eqstr
- 11306                                  ;  264  1763 eqstr
- 11307                                  ;  265  1769 eqstr
- 11308                                  ;  266  1775 eqstr
- 11309                                  ;  267  1781 eqstr
- 11310                                  ;  268  1787 eqstr
- 11311                                  ;  269  1793 eqstr
- 11312                                  ;  270  1799 eqstr
- 11313                                  ;  271  1805 eqstr
- 11314                                  ;  272  1811 eqstr
- 11315                                  ;  273  1817 eqstr
- 11316                                  ;  274  1823 eqstr
- 11317                                  ;  275  1829 eqstr
- 11318                                  ;  276  1835 eqstr
- 11319                                  ;  277  1841 eqstr
- 11320                                  ;  278  1847 eqstr
- 11321                                  ;  279  1853 eqstr
- 11322                                  ;  280  1859 eqstr
- 11323                                  ;  281  1865 eqstr
- 11324                                  ;  282  1871 eqstr
- 11325                                  ;  283  1877 eqstr
- 11326                                  ;  284  1883 strlen
- 11327                                  ;  285  1890 eqstr
- 11328                                  ;  286  1896 eqstr
- 11329                                  ;  287  1902 eqstr
- 11330                                  ;  288  1908 eqstr
- 11331                                  ;  289  1914 eqstr
- 11332                                  ;  290  1920 eqstr
- 11333                                  ;  291  1926 eqstr
- 11334                                  ;  292  1932 eqstr
- 11335                                  ;  293  1938 eqstr
- 11336                                  ;  294  1944 prc
- 11337                                  ;  295  1948 prc
- 11338                                  ;  296  1952 prc
- 11339                                  ;  297  1956 istoken
- 11340                                  ;  298  1964 prs
- 11341                                  ;  299  1968 pint1
- 11342                                  ;  300  1974 typeName
- 11343                                  ;  301  1983 checkreg
- 11344                                  ;  302  1992 doreg1
- 11345                                  ;  303  1999 docall1
- 11346                                  ;  304  2007 isreg
- 11347                                  ;  305  2013 searchname
- 11348                                  ;  306  2024 gettypes
- 11349                                  ;  307  2033 istoken
- 11350                                  ;  308  2041 istoken
- 11351                                  ;  309  2049 expect
- 11352                                  ;  310  2056 searchname
- 11353                                  ;  311  2067 expect
- 11354                                  ;  312  2074 expect
- 11355                                  ;  313  2081 gettypes
- 11356                                  ;  314  2090 error1
- 11357                                  ;  315  2097 istoken
- 11358                                  ;  316  2105 error1
- 11359                                  ;  317  2112 prs
- 11360                                  ;  318  2116 prs
- 11361                                  ;  319  2120 prs
- 11362                                  ;  320  2124 v
- 11363                                  ;  321  2126 istoken
- 11364                                  ;  322  2134 error1
- 11365                                  ;  323  2141 prs
- 11366                                  ;  324  2145 prs
- 11367                                  ;  325  2149 prs
- 11368                                  ;  326  2153 v
- 11369                                  ;  327  2155 istoken
- 11370                                  ;  328  2163 compoundass
- 11371                                  ;  329  2175 istoken
- 11372                                  ;  330  2183 compoundass
- 11373                                  ;  331  2195 istoken
- 11374                                  ;  332  2203 compoundass
- 11375                                  ;  333  2215 istoken
- 11376                                  ;  334  2223 compoundass
- 11377                                  ;  335  2235 istoken
- 11378                                  ;  336  2243 error1
- 11379                                  ;  337  2250 istoken
- 11380                                  ;  338  2258 error1
- 11381                                  ;  339  2265 istoken
- 11382                                  ;  340  2273 expr
- 11383                                  ;  341  2278 doassign
- 11384                                  ;  342  2287 dovar1
- 11385                                  ;  343  2294 istoken
- 11386                                  ;  344  2302 rterm
- 11387                                  ;  345  2308 istoken
- 11388                                  ;  346  2316 rterm
- 11389                                  ;  347  2322 istoken
- 11390                                  ;  348  2330 rterm
- 11391                                  ;  349  2336 istoken
- 11392                                  ;  350  2344 rterm
- 11393                                  ;  351  2350 istoken
- 11394                                  ;  352  2358 rterm
- 11395                                  ;  353  2364 istoken
- 11396                                  ;  354  2372 rterm
- 11397                                  ;  355  2378 istoken
- 11398                                  ;  356  2386 domul
- 11399                                  ;  357  2392 istoken
- 11400                                  ;  358  2400 doidiv
- 11401                                  ;  359  2407 istoken
- 11402                                  ;  360  2415 domod
- 11403                                  ;  361  2421 isrelational
- 11404                                  ;  362  2434 rterm
- 11405                                  ;  363  2440 cmpneg
- 11406                                  ;  364  2447 error1
- 11407                                  ;  365  2454 prnl
- 11408                                  ;  366  2459 prs
- 11409                                  ;  367  2463 prs
- 11410                                  ;  368  2467 gettypes
- 11411                                  ;  369  2476 prs
- 11412                                  ;  370  2480 prs
- 11413                                  ;  371  2484 v
- 11414                                  ;  372  2486 prs
- 11415                                  ;  373  2490 expect
- 11416                                  ;  374  2497 pint1
- 11417                                  ;  375  2503 gettypes
- 11418                                  ;  376  2512 prs
- 11419                                  ;  377  2516 v
- 11420                                  ;  378  2518 prnl
- 11421                                  ;  379  2523 prs
- 11422                                  ;  380  2527 prs
- 11423                                  ;  381  2531 prs
- 11424                                  ;  382  2535 prnl
- 11425                                  ;  383  2540 prs
- 11426                                  ;  384  2544 prs
- 11427                                  ;  385  2548 a
- 11428                                  ;  386  2550 prs
- 11429                                  ;  387  2554 v
- 11430                                  ;  388  2556 prs
- 11431                                  ;  389  2560 prs
- 11432                                  ;  390  2564 prs
- 11433                                  ;  391  2568 prs
- 11434                                  ;  392  2572 prs
- 11435                                  ;  393  2576 prc
- 11436                                  ;  394  2580 printName
- 11437                                  ;  395  2590 prs
- 11438                                  ;  396  2594 prnl
- 11439                                  ;  397  2599 prs
- 11440                                  ;  398  2603 prs
- 11441                                  ;  399  2607 prs
- 11442                                  ;  400  2611 prs
- 11443                                  ;  401  2615 v
- 11444                                  ;  402  2617 istoken
- 11445                                  ;  403  2625 prnl
- 11446                                  ;  404  2630 prs
- 11447                                  ;  405  2634 prs
- 11448                                  ;  406  2638 prs
- 11449                                  ;  407  2642 prs
- 11450                                  ;  408  2646 pint1
- 11451                                  ;  409  2652 typeName
- 11452                                  ;  410  2661 searchname
- 11453                                  ;  411  2672 istoken
- 11454                                  ;  412  2680 searchname
- 11455                                  ;  413  2691 expect
- 11456                                  ;  414  2698 expect
- 11457                                  ;  415  2705 gettypes
- 11458                                  ;  416  2714 error1
- 11459                                  ;  417  2721 eqstr
- 11460                                  ;  418  2727 dovar1
- 11461                                  ;  419  2734 eqstr
- 11462                                  ;  420  2740 doreg
- 11463                                  ;  421  2746 eqstr
- 11464                                  ;  422  2752 doreg
- 11465                                  ;  423  2758 eqstr
- 11466                                  ;  424  2764 doreg
- 11467                                  ;  425  2770 eqstr
- 11468                                  ;  426  2776 doreg
- 11469                                  ;  427  2782 eqstr
- 11470                                  ;  428  2788 doreg
- 11471                                  ;  429  2794 eqstr
- 11472                                  ;  430  2800 doreg
- 11473                                  ;  431  2806 eqstr
- 11474                                  ;  432  2812 doreg
- 11475                                  ;  433  2818 eqstr
- 11476                                  ;  434  2824 doreg
- 11477                                  ;  435  2830 eqstr
- 11478                                  ;  436  2836 doreg
- 11479                                  ;  437  2842 eqstr
- 11480                                  ;  438  2848 doreg
- 11481                                  ;  439  2854 eqstr
- 11482                                  ;  440  2860 doreg
- 11483                                  ;  441  2866 eqstr
- 11484                                  ;  442  2872 doreg
- 11485                                  ;  443  2878 eqstr
- 11486                                  ;  444  2884 doreg
- 11487                                  ;  445  2890 eqstr
- 11488                                  ;  446  2896 doreg
- 11489                                  ;  447  2902 eqstr
- 11490                                  ;  448  2908 doreg
- 11491                                  ;  449  2914 expect
- 11492                                  ;  450  2921 prs
- 11493                                  ;  451  2925 prs
- 11494                                  ;  452  2929 prs
- 11495                                  ;  453  2933 istoken
- 11496                                  ;  454  2941 pint1
- 11497                                  ;  455  2947 istoken
- 11498                                  ;  456  2955 searchname
- 11499                                  ;  457  2966 v
- 11500                                  ;  458  2968 error1
- 11501                                  ;  459  2975 gettypes
- 11502                                  ;  460  2984 prs
- 11503                                  ;  461  2988 v
- 11504                                  ;  462  2990 prs
- 11505                                  ;  463  2994 prs
- 11506                                  ;  464  2998 prs
- 11507                                  ;  465  3002 a
- 11508                                  ;  466  3004 prs
- 11509                                  ;  467  3008 prs
- 11510                                  ;  468  3012 pint1
- 11511                                  ;  469  3018 v
- 11512                                  ;  470  3020 prs
- 11513                                  ;  471  3024 prs
- 11514                                  ;  472  3028 printName
- 11515                                  ;  473  3038 prs
- 11516                                  ;  474  3042 prs
- 11517                                  ;  475  3046 prs
- 11518                                  ;  476  3050 prs
- 11519                                  ;  477  3054 v
- 11520                                  ;  478  3056 prs
- 11521                                  ;  479  3060 prs
- 11522                                  ;  480  3064 prs
- 11523                                  ;  481  3068 v
- 11524                                  ;  482  3070 prs
- 11525                                  ;  483  3074 prs
- 11526                                  ;  484  3078 prs
- 11527                                  ;  485  3082 v
- 11528                                  ;  486  3084 prs
- 11529                                  ;  487  3088 rterm
- 11530                                  ;  488  3094 istoken
- 11531                                  ;  489  3102 prs
- 11532                                  ;  490  3106 pint1
- 11533                                  ;  491  3112 prs
- 11534                                  ;  492  3116 error1
- 11535                                  ;  493  3123 istoken
- 11536                                  ;  494  3131 prs
- 11537                                  ;  495  3135 pint1
- 11538                                  ;  496  3141 prs
- 11539                                  ;  497  3145 prs
- 11540                                  ;  498  3149 typeName
- 11541                                  ;  499  3158 searchname
- 11542                                  ;  500  3169 error1
- 11543                                  ;  501  3176 gettypes
- 11544                                  ;  502  3185 error1
- 11545                                  ;  503  3192 error1
- 11546                                  ;  504  3199 prs
- 11547                                  ;  505  3203 v
- 11548                                  ;  506  3205 prs
- 11549                                  ;  507  3209 prs
- 11550                                  ;  508  3213 doidiv
- 11551                                  ;  509  3220 prs
- 11552                                  ;  510  3224 checknamelen
- 11553                                  ;  511  3237 strcpy
- 11554                                  ;  512  3244 storecall
- 11555                                  ;  513  3254 expect
- 11556                                  ;  514  3261 istoken
- 11557                                  ;  515  3269 error1
- 11558                                  ;  516  3276 istoken
- 11559                                  ;  517  3284 istoken
- 11560                                  ;  518  3292 eprs
- 11561                                  ;  519  3297 eprs
- 11562                                  ;  520  3302 eprc
- 11563                                  ;  521  3307 eprnum
- 11564                                  ;  522  3314 eprs
- 11565                                  ;  523  3319 eprc
- 11566                                  ;  524  3324 eprs
- 11567                                  ;  525  3329 eprc
- 11568                                  ;  526  3334 eprs
- 11569                                  ;  527  3339 istoken
- 11570                                  ;  528  3347 name1
- 11571                                  ;  529  3353 searchname
- 11572                                  ;  530  3364 istoken
- 11573                                  ;  531  3372 checkreg
- 11574                                  ;  532  3381 searchname
- 11575                                  ;  533  3392 error1
- 11576                                  ;  534  3399 istoken
- 11577                                  ;  535  3407 expect
- 11578                                  ;  536  3414 prs
- 11579                                  ;  537  3418 pint1
- 11580                                  ;  538  3424 prs
- 11581                                  ;  539  3428 prs
- 11582                                  ;  540  3432 prc
- 11583                                  ;  541  3436 pint1
- 11584                                  ;  542  3442 prs
- 11585                                  ;  543  3446 v
- 11586                                  ;  544  3448 prs
- 11587                                  ;  545  3452 gettypes
- 11588                                  ;  546  3461 prs
- 11589                                  ;  547  3465 v
- 11590                                  ;  548  3467 prs
- 11591                                  ;  549  3471 v
- 11592                                  ;  550  3473 prs
- 11593                                  ;  551  3477 prs
- 11594                                  ;  552  3481 printreg
- 11595                                  ;  553  3490 prs
- 11596                                  ;  554  3494 prs
- 11597                                  ;  555  3498 prs
- 11598                                  ;  556  3502 pint1
- 11599                                  ;  557  3508 getarg
- 11600                                  ;  558  3515 setblock
- 11601                                  ;  559  3524 error1
- 11602                                  ;  560  3531 allocmem
- 11603                                  ;  561  3540 error1
- 11604                                  ;  562  3547 getfirstchar
- 11605                                  ;  563  3560 parse
- 11606                                  ;  564  3566 checkcalls
- 11607                                  ;  565  3577 epilog
- 11608                                  ;  566  3584 fgets1
- 11609                                  ;  567  3591 cputs
- 11610                                  ;  568  3597 cputs
- 11611                                  ;  569  3603 readRL
- 11612                                  ;  570  3610 prnl
- 11613                                  ;  571  3615 strcpy
- 11614                                  ;  572  3622 instr1
- 11615                                  ;  573  3629 strcat1
- 11616                                  ;  574  3637 toupper
- 11617                                  ;  575  3645 strcpy
- 11618                                  ;  576  3652 strlen
- 11619                                  ;  577  3659 openR
- 11620                                  ;  578  3665 cputs
- 11621                                  ;  579  3671 cputs
- 11622                                  ;  580  3677 exitR
- 11623                                  ;  581  3683 creatR
- 11624                                  ;  582  3690 cputs
- 11625                                  ;  583  3696 cputs
- 11626                                  ;  584  3702 exitR
- 11627                                  ;  585  3708 prs
- 11628                                  ;  586  3712 prs
- 11629                                  ;  587  3716 prs
- 11630                                  ;  588  3720 prs
- 11631                                  ;  589  3724 prs
- 11632                                  ;  590  3728 prs
- 11633                                  ;  591  3732 prs
- 11634                                  ;  592  3736 getlex
- 11635                                  ;  593  3743 istoken
- 11636                                  ;  594  3751 istoken
- 11637                                  ;  595  3759 dodefine
- 11638                                  ;  596  3768 istoken
- 11639                                  ;  597  3776 doinclude
- 11640                                  ;  598  3786 error1
- 11641                                  ;  599  3793 typeName
- 11642                                  ;  600  3802 dofunc
- 11643                                  ;  601  3809 doglob
- 11644                                  ;  602  3816 prs
- 11645                                  ;  603  3820 from_far
- 11646                                  ;  604  3829 adrF
- 11647                                  ;  605  3834 eqstr
- 11648                                  ;  606  3840 prs
- 11649                                  ;  607  3844 prs
- 11650                                  ;  608  3848 prs
- 11651                                  ;  609  3852 printint51
- 11652                                  ;  610  3863 error1
- 11653                                  ;  611  3870 prs
- 11654                                  ;  612  3874 prs
- 11655                                  ;  613  3878 prs
- 11656                                  ;  614  3882 openR
- 11657                                  ;  615  3888 prs
- 11658                                  ;  616  3892 prs
- 11659                                  ;  617  3896 error1
- 11660                                  ;  618  3903 parse
- 11661                                  ;  619  3909 prs
- 11662                                  ;  620  3913 prs
- 11663                                  ;  621  3917 getfirstchar
- 11664                                  ;  622  3930 getlex
- 11665                                  ;  623  3937 eqstr
- 11666                                  ;  624  3943 getlex
- 11667                                  ;  625  3950 eqstr
- 11668                                  ;  626  3956 getlex
- 11669                                  ;  627  3963 prs
- 11670                                  ;  628  3967 strcpy
- 11671                                  ;  629  3974 prs
- 11672                                  ;  630  3978 error1
- 11673                                  ;  631  3985 getlex
- 11674                                  ;  632  3992 expect
- 11675                                  ;  633  3999 error1
- 11676                                  ;  634  4006 strlen
- 11677                                  ;  635  4013 error1
- 11678                                  ;  636  4020 adrofname
- 11679                                  ;  637  4030 strcpy
- 11680                                  ;  638  4037 expect
- 11681                                  ;  639  4044 istoken
- 11682                                  ;  640  4052 istoken
- 11683                                  ;  641  4060 stmt
- 11684                                  ;  642  4065 istoken
- 11685                                  ;  643  4073 doif
- 11686                                  ;  644  4078 istoken
- 11687                                  ;  645  4086 dodo
- 11688                                  ;  646  4091 istoken
- 11689                                  ;  647  4099 dowhile
- 11690                                  ;  648  4107 istoken
- 11691                                  ;  649  4115 prs
- 11692                                  ;  650  4119 name1
- 11693                                  ;  651  4125 prs
- 11694                                  ;  652  4129 expect
- 11695                                  ;  653  4136 prs
- 11696                                  ;  654  4140 next
- 11697                                  ;  655  4145 prc
- 11698                                  ;  656  4149 next
- 11699                                  ;  657  4154 getlex
- 11700                                  ;  658  4161 istoken
- 11701                                  ;  659  4169 prs
- 11702                                  ;  660  4173 next
- 11703                                  ;  661  4178 prc
- 11704                                  ;  662  4182 next
- 11705                                  ;  663  4187 getlex
- 11706                                  ;  664  4194 error1
- 11707                                  ;  665  4201 istoken
- 11708                                  ;  666  4209 doemit
- 11709                                  ;  667  4216 istoken
- 11710                                  ;  668  4224 istoken
- 11711                                  ;  669  4232 exprstart
- 11712                                  ;  670  4242 prs
- 11713                                  ;  671  4246 prs
- 11714                                  ;  672  4250 expect
- 11715                                  ;  673  4257 prs
- 11716                                  ;  674  4261 prs
- 11717                                  ;  675  4265 prc
- 11718                                  ;  676  4269 expect
- 11719                                  ;  677  4276 expect
- 11720                                  ;  678  4283 exprstart
- 11721                                  ;  679  4293 expect
- 11722                                  ;  680  4300 prs
- 11723                                  ;  681  4304 getlex
- 11724                                  ;  682  4311 pint1
- 11725                                  ;  683  4317 getlex
- 11726                                  ;  684  4324 prc
- 11727                                  ;  685  4328 expect
- 11728                                  ;  686  4335 prs
- 11729                                  ;  687  4339 prs
- 11730                                  ;  688  4343 prs
- 11731                                  ;  689  4347 prs
- 11732                                  ;  690  4351 prs
- 11733                                  ;  691  4355 pint1
- 11734                                  ;  692  4361 prs
- 11735                                  ;  693  4365 prs
- 11736                                  ;  694  4369 pint1
- 11737                                  ;  695  4375 prs
- 11738                                  ;  696  4379 prs
- 11739                                  ;  697  4383 prs
- 11740                                  ;  698  4387 error1
- 11741                                  ;  699  4394 prs
- 11742                                  ;  700  4398 prs
- 11743                                  ;  701  4402 pint1
- 11744                                  ;  702  4408 prc
- 11745                                  ;  703  4412 prs
- 11746                                  ;  704  4416 prs
- 11747                                  ;  705  4420 pint1
- 11748                                  ;  706  4426 pexpr
- 11749                                  ;  707  4432 pint1
- 11750                                  ;  708  4438 stmt
- 11751                                  ;  709  4443 istoken
- 11752                                  ;  710  4451 prjump
- 11753                                  ;  711  4458 prlabel
- 11754                                  ;  712  4466 stmt
- 11755                                  ;  713  4471 prlabel
- 11756                                  ;  714  4479 prlabel
- 11757                                  ;  715  4487 prlabel
- 11758                                  ;  716  4495 stmt
- 11759                                  ;  717  4500 expect
- 11760                                  ;  718  4507 pexpr
- 11761                                  ;  719  4513 pint1
- 11762                                  ;  720  4519 prjump
- 11763                                  ;  721  4526 prlabel
- 11764                                  ;  722  4534 prlabel
- 11765                                  ;  723  4542 pexpr
- 11766                                  ;  724  4548 pint1
- 11767                                  ;  725  4554 stmt
- 11768                                  ;  726  4559 prjump
- 11769                                  ;  727  4566 prlabel
- 11770                                  ;  728  4574 getlex
- 11771                                  ;  729  4581 next
- 11772                                  ;  730  4586 next
- 11773                                  ;  731  4591 next
- 11774                                  ;  732  4596 next
- 11775                                  ;  733  4601 next
- 11776                                  ;  734  4606 next
- 11777                                  ;  735  4611 next
- 11778                                  ;  736  4616 next
- 11779                                  ;  737  4621 next
- 11780                                  ;  738  4626 next
- 11781                                  ;  739  4631 next
- 11782                                  ;  740  4636 next
- 11783                                  ;  741  4641 next
- 11784                                  ;  742  4646 next
- 11785                                  ;  743  4651 next
- 11786                                  ;  744  4656 instr1
- 11787                                  ;  745  4663 next
- 11788                                  ;  746  4668 getlex
- 11789                                  ;  747  4675 next
- 11790                                  ;  748  4680 next
- 11791                                  ;  749  4685 getlex
- 11792                                  ;  750  4692 getstring
- 11793                                  ;  751  4702 digit
- 11794                                  ;  752  4708 getdigit
- 11795                                  ;  753  4717 next
- 11796                                  ;  754  4722 next
- 11797                                  ;  755  4727 next
- 11798                                  ;  756  4732 alnum
- 11799                                  ;  757  4738 strcpy
- 11800                                  ;  758  4745 alnum
- 11801                                  ;  759  4751 next
- 11802                                  ;  760  4756 eqstr
- 11803                                  ;  761  4762 eqstr
- 11804                                  ;  762  4768 eqstr
- 11805                                  ;  763  4774 eqstr
- 11806                                  ;  764  4780 eqstr
- 11807                                  ;  765  4786 eqstr
- 11808                                  ;  766  4792 eqstr
- 11809                                  ;  767  4798 eqstr
- 11810                                  ;  768  4804 eqstr
- 11811                                  ;  769  4810 eqstr
- 11812                                  ;  770  4816 eqstr
- 11813                                  ;  771  4822 eqstr
- 11814                                  ;  772  4828 eqstr
- 11815                                  ;  773  4834 eqstr
- 11816                                  ;  774  4840 eqstr
- 11817                                  ;  775  4846 eqstr
- 11818                                  ;  776  4852 eqstr
- 11819                                  ;  777  4858 convertdefine
- 11820                                  ;  778  4872 strcpy
- 11821                                  ;  779  4879 error1
- 11822                                  ;  780  4886 adrofname
- 11823                                  ;  781  4896 eqstr
- 11824                                  ;  782  4902 next
- 11825                                  ;  783  4907 alnum
- 11826                                  ;  784  4913 next
- 11827                                  ;  785  4918 digit
- 11828                                  ;  786  4924 next
- 11829                                  ;  787  4929 next
- 11830                                  ;  788  4934 next
- 11831                                  ;  789  4939 fgets1
- 11832                                  ;  790  4946 getlex
- 11833                                  ;  791  4953 istoken
- 11834                                  ;  792  4961 prs
- 11835                                  ;  793  4965 listproc
- 11836                                  ;  794  4974 prs
- 11837                                  ;  795  4978 pint1
- 11838                                  ;  796  4984 error1
- 11839                                  ;  797  4991 eprc
- 11840                                  ;  798  4996 writetty
- 11841                                  ;  799  5005 writetty
- 11842                                  ;  800  5014 fputcR
- 11843                                  ;  801  5021 prc
- 11844                                  ;  802  5025 prs
- 11845                                  ;  803  5029 prc
- 11846                                  ;  804  5033 eprc
- 11847                                  ;  805  5038 mkneg
- 11848                                  ;  806  5044 eprnum
- 11849                                  ;  807  5051 eprc
- 11850                                  ;  808  5056 prc
- 11851                                  ;  809  5060 mkneg
- 11852                                  ;  810  5066 pint1
- 11853                                  ;  811  5072 prc
- 11854                                  ;  812  5076 prc
- 11855                                  ;  813  5080 prc
- 11856                                  ;  814  5084 prc
- 11857                                  ;  815  5088 prc
- 11858                                  ;  816  5092 pint1
- 11859                                  ;  817  5098 printinputline
- 11860                                  ;  818  5113 readRL
- 11861                                  ;  819  5120 prs
- 11862                                  ;  820  5124 pint1
- 11863                                  ;  821  5130 prc
- 11864                                  ;  822  5134 prscomment
- 11865                                  ;  823  5145 fcloseR
- 11866                                  ;  824  5153 fcloseR
- 11867                                  ;  825  5161 exitR
- 11868                                  ;  826  5167 prnl
- 11869                                  ;  827  5172 prscomment
- 11870                                  ;  828  5183 prs
- 11871                                  ;  829  5187 pint1
- 11872                                  ;  830  5193 prs
- 11873                                  ;  831  5197 prs
- 11874                                  ;  832  5201 prs
- 11875                                  ;  833  5205 pint1
- 11876                                  ;  834  5211 prs
- 11877                                  ;  835  5215 pint1
- 11878                                  ;  836  5221 prs
- 11879                                  ;  837  5225 prc
- 11880                                  ;  838  5229 prs
- 11881                                  ;  839  5233 pint1
- 11882                                  ;  840  5239 prs
- 11883                                  ;  841  5243 prs
- 11884                                  ;  842  5247 end1
- 11885                                  ;  843  5252 prs
- 11886                                  ;  844  5256 prs
- 11887                                  ;  845  5260 prs
- 11888                                  ;  846  5264 pint1
- 11889                                  ;  847  5270 prs
- 11890                                  ;  848  5274 listvar
- 11891                                  ;  849  5282 prs
- 11892                                  ;  850  5286 printint51
- 11893                                  ;  851  5297 prc
- 11894                                  ;  852  5301 prs
- 11895                                  ;  853  5305 prs
- 11896                                  ;  854  5309 prs
- 11897                                  ;  855  5313 prs
- 11898                                  ;  856  5317 prs
- 11899                                  ;  857  5321 prs
- 11900                                  ;  858  5325 prs
- 11901                                  ;  859  5329 prs
- 11902                                  ;  860  5333 prs
- 11903                                  ;  861  5337 printint51
- 11904                                  ;  862  5348 printint51
- 11905                                  ;  863  5359 prs
- 11906                                  ;  864  5363 prs
- 11907                                  ;  865  5367 prc
- 11908                                  ;  866  5371 adrofname
- 11909                                  ;  867  5381 prs
- 11910                                  ;  868  5385 prc
- 11911                                  ;  869  5389 pint1
- 11912                                  ;  870  5395 prc
- 11913                                  ;  871  5399 pint1
- 11914                                  ;  872  5405 prc
- 11915                                  ;  873  5409 prs
- 11916                                  ;  874  5413 prc
- 11917                                  ;  875  5417 pint1
- 11918                                  ;  876  5423 prs
- 11919                                  ;  877  5427 calllisting
- 11920                                  ;  878  5439 prs
- 11921                                  ;  879  5443 printint51
- 11922                                  ;  880  5454 prc
- 11923                                  ;  881  5458 prs
- 11924                                  ;  882  5462 printint51
- 11925                                  ;  883  5473 prc
- 11926                                  ;  884  5477 from_far
- 11927                                  ;  885  5486 prs
- 11928                                  ;  886  5490 adrF
- 11929                                  ;  887  5495 from_far
- 11930                                  ;  888  5504 eqstr
- 11931                                  ;  889  5510 prs
- 11932                                  ;  890  5514 countcalls
- 11933                                  ;  891  5525 funclisting
- 11934                                  ;  892  5537 prs
- 11935                                  ;  893  5541 printint51
- 11936                                  ;  894  5552 printint51
- 11937                                  ;  895  5563 prs
- 11938                                  ;  896  5567 printint51
- 11939                                  ;  897  5578 prc
- 11940                                  ;  898  5582 prs
- 11941                                  ;  899  5586 prs
- 11942                                  ;  900  5590 prs
- 11943                                  ;  901  5594 prs
- 11944                                  ;  902  5598 prc
- 11945                                  ;  903  5602 prc
- 11946                                  ;  904  5606 adrF
- 11947                                  ;  905  5611 prs
- 11948                                  ;  906  5615 strcpy
- 11949                                  ;  907  5622 storefunc
- 11950                                  ;  908  5632 prs
- 11951                                  ;  909  5636 prs
- 11952                                  ;  910  5640 listvar
- 11953                                  ;  911  5648 listfunc
- 11954                                  ;  912  5657 listcall
- 11955                                  ;  913  5666 prs
- 11956                                  ;  914  5670 prs
- 11957                                  ;  915  5674 prs
- 11958                                  ;  916  5678 prs
- 11959                                  ;  917  5682 prs
- 11960                                  ;  918  5686 printint51
- 11961                                  ;  919  5697 prs
- 11962                                  ;  920  5701 printint51
- 11963                                  ;  921  5712 prs
- 11964                                  ;  922  5716 printint51
- 11965                                  ;  923  5727 prs
- 11966                                  ;  924  5731 printint51
- 11967                                  ;  925  5742 prs
- 11968                                  ;  926  5746 printint51
- 11969                                  ;  927  5757 prs
- 11970                                  ;  928  5761 printint51
- 11971                                  ;  929  5772 prs
- 11972                                  ;  930  5776 printint51
- 11973                                  ;  931  5787 prs
- 11974                                  ;  932  5791 printint51
- 11975                                  ;  933  5802 prs
- 11976                                  ;  934  5806 printint51
- 11977                                  ;  935  5817 prs
- 11978                                  ;  936  5821 printint51
- 11979                                  ;  937  5832 prs
- 11980                                  ;  938  5836 printint51
- 11981                                  ;  939  5847 prs
- 11982                                  ;  940  5851 printint51
- 11983                                  ;  941  5862 prs
- 11984                                  ;  942  5866 prs
- 11985                                  ;  943  5870 pint1
- 11986                                  ;  944  5876 prs
- 11987                                  ;  945  5880 printint51
- 11988                                  ;  946  5891 prs
- 11989                                  ;  947  5895 prs
- 11990                                  ;  948  5899 prs
- 11991                                  ;  949  5903 prs
- 11992                                  ;  950  5907 printint51
- 11993                                  ;  951  5918 prs
- 11994                                  ;  952  5922 printint51
- 11995                                  ;  953  5933 prs
- 11996                                  ;  954  5937 printint51
- 11997                                  ;  955  5948 prs
- 11998                                  ;  956  5952 end1
- 11999                                  ;  957  5957 DosInt
- 12000                                  ;  958  5964 DosInt
- 12001                                  ;Input: A.C, List: A.S,  Lines: 1002
- 12002                                  ;Glob. variables:  129 max.:  200
- 12003                                  ;Functions      :  106 max.:  300
- 12004                                  ;Calls          :  959 max.: 2000, NameField: 5971 max.:    -1
- 12005                                  ;Code until     :21541 max.: 30000, free: 8459
- 12006                                  ;Data (HeapEnd) :-11988, resting stacksize: 11987
- 12007                                  ;Max. Const in 'epilog' :  947 max. 3000, free: 2053
+ 10787                                  ;-997   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
+ 10788                                  
+ 10789                                  ;Function : from_far, Number of local variables: 2
+ 10790                                  ;   # type sign width addr used name   list of local variables
+ 10791                                  ;  200 ptr sign byte   996 NULL dest = bp+4
+ 10792                                  ;  201 ptr sign byte   996 NULL src = bp+6;
+ 10793 00005345 C8000000                 ENTER  0,0
+ 10794 00005349 A1[6400]                 mov ax, [segE]
+ 10795 0000534C 8EC0                     mov  es, ax
+ 10796 0000534E 8B7606                   mov  si, [bp+6]
+ 10797 00005351 8B7E04                   mov  di, [bp+4]
+ 10798                                  
+ 10799                                  ;-998   do{
+ 10800                                  
+ 10801                                  .from_far588:
+ 10802                                  
+ 10803                                  ;-999   asm mov al, [es:si]
+ 10804                                  
+ 10805 00005354 268A04                   mov al, [es:si]
+ 10806                                  
+ 10807                                  ;-1000   asm inc si
+ 10808                                  
+ 10809 00005357 46                       inc si
+ 10810                                  
+ 10811                                  ;-1001   asm mov [di], al
+ 10812                                  
+ 10813 00005358 8805                     mov [di], al
+ 10814                                  
+ 10815                                  ;-1002   asm inc di
+ 10816                                  
+ 10817 0000535A 47                       inc di
+ 10818                                  
+ 10819                                  ;-1003   } while (al != 0);
+ 10820                                  
+ 10821 0000535B 3C00                     cmp  al, 0
+ 10822 0000535D 0F840200                 je  .from_far589
+ 10823 00005361 EBF1                     jmp .from_far588
+ 10824                                  .from_far589:
+ 10825                                  
+ 10826                                  ;-1004 }
+ 10827 00005363 C9                       LEAVE
+ 10828 00005364 C3                       ret
+ 10829                                  ; ENDP
+ 10830                                   
+ 10831                                  ; missing functions: 
+ 10832                                  ; Number of unresolved CALLs :    0 All FUNCTIONs in place
+ 10833 00005365 E80000                  LastFunctionByt:db 0E8h, 0, 0
+ 10834 00005368 58                      pop ax
+ 10835 00005369 C3                      ret
+ 10836                                   
+ 10837                                  ;   # type sign width  adr used name   list of global variables
+ 10838                                  
+ 10839                                  ;    1 arr sign byte     2    2 Version1[10]
+ 10840                                  ;    2 def unsg byte     3    - LSTART=200
+ 10841                                  ;    3 def unsg byte     4    - VARMAX=300
+ 10842                                  ;    4 def unsg byte     5    - GNAMEMAX=4800
+ 10843                                  ;    5 def unsg byte     6    - FUNCMAX=300
+ 10844                                  ;    6 def unsg byte     7    - FNAMEMAX=4800
+ 10845                                  ;    7 def unsg byte     8    - CALLMAX=2000
+ 10846                                  ;    8 def unsg byte     9    - IDLENMAX=15
+ 10847                                  ;    9 def unsg byte    11    - T_NAME=256
+ 10848                                  ;   10 def unsg byte    12    - T_CONST=257
+ 10849                                  ;   11 def unsg byte    13    - T_STRING=258
+ 10850                                  ;   12 def unsg byte    14    - T_INCLUDE=510
+ 10851                                  ;   13 def unsg byte    15    - T_DEFINE=511
+ 10852                                  ;   14 def unsg byte    16    - T_RETURN=512
+ 10853                                  ;   15 def unsg byte    17    - T_IF=513
+ 10854                                  ;   16 def unsg byte    18    - T_ELSE=514
+ 10855                                  ;   17 def unsg byte    19    - T_WHILE=515
+ 10856                                  ;   18 def unsg byte    20    - T_DO=516
+ 10857                                  ;   19 def unsg byte    21    - T_INT=517
+ 10858                                  ;   20 def unsg byte    22    - T_ASM=518
+ 10859                                  ;   21 def unsg byte    23    - T_ASMBLOCK=519
+ 10860                                  ;   22 def unsg byte    24    - T_EMIT=520
+ 10861                                  ;   23 def unsg byte    25    - T_GOTO=521
+ 10862                                  ;   24 def unsg byte    26    - T_VOID=529
+ 10863                                  ;   25 def unsg byte    27    - T_CHAR=530
+ 10864                                  ;   26 def unsg byte    28    - T_SIGNED=531
+ 10865                                  ;   27 def unsg byte    29    - T_UNSIGNED=532
+ 10866                                  ;   28 def unsg byte    30    - T_LONG=533
+ 10867                                  ;   29 def unsg byte    31    - T_EQ=806
+ 10868                                  ;   30 def unsg byte    32    - T_NE=807
+ 10869                                  ;   31 def unsg byte    33    - T_GE=811
+ 10870                                  ;   32 def unsg byte    34    - T_LE=824
+ 10871                                  ;   33 def unsg byte    35    - T_PLUSPLUS=1219
+ 10872                                  ;   34 def unsg byte    36    - T_MINUSMINUS=1225
+ 10873                                  ;   35 def unsg byte    37    - T_PLUSASS=1230
+ 10874                                  ;   36 def unsg byte    38    - T_MINUSASS=1231
+ 10875                                  ;   37 def unsg byte    39    - T_MULASS=1232
+ 10876                                  ;   38 def unsg byte    40    - T_DIVASS=1233
+ 10877                                  ;   39 def unsg byte    41    - T_ANDASS=1234
+ 10878                                  ;   40 def unsg byte    42    - T_ORASS=1235
+ 10879                                  ;   41 def unsg byte    43    - T_LESSLESS=1240
+ 10880                                  ;   42 def unsg byte    44    - T_GREATGREAT=1241
+ 10881                                  ;   43 def unsg byte    45    - COMAX=3000
+ 10882                                  ;   44 def unsg byte    46    - CMDLENMAX=67
+ 10883                                  ;   45 var unsg word    47    3 ORGDATAORIG
+ 10884                                  ;   46 var unsg word    47   10 orgData
+ 10885                                  ;   47 arr sign byte    48    4 co[3000]
+ 10886                                  ;   48 var sign word    48    4 maxco
+ 10887                                  ;   49 var sign word    48    3 maxco1
+ 10888                                  ;   50 arr sign byte    49    2 coname[67]
+ 10889                                  ;   51 ptr sign byte    49    5 cloc
+ 10890                                  ;   52 var sign word    50    6 fdin
+ 10891                                  ;   53 var sign word    50    4 fdout
+ 10892                                  ;   54 arr sign byte    50  104 symbol[128]
+ 10893                                  ;   55 arr sign byte    51   12 fname[67]
+ 10894                                  ;   56 arr sign byte    51   10 namein[67]
+ 10895                                  ;   57 arr sign byte    52    7 namelst[67]
+ 10896                                  ;   58 arr sign byte    52    2 archivename[67]
+ 10897                                  ;   59 var sign word    53   41 token
+ 10898                                  ;   60 var sign byte    53    2 globC
+ 10899                                  ;   61 var sign word    53    3 spalte
+ 10900                                  ;   62 var sign byte    54   28 thechar
+ 10901                                  ;   63 var sign word    54    9 iscmp
+ 10902                                  ;   64 var sign word    54    4 nconst
+ 10903                                  ;   65 var sign word    55    3 nreturn
+ 10904                                  ;   66 var sign word    55   12 nlabel
+ 10905                                  ;   67 var sign word    56   24 GTop
+ 10906                                  ;   68 var sign word    56   20 LTop
+ 10907                                  ;   69 var unsg word    57   44 lexval
+ 10908                                  ;   70 var sign word    58    6 typei
+ 10909                                  ;   71 var sign byte    58    8 istype
+ 10910                                  ;   72 arr sign byte    58   11 GType[300]
+ 10911                                  ;   73 var sign word    59    6 signi
+ 10912                                  ;   74 var sign byte    59    5 issign
+ 10913                                  ;   75 arr sign byte    59    5 GSign[300]
+ 10914                                  ;   76 var sign word    60    9 widthi
+ 10915                                  ;   77 var sign byte    60   19 iswidth
+ 10916                                  ;   78 arr sign byte    60    5 GWidth[300]
+ 10917                                  ;   79 arr sign word    61    4 GAdr[300]
+ 10918                                  ;   80 arr sign word    61    6 GUsed[300]
+ 10919                                  ;   81 var sign word    62   26 wi
+ 10920                                  ;   82 arr sign word    62   11 GData[300]
+ 10921                                  ;   83 arr sign byte    62    2 GNameField[4800]
+ 10922                                  ;   84 var sign word    63   13 FTop
+ 10923                                  ;   85 var sign word    63    8 CTop
+ 10924                                  ;   86 arr sign byte    64    2 FType[300]
+ 10925                                  ;   87 arr sign byte    64    3 CType[2000]
+ 10926                                  ;   88 arr sign word    65    2 FAdr[300]
+ 10927                                  ;   89 arr sign word    65    4 CAdr[2000]
+ 10928                                  ;   90 arr sign word    66    4 FCalls[300]
+ 10929                                  ;   91 arr sign byte    67    5 FNameField[4800]
+ 10930                                  ;   92 arr sign byte    68    7 NameA[32]
+ 10931                                  ;   93 arr sign byte    69    5 fgetsdest[128]
+ 10932                                  ;   94 ptr unsg byte    69    8 CNameTop
+ 10933                                  ;   95 ptr unsg byte    70   10 fgetsp
+ 10934                                  ;   96 var unsg word    70    4 segE
+ 10935                                  ;   97 var unsg word    71   12 lineno
+ 10936                                  ;   98 var unsg word    71    2 linenoinclude
+ 10937                                  ;   99 ptr unsg byte    72   17 pt
+ 10938                                  ;  100 ptr unsg byte    72    8 p1
+ 10939                                  ;  101 var sign word    73    9 DOS_ERR
+ 10940                                  ;  102 var sign word    73    5 DOS_NoBytes
+ 10941                                  ;  103 var sign byte    73    3 DOS_ByteRead
+ 10942                                  ;  104 arr sign byte   131    2 doglobName[15]
+ 10943                                  ;  105 var sign word   297    5 mod1
+ 10944                                  ;  106 var sign word   297   12 ireg1
+ 10945                                  ;  107 var sign word   297    6 idx1
+ 10946                                  ;  108 var sign word   297    1 ids1
+ 10947                                  ;  109 var sign word   297    4 idw1
+ 10948                                  ;  110 var sign word   297    2 idt1
+ 10949                                  ;  111 var sign word   297 NULL val1
+ 10950                                  ;  112 var sign word   298    2 mod2
+ 10951                                  ;  113 var sign word   298    6 ireg2
+ 10952                                  ;  114 var sign word   298    6 idx2
+ 10953                                  ;  115 var sign word   298    1 ids2
+ 10954                                  ;  116 var sign word   298    4 idw2
+ 10955                                  ;  117 var sign word   298    2 idt2
+ 10956                                  ;  118 var sign word   298    2 val2
+ 10957                                  ;  119 arr sign byte   363    9 ops[5]
+ 10958                                  ;  120 arr sign byte   405    3 printregstr[74]
+ 10959                                  ;  121 var sign word   413    1 evalue
+ 10960                                  ;  122 var sign word   413    1 exprtype
+ 10961                                  ;  123 arr sign word   565    2 docalltype[10]
+ 10962                                  ;  124 arr sign word   565    2 docallvalue[10]
+ 10963                                  ;  125 arr sign byte   566    2 procname[17]
+ 10964                                  ;  126 ptr sign byte   621    1 arglen
+ 10965                                  ;  127 ptr sign byte   621    2 argv
+ 10966                                  ;  128 arr sign byte   762    2 symboltemp[80]
+ 10967                                  ;  129 var unsg word   943    1 MAXUI
+ 10968                                  
+ 10969                                  
+ 10970                                  ;   # Calls Line Width  Name   list of functions
+ 10971                                  
+ 10972                                  ;    0    4   75   writetty
+ 10973                                  ;    1    1   76   putch
+ 10974                                  ;    2    6   77   cputs
+ 10975                                  ;    3    3   78   mkneg
+ 10976                                  ;    4    8   80   DosInt
+ 10977                                  ;    5    2   85   openR
+ 10978                                  ;    6    1   86   creatR
+ 10979                                  ;    7    2   87   fcloseR
+ 10980                                  ;    8    3   88   exitR
+ 10981                                  ;    9    2   89   readRL
+ 10982                                  ;   10    1   90   fputcR
+ 10983                                  ;   11    8   93   strlen
+ 10984                                  ;   12   24   94   strcpy
+ 10985                                  ;   13   74   95   eqstr
+ 10986                                  ;   14    2   98   instr1
+ 10987                                  ;   15    1   99   strcat1
+ 10988                                  ;   16    1  100   toupper
+ 10989                                  ;   17    3  102   digit
+ 10990                                  ;   18    1  107   letter
+ 10991                                  ;   19    3  117   alnum
+ 10992                                  ;   20    4  122   a
+ 10993                                  ;   21   21  123   v
+ 10994                                  ;   22    4  128   checknamelen
+ 10995                                  ;   23    1  132   doglob
+ 10996                                  ;   24   12  181   gettypes
+ 10997                                  ;   25    9  190   adrofname
+ 10998                                  ;   26    7  191   adrF
+ 10999                                  ;   27    4  193   printName
+ 11000                                  ;   28   12  197   searchname
+ 11001                                  ;   29    3  201   checkName
+ 11002                                  ;   30   10  206   typeName
+ 11003                                  ;   31    3  222   name1
+ 11004                                  ;   32    1  227   storecall
+ 11005                                  ;   33    2  233   storefunc
+ 11006                                  ;   34    2  237   addlocal
+ 11007                                  ;   35    1  243   checkFunction
+ 11008                                  ;   36    1  246   dofunc
+ 11009                                  ;   37    1  287   isvariable
+ 11010                                  ;   38    3  300   pexpr
+ 11011                                  ;   39    1  307   constantexpr
+ 11012                                  ;   40    3  317   exprstart
+ 11013                                  ;   41    1  319   expr2
+ 11014                                  ;   42    3  364   doreg1
+ 11015                                  ;   43    6  383   checkreg
+ 11016                                  ;   44    6  408   printreg
+ 11017                                  ;   45    2  414   expr
+ 11018                                  ;   46    4  463   compoundass
+ 11019                                  ;   47    2  470   dovar1
+ 11020                                  ;   48    8  491   rterm
+ 11021                                  ;   49    1  504   isreg
+ 11022                                  ;   50   15  522   doreg
+ 11023                                  ;   51    1  528   doassign
+ 11024                                  ;   52    1  546   domul
+ 11025                                  ;   53    2  550   doidiv
+ 11026                                  ;   54    1  563   domod
+ 11027                                  ;   55    1  567   docall1
+ 11028                                  ;   56 NULL  609   main
+ 11029                                  ;   57    2  620   getfirstchar
+ 11030                                  ;   58    1  622   getarg
+ 11031                                  ;   59    2  640   parse
+ 11032                                  ;   60    1  649   checkcalls
+ 11033                                  ;   61    1  666   doinclude
+ 11034                                  ;   62    1  677   dodefine
+ 11035                                  ;   63    6  693   stmt
+ 11036                                  ;   64    1  724   doemit
+ 11037                                  ;   65    3  728   cmpneg
+ 11038                                  ;   66    7  741   prlabel
+ 11039                                  ;   67    3  742   prjump
+ 11040                                  ;   68    1  743   doif
+ 11041                                  ;   69    1  749   dodo
+ 11042                                  ;   70    1  753   dowhile
+ 11043                                  ;   71    4  756   isrelational
+ 11044                                  ;   72   17  763   getlex
+ 11045                                  ;   73    1  815   convertdefine
+ 11046                                  ;   74    1  822   getdigit
+ 11047                                  ;   75    1  831   getstring
+ 11048                                  ;   76   31  834   next
+ 11049                                  ;   77   78  835   istoken
+ 11050                                  ;   78   36  836   expect
+ 11051                                  ;   79    6  839   eprc
+ 11052                                  ;   80    5  840   eprs
+ 11053                                  ;   81   41  841   prc
+ 11054                                  ;   82    3  846   prscomment
+ 11055                                  ;   83    8  848   prnl
+ 11056                                  ;   84  249  850   prs
+ 11057                                  ;   85    2  855   eprnum
+ 11058                                  ;   86    7  857   pint1
+ 11059                                  ;   87   35  859   prunsign1
+ 11060                                  ;   88   25  862   printint51
+ 11061                                  ;   89    2  866   fgets1
+ 11062                                  ;   90    1  870   printinputline
+ 11063                                  ;   91    2  878   end1
+ 11064                                  ;   92   50  879   error1
+ 11065                                  ;   93    2  888   listproc
+ 11066                                  ;   94    2  896   listvar
+ 11067                                  ;   95    1  912   listcall
+ 11068                                  ;   96    1  915   calllisting
+ 11069                                  ;   97    1  921   countcalls
+ 11070                                  ;   98    1  929   listfunc
+ 11071                                  ;   99    1  933   funclisting
+ 11072                                  ;  100    1  944   epilog
+ 11073                                  ;  101    1  976   setblock
+ 11074                                  ;  102    1  978   allocmem
+ 11075                                  ;  103 NULL  982   copyF
+ 11076                                  ;  104    1  988   to_far
+ 11077                                  ;  105    3  996   from_far
+ 11078                                  ;  106 NULL 1004   LastFunctionByt
+ 11079                                  
+ 11080                                  ;    #  addr name   list of CALLs
+ 11081                                  
+ 11082                                  ;    0     0 writetty
+ 11083                                  ;    1     9 writetty
+ 11084                                  ;    2    18 putch
+ 11085                                  ;    3    24 DosInt
+ 11086                                  ;    4    31 DosInt
+ 11087                                  ;    5    38 DosInt
+ 11088                                  ;    6    45 DosInt
+ 11089                                  ;    7    52 DosInt
+ 11090                                  ;    8    59 DosInt
+ 11091                                  ;    9    66 strcpy
+ 11092                                  ;   10    73 digit
+ 11093                                  ;   11    79 letter
+ 11094                                  ;   12    86 printName
+ 11095                                  ;   13    96 prc
+ 11096                                  ;   14   100 printName
+ 11097                                  ;   15   110 prc
+ 11098                                  ;   16   114 strlen
+ 11099                                  ;   17   121 error1
+ 11100                                  ;   18   128 error1
+ 11101                                  ;   19   135 error1
+ 11102                                  ;   20   142 checknamelen
+ 11103                                  ;   21   155 checkName
+ 11104                                  ;   22   165 error1
+ 11105                                  ;   23   172 istoken
+ 11106                                  ;   24   180 istoken
+ 11107                                  ;   25   188 prs
+ 11108                                  ;   26   192 prunsign1
+ 11109                                  ;   27   202 prs
+ 11110                                  ;   28   206 prs
+ 11111                                  ;   29   210 prs
+ 11112                                  ;   30   214 prs
+ 11113                                  ;   31   218 prs
+ 11114                                  ;   32   222 prunsign1
+ 11115                                  ;   33   232 prs
+ 11116                                  ;   34   236 expect
+ 11117                                  ;   35   243 expect
+ 11118                                  ;   36   250 error1
+ 11119                                  ;   37   257 prs
+ 11120                                  ;   38   261 prs
+ 11121                                  ;   39   265 prs
+ 11122                                  ;   40   269 strcpy
+ 11123                                  ;   41   276 expect
+ 11124                                  ;   42   283 istoken
+ 11125                                  ;   43   291 prc
+ 11126                                  ;   44   295 prscomment
+ 11127                                  ;   45   306 prc
+ 11128                                  ;   46   310 prs
+ 11129                                  ;   47   314 strlen
+ 11130                                  ;   48   321 istoken
+ 11131                                  ;   49   329 prc
+ 11132                                  ;   50   333 expect
+ 11133                                  ;   51   340 prunsign1
+ 11134                                  ;   52   350 istoken
+ 11135                                  ;   53   358 expect
+ 11136                                  ;   54   365 error1
+ 11137                                  ;   55   372 prs
+ 11138                                  ;   56   376 prs
+ 11139                                  ;   57   380 prs
+ 11140                                  ;   58   384 prs
+ 11141                                  ;   59   388 prs
+ 11142                                  ;   60   392 prs
+ 11143                                  ;   61   396 istoken
+ 11144                                  ;   62   404 prc
+ 11145                                  ;   63   408 istoken
+ 11146                                  ;   64   416 expect
+ 11147                                  ;   65   423 prunsign1
+ 11148                                  ;   66   433 prunsign1
+ 11149                                  ;   67   443 adrofname
+ 11150                                  ;   68   453 strcpy
+ 11151                                  ;   69   460 strcpy
+ 11152                                  ;   70   467 expect
+ 11153                                  ;   71   474 adrF
+ 11154                                  ;   72   479 adrofname
+ 11155                                  ;   73   489 prs
+ 11156                                  ;   74   493 prs
+ 11157                                  ;   75   497 prc
+ 11158                                  ;   76   501 pint1
+ 11159                                  ;   77   507 prc
+ 11160                                  ;   78   511 checkName
+ 11161                                  ;   79   521 error1
+ 11162                                  ;   80   528 adrofname
+ 11163                                  ;   81   538 eqstr
+ 11164                                  ;   82   544 adrofname
+ 11165                                  ;   83   554 eqstr
+ 11166                                  ;   84   560 istoken
+ 11167                                  ;   85   568 istoken
+ 11168                                  ;   86   576 istoken
+ 11169                                  ;   87   584 istoken
+ 11170                                  ;   88   592 istoken
+ 11171                                  ;   89   600 istoken
+ 11172                                  ;   90   608 istoken
+ 11173                                  ;   91   616 istoken
+ 11174                                  ;   92   624 name1
+ 11175                                  ;   93   630 error1
+ 11176                                  ;   94   637 getlex
+ 11177                                  ;   95   644 error1
+ 11178                                  ;   96   651 error1
+ 11179                                  ;   97   658 strlen
+ 11180                                  ;   98   665 to_far
+ 11181                                  ;   99   672 error1
+ 11182                                  ;  100   679 adrF
+ 11183                                  ;  101   684 strcpy
+ 11184                                  ;  102   691 error1
+ 11185                                  ;  103   698 checkName
+ 11186                                  ;  104   708 error1
+ 11187                                  ;  105   715 adrF
+ 11188                                  ;  106   720 strcpy
+ 11189                                  ;  107   727 adrF
+ 11190                                  ;  108   732 eqstr
+ 11191                                  ;  109   738 checknamelen
+ 11192                                  ;  110   751 strcpy
+ 11193                                  ;  111   758 checkFunction
+ 11194                                  ;  112   772 error1
+ 11195                                  ;  113   779 storefunc
+ 11196                                  ;  114   789 prs
+ 11197                                  ;  115   793 prs
+ 11198                                  ;  116   797 prs
+ 11199                                  ;  117   801 expect
+ 11200                                  ;  118   808 istoken
+ 11201                                  ;  119   816 typeName
+ 11202                                  ;  120   825 addlocal
+ 11203                                  ;  121   834 istoken
+ 11204                                  ;  122   842 expect
+ 11205                                  ;  123   849 expect
+ 11206                                  ;  124   856 isvariable
+ 11207                                  ;  125   867 typeName
+ 11208                                  ;  126   876 checknamelen
+ 11209                                  ;  127   889 addlocal
+ 11210                                  ;  128   898 istoken
+ 11211                                  ;  129   906 expect
+ 11212                                  ;  130   913 expect
+ 11213                                  ;  131   920 istoken
+ 11214                                  ;  132   928 expect
+ 11215                                  ;  133   935 listproc
+ 11216                                  ;  134   944 prs
+ 11217                                  ;  135   948 mkneg
+ 11218                                  ;  136   954 prunsign1
+ 11219                                  ;  137   964 prs
+ 11220                                  ;  138   968 istoken
+ 11221                                  ;  139   976 stmt
+ 11222                                  ;  140   981 prs
+ 11223                                  ;  141   985 prs
+ 11224                                  ;  142   989 prc
+ 11225                                  ;  143   993 prs
+ 11226                                  ;  144   997 prs
+ 11227                                  ;  145  1001 prs
+ 11228                                  ;  146  1005 strlen
+ 11229                                  ;  147  1012 strcpy
+ 11230                                  ;  148  1019 prs
+ 11231                                  ;  149  1023 expect
+ 11232                                  ;  150  1030 eqstr
+ 11233                                  ;  151  1036 constantexpr
+ 11234                                  ;  152  1049 checkreg
+ 11235                                  ;  153  1058 doreg1
+ 11236                                  ;  154  1065 exprstart
+ 11237                                  ;  155  1075 prs
+ 11238                                  ;  156  1079 prs
+ 11239                                  ;  157  1083 expect
+ 11240                                  ;  158  1090 getlex
+ 11241                                  ;  159  1097 typeName
+ 11242                                  ;  160  1106 searchname
+ 11243                                  ;  161  1117 gettypes
+ 11244                                  ;  162  1126 isrelational
+ 11245                                  ;  163  1139 error1
+ 11246                                  ;  164  1146 expect
+ 11247                                  ;  165  1153 prs
+ 11248                                  ;  166  1157 prs
+ 11249                                  ;  167  1161 gettypes
+ 11250                                  ;  168  1170 prs
+ 11251                                  ;  169  1174 prs
+ 11252                                  ;  170  1178 v
+ 11253                                  ;  171  1180 prs
+ 11254                                  ;  172  1184 prunsign1
+ 11255                                  ;  173  1194 cmpneg
+ 11256                                  ;  174  1201 prs
+ 11257                                  ;  175  1205 expect
+ 11258                                  ;  176  1212 eqstr
+ 11259                                  ;  177  1218 expr2
+ 11260                                  ;  178  1224 expr
+ 11261                                  ;  179  1229 getlex
+ 11262                                  ;  180  1236 typeName
+ 11263                                  ;  181  1245 error1
+ 11264                                  ;  182  1252 checkreg
+ 11265                                  ;  183  1261 doreg1
+ 11266                                  ;  184  1268 searchname
+ 11267                                  ;  185  1279 gettypes
+ 11268                                  ;  186  1288 error1
+ 11269                                  ;  187  1295 isrelational
+ 11270                                  ;  188  1308 error1
+ 11271                                  ;  189  1315 istoken
+ 11272                                  ;  190  1323 error1
+ 11273                                  ;  191  1330 istoken
+ 11274                                  ;  192  1338 prs
+ 11275                                  ;  193  1342 prs
+ 11276                                  ;  194  1346 prs
+ 11277                                  ;  195  1350 prs
+ 11278                                  ;  196  1354 prs
+ 11279                                  ;  197  1358 v
+ 11280                                  ;  198  1360 prs
+ 11281                                  ;  199  1364 prunsign1
+ 11282                                  ;  200  1374 adrofname
+ 11283                                  ;  201  1384 prs
+ 11284                                  ;  202  1388 prs
+ 11285                                  ;  203  1392 typeName
+ 11286                                  ;  204  1401 checkreg
+ 11287                                  ;  205  1410 prs
+ 11288                                  ;  206  1414 printreg
+ 11289                                  ;  207  1423 v
+ 11290                                  ;  208  1425 prs
+ 11291                                  ;  209  1429 printreg
+ 11292                                  ;  210  1438 error1
+ 11293                                  ;  211  1445 searchname
+ 11294                                  ;  212  1456 gettypes
+ 11295                                  ;  213  1465 error1
+ 11296                                  ;  214  1472 prs
+ 11297                                  ;  215  1476 printreg
+ 11298                                  ;  216  1485 error1
+ 11299                                  ;  217  1492 prs
+ 11300                                  ;  218  1496 a
+ 11301                                  ;  219  1498 prs
+ 11302                                  ;  220  1502 prs
+ 11303                                  ;  221  1506 prs
+ 11304                                  ;  222  1510 v
+ 11305                                  ;  223  1512 adrofname
+ 11306                                  ;  224  1522 prs
+ 11307                                  ;  225  1526 prs
+ 11308                                  ;  226  1530 error1
+ 11309                                  ;  227  1537 istoken
+ 11310                                  ;  228  1545 strcpy
+ 11311                                  ;  229  1552 istoken
+ 11312                                  ;  230  1560 strcpy
+ 11313                                  ;  231  1567 istoken
+ 11314                                  ;  232  1575 strcpy
+ 11315                                  ;  233  1582 istoken
+ 11316                                  ;  234  1590 strcpy
+ 11317                                  ;  235  1597 istoken
+ 11318                                  ;  236  1605 strcpy
+ 11319                                  ;  237  1612 istoken
+ 11320                                  ;  238  1620 strcpy
+ 11321                                  ;  239  1627 istoken
+ 11322                                  ;  240  1635 strcpy
+ 11323                                  ;  241  1642 getlex
+ 11324                                  ;  242  1649 isrelational
+ 11325                                  ;  243  1662 error1
+ 11326                                  ;  244  1669 strcpy
+ 11327                                  ;  245  1676 prnl
+ 11328                                  ;  246  1681 prs
+ 11329                                  ;  247  1685 prs
+ 11330                                  ;  248  1689 printreg
+ 11331                                  ;  249  1698 prs
+ 11332                                  ;  250  1702 istoken
+ 11333                                  ;  251  1710 prunsign1
+ 11334                                  ;  252  1720 typeName
+ 11335                                  ;  253  1729 checkreg
+ 11336                                  ;  254  1738 printreg
+ 11337                                  ;  255  1747 searchname
+ 11338                                  ;  256  1758 a
+ 11339                                  ;  257  1760 v
+ 11340                                  ;  258  1762 cmpneg
+ 11341                                  ;  259  1769 prs
+ 11342                                  ;  260  1773 expect
+ 11343                                  ;  261  1780 strlen
+ 11344                                  ;  262  1787 eqstr
+ 11345                                  ;  263  1793 eqstr
+ 11346                                  ;  264  1799 eqstr
+ 11347                                  ;  265  1805 eqstr
+ 11348                                  ;  266  1811 eqstr
+ 11349                                  ;  267  1817 eqstr
+ 11350                                  ;  268  1823 eqstr
+ 11351                                  ;  269  1829 eqstr
+ 11352                                  ;  270  1835 eqstr
+ 11353                                  ;  271  1841 eqstr
+ 11354                                  ;  272  1847 eqstr
+ 11355                                  ;  273  1853 eqstr
+ 11356                                  ;  274  1859 eqstr
+ 11357                                  ;  275  1865 eqstr
+ 11358                                  ;  276  1871 eqstr
+ 11359                                  ;  277  1877 eqstr
+ 11360                                  ;  278  1883 eqstr
+ 11361                                  ;  279  1889 eqstr
+ 11362                                  ;  280  1895 eqstr
+ 11363                                  ;  281  1901 eqstr
+ 11364                                  ;  282  1907 eqstr
+ 11365                                  ;  283  1913 eqstr
+ 11366                                  ;  284  1919 strlen
+ 11367                                  ;  285  1926 eqstr
+ 11368                                  ;  286  1932 eqstr
+ 11369                                  ;  287  1938 eqstr
+ 11370                                  ;  288  1944 eqstr
+ 11371                                  ;  289  1950 eqstr
+ 11372                                  ;  290  1956 eqstr
+ 11373                                  ;  291  1962 eqstr
+ 11374                                  ;  292  1968 eqstr
+ 11375                                  ;  293  1974 eqstr
+ 11376                                  ;  294  1980 prc
+ 11377                                  ;  295  1984 prc
+ 11378                                  ;  296  1988 prc
+ 11379                                  ;  297  1992 istoken
+ 11380                                  ;  298  2000 prs
+ 11381                                  ;  299  2004 prunsign1
+ 11382                                  ;  300  2014 typeName
+ 11383                                  ;  301  2023 checkreg
+ 11384                                  ;  302  2032 doreg1
+ 11385                                  ;  303  2039 docall1
+ 11386                                  ;  304  2047 isreg
+ 11387                                  ;  305  2053 searchname
+ 11388                                  ;  306  2064 gettypes
+ 11389                                  ;  307  2073 istoken
+ 11390                                  ;  308  2081 istoken
+ 11391                                  ;  309  2089 expect
+ 11392                                  ;  310  2096 searchname
+ 11393                                  ;  311  2107 expect
+ 11394                                  ;  312  2114 expect
+ 11395                                  ;  313  2121 gettypes
+ 11396                                  ;  314  2130 error1
+ 11397                                  ;  315  2137 istoken
+ 11398                                  ;  316  2145 error1
+ 11399                                  ;  317  2152 prs
+ 11400                                  ;  318  2156 prs
+ 11401                                  ;  319  2160 prs
+ 11402                                  ;  320  2164 v
+ 11403                                  ;  321  2166 istoken
+ 11404                                  ;  322  2174 error1
+ 11405                                  ;  323  2181 prs
+ 11406                                  ;  324  2185 prs
+ 11407                                  ;  325  2189 prs
+ 11408                                  ;  326  2193 v
+ 11409                                  ;  327  2195 istoken
+ 11410                                  ;  328  2203 compoundass
+ 11411                                  ;  329  2215 istoken
+ 11412                                  ;  330  2223 compoundass
+ 11413                                  ;  331  2235 istoken
+ 11414                                  ;  332  2243 compoundass
+ 11415                                  ;  333  2255 istoken
+ 11416                                  ;  334  2263 compoundass
+ 11417                                  ;  335  2275 istoken
+ 11418                                  ;  336  2283 error1
+ 11419                                  ;  337  2290 istoken
+ 11420                                  ;  338  2298 error1
+ 11421                                  ;  339  2305 istoken
+ 11422                                  ;  340  2313 expr
+ 11423                                  ;  341  2318 doassign
+ 11424                                  ;  342  2327 dovar1
+ 11425                                  ;  343  2334 istoken
+ 11426                                  ;  344  2342 rterm
+ 11427                                  ;  345  2348 istoken
+ 11428                                  ;  346  2356 rterm
+ 11429                                  ;  347  2362 istoken
+ 11430                                  ;  348  2370 rterm
+ 11431                                  ;  349  2376 istoken
+ 11432                                  ;  350  2384 rterm
+ 11433                                  ;  351  2390 istoken
+ 11434                                  ;  352  2398 rterm
+ 11435                                  ;  353  2404 istoken
+ 11436                                  ;  354  2412 rterm
+ 11437                                  ;  355  2418 istoken
+ 11438                                  ;  356  2426 domul
+ 11439                                  ;  357  2432 istoken
+ 11440                                  ;  358  2440 doidiv
+ 11441                                  ;  359  2447 istoken
+ 11442                                  ;  360  2455 domod
+ 11443                                  ;  361  2461 isrelational
+ 11444                                  ;  362  2474 rterm
+ 11445                                  ;  363  2480 cmpneg
+ 11446                                  ;  364  2487 error1
+ 11447                                  ;  365  2494 prnl
+ 11448                                  ;  366  2499 prs
+ 11449                                  ;  367  2503 prs
+ 11450                                  ;  368  2507 gettypes
+ 11451                                  ;  369  2516 prs
+ 11452                                  ;  370  2520 prs
+ 11453                                  ;  371  2524 v
+ 11454                                  ;  372  2526 prs
+ 11455                                  ;  373  2530 expect
+ 11456                                  ;  374  2537 prunsign1
+ 11457                                  ;  375  2547 gettypes
+ 11458                                  ;  376  2556 prs
+ 11459                                  ;  377  2560 v
+ 11460                                  ;  378  2562 prnl
+ 11461                                  ;  379  2567 prs
+ 11462                                  ;  380  2571 prs
+ 11463                                  ;  381  2575 prs
+ 11464                                  ;  382  2579 prnl
+ 11465                                  ;  383  2584 prs
+ 11466                                  ;  384  2588 prs
+ 11467                                  ;  385  2592 a
+ 11468                                  ;  386  2594 prs
+ 11469                                  ;  387  2598 v
+ 11470                                  ;  388  2600 prs
+ 11471                                  ;  389  2604 prs
+ 11472                                  ;  390  2608 prs
+ 11473                                  ;  391  2612 prs
+ 11474                                  ;  392  2616 prs
+ 11475                                  ;  393  2620 prc
+ 11476                                  ;  394  2624 printName
+ 11477                                  ;  395  2634 prs
+ 11478                                  ;  396  2638 prnl
+ 11479                                  ;  397  2643 prs
+ 11480                                  ;  398  2647 prs
+ 11481                                  ;  399  2651 prs
+ 11482                                  ;  400  2655 prs
+ 11483                                  ;  401  2659 v
+ 11484                                  ;  402  2661 istoken
+ 11485                                  ;  403  2669 prnl
+ 11486                                  ;  404  2674 prs
+ 11487                                  ;  405  2678 prs
+ 11488                                  ;  406  2682 prs
+ 11489                                  ;  407  2686 prs
+ 11490                                  ;  408  2690 prunsign1
+ 11491                                  ;  409  2700 typeName
+ 11492                                  ;  410  2709 searchname
+ 11493                                  ;  411  2720 istoken
+ 11494                                  ;  412  2728 searchname
+ 11495                                  ;  413  2739 expect
+ 11496                                  ;  414  2746 expect
+ 11497                                  ;  415  2753 gettypes
+ 11498                                  ;  416  2762 error1
+ 11499                                  ;  417  2769 eqstr
+ 11500                                  ;  418  2775 dovar1
+ 11501                                  ;  419  2782 eqstr
+ 11502                                  ;  420  2788 doreg
+ 11503                                  ;  421  2794 eqstr
+ 11504                                  ;  422  2800 doreg
+ 11505                                  ;  423  2806 eqstr
+ 11506                                  ;  424  2812 doreg
+ 11507                                  ;  425  2818 eqstr
+ 11508                                  ;  426  2824 doreg
+ 11509                                  ;  427  2830 eqstr
+ 11510                                  ;  428  2836 doreg
+ 11511                                  ;  429  2842 eqstr
+ 11512                                  ;  430  2848 doreg
+ 11513                                  ;  431  2854 eqstr
+ 11514                                  ;  432  2860 doreg
+ 11515                                  ;  433  2866 eqstr
+ 11516                                  ;  434  2872 doreg
+ 11517                                  ;  435  2878 eqstr
+ 11518                                  ;  436  2884 doreg
+ 11519                                  ;  437  2890 eqstr
+ 11520                                  ;  438  2896 doreg
+ 11521                                  ;  439  2902 eqstr
+ 11522                                  ;  440  2908 doreg
+ 11523                                  ;  441  2914 eqstr
+ 11524                                  ;  442  2920 doreg
+ 11525                                  ;  443  2926 eqstr
+ 11526                                  ;  444  2932 doreg
+ 11527                                  ;  445  2938 eqstr
+ 11528                                  ;  446  2944 doreg
+ 11529                                  ;  447  2950 eqstr
+ 11530                                  ;  448  2956 doreg
+ 11531                                  ;  449  2962 expect
+ 11532                                  ;  450  2969 prs
+ 11533                                  ;  451  2973 prs
+ 11534                                  ;  452  2977 prs
+ 11535                                  ;  453  2981 istoken
+ 11536                                  ;  454  2989 prunsign1
+ 11537                                  ;  455  2999 istoken
+ 11538                                  ;  456  3007 searchname
+ 11539                                  ;  457  3018 v
+ 11540                                  ;  458  3020 error1
+ 11541                                  ;  459  3027 gettypes
+ 11542                                  ;  460  3036 prs
+ 11543                                  ;  461  3040 v
+ 11544                                  ;  462  3042 prs
+ 11545                                  ;  463  3046 prs
+ 11546                                  ;  464  3050 prs
+ 11547                                  ;  465  3054 a
+ 11548                                  ;  466  3056 prs
+ 11549                                  ;  467  3060 prs
+ 11550                                  ;  468  3064 prunsign1
+ 11551                                  ;  469  3074 v
+ 11552                                  ;  470  3076 prs
+ 11553                                  ;  471  3080 prs
+ 11554                                  ;  472  3084 printName
+ 11555                                  ;  473  3094 prs
+ 11556                                  ;  474  3098 prs
+ 11557                                  ;  475  3102 prs
+ 11558                                  ;  476  3106 prs
+ 11559                                  ;  477  3110 v
+ 11560                                  ;  478  3112 prs
+ 11561                                  ;  479  3116 prs
+ 11562                                  ;  480  3120 prs
+ 11563                                  ;  481  3124 v
+ 11564                                  ;  482  3126 prs
+ 11565                                  ;  483  3130 prs
+ 11566                                  ;  484  3134 prs
+ 11567                                  ;  485  3138 v
+ 11568                                  ;  486  3140 prs
+ 11569                                  ;  487  3144 rterm
+ 11570                                  ;  488  3150 istoken
+ 11571                                  ;  489  3158 prs
+ 11572                                  ;  490  3162 prunsign1
+ 11573                                  ;  491  3172 prs
+ 11574                                  ;  492  3176 error1
+ 11575                                  ;  493  3183 istoken
+ 11576                                  ;  494  3191 prs
+ 11577                                  ;  495  3195 prunsign1
+ 11578                                  ;  496  3205 prs
+ 11579                                  ;  497  3209 prs
+ 11580                                  ;  498  3213 typeName
+ 11581                                  ;  499  3222 searchname
+ 11582                                  ;  500  3233 error1
+ 11583                                  ;  501  3240 gettypes
+ 11584                                  ;  502  3249 error1
+ 11585                                  ;  503  3256 error1
+ 11586                                  ;  504  3263 prs
+ 11587                                  ;  505  3267 v
+ 11588                                  ;  506  3269 prs
+ 11589                                  ;  507  3273 prs
+ 11590                                  ;  508  3277 doidiv
+ 11591                                  ;  509  3284 prs
+ 11592                                  ;  510  3288 checknamelen
+ 11593                                  ;  511  3301 strcpy
+ 11594                                  ;  512  3308 storecall
+ 11595                                  ;  513  3318 expect
+ 11596                                  ;  514  3325 istoken
+ 11597                                  ;  515  3333 error1
+ 11598                                  ;  516  3340 istoken
+ 11599                                  ;  517  3348 istoken
+ 11600                                  ;  518  3356 eprs
+ 11601                                  ;  519  3361 eprs
+ 11602                                  ;  520  3366 eprc
+ 11603                                  ;  521  3371 eprnum
+ 11604                                  ;  522  3378 eprs
+ 11605                                  ;  523  3383 eprc
+ 11606                                  ;  524  3388 eprs
+ 11607                                  ;  525  3393 eprc
+ 11608                                  ;  526  3398 eprs
+ 11609                                  ;  527  3403 istoken
+ 11610                                  ;  528  3411 name1
+ 11611                                  ;  529  3417 searchname
+ 11612                                  ;  530  3428 istoken
+ 11613                                  ;  531  3436 checkreg
+ 11614                                  ;  532  3445 searchname
+ 11615                                  ;  533  3456 error1
+ 11616                                  ;  534  3463 istoken
+ 11617                                  ;  535  3471 expect
+ 11618                                  ;  536  3478 prs
+ 11619                                  ;  537  3482 prunsign1
+ 11620                                  ;  538  3492 prs
+ 11621                                  ;  539  3496 prs
+ 11622                                  ;  540  3500 prc
+ 11623                                  ;  541  3504 prunsign1
+ 11624                                  ;  542  3514 prs
+ 11625                                  ;  543  3518 v
+ 11626                                  ;  544  3520 prs
+ 11627                                  ;  545  3524 gettypes
+ 11628                                  ;  546  3533 prs
+ 11629                                  ;  547  3537 v
+ 11630                                  ;  548  3539 prs
+ 11631                                  ;  549  3543 v
+ 11632                                  ;  550  3545 prs
+ 11633                                  ;  551  3549 prs
+ 11634                                  ;  552  3553 printreg
+ 11635                                  ;  553  3562 prs
+ 11636                                  ;  554  3566 prs
+ 11637                                  ;  555  3570 prs
+ 11638                                  ;  556  3574 prunsign1
+ 11639                                  ;  557  3584 getarg
+ 11640                                  ;  558  3591 setblock
+ 11641                                  ;  559  3600 error1
+ 11642                                  ;  560  3607 allocmem
+ 11643                                  ;  561  3616 error1
+ 11644                                  ;  562  3623 getfirstchar
+ 11645                                  ;  563  3636 parse
+ 11646                                  ;  564  3642 checkcalls
+ 11647                                  ;  565  3653 epilog
+ 11648                                  ;  566  3660 fgets1
+ 11649                                  ;  567  3667 cputs
+ 11650                                  ;  568  3673 cputs
+ 11651                                  ;  569  3679 readRL
+ 11652                                  ;  570  3686 prnl
+ 11653                                  ;  571  3691 strcpy
+ 11654                                  ;  572  3698 instr1
+ 11655                                  ;  573  3705 strcat1
+ 11656                                  ;  574  3713 toupper
+ 11657                                  ;  575  3721 strcpy
+ 11658                                  ;  576  3728 strlen
+ 11659                                  ;  577  3735 openR
+ 11660                                  ;  578  3741 cputs
+ 11661                                  ;  579  3747 cputs
+ 11662                                  ;  580  3753 exitR
+ 11663                                  ;  581  3759 creatR
+ 11664                                  ;  582  3766 cputs
+ 11665                                  ;  583  3772 cputs
+ 11666                                  ;  584  3778 exitR
+ 11667                                  ;  585  3784 prs
+ 11668                                  ;  586  3788 prs
+ 11669                                  ;  587  3792 prs
+ 11670                                  ;  588  3796 prs
+ 11671                                  ;  589  3800 prs
+ 11672                                  ;  590  3804 prs
+ 11673                                  ;  591  3808 prs
+ 11674                                  ;  592  3812 getlex
+ 11675                                  ;  593  3819 istoken
+ 11676                                  ;  594  3827 istoken
+ 11677                                  ;  595  3835 dodefine
+ 11678                                  ;  596  3844 istoken
+ 11679                                  ;  597  3852 doinclude
+ 11680                                  ;  598  3862 error1
+ 11681                                  ;  599  3869 typeName
+ 11682                                  ;  600  3878 dofunc
+ 11683                                  ;  601  3885 doglob
+ 11684                                  ;  602  3892 prs
+ 11685                                  ;  603  3896 from_far
+ 11686                                  ;  604  3905 adrF
+ 11687                                  ;  605  3910 eqstr
+ 11688                                  ;  606  3916 prs
+ 11689                                  ;  607  3920 prs
+ 11690                                  ;  608  3924 prs
+ 11691                                  ;  609  3928 printint51
+ 11692                                  ;  610  3939 error1
+ 11693                                  ;  611  3946 prs
+ 11694                                  ;  612  3950 prs
+ 11695                                  ;  613  3954 prs
+ 11696                                  ;  614  3958 openR
+ 11697                                  ;  615  3964 prs
+ 11698                                  ;  616  3968 prs
+ 11699                                  ;  617  3972 error1
+ 11700                                  ;  618  3979 parse
+ 11701                                  ;  619  3985 prs
+ 11702                                  ;  620  3989 prs
+ 11703                                  ;  621  3993 getfirstchar
+ 11704                                  ;  622  4006 getlex
+ 11705                                  ;  623  4013 eqstr
+ 11706                                  ;  624  4019 getlex
+ 11707                                  ;  625  4026 eqstr
+ 11708                                  ;  626  4032 getlex
+ 11709                                  ;  627  4039 prs
+ 11710                                  ;  628  4043 strcpy
+ 11711                                  ;  629  4050 prs
+ 11712                                  ;  630  4054 error1
+ 11713                                  ;  631  4061 getlex
+ 11714                                  ;  632  4068 expect
+ 11715                                  ;  633  4075 error1
+ 11716                                  ;  634  4082 strlen
+ 11717                                  ;  635  4089 error1
+ 11718                                  ;  636  4096 adrofname
+ 11719                                  ;  637  4106 strcpy
+ 11720                                  ;  638  4113 expect
+ 11721                                  ;  639  4120 istoken
+ 11722                                  ;  640  4128 istoken
+ 11723                                  ;  641  4136 stmt
+ 11724                                  ;  642  4141 istoken
+ 11725                                  ;  643  4149 doif
+ 11726                                  ;  644  4154 istoken
+ 11727                                  ;  645  4162 dodo
+ 11728                                  ;  646  4167 istoken
+ 11729                                  ;  647  4175 dowhile
+ 11730                                  ;  648  4183 istoken
+ 11731                                  ;  649  4191 prs
+ 11732                                  ;  650  4195 name1
+ 11733                                  ;  651  4201 prs
+ 11734                                  ;  652  4205 expect
+ 11735                                  ;  653  4212 prs
+ 11736                                  ;  654  4216 next
+ 11737                                  ;  655  4221 prc
+ 11738                                  ;  656  4225 next
+ 11739                                  ;  657  4230 getlex
+ 11740                                  ;  658  4237 istoken
+ 11741                                  ;  659  4245 prs
+ 11742                                  ;  660  4249 next
+ 11743                                  ;  661  4254 prc
+ 11744                                  ;  662  4258 next
+ 11745                                  ;  663  4263 getlex
+ 11746                                  ;  664  4270 error1
+ 11747                                  ;  665  4277 istoken
+ 11748                                  ;  666  4285 doemit
+ 11749                                  ;  667  4292 istoken
+ 11750                                  ;  668  4300 istoken
+ 11751                                  ;  669  4308 exprstart
+ 11752                                  ;  670  4318 prs
+ 11753                                  ;  671  4322 prs
+ 11754                                  ;  672  4326 expect
+ 11755                                  ;  673  4333 prs
+ 11756                                  ;  674  4337 prs
+ 11757                                  ;  675  4341 prc
+ 11758                                  ;  676  4345 expect
+ 11759                                  ;  677  4352 expect
+ 11760                                  ;  678  4359 exprstart
+ 11761                                  ;  679  4369 expect
+ 11762                                  ;  680  4376 prs
+ 11763                                  ;  681  4380 getlex
+ 11764                                  ;  682  4387 prunsign1
+ 11765                                  ;  683  4397 getlex
+ 11766                                  ;  684  4404 prc
+ 11767                                  ;  685  4408 expect
+ 11768                                  ;  686  4415 prs
+ 11769                                  ;  687  4419 prs
+ 11770                                  ;  688  4423 prs
+ 11771                                  ;  689  4427 prs
+ 11772                                  ;  690  4431 prs
+ 11773                                  ;  691  4435 prunsign1
+ 11774                                  ;  692  4445 prs
+ 11775                                  ;  693  4449 prs
+ 11776                                  ;  694  4453 prunsign1
+ 11777                                  ;  695  4463 prs
+ 11778                                  ;  696  4467 prs
+ 11779                                  ;  697  4471 prs
+ 11780                                  ;  698  4475 error1
+ 11781                                  ;  699  4482 prs
+ 11782                                  ;  700  4486 prs
+ 11783                                  ;  701  4490 prunsign1
+ 11784                                  ;  702  4500 prc
+ 11785                                  ;  703  4504 prs
+ 11786                                  ;  704  4508 prs
+ 11787                                  ;  705  4512 prunsign1
+ 11788                                  ;  706  4522 pexpr
+ 11789                                  ;  707  4528 pint1
+ 11790                                  ;  708  4534 stmt
+ 11791                                  ;  709  4539 istoken
+ 11792                                  ;  710  4547 prjump
+ 11793                                  ;  711  4554 prlabel
+ 11794                                  ;  712  4562 stmt
+ 11795                                  ;  713  4567 prlabel
+ 11796                                  ;  714  4575 prlabel
+ 11797                                  ;  715  4583 prlabel
+ 11798                                  ;  716  4591 stmt
+ 11799                                  ;  717  4596 expect
+ 11800                                  ;  718  4603 pexpr
+ 11801                                  ;  719  4609 pint1
+ 11802                                  ;  720  4615 prjump
+ 11803                                  ;  721  4622 prlabel
+ 11804                                  ;  722  4630 prlabel
+ 11805                                  ;  723  4638 pexpr
+ 11806                                  ;  724  4644 pint1
+ 11807                                  ;  725  4650 stmt
+ 11808                                  ;  726  4655 prjump
+ 11809                                  ;  727  4662 prlabel
+ 11810                                  ;  728  4670 getlex
+ 11811                                  ;  729  4677 next
+ 11812                                  ;  730  4682 next
+ 11813                                  ;  731  4687 next
+ 11814                                  ;  732  4692 next
+ 11815                                  ;  733  4697 next
+ 11816                                  ;  734  4702 next
+ 11817                                  ;  735  4707 next
+ 11818                                  ;  736  4712 next
+ 11819                                  ;  737  4717 next
+ 11820                                  ;  738  4722 next
+ 11821                                  ;  739  4727 next
+ 11822                                  ;  740  4732 next
+ 11823                                  ;  741  4737 next
+ 11824                                  ;  742  4742 next
+ 11825                                  ;  743  4747 next
+ 11826                                  ;  744  4752 instr1
+ 11827                                  ;  745  4759 next
+ 11828                                  ;  746  4764 getlex
+ 11829                                  ;  747  4771 next
+ 11830                                  ;  748  4776 next
+ 11831                                  ;  749  4781 getlex
+ 11832                                  ;  750  4788 getstring
+ 11833                                  ;  751  4798 digit
+ 11834                                  ;  752  4804 getdigit
+ 11835                                  ;  753  4813 next
+ 11836                                  ;  754  4818 next
+ 11837                                  ;  755  4823 next
+ 11838                                  ;  756  4828 alnum
+ 11839                                  ;  757  4834 strcpy
+ 11840                                  ;  758  4841 alnum
+ 11841                                  ;  759  4847 next
+ 11842                                  ;  760  4852 eqstr
+ 11843                                  ;  761  4858 eqstr
+ 11844                                  ;  762  4864 eqstr
+ 11845                                  ;  763  4870 eqstr
+ 11846                                  ;  764  4876 eqstr
+ 11847                                  ;  765  4882 eqstr
+ 11848                                  ;  766  4888 eqstr
+ 11849                                  ;  767  4894 eqstr
+ 11850                                  ;  768  4900 eqstr
+ 11851                                  ;  769  4906 eqstr
+ 11852                                  ;  770  4912 eqstr
+ 11853                                  ;  771  4918 eqstr
+ 11854                                  ;  772  4924 eqstr
+ 11855                                  ;  773  4930 eqstr
+ 11856                                  ;  774  4936 eqstr
+ 11857                                  ;  775  4942 eqstr
+ 11858                                  ;  776  4948 eqstr
+ 11859                                  ;  777  4954 convertdefine
+ 11860                                  ;  778  4968 strcpy
+ 11861                                  ;  779  4975 error1
+ 11862                                  ;  780  4982 adrofname
+ 11863                                  ;  781  4992 eqstr
+ 11864                                  ;  782  4998 next
+ 11865                                  ;  783  5003 alnum
+ 11866                                  ;  784  5009 next
+ 11867                                  ;  785  5014 digit
+ 11868                                  ;  786  5020 next
+ 11869                                  ;  787  5025 next
+ 11870                                  ;  788  5030 next
+ 11871                                  ;  789  5035 fgets1
+ 11872                                  ;  790  5042 getlex
+ 11873                                  ;  791  5049 istoken
+ 11874                                  ;  792  5057 prs
+ 11875                                  ;  793  5061 listproc
+ 11876                                  ;  794  5070 prs
+ 11877                                  ;  795  5074 pint1
+ 11878                                  ;  796  5080 error1
+ 11879                                  ;  797  5087 eprc
+ 11880                                  ;  798  5092 writetty
+ 11881                                  ;  799  5101 writetty
+ 11882                                  ;  800  5110 fputcR
+ 11883                                  ;  801  5117 prc
+ 11884                                  ;  802  5121 prs
+ 11885                                  ;  803  5125 prc
+ 11886                                  ;  804  5129 eprc
+ 11887                                  ;  805  5134 mkneg
+ 11888                                  ;  806  5140 eprnum
+ 11889                                  ;  807  5147 eprc
+ 11890                                  ;  808  5152 prc
+ 11891                                  ;  809  5156 mkneg
+ 11892                                  ;  810  5162 pint1
+ 11893                                  ;  811  5168 prc
+ 11894                                  ;  812  5172 prunsign1
+ 11895                                  ;  813  5182 prc
+ 11896                                  ;  814  5186 prc
+ 11897                                  ;  815  5190 prc
+ 11898                                  ;  816  5194 prc
+ 11899                                  ;  817  5198 prc
+ 11900                                  ;  818  5202 prunsign1
+ 11901                                  ;  819  5212 printinputline
+ 11902                                  ;  820  5227 readRL
+ 11903                                  ;  821  5234 prs
+ 11904                                  ;  822  5238 prunsign1
+ 11905                                  ;  823  5248 prc
+ 11906                                  ;  824  5252 prscomment
+ 11907                                  ;  825  5263 fcloseR
+ 11908                                  ;  826  5271 fcloseR
+ 11909                                  ;  827  5279 exitR
+ 11910                                  ;  828  5285 prnl
+ 11911                                  ;  829  5290 prscomment
+ 11912                                  ;  830  5301 prs
+ 11913                                  ;  831  5305 prunsign1
+ 11914                                  ;  832  5315 prs
+ 11915                                  ;  833  5319 prs
+ 11916                                  ;  834  5323 prs
+ 11917                                  ;  835  5327 prunsign1
+ 11918                                  ;  836  5337 prs
+ 11919                                  ;  837  5341 prunsign1
+ 11920                                  ;  838  5351 prs
+ 11921                                  ;  839  5355 prc
+ 11922                                  ;  840  5359 prs
+ 11923                                  ;  841  5363 prunsign1
+ 11924                                  ;  842  5373 prs
+ 11925                                  ;  843  5377 prs
+ 11926                                  ;  844  5381 end1
+ 11927                                  ;  845  5386 prs
+ 11928                                  ;  846  5390 prs
+ 11929                                  ;  847  5394 prs
+ 11930                                  ;  848  5398 prunsign1
+ 11931                                  ;  849  5408 prs
+ 11932                                  ;  850  5412 listvar
+ 11933                                  ;  851  5420 prs
+ 11934                                  ;  852  5424 printint51
+ 11935                                  ;  853  5435 prc
+ 11936                                  ;  854  5439 prs
+ 11937                                  ;  855  5443 prs
+ 11938                                  ;  856  5447 prs
+ 11939                                  ;  857  5451 prs
+ 11940                                  ;  858  5455 prs
+ 11941                                  ;  859  5459 prs
+ 11942                                  ;  860  5463 prs
+ 11943                                  ;  861  5467 prs
+ 11944                                  ;  862  5471 prs
+ 11945                                  ;  863  5475 printint51
+ 11946                                  ;  864  5486 printint51
+ 11947                                  ;  865  5497 prs
+ 11948                                  ;  866  5501 prs
+ 11949                                  ;  867  5505 prc
+ 11950                                  ;  868  5509 adrofname
+ 11951                                  ;  869  5519 prs
+ 11952                                  ;  870  5523 prc
+ 11953                                  ;  871  5527 prunsign1
+ 11954                                  ;  872  5537 prc
+ 11955                                  ;  873  5541 prunsign1
+ 11956                                  ;  874  5551 prc
+ 11957                                  ;  875  5555 prs
+ 11958                                  ;  876  5559 prc
+ 11959                                  ;  877  5563 pint1
+ 11960                                  ;  878  5569 prs
+ 11961                                  ;  879  5573 calllisting
+ 11962                                  ;  880  5585 prs
+ 11963                                  ;  881  5589 printint51
+ 11964                                  ;  882  5600 prc
+ 11965                                  ;  883  5604 prs
+ 11966                                  ;  884  5608 printint51
+ 11967                                  ;  885  5619 prc
+ 11968                                  ;  886  5623 from_far
+ 11969                                  ;  887  5632 prs
+ 11970                                  ;  888  5636 adrF
+ 11971                                  ;  889  5641 from_far
+ 11972                                  ;  890  5650 eqstr
+ 11973                                  ;  891  5656 prs
+ 11974                                  ;  892  5660 countcalls
+ 11975                                  ;  893  5671 funclisting
+ 11976                                  ;  894  5683 prs
+ 11977                                  ;  895  5687 printint51
+ 11978                                  ;  896  5698 printint51
+ 11979                                  ;  897  5709 prs
+ 11980                                  ;  898  5713 printint51
+ 11981                                  ;  899  5724 prc
+ 11982                                  ;  900  5728 prs
+ 11983                                  ;  901  5732 prs
+ 11984                                  ;  902  5736 prs
+ 11985                                  ;  903  5740 prs
+ 11986                                  ;  904  5744 prc
+ 11987                                  ;  905  5748 prc
+ 11988                                  ;  906  5752 adrF
+ 11989                                  ;  907  5757 prs
+ 11990                                  ;  908  5761 strcpy
+ 11991                                  ;  909  5768 storefunc
+ 11992                                  ;  910  5778 prs
+ 11993                                  ;  911  5782 prs
+ 11994                                  ;  912  5786 listvar
+ 11995                                  ;  913  5794 listfunc
+ 11996                                  ;  914  5803 listcall
+ 11997                                  ;  915  5812 prs
+ 11998                                  ;  916  5816 prs
+ 11999                                  ;  917  5820 prs
+ 12000                                  ;  918  5824 prs
+ 12001                                  ;  919  5828 prs
+ 12002                                  ;  920  5832 printint51
+ 12003                                  ;  921  5843 prs
+ 12004                                  ;  922  5847 printint51
+ 12005                                  ;  923  5858 prs
+ 12006                                  ;  924  5862 printint51
+ 12007                                  ;  925  5873 prs
+ 12008                                  ;  926  5877 printint51
+ 12009                                  ;  927  5888 prs
+ 12010                                  ;  928  5892 printint51
+ 12011                                  ;  929  5903 prs
+ 12012                                  ;  930  5907 printint51
+ 12013                                  ;  931  5918 prs
+ 12014                                  ;  932  5922 printint51
+ 12015                                  ;  933  5933 prs
+ 12016                                  ;  934  5937 printint51
+ 12017                                  ;  935  5948 prs
+ 12018                                  ;  936  5952 printint51
+ 12019                                  ;  937  5963 prs
+ 12020                                  ;  938  5967 printint51
+ 12021                                  ;  939  5978 prs
+ 12022                                  ;  940  5982 printint51
+ 12023                                  ;  941  5993 prs
+ 12024                                  ;  942  5997 printint51
+ 12025                                  ;  943  6008 prs
+ 12026                                  ;  944  6012 prs
+ 12027                                  ;  945  6016 prunsign1
+ 12028                                  ;  946  6026 prs
+ 12029                                  ;  947  6030 printint51
+ 12030                                  ;  948  6041 prs
+ 12031                                  ;  949  6045 prs
+ 12032                                  ;  950  6049 prs
+ 12033                                  ;  951  6053 prs
+ 12034                                  ;  952  6057 printint51
+ 12035                                  ;  953  6068 prs
+ 12036                                  ;  954  6072 printint51
+ 12037                                  ;  955  6083 prs
+ 12038                                  ;  956  6087 printint51
+ 12039                                  ;  957  6098 prs
+ 12040                                  ;  958  6102 end1
+ 12041                                  ;  959  6107 DosInt
+ 12042                                  ;  960  6114 DosInt
+ 12043                                  ;Input: A.C, List: A.S,  Lines: 1005
+ 12044                                  ;Glob. variables:  129 max.:  200
+ 12045                                  ;Functions      :  107 max.:  300
+ 12046                                  ;Calls          :  961 max.: 2000, NameField: 6121 max.:    65535
+ 12047                                  ;Code until     :21608 max.: 30000, free: 8392
+ 12048                                  ;Data (HeapEnd) :53548, resting stacksize: 11987
+ 12049                                  ;Max. Const in 'epilog' :  947 max. 3000, free: 2053
