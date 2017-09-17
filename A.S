@@ -351,7 +351,7 @@ DOS_ByteRead db 0
 ;-75 int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); } 
 
 
-writetty:  ; *** PROC ***
+writetty: PROC
  mov  ah, 14
  mov  bx, 0
  db 205,16
@@ -359,9 +359,9 @@ writetty:  ; *** PROC ***
 ;-76 int putch(char c)  {if (_ c==10) {al=13; writetty();} al=c; writetty(); }
 
  ret
-; ENDP
+ENDP
 
-putch:  ; *** PROC ***
+putch: PROC
 ;Function : putch, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign byte    76 NULL c = bp+4;
@@ -377,9 +377,9 @@ cmp byte[bp+4], 10
 ;-77 int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
  LEAVE
  ret
-; ENDP
+ENDP
 
-cputs:  ; *** PROC ***
+cputs: PROC
 ;Function : cputs, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    77 NULL s = bp+4
@@ -407,9 +407,9 @@ cputs:  ; *** PROC ***
 ;-78 int mkneg(int n)   { n; __asm {neg ax} }
  LEAVE
  ret
-; ENDP
+ENDP
 
-mkneg:  ; *** PROC ***
+mkneg: PROC
 ;Function : mkneg, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word    78 NULL n = bp+4;
@@ -423,9 +423,9 @@ neg ax
 ;-80 int DosInt() { 
  LEAVE
  ret
-; ENDP
+ENDP
 
-DosInt:  ; *** PROC ***
+DosInt: PROC
 
 ;-81     __emit__(0xCD,0x21);//inth 0x21; 
 
@@ -445,9 +445,9 @@ DosInt:  ; *** PROC ***
 ;-85 int openR (char *s) { dx=s;       ax=0x3D02; DosInt(); }
 
  ret
-; ENDP
+ENDP
 
-openR:  ; *** PROC ***
+openR: PROC
 ;Function : openR, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    85 NULL s = bp+4;
@@ -459,9 +459,9 @@ openR:  ; *** PROC ***
 ;-86 int creatR(char *s) { dx=s; cx=0; ax=0x3C00; DosInt(); }
  LEAVE
  ret
-; ENDP
+ENDP
 
-creatR:  ; *** PROC ***
+creatR: PROC
 ;Function : creatR, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    86 NULL s = bp+4;
@@ -474,9 +474,9 @@ creatR:  ; *** PROC ***
 ;-87 int fcloseR(int fd) {bx=fd;       ax=0x3E00; DosInt(); }
  LEAVE
  ret
-; ENDP
+ENDP
 
-fcloseR:  ; *** PROC ***
+fcloseR: PROC
 ;Function : fcloseR, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word    87 NULL fd = bp+4;
@@ -488,9 +488,9 @@ fcloseR:  ; *** PROC ***
 ;-88 int exitR  (char c) {ah=0x4C; al=c;          DosInt(); }
  LEAVE
  ret
-; ENDP
+ENDP
 
-exitR:  ; *** PROC ***
+exitR: PROC
 ;Function : exitR, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign byte    88 NULL c = bp+4;
@@ -502,9 +502,9 @@ exitR:  ; *** PROC ***
 ;-89 int readRL(char *s, int fd, int len){dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
  LEAVE
  ret
-; ENDP
+ENDP
 
-readRL:  ; *** PROC ***
+readRL: PROC
 ;Function : readRL, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    89 NULL s = bp+4
@@ -520,9 +520,9 @@ readRL:  ; *** PROC ***
 ;-90 int fputcR(char *n, int fd) { __asm{lea dx, [bp+4]}; /* = *n */
  LEAVE
  ret
-; ENDP
+ENDP
 
-fputcR:  ; *** PROC ***
+fputcR: PROC
 ;Function : fputcR, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    90 NULL n = bp+4
@@ -543,9 +543,9 @@ lea dx, [bp+4]
 ;-93 int strlen(char *s) { int c; c=0; while (*s!=0) {s++; c++;} return c; }
  LEAVE
  ret
-; ENDP
+ENDP
 
-strlen:  ; *** PROC ***
+strlen: PROC
 ;Function : strlen, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    93 NULL s = bp+4
@@ -570,9 +570,9 @@ strlen:  ; *** PROC ***
 
  .retnstrlen: LEAVE
  ret
-; ENDP
+ENDP
 
-strcpy:  ; *** PROC ***
+strcpy: PROC
 ;Function : strcpy, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    94 NULL s = bp+4
@@ -600,9 +600,9 @@ strcpy:  ; *** PROC ***
 ;-95 int eqstr(char *p, char *q) { while(*p) {
  LEAVE
  ret
-; ENDP
+ENDP
 
-eqstr:  ; *** PROC ***
+eqstr: PROC
 ;Function : eqstr, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    95 NULL p = bp+4
@@ -649,9 +649,9 @@ eqstr:  ; *** PROC ***
 
  .retneqstr: LEAVE
  ret
-; ENDP
+ENDP
 
-instr1:  ; *** PROC ***
+instr1: PROC
 ;Function : instr1, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    98 NULL s = bp+4
@@ -681,9 +681,9 @@ instr1:  ; *** PROC ***
 
  .retninstr1: LEAVE
  ret
-; ENDP
+ENDP
 
-strcat1:  ; *** PROC ***
+strcat1: PROC
 ;Function : strcat1, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte    99 NULL s = bp+4
@@ -706,9 +706,9 @@ strcat1:  ; *** PROC ***
 ;-100 int toupper(char *s) {while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
  LEAVE
  ret
-; ENDP
+ENDP
 
-toupper:  ; *** PROC ***
+toupper: PROC
 ;Function : toupper, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte   100 NULL s = bp+4;
@@ -747,9 +747,9 @@ toupper:  ; *** PROC ***
 ;-102 int digit(char c){ 
  LEAVE
  ret
-; ENDP
+ENDP
 
-digit:  ; *** PROC ***
+digit: PROC
 
 ;-103     if(c<'0') return 0; 
 
@@ -785,9 +785,9 @@ digit:  ; *** PROC ***
 
  .retndigit: LEAVE
  ret
-; ENDP
+ENDP
 
-letter:  ; *** PROC ***
+letter: PROC
 
 ;-108     if (c=='_') return 1;
 
@@ -872,9 +872,9 @@ letter:  ; *** PROC ***
 
  .retnletter: LEAVE
  ret
-; ENDP
+ENDP
 
-alnum:  ; *** PROC ***
+alnum: PROC
 
 ;-118   if (digit (c)) return 1;
 
@@ -918,9 +918,9 @@ alnum:  ; *** PROC ***
 
  .retnalnum: LEAVE
  ret
-; ENDP
+ENDP
 
-a:  ; *** PROC ***
+a: PROC
 ;Function : a, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var unsg word   122 NULL i = bp+4;
@@ -932,9 +932,9 @@ a:  ; *** PROC ***
 ;-123 int v(unsigned int i) {//value 
  LEAVE
  ret
-; ENDP
+ENDP
 
-v:  ; *** PROC ***
+v: PROC
 
 ;-124     if (i < LSTART) prc('['); 
 
@@ -972,9 +972,9 @@ v:  ; *** PROC ***
 ;-128 int checknamelen() { int i;    i=strlen(symbol);
  LEAVE
  ret
-; ENDP
+ENDP
 
-checknamelen:  ; *** PROC ***
+checknamelen: PROC
 ;Function : checknamelen, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   128 NULL i = bp-2;
@@ -1002,7 +1002,7 @@ checknamelen:  ; *** PROC ***
  LEAVE
  ret
 checknamelen_0 db "Item name is too long in characters)",0
-; ENDP
+ENDP
 section .bss
 absolute 53391
 doglobName resb 15
@@ -1011,7 +1011,7 @@ section .text
 ;-132 int doglob() { int i; int j; int isstrarr; isstrarr=0;
 
 
-doglob:  ; *** PROC ***
+doglob: PROC
 ;Function : doglob, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   132 NULL i = bp-2
@@ -1500,9 +1500,9 @@ doglob_15 db " dw ",0
 doglob_16 db " db ",0
 doglob_17 db " dw ",0
 doglob_18 db " dd ",0
-; ENDP
+ENDP
 
-gettypes:  ; *** PROC ***
+gettypes: PROC
 
 ;-182   c=GSign [i]; if (c=='S') signi =1;    else signi =0;
 
@@ -1603,9 +1603,9 @@ gettypes:  ; *** PROC ***
 
  .retngettypes: LEAVE
  ret
-; ENDP
+ENDP
 
-adrofname:  ; *** PROC ***
+adrofname: PROC
 ;Function : adrofname, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var unsg word   190 NULL i = bp+4;
@@ -1619,9 +1619,9 @@ adrofname:  ; *** PROC ***
 ;-191 int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
  LEAVE
  ret
-; ENDP
+ENDP
 
-adrF:  ; *** PROC ***
+adrF: PROC
 ;Function : adrF, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte   191 NULL s = bp+4
@@ -1637,9 +1637,9 @@ adrF:  ; *** PROC ***
 ;-193 int printName(unsigned int i) {int j;
  LEAVE
  ret
-; ENDP
+ENDP
 
-printName:  ; *** PROC ***
+printName: PROC
 
 ;-194   if (i < LSTART) { i=adrofname(i); prs(i); }
 
@@ -1692,9 +1692,9 @@ printName:  ; *** PROC ***
  LEAVE
  ret
 printName_0 db "[bp",0
-; ENDP
+ENDP
 
-searchname:  ; *** PROC ***
+searchname: PROC
 
 ;-198   i=checkName(); if (i == 0) error1("Variable unknown");
 
@@ -1732,9 +1732,9 @@ searchname:  ; *** PROC ***
  .retnsearchname: LEAVE
  ret
 searchname_0 db "Variable unknown",0
-; ENDP
+ENDP
 
-checkName:  ; *** PROC ***
+checkName: PROC
 
 ;-202   i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
 
@@ -1805,9 +1805,9 @@ checkName:  ; *** PROC ***
 
  .retncheckName: LEAVE
  ret
-; ENDP
+ENDP
 
-typeName:  ; *** PROC ***
+typeName: PROC
 
 ;-207     issign='S';
 
@@ -1941,9 +1941,9 @@ typeName:  ; *** PROC ***
 
  .retntypeName: LEAVE
  ret
-; ENDP
+ENDP
 
-name1:  ; *** PROC ***
+name1: PROC
 
 ;-223     if (token!=T_NAME) error1("Name expected"); 
 
@@ -1970,9 +1970,9 @@ name1:  ; *** PROC ***
 
  ret
 name1_0 db "Name expected",0
-; ENDP
+ENDP
 
-storecall:  ; *** PROC ***
+storecall: PROC
 ;Function : storecall, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   227 NULL i = bp-2;
@@ -2034,9 +2034,9 @@ storecall:  ; *** PROC ***
  ret
 storecall_0 db "Call table full",0
 storecall_1 db "Call name table fuill",0
-; ENDP
+ENDP
 
-storefunc:  ; *** PROC ***
+storefunc: PROC
  mov ax, [FTop]
  cmp ax, 300 ;unsigned : 1
  jl  .storefunc95
@@ -2082,9 +2082,9 @@ storefunc:  ; *** PROC ***
 
  ret
 storefunc_0 db "Function table full",0
-; ENDP
+ENDP
 
-addlocal:  ; *** PROC ***
+addlocal: PROC
  mov ax, [LTop]
  cmp ax, 300 ;unsigned : 1
  jl  .addlocal96
@@ -2149,9 +2149,9 @@ addlocal:  ; *** PROC ***
  ret
 addlocal_0 db "Local variable table full",0
 addlocal_1 db "Variable already defined",0
-; ENDP
+ENDP
 
-checkFunction:  ; *** PROC ***
+checkFunction: PROC
 ;Function : checkFunction, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var unsg word   243 NULL i = bp-2
@@ -2195,9 +2195,9 @@ checkFunction:  ; *** PROC ***
 
  .retncheckFunction: LEAVE
  ret
-; ENDP
+ENDP
 
-dofunc:  ; *** PROC ***
+dofunc: PROC
 
 ;-247   cloc=&co; 
 
@@ -2237,7 +2237,7 @@ dofunc:  ; *** PROC ***
 .dofunc101:
  call storefunc
 
-;-252   prs("\n\n"); prs(symbol); prs(":  ; *** PROC ***");
+;-252   prs("\n\n"); prs(symbol); prs(": PROC");
 
  push dofunc_1
  call prs
@@ -2526,7 +2526,7 @@ dofunc:  ; *** PROC ***
  call strcpy
  add  sp, 4
 
-;-285   prs("\n; ENDP"); 
+;-285   prs("\nENDP"); 
 
 .dofunc117:
  push dofunc_8
@@ -2541,16 +2541,16 @@ dofunc:  ; *** PROC ***
  ret
 dofunc_0 db "Function already defined",0
 dofunc_1 db "\n\n",0
-dofunc_2 db ":  ; *** PROC ***",0
+dofunc_2 db ": PROC",0
 dofunc_3 db ";\n ENTER  ",0
 dofunc_4 db ",0",0
 dofunc_5 db "\n .retn",0
 dofunc_6 db " LEAVE",0
 dofunc_7 db "\n ret",0
-dofunc_8 db "\n; ENDP",0
-; ENDP
+dofunc_8 db "\nENDP",0
+ENDP
 
-isvariable:  ; *** PROC ***
+isvariable: PROC
 
 ;-288     if(token==T_SIGNED)   goto v1;   
 
@@ -2613,7 +2613,7 @@ isvariable:  ; *** PROC ***
 
  .retnisvariable:
  ret
-; ENDP
+ENDP
 mod1 dw 0
 ireg1 dw 0
 idx1 dw 0
@@ -2638,7 +2638,7 @@ val2 dw 0
 ;-300 int pexpr() {expect('('); iscmp=0; 
 
 
-pexpr:  ; *** PROC ***
+pexpr: PROC
  push 40
  call expect
  add  sp, 2
@@ -2708,9 +2708,9 @@ pexpr:  ; *** PROC ***
  ret
 pexpr_0 db "_",0
 pexpr_1 db "\n or  al, al\n je .",0
-; ENDP
+ENDP
 
-constantexpr:  ; *** PROC ***
+constantexpr: PROC
 
 ;-308   token=getlex();   mode=typeName();  
 
@@ -2815,9 +2815,9 @@ constantexpr_2 db "\ncmp ",0
 constantexpr_3 db "word",0
 constantexpr_4 db "byte",0
 constantexpr_5 db ", ",0
-; ENDP
+ENDP
 
-exprstart:  ; *** PROC ***
+exprstart: PROC
  push exprstart_0
  lea  ax, [symbol]
  push ax
@@ -2842,9 +2842,9 @@ exprstart:  ; *** PROC ***
 
  ret
 exprstart_0 db "_",0
-; ENDP
+ENDP
 
-expr2:  ; *** PROC ***
+expr2: PROC
 
 ;-320   if(kind != 1) token=getlex();
 
@@ -3255,7 +3255,7 @@ expr2_19 db "word ",0
 expr2_20 db "dword ",0
 expr2_21 db "; ",0
 expr2_22 db "Internal error: only const or reg allowed",0
-; ENDP
+ENDP
 section .bss
 absolute 53406
 ops resb 5
@@ -3264,7 +3264,7 @@ section .text
 ;-364 int doreg1(int iscmp1) { int i;
 
 
-doreg1:  ; *** PROC ***
+doreg1: PROC
 
 ;-365   if (istoken('='))          strcpy(ops, "mov");
 
@@ -3499,9 +3499,9 @@ doreg1_7 db "Relational expected",0
 doreg1_8 db "cmp",0
 doreg1_9 db "  ",0
 doreg1_10 db ", ",0
-; ENDP
+ENDP
 
-checkreg:  ; *** PROC ***
+checkreg: PROC
 
 ;-384   if (strlen(symbol) <  2) return 0;
 
@@ -3928,7 +3928,7 @@ checkreg_27 db "ebp",0
 checkreg_28 db "esi",0
 checkreg_29 db "edi",0
 checkreg_30 db "cr0",0
-; ENDP
+ENDP
 
 ;-405 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
 
@@ -3943,7 +3943,7 @@ printregstr db "*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespeb
 ;-408 int printreg(int i) {  unsigned int k; unsigned char c;
 
 
-printreg:  ; *** PROC ***
+printreg: PROC
 
 ;-409   k = &printregstr + i; c=*k; prc(c); i++;
 
@@ -4005,14 +4005,14 @@ printreg:  ; *** PROC ***
 ;-413 int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
  LEAVE
  ret
-; ENDP
+ENDP
 evalue dw 0
 exprtype dw 10
 
 ;-414 int expr(int isRight)
 
 
-expr:  ; *** PROC ***
+expr: PROC
 
 ;-415 { int mode; int id1;     int ixarr; int ixconst;
 
@@ -4550,9 +4550,9 @@ expr_20 db "or",0
 expr_21 db "shl",0
 expr_22 db "shr",0
 expr_23 db "cmp",0
-; ENDP
+ENDP
 
-compoundass:  ; *** PROC ***
+compoundass: PROC
 
 ;-464   if(mode) error1("only scalar Var allowed");
 
@@ -4627,9 +4627,9 @@ compoundass_1 db "  ",0
 compoundass_2 db "word",0
 compoundass_3 db "byte",0
 compoundass_4 db ", ",0
-; ENDP
+ENDP
 
-dovar1:  ; *** PROC ***
+dovar1: PROC
 
 ;-471   gettypes(id1);
 
@@ -4835,9 +4835,9 @@ dovar1_9 db " + bx]",0
 dovar1_10 db " al, ",0
 dovar1_11 db " ax, ",0
 dovar1_12 db " eax, ",0
-; ENDP
+ENDP
 
-rterm:  ; *** PROC ***
+rterm: PROC
 
 ;-492   if (istoken(T_CONST)) { prnl(); prs(op); 
 
@@ -4974,9 +4974,9 @@ rterm_1 db " ax, ",0
 rterm_2 db " eax, ",0
 rterm_3 db "Arrayindex muss int sein",0
 rterm_4 db "_AX",0
-; ENDP
+ENDP
 
-isreg:  ; *** PROC ***
+isreg: PROC
 
 ;-505   if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
 
@@ -5248,9 +5248,9 @@ isreg_26 db "_DI",0
 isreg_27 db "di",0
 isreg_28 db "_FLAGS",0
 isreg_29 db "flags",0
-; ENDP
+ENDP
 
-doreg:  ; *** PROC ***
+doreg: PROC
 ;Function : doreg, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte   522 NULL dr = bp+4
@@ -5317,9 +5317,9 @@ doreg:  ; *** PROC ***
 doreg_0 db "\n mov  ",0
 doreg_1 db ", ",0
 doreg_2 db "only number or var allowed",0
-; ENDP
+ENDP
 
-doassign:  ; *** PROC ***
+doassign: PROC
 
 ;-529   gettypes(i);
 
@@ -5550,9 +5550,9 @@ doassign_15 db ", ax",0
 doassign_16 db "\n mov ",0
 doassign_17 db "dword ",0
 doassign_18 db ", eax",0
-; ENDP
+ENDP
 
-domul:  ; *** PROC ***
+domul: PROC
 
 ;-547   if (ids) rterm("imul"); else {
 
@@ -5603,9 +5603,9 @@ domul_0 db "imul",0
 domul_1 db "\n mov bx, ",0
 domul_2 db "\n mul bx",0
 domul_3 db "with MUL only const number as multiplicator allowed",0
-; ENDP
+ENDP
 
-doidiv:  ; *** PROC ***
+doidiv: PROC
 
 ;-551   if (istoken(T_CONST)) {
 
@@ -5733,9 +5733,9 @@ doidiv_5 db "only int, no byte as divisor allowed",0
 doidiv_6 db "\n mov bx, ",0
 doidiv_7 db "\n cwd\n idiv bx",0
 doidiv_8 db "\n mov dx, 0\n div bx",0
-; ENDP
+ENDP
 
-domod:  ; *** PROC ***
+domod: PROC
 ;Function : domod, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   563 NULL ids = bp+4;
@@ -5754,7 +5754,7 @@ domod:  ; *** PROC ***
  LEAVE
  ret
 domod_0 db "\n mov ax, dx",0
-; ENDP
+ENDP
 section .bss
 absolute 53411
 docalltype resw 10
@@ -5774,7 +5774,7 @@ section .text
 ;-567 int docall1() {int i; int narg; int t0; int n0;  int sz32;
 
 
-docall1:  ; *** PROC ***
+docall1: PROC
 
 ;-568   narg=0;  sz32=0;
 
@@ -6200,9 +6200,9 @@ docall1_11 db "\n mov ah, 0\n push ax",0
 docall1_12 db "\n push ",0
 docall1_13 db "\n call ",0
 docall1_14 db "\n add  sp, ",0
-; ENDP
+ENDP
 
-main:  ; *** PROC ***
+main: PROC
 
 ;-610   getarg();
 
@@ -6267,9 +6267,9 @@ main:  ; *** PROC ***
  ret
 main_0 db "SetBlock , AX=",0
 main_1 db "alloc memory, AX=",0
-; ENDP
+ENDP
 
-getfirstchar:  ; *** PROC ***
+getfirstchar: PROC
  mov ax, fgetsdest
  mov word [fgetsp], ax
  mov ax, 0
@@ -6281,14 +6281,14 @@ getfirstchar:  ; *** PROC ***
 ;-621 char *arglen=0x80; char *argv=0x82;
 
  ret
-; ENDP
+ENDP
 arglen dw 128
 argv dw 130
 
 ;-622 int getarg() { int arglen1; int i; char *c;
 
 
-getarg:  ; *** PROC ***
+getarg: PROC
 
 ;-623   arglen1=*arglen;
 
@@ -6496,9 +6496,9 @@ getarg_4 db "\n; ",0
 getarg_5 db ", Source: ",0
 getarg_6 db ", Output asm: ",0
 getarg_7 db "\norg  256 \njmp main",0
-; ENDP
+ENDP
 
-parse:  ; *** PROC ***
+parse: PROC
  call getlex
  mov word [token], ax
 .parse346:
@@ -6581,9 +6581,9 @@ parse:  ; *** PROC ***
  .retnparse:
  ret
 parse_0 db "define or include expected",0
-; ENDP
+ENDP
 
-checkcalls:  ; *** PROC ***
+checkcalls: PROC
 
 ;-650   prs("\n \n; missing functions: ");
 
@@ -6728,9 +6728,9 @@ checkcalls_1 db "\n; ",0
 checkcalls_2 db "\n; Number of unresolved CALLs :",0
 checkcalls_3 db "At least 1 function is missing! ",0
 checkcalls_4 db " All FUNCTIONs in place",0
-; ENDP
+ENDP
 
-doinclude:  ; *** PROC ***
+doinclude: PROC
 
 ;-667   if (token==T_STRING) {  fdtemp=fdin;
 
@@ -6824,9 +6824,9 @@ doinclude_0 db "\n;Use include file: ",0
 doinclude_1 db "Include file missing: ",0
 doinclude_2 db " Stop!!",0
 doinclude_3 db "\n;Back to main program: ",0
-; ENDP
+ENDP
 
-dodefine:  ; *** PROC ***
+dodefine: PROC
 
 ;-678   if (eqstr(symbol, "ORGDATA")) {token=getlex();
 
@@ -7000,9 +7000,9 @@ dodefine_2 db "\n;Use archive file: ",0
 dodefine_3 db "Name of archive file missing",0
 dodefine_4 db "global table (define) full",0
 dodefine_5 db "Define name longer 15 char",0
-; ENDP
+ENDP
 
-stmt:  ; *** PROC ***
+stmt: PROC
 
 ;-694        if(istoken('{'))     {while(istoken('}')==0) stmt();}
 
@@ -7299,9 +7299,9 @@ stmt_2 db "\n",0
 stmt_3 db "Curly open expected",0
 stmt_4 db "\n jmp .retn",0
 stmt_5 db "\n.",0
-; ENDP
+ENDP
 
-doemit:  ; *** PROC ***
+doemit: PROC
  push doemit_0
  call prs
  add  sp, 2
@@ -7338,9 +7338,9 @@ doemit:  ; *** PROC ***
 
  ret
 doemit_0 db "\n db ",0
-; ENDP
+ENDP
 
-cmpneg:  ; *** PROC ***
+cmpneg: PROC
 
 ;-729        if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
 
@@ -7483,9 +7483,9 @@ cmpneg_7 db "\n jb  .",0
 cmpneg_8 db "\n jge .",0
 cmpneg_9 db "\n jle .",0
 cmpneg_10 db "internal error compare unknown in CMPNEG()",0
-; ENDP
+ENDP
 
-prlabel:  ; *** PROC ***
+prlabel: PROC
 ;Function : prlabel, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   741 NULL n = bp+4;
@@ -7508,9 +7508,9 @@ prlabel:  ; *** PROC ***
  LEAVE
  ret
 prlabel_0 db "\n.",0
-; ENDP
+ENDP
 
-prjump:  ; *** PROC ***
+prjump: PROC
 ;Function : prjump, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   742 NULL n = bp+4;
@@ -7530,9 +7530,9 @@ prjump:  ; *** PROC ***
  LEAVE
  ret
 prjump_0 db "\n jmp .",0
-; ENDP
+ENDP
 
-doif:  ; *** PROC ***
+doif: PROC
 ;Function : doif, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   743 NULL jdest = bp-2
@@ -7589,9 +7589,9 @@ doif:  ; *** PROC ***
 ;-749 int dodo() {int jdest; int jtemp;
  LEAVE
  ret
-; ENDP
+ENDP
 
-dodo:  ; *** PROC ***
+dodo: PROC
 
 ;-750   nlabel++; jdest=nlabel; prlabel(jdest); stmt();
 
@@ -7633,9 +7633,9 @@ dodo:  ; *** PROC ***
 ;-753 int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
  LEAVE
  ret
-; ENDP
+ENDP
 
-dowhile:  ; *** PROC ***
+dowhile: PROC
 ;Function : dowhile, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   753 NULL jdest = bp-2
@@ -7671,9 +7671,9 @@ dowhile:  ; *** PROC ***
 ;-756 int isrelational() {
  LEAVE
  ret
-; ENDP
+ENDP
 
-isrelational:  ; *** PROC ***
+isrelational: PROC
 
 ;-757   if (token==T_EQ) goto w; if (token==T_NE) goto w;
 
@@ -7733,7 +7733,7 @@ isrelational:  ; *** PROC ***
 
  .retnisrelational:
  ret
-; ENDP
+ENDP
 section .bss
 absolute 53468
 symboltemp resb 80
@@ -7742,7 +7742,7 @@ section .text
 ;-763 int getlex() { char c; char *p; 
 
 
-getlex:  ; *** PROC ***
+getlex: PROC
 
 ;-764 g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
 
@@ -8436,9 +8436,9 @@ getlex_15 db "goto",0
 getlex_16 db "define",0
 getlex_17 db "include",0
 getlex_18 db "Input item not recognized",0
-; ENDP
+ENDP
 
-convertdefine:  ; *** PROC ***
+convertdefine: PROC
 ;Function : convertdefine, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   815 NULL i = bp-2
@@ -8501,9 +8501,9 @@ convertdefine:  ; *** PROC ***
 
  .retnconvertdefine: LEAVE
  ret
-; ENDP
+ENDP
 
-getdigit:  ; *** PROC ***
+getdigit: PROC
 
 ;-823     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
 
@@ -8620,9 +8620,9 @@ getdigit:  ; *** PROC ***
 ;-831 int getstring(int delim) {int c; char *p;  p=&symbol; c=next();
  LEAVE
  ret
-; ENDP
+ENDP
 
-getstring:  ; *** PROC ***
+getstring: PROC
 ;Function : getstring, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   831 NULL delim = bp+4
@@ -8658,9 +8658,9 @@ getstring:  ; *** PROC ***
 ;-834 int next() {char r; r = thechar; globC=r; thechar = fgets1(); return r; }
  LEAVE
  ret
-; ENDP
+ENDP
 
-next:  ; *** PROC ***
+next: PROC
 ;Function : next, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign byte   834 NULL r = bp-2;
@@ -8678,9 +8678,9 @@ next:  ; *** PROC ***
 
  .retnnext: LEAVE
  ret
-; ENDP
+ENDP
 
-istoken:  ; *** PROC ***
+istoken: PROC
 ;Function : istoken, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   835 NULL t = bp+4;
@@ -8700,9 +8700,9 @@ istoken:  ; *** PROC ***
 
  .retnistoken: LEAVE
  ret
-; ENDP
+ENDP
 
-expect:  ; *** PROC ***
+expect: PROC
 ;Function : expect, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   836 NULL t = bp+4;
@@ -8742,9 +8742,9 @@ expect:  ; *** PROC ***
  ret
 expect_0 db "\nExpected ASCII(dez): ",0
 expect_1 db " not found",0
-; ENDP
+ENDP
 
-eprc:  ; *** PROC ***
+eprc: PROC
 ;Function : eprc, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign byte   839 NULL c = bp+4;
@@ -8757,9 +8757,9 @@ eprc:  ; *** PROC ***
 ;-840 int eprs(char *s) {char c;  while(*s) { c=*s; eprc(c); s++; } }
  LEAVE
  ret
-; ENDP
+ENDP
 
-eprs:  ; *** PROC ***
+eprs: PROC
 ;Function : eprs, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr sign byte   840 NULL s = bp+4
@@ -8787,9 +8787,9 @@ eprs:  ; *** PROC ***
 ;-841 int prc(unsigned char c) { 
  LEAVE
  ret
-; ENDP
+ENDP
 
-prc:  ; *** PROC ***
+prc: PROC
 
 ;-842   if (c==10) {_AX=13; writetty(); }
 
@@ -8824,9 +8824,9 @@ prc:  ; *** PROC ***
 ;-846 int prscomment(unsigned char *s) {unsigned char c;
  LEAVE
  ret
-; ENDP
+ENDP
 
-prscomment:  ; *** PROC ***
+prscomment: PROC
 
 ;-847   while(*s){c=*s;prc(c);s++;} }
 
@@ -8857,9 +8857,9 @@ prscomment:  ; *** PROC ***
 ;-848 int prnl() { prs("\n ");}
  LEAVE
  ret
-; ENDP
+ENDP
 
-prnl:  ; *** PROC ***
+prnl: PROC
  push prnl_0
  call prs
  add  sp, 2
@@ -8871,9 +8871,9 @@ prnl:  ; *** PROC ***
 
  ret
 prnl_0 db "\n ",0
-; ENDP
+ENDP
 
-prs:  ; *** PROC ***
+prs: PROC
 ;Function : prs, Number of local variables: 3
 ;   # type sign width addr used name   list of local variables
 ;  200 ptr unsg byte   850 NULL s = bp+4
@@ -8955,9 +8955,9 @@ prs:  ; *** PROC ***
 ;-855 int eprnum(int n){int e; if(n<0) { eprc('-'); n=mkneg(n); }
  LEAVE
  ret
-; ENDP
+ENDP
 
-eprnum:  ; *** PROC ***
+eprnum: PROC
 ;Function : eprnum, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   855 NULL n = bp+4
@@ -9005,9 +9005,9 @@ eprnum:  ; *** PROC ***
 ;-857 int pint1 (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
  LEAVE
  ret
-; ENDP
+ENDP
 
-pint1:  ; *** PROC ***
+pint1: PROC
 ;Function : pint1, Number of local variables: 2
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   857 NULL n = bp+4
@@ -9053,9 +9053,9 @@ pint1:  ; *** PROC ***
 ;-859 int prunsign1(unsigned int n) { unsigned int e;
  LEAVE
  ret
-; ENDP
+ENDP
 
-prunsign1:  ; *** PROC ***
+prunsign1: PROC
 
 ;-860   if ( _ n >= 10) {  e=n/10; prunsign1(e); }
 
@@ -9092,9 +9092,9 @@ cmp word[bp+4], 10 ;unsigned : 0
 ;-862 int printint51(unsigned int j)  {
  LEAVE
  ret
-; ENDP
+ENDP
 
-printint51:  ; *** PROC ***
+printint51: PROC
 
 ;-863   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
 
@@ -9143,9 +9143,9 @@ printint51:  ; *** PROC ***
 ;-866 int fgets1() { char c; c=*fgetsp;
  LEAVE
  ret
-; ENDP
+ENDP
 
-fgets1:  ; *** PROC ***
+fgets1: PROC
 ;Function : fgets1, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign byte   866 NULL c = bp-2;
@@ -9191,9 +9191,9 @@ fgets1:  ; *** PROC ***
 
  .retnfgets1: LEAVE
  ret
-; ENDP
+ENDP
 
-printinputline:  ; *** PROC ***
+printinputline: PROC
  mov ax, fgetsdest
  mov word [fgetsp], ax
 
@@ -9266,9 +9266,9 @@ printinputline:  ; *** PROC ***
  .retnprintinputline:
  ret
 printinputline_0 db "\n\n;-",0
-; ENDP
+ENDP
 
-end1:  ; *** PROC ***
+end1: PROC
 ;Function : end1, Number of local variables: 1
 ;   # type sign width addr used name   list of local variables
 ;  200 var sign word   878 NULL n = bp+4;
@@ -9286,9 +9286,9 @@ end1:  ; *** PROC ***
 ;-879 int error1(char *s) { 
  LEAVE
  ret
-; ENDP
+ENDP
 
-error1:  ; *** PROC ***
+error1: PROC
 
 ;-880   lineno--;
 
@@ -9384,9 +9384,9 @@ error1_3 db "\nToken: ",0
 error1_4 db ", globC: ",0
 error1_5 db ", thechar: ",0
 error1_6 db ", symbol: ",0
-; ENDP
+ENDP
 
-listproc:  ; *** PROC ***
+listproc: PROC
 
 ;-889   if (LTop > LSTART) {
 
@@ -9454,9 +9454,9 @@ listproc:  ; *** PROC ***
 listproc_0 db "\n;Function : ",0
 listproc_1 db ", Number of local variables: ",0
 listproc_2 db "\n;   # type sign width addr used name   list of local variables",0
-; ENDP
+ENDP
 
-listvar:  ; *** PROC ***
+listvar: PROC
 
 ;-897   prs("\n;"); printint51(i); prc(32);
 
@@ -9703,9 +9703,9 @@ listvar_9 db "dwrd ",0
 listvar_10 db "    -",0
 listvar_11 db " NULL",0
 listvar_12 db " = bp",0
-; ENDP
+ENDP
 
-listcall:  ; *** PROC ***
+listcall: PROC
 
 ;-913   prs("\n\n;    #  addr name   list of CALLs\n");
 
@@ -9736,9 +9736,9 @@ listcall:  ; *** PROC ***
  LEAVE
  ret
 listcall_0 db "\n\n;    #  addr name   list of CALLs\n",0
-; ENDP
+ENDP
 
-calllisting:  ; *** PROC ***
+calllisting: PROC
 
 ;-916   prs("\n;"); printint51(i); prc(32);
 
@@ -9804,9 +9804,9 @@ calllisting:  ; *** PROC ***
  ret
 calllisting_0 db "\n;",0
 calllisting_1 db "unresolved ",0
-; ENDP
+ENDP
 
-countcalls:  ; *** PROC ***
+countcalls: PROC
 
 ;-922   pt=adrF(FNameField, f);
 
@@ -9876,9 +9876,9 @@ countcalls:  ; *** PROC ***
 ;-929 int listfunc() { int i;
  LEAVE
  ret
-; ENDP
+ENDP
 
-listfunc:  ; *** PROC ***
+listfunc: PROC
 
 ;-930   prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
 
@@ -9924,9 +9924,9 @@ listfunc:  ; *** PROC ***
  LEAVE
  ret
 listfunc_0 db "\n\n\n;   # Calls Line Width  Name   list of functions\n",0
-; ENDP
+ENDP
 
-funclisting:  ; *** PROC ***
+funclisting: PROC
 
 ;-934   prs("\n;");    printint51(i);
 
@@ -10048,13 +10048,13 @@ funclisting_2 db "void ",0
 funclisting_3 db "byte ",0
 funclisting_4 db "word ",0
 funclisting_5 db "dwrd ",0
-; ENDP
+ENDP
 MAXUI dw 65535
 
 ;-944 int epilog() {unsigned int i; 
 
 
-epilog:  ; *** PROC ***
+epilog: PROC
 
 ;-945   strcpy(symbol, "LastFunctionByt");  storefunc();
 
@@ -10369,9 +10369,9 @@ epilog_22 db "' :",0
 epilog_23 db " max.",0
 epilog_24 db ", free:",0
 epilog_25 db " *** Warning *** constant area too small",0
-; ENDP
+ENDP
 
-setblock:  ; *** PROC ***
+setblock: PROC
 
 ;-977   DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
 
@@ -10390,9 +10390,9 @@ setblock:  ; *** PROC ***
 ;-978 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
  LEAVE
  ret
-; ENDP
+ENDP
 
-allocmem:  ; *** PROC ***
+allocmem: PROC
 
 ;-979   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
 
@@ -10428,9 +10428,9 @@ mov [bp-4], bx
 
  .retnallocmem: LEAVE
  ret
-; ENDP
+ENDP
 
-copyF:  ; *** PROC ***
+copyF: PROC
 
 ;-983   segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
 
@@ -10464,9 +10464,9 @@ copyF:  ; *** PROC ***
 ;-988 int to_far(char *dest, char *src) {
  LEAVE
  ret
-; ENDP
+ENDP
 
-to_far:  ; *** PROC ***
+to_far: PROC
 
 ;-989   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
 
@@ -10509,9 +10509,9 @@ to_far:  ; *** PROC ***
 ;-996 int from_far(char *dest, char *src) {
  LEAVE
  ret
-; ENDP
+ENDP
 
-from_far:  ; *** PROC ***
+from_far: PROC
 
 ;-997   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
 
@@ -10555,7 +10555,7 @@ from_far:  ; *** PROC ***
 ;-1004 }
  LEAVE
  ret
-; ENDP
+ENDP
  
 ; missing functions: 
 ; Number of unresolved CALLs :    0 All FUNCTIONs in place
@@ -11773,6 +11773,6 @@ ret
 ;Glob. variables:  129 max.:  200
 ;Functions      :  107 max.:  300
 ;Calls          :  961 max.: 2000, NameField: 6121 max.:    65535
-;Code until     :21608 max.: 30000, free: 8392
+;Code until     :21595 max.: 30000, free: 8405
 ;Data (HeapEnd) :53548, resting stacksize: 11987
 ;Max. Const in 'epilog' :  947 max. 3000, free: 2053

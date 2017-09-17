@@ -249,7 +249,7 @@ int dofunc() { int nloc; int i; int narg;
   strcpy(fname, symbol);
   if (checkFunction() ) error1("Function already defined");
   storefunc();
-  prs("\n\n"); prs(symbol); prs(":  ; *** PROC ***");
+  prs("\n\n"); prs(symbol); prs(": PROC");
   expect('('); LTop=LSTART;  i=0;
   if (istoken(')')==0) { narg=2; 
     do { typeName();  addlocal(); narg+=2;
@@ -282,7 +282,7 @@ int dofunc() { int nloc; int i; int narg;
   *cloc=0; prs(co); 
   maxco1=strlen(co);
   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
-  prs("\n; ENDP"); 
+  prs("\nENDP"); 
 }
 int isvariable() {
     if(token==T_SIGNED)   goto v1;   
