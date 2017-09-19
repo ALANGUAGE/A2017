@@ -1,4 +1,4 @@
-//  .ret redefined 2011.04.25 23.644 bytes, Full  Working 2017.09.13
+// 23.644 byte 21.407byte, Full  Working 2017.09.13
 char Version1[]="A.COM V0.9";
 #define LSTART        200
 #define VARMAX        300
@@ -51,7 +51,8 @@ int fdin=0;        int fdout=0;      char symbol[128];
 char fname[CMDLENMAX];               char namein[CMDLENMAX];
 char namelst[CMDLENMAX];             char archivename[CMDLENMAX];
 int token=0;       char globC=0;     int spalte=0;
-char thechar=0;    int iscmp=0;      int nconst=0;
+char thechar=0;   //reads one char forward 
+int iscmp=0;      int nconst=0;
 int nreturn=0;     int nlabel=0;    
 int GTop=1;        int LTop=150;
 unsigned int lexval=0;
