@@ -778,7 +778,7 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}        
   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
   if (c == '/') { if (thechar == '/') {
-      do c=next(); while(c != 13); /* c=next(); */ return getlex(); } }
+      do c=next(); while(ifEOL(c)==0) return getlex(); } }
   if (c == '/') { if (thechar == '*') {
       g2: c=next(); if (c != '*') goto g2; if (thechar != '/') goto g2;
       c=next(); return getlex(); } else  return '/'; }
@@ -875,6 +875,15 @@ int printinputline() { fgetsp=&fgetsdest;
     if (fdout) { prs("\n\n;-"); prunsign1(lineno); prc(' '); lineno++;
       prscomment(&fgetsdest);}
 }
+int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
+  if (c == 10) return 1;//LF
+  if (c == 13) {//CR
+    if (thechar == 10) c=next();
+    return 1;
+  }
+  return 0;
+}
+
 int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
 int error1(char *s) { 
   lineno--;
