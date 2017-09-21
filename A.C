@@ -613,7 +613,8 @@ int main() {
   if (DOS_ERR) error1("SetBlock , AX=");
   segE=allocmem(4096);
   if (DOS_ERR)  error1("alloc memory, AX=");
-  CNameTop=0;
+  CNameTop=0;  
+  coname=0;
   getfirstchar();
   parse();
   checkcalls(); epilog();
