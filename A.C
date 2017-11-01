@@ -1,30 +1,30 @@
-// 23.644 byte 21.407byte, Full  Working 2017.09.13
-char Version1[]="A.COM V0.9";
-#define LSTART        200
-#define VARMAX        300
-#define GNAMEMAX     4800 // 16*VARMAX
-#define FUNCMAX       300
-#define FNAMEMAX     4800 // 16*FUNCMAX
-#define CALLMAX      2000
-#define IDLENMAX       15
-#define _                 // Konstantvergleich
-#define T_NAME        256
-#define T_CONST       257 
-#define T_STRING      258     
-#define T_INCLUDE     510     
-#define T_DEFINE      511  
+char Version1[]="A.COM V0.9.2";
+#define LSTART        200//max global var
+#define VARMAX        300//max global and local var
+#define GNAMEMAX     4800// 16*VARMAX
+#define FUNCMAX       300//max functions
+#define FNAMEMAX     4800// 16*FUNCMAX
+#define CALLMAX      2000//max call
+#define IDLENMAX       15//max length of names
+#define COLUMNMAX     128
+#define _                // compare constants
+#define T_NAME        256//the following defines for better clearity
+#define T_CONST       257
+#define T_STRING      258
+#define T_INCLUDE     510
+#define T_DEFINE      511
 #define T_RETURN      512
-#define T_IF          513      
-#define T_ELSE        514  
-#define T_WHILE       515      
+#define T_IF          513
+#define T_ELSE        514
+#define T_WHILE       515
 #define T_DO          516
-#define T_INT         517     
-#define T_ASM         518   
-#define T_ASMBLOCK    519   
+#define T_INT         517
+#define T_ASM         518
+#define T_ASMBLOCK    519
 #define T_EMIT        520
-#define T_GOTO        521    
-#define T_VOID        529  
-#define T_CHAR        530       
+#define T_GOTO        521
+#define T_VOID        529
+#define T_CHAR        530
 #define T_SIGNED      531
 #define T_UNSIGNED    532
 #define T_LONG        533
@@ -42,44 +42,74 @@ char Version1[]="A.COM V0.9";
 #define T_ORASS      1235
 #define T_LESSLESS   1240
 #define T_GREATGREAT 1241
+
+unsigned int ORGDATAORIG=25000;//start of arrays      
+unsigned int orgData;//actual max of array, must be less than stack
 #define COMAX        3000
+char co[COMAX];//constant storage    
+int maxco=0;      
+int maxco1=0;
 #define CMDLENMAX      67
-unsigned int ORGDATAORIG=30000;      unsigned int orgData=30000;
-char co[COMAX];    int maxco=0;      int maxco1=0;
-char coname[CMDLENMAX];              char *cloc=0;
-int fdin=0;        int fdout=0;      char symbol[128];
-char fname[CMDLENMAX];               char namein[CMDLENMAX];
-char namelst[CMDLENMAX];             char archivename[CMDLENMAX];
-int token=0;       char globC=0;     int spalte=0;
-char thechar=0;   //reads one char forward 
-int iscmp=0;      int nconst=0;
-int nreturn=0;     int nlabel=0;    
-int GTop=1;        int LTop=150;
+char coname[CMDLENMAX];              
+char symbol[COLUMNMAX];
+char fname[CMDLENMAX];               
+char namein[CMDLENMAX];
+char namelst[CMDLENMAX];             
+char archivename[CMDLENMAX];
+char *cloc=0;
+int fdin=0;        
+int fdout=0;      
+int token=0;       
+char globC=0;     
+int column=0;
+char thechar=0;   //reads one char forward
+int iscmp=0;      
+int nconst=0;
+int nreturn=0;     
+int nlabel=0;
+int GTop=1;        
+int LTop=LSTART;
 unsigned int lexval=0;
-int typei;       char istype;  char GType [VARMAX]; // 0=V, 1=*, 2=&,#
-int signi;       char issign;  char GSign [VARMAX]; // 0=U, 1=S
-int widthi;      char iswidth; char GWidth[VARMAX]; // 0, 1, 2, 4
-             int GAdr[VARMAX]; int  GUsed [VARMAX];
-int wi=0;   int GData[VARMAX];  char GNameField[GNAMEMAX];
-int  FTop=0;                 int  CTop=0;
-char FType [FUNCMAX];        char CType[CALLMAX];
-int  FAdr  [FUNCMAX];        int  CAdr [CALLMAX];
+int typei;       char istype;  
+int signi;       char issign;  
+int widthi;      char iswidth; 
+char GType [VARMAX]; // 0=V, 1=*, 2=&,#
+char GSign [VARMAX]; // 0=U, 1=S
+char GWidth[VARMAX]; // 0, 1, 2, 4             
+int GAdr [VARMAX]; 
+int GUsed[VARMAX];
+int GData[VARMAX];  
+char GNameField[GNAMEMAX];  
+int wi=0;   
+int  FTop=0;                 
+int  CTop=0;
+char FType [FUNCMAX];        
+char CType[CALLMAX];
+int  FAdr  [FUNCMAX];        
+int  CAdr [CALLMAX];
 int  FCalls[FUNCMAX];
 char FNameField[FNAMEMAX];   //char CNameField[CNAMEMAX];
 char NameA[]="12345678901234567890123456789012"; //must be in low memory
-char fgetsdest[128];         unsigned char *CNameTop=0;
-unsigned char *fgetsp=0;     unsigned int segE;
-unsigned int lineno=1;       unsigned int linenoinclude=1;
-unsigned char *pt=0;         unsigned char *p1=0;
-int DOS_ERR=0; int DOS_NoBytes=0; char DOS_ByteRead=0;
+char fgetsdest[COLUMNMAX];         
+unsigned char *CNameTop=0;
+unsigned char *fgetsp=0;     
+unsigned int segE;
+unsigned int lineno=1;       
+unsigned int linenoinclude=1;
+unsigned char *pt=0;         
+unsigned char *p1=0;
+int DOS_ERR=0; 
+int DOS_NoBytes=0; 
+char DOS_ByteRead=0;
 
-int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); } 
+
+int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); }
 int putch(char c)  {if (_ c==10) {al=13; writetty();} al=c; writetty(); }
 int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
 int mkneg(int n)   { n; __asm {neg ax} }
 
-int DosInt() { 
-    __emit__(0xCD,0x21);//inth 0x21; 
+int DosInt() {
+    __emit__(0xCD,0x21);//inth 0x21;
     __emit__(0x73, 04); //ifcarry DOS_ERR++;
     DOS_ERR++;
 }
@@ -87,7 +117,8 @@ int openR (char *s) { dx=s;       ax=0x3D02; DosInt(); }
 int creatR(char *s) { dx=s; cx=0; ax=0x3C00; DosInt(); }
 int fcloseR(int fd) {bx=fd;       ax=0x3E00; DosInt(); }
 int exitR  (char c) {ah=0x4C; al=c;          DosInt(); }
-int readRL(char *s, int fd, int len){dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
+int readRL(char *s, int fd, int len){
+    dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
 int fputcR(char *n, int fd) { __asm{lea dx, [bp+4]}; /* = *n */
   cx=1; bx=fd; ax=0x4000; DosInt(); }
 
@@ -98,33 +129,34 @@ int eqstr(char *p, char *q) { while(*p) {
     if(*q) return 0; return 1; }
 int instr1(char *s, char c) { while(*s) {if (*s==c) return 1; s++;}return 0;}
 int strcat1(char *s, char *t) { while (*s != 0) s++; strcpy(s, t);  }
-int toupper(char *s) {while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
+int toupper(char *s) {
+    while(*s) {if (*s >= 'a') if (*s <= 'z') *s=*s-32; s++;}}
 
-int digit(char c){ 
-    if(c<'0') return 0; 
-    if(c>'9') return 0; 
-    return 1; 
+int digit(char c){
+    if(c<'0') return 0;
+    if(c>'9') return 0;
+    return 1;
 }
-int letter(char c) { 
+int letter(char c) {
     if (c=='_') return 1;
     if (c=='.') return 1;
     if (c=='?') return 1;
     if (c=='$') return 1;
-    if (c> 'z') return 0; 
+    if (c> 'z') return 0;
     if (c< '@') return 0;// at included
-    if (c> 'Z') { if (c< 'a') return 0; }  
-    return 1; 
-}    
+    if (c> 'Z') { if (c< 'a') return 0; }
+    return 1;
+}
 int alnum(char c) {
   if (digit (c)) return 1;
   if (letter(c)) return 1;
   return 0;
-}       
+}
 int a(unsigned int i) {  printName(i);}//address
-int v(unsigned int i) {//value 
-    if (i < LSTART) prc('['); 
+int v(unsigned int i) {//value
+    if (i < LSTART) prc('[');
     printName(i);
-    if (i < LSTART) prc(']');   
+    if (i < LSTART) prc(']');
 }
 int checknamelen() { int i;    i=strlen(symbol);
   if (i > IDLENMAX) error1("Item name is too long in characters)");
@@ -139,11 +171,11 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
     if (istoken(T_CONST)) {
       prs("\nsection .bss\nabsolute ");
       prunsign1(orgData);
-      prs("\n"); prs(symbol); 
-      if (iswidth==1) prs(" resb "); 
+      prs("\n"); prs(symbol);
+      if (iswidth==1) prs(" resb ");
       if (iswidth==2) prs(" resw ");
       if (iswidth==4) prs(" resd ");
-      prunsign1(lexval); 
+      prunsign1(lexval);
       prs("\nsection .text");
       orgData=orgData+lexval;
       if (iswidth==2) orgData=orgData+lexval;
@@ -151,18 +183,18 @@ int doglob() { int i; int j; int isstrarr; isstrarr=0;
       GData[GTop]=lexval; expect(']');
     }else { expect(']');
       if (iswidth != 1) error1("Only ByteArray allowed");
-      prs("\n"); prs(symbol); prs(" db "); 
+      prs("\n"); prs(symbol); prs(" db ");
       isstrarr=1; strcpy(doglobName, symbol);
-      expect('='); 
-      if (istoken(T_STRING)) { 
-        prc(34); prscomment(symbol); prc(34); prs(",0"); 
+      expect('=');
+      if (istoken(T_STRING)) {
+        prc(34); prscomment(symbol); prc(34); prs(",0");
         i=strlen(symbol); GData[GTop]=i; }
       else if (istoken('{' )) { i=0;
-        do { if(i) prc(','); 
+        do { if(i) prc(',');
           expect(T_CONST); prunsign1(lexval); i=1; }
-        while (istoken(',')); expect('}'); }  
+        while (istoken(',')); expect('}'); }
       else error1("String or number array expected");
-      }; 
+      };
   }else { //expect('=');
     prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
     else {
@@ -186,8 +218,8 @@ int gettypes(int i) {int j; char c;
   if (c==2) {widthi=2;wi=2;}
   if (c==4) {widthi=4;wi=4;}
   c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
-  if (c=='&')  typei=2;  
-  return i; }  
+  if (c=='&')  typei=2;
+  return i; }
 int adrofname(unsigned int i) { adrF(GNameField, i); }
 int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
   __asm{ add ax, [bp+4]  ; offset s } }
@@ -203,26 +235,26 @@ int checkName() { unsigned int i; unsigned int j;
   i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
   i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
   return 0;
-}    
+}
 int typeName() { int m; //0=V,1=*,2=&
     issign='S';
-    if(istoken(T_SIGNED))   issign='S';  
+    if(istoken(T_SIGNED))   issign='S';
     if(istoken(T_UNSIGNED)) issign='U';
-    iswidth=2;                           
+    iswidth=2;
     if(istoken(T_VOID))     iswidth=0;
-    if(istoken(T_CHAR))     iswidth=1;   
+    if(istoken(T_CHAR))     iswidth=1;
     if(istoken(T_INT))      iswidth=2;
     if(istoken(T_LONG))     iswidth=4;
-    istype='V'; 
+    istype='V';
     m=0;
-    if(istoken('*'))  {istype='*'; m=1;} 
+    if(istoken('*'))  {istype='*'; m=1;}
     if(istoken('&'))  {istype='&'; m=2;}
-    name1(); 
-    return m; 
+    name1();
+    return m;
 }
 int name1() {
-    if (token!=T_NAME) error1("Name expected"); 
-    token=getlex(); 
+    if (token!=T_NAME) error1("Name expected");
+    token=getlex();
 }
 
 int storecall() { int i; if (CTop >= CALLMAX) error1("Call table full");
@@ -242,21 +274,22 @@ int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
 }
 int checkFunction() { unsigned int i; unsigned int j; i=0;
-  while (i < FTop) { j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
+  while (i < FTop) { 
+    j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
   return 0; }
-int dofunc() { int nloc; int i; int narg;  
-  cloc=&co; 
+int dofunc() { int nloc; int i; int narg;
+  cloc=&co;
   checknamelen();
   strcpy(fname, symbol);
   if (checkFunction() ) error1("Function already defined");
   storefunc();
   prs("\n\n"); prs(symbol); prs(": PROC");
   expect('('); LTop=LSTART;  i=0;
-  if (istoken(')')==0) { narg=2; 
+  if (istoken(')')==0) { narg=2;
     do { typeName();  addlocal(); narg+=2;
          GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
     while (istoken(','));  expect(')'); }
-    
+
   expect('{'); /*body*/
   nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
   while(isvariable()) {
@@ -265,40 +298,42 @@ int dofunc() { int nloc; int i; int narg;
         addlocal(); nloc-=2;
         if (iswidth == 4) nloc-=2;
         GData[LTop]=nloc;
-        if (istoken('[')){istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
-            nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc; }
+        if (istoken('[')){
+            istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
+            nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc; 
+            }
         LTop++;
       } while (istoken(',')); expect(';'); }
-  listproc(); 
-  if (LTop>LSTART){prs(";\n ENTER  "); 
+  listproc();
+  if (LTop>LSTART){prs(";\n ENTER  ");
     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
   while(istoken('}')==0)   stmt();
-  if (nreturn) { 
+  if (nreturn) {
         prs("\n .retn");
         prs(fname);
         prc(':');
         }
   if (LTop > LSTART) prs(" LEAVE");
-  prs("\n ret"); 
-  *cloc=0; prs(co); 
+  prs("\n ret");
+  *cloc=0; prs(co);
   maxco1=strlen(co);
   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
-  prs("\nENDP"); 
+  prs("\nENDP");
 }
 int isvariable() {
-    if(token==T_SIGNED)   goto v1;   
+    if(token==T_SIGNED)   goto v1;
     if(token==T_UNSIGNED) goto v1;
-    if(token==T_CHAR)     goto v1;   
+    if(token==T_CHAR)     goto v1;
     if(token==T_INT)      goto v1;
     if(token==T_LONG)     goto v1;
-    return 0;  
+    return 0;
 v1: return 1;
 }
-                  
+
 int mod1; int ireg1; int idx1; int ids1; int idw1; int idt1; int val1;
 int mod2; int ireg2; int idx2; int ids2; int idw2; int idt2; int val2;
 
-int pexpr() {expect('('); iscmp=0; 
+int pexpr() {expect('('); iscmp=0;
   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
     ireg1=checkreg();
     if (ireg1) { doreg1(1); return; }  }
@@ -306,15 +341,15 @@ int pexpr() {expect('('); iscmp=0;
   expect(')'); }           /*error1("Vergleich fehlt");*/
 
 int constantexpr() { int mode; int id1;int ids;
-  token=getlex();   mode=typeName();  
+  token=getlex();   mode=typeName();
   id1=searchname(); gettypes(id1); ids=signi;
   if (isrelational() ==0) error1("Relational expression expected");
   expect(T_CONST);  prs(" ; constant expression");
-  prs("\ncmp "); 
+  prs("\ncmp ");
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
   expect(')');
-}  
+}
 int exprstart() { if (eqstr(symbol, "_")) expr2(0); else expr(0); }
 
 int expr2(int kind) {  int i;
@@ -326,7 +361,7 @@ int expr2(int kind) {  int i;
   if (ireg1 == 0) { idx1=searchname();
     gettypes(idx1); ids1=signi; idw1=wi; idt1=typei;
     if (idt1)  error1("Noch kein Array oder Pointer links erlaubt");  }
-  
+
   if (isrelational()) { error1("Vergleich noch nicht implementiert");
   }
   if (istoken('=') == 0) error1("Assign expected");
@@ -338,18 +373,22 @@ int expr2(int kind) {  int i;
     v(idx1);
     prs(", "); prunsign1(val2);
     if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
-  
+
   mod1=typeName(); ireg2=checkreg();
   if (ireg2) { prs("\nmov ");
-    if (ireg1) printreg(ireg1); else v(idx1); prs(", "); printreg(ireg2);return;}
+    if (ireg1) printreg(ireg1); 
+        else v(idx1); 
+            prs(", "); printreg(ireg2);return;
+            }
   else {
     if (mod1 == 1) error1("Noch kein * im Text erlaubt");
-    
+
     idx2=searchname();
     gettypes(idx2); ids2=signi; idw2=wi; idt2=typei;
     if (idt2 == 1)  error1("Noch kein Array rechts erlaubt");
     prs("\nmov ");
-    if (ireg1) printreg(ireg1); else error1("Mem to Mem not allowed by x86-CPU");
+    if (ireg1) printreg(ireg1); 
+        else error1("Mem to Mem not allowed by x86-CPU");
     prs(", ");
     if (mod1 == 2) a(idx2);
     else {
@@ -436,24 +475,24 @@ int expr(int isRight)
   if (istoken(T_MINUSMINUS)) {if(mode)error1("Nur var erlaubt");
      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
      v(id1); goto e1;}
-       
+
   if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
   if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
   if (istoken(T_ANDASS    )) {compoundass("and", mode, id1); goto e1;}
-  if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}    
+  if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}
   if (istoken(T_MULASS    )) {error1("not implemented");}
   if (istoken(T_DIVASS    )) {error1("not implemented");}
 
-  if (istoken('=')) { exprtype= expr(1); 
+  if (istoken('=')) { exprtype= expr(1);
   doassign(mode, id1, ixarr, ixconst); goto e1;  }
   dovar1(mode, "mov", ixarr, id1);
-  
+
 e1:    if (istoken('+')) rterm("add");
   else if (istoken('-')) rterm("sub" );
   else if (istoken('&')) rterm("and" );
-  else if (istoken('|')) rterm("or" );  
+  else if (istoken('|')) rterm("or" );
   else if (istoken(T_LESSLESS)) rterm("shl");
-  else if (istoken(T_GREATGREAT)) rterm("shr");  
+  else if (istoken(T_GREATGREAT)) rterm("shr");
   else if (istoken('*')) domul (ids);
   else if (istoken('/')) doidiv(ids);
   else if (istoken('%')) domod (ids);
@@ -463,12 +502,12 @@ e1:    if (istoken('+')) rterm("add");
 
 int compoundass(char *op, int mode, int id1) {
   if(mode) error1("only scalar Var allowed");
-  prnl(); prs(op); prs("  "); 
+  prnl(); prs(op); prs("  ");
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
   v(id1); prs(", ");
   expect(T_CONST); prunsign1(lexval);
 }
-int dovar1(int mode, int op, int ixarr, int id1) { 
+int dovar1(int mode, int op, int ixarr, int id1) {
   gettypes(id1);
   if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
     if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
@@ -481,7 +520,7 @@ int dovar1(int mode, int op, int ixarr, int id1) {
     prs("\n "); prs(op);
     if (wi==2) prs(" ax, "); else prs(" al, ");
 // v(id1); prs(" [bx]");
-    prc('['); printName(id1); prs(" + bx]"); 
+    prc('['); printName(id1); prs(" + bx]");
     return; }
   prnl();prs(op);
   if(wi==1) prs(" al, ");
@@ -490,13 +529,13 @@ int dovar1(int mode, int op, int ixarr, int id1) {
   v(id1);
 }
 int rterm(char *op) {int mode; int opint; int ixarr; int id1;
-  if (istoken(T_CONST)) { prnl(); prs(op); 
+  if (istoken(T_CONST)) { prnl(); prs(op);
     if (wi==1) prs(" al, ");
     if (wi==2) prs(" ax, ");
     if (wi==4) prs(" eax, ");
     prunsign1(lexval); return;}
   mode=typeName(); id1=searchname(); ixarr=0;
-  if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');  
+  if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');
     gettypes(ixarr);
     if (widthi != 2) error1("Arrayindex muss int sein"); }
   if (eqstr(symbol,"_AX")) return;
@@ -504,21 +543,21 @@ int rterm(char *op) {int mode; int opint; int ixarr; int id1;
 }
 int isreg() {
   if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
-  if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}  
+  if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
   if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
   if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
   if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
-  if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}    
+  if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
   if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
   if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
-  if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}    
+  if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
   if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
   if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
-  if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}  
+  if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
   if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
   if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
-  if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}  
-  return 0;   r1: return 1; 
+  if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
+  return 0;   r1: return 1;
 }
 int doreg(char *dr) { int i; expect('=');
   prs("\n mov  "); prs(dr); prs(", ");
@@ -528,7 +567,7 @@ int doreg(char *dr) { int i; expect('=');
 
 int doassign(int mode, int i, int ixarr, int ixconst) {
   gettypes(i);
-  if (mode==1) {prs("\n mov  bx, ");v(i);                  
+  if (mode==1) {prs("\n mov  bx, ");v(i);
     if (widthi == 2) prs("\n mov  [bx], ax");
     else  prs("\n mov  [bx], al"); return;}
   if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
@@ -546,7 +585,9 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
 }
 int domul(int ids) {
   if (ids) rterm("imul"); else {
-  if (istoken(T_CONST)) {prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx"); }
+  if (istoken(T_CONST)) {
+    prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx"); 
+    }
   else error1("with MUL only const number as multiplicator allowed"); } }
 int doidiv(int ids) { int mode; int id1;
   if (istoken(T_CONST)) {
@@ -587,17 +628,17 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
       docalltype [narg] = t0;
       docallvalue[narg] = n0;
     } while (istoken(','));
-    
+
   	expect(')');  i=narg;
     do {
       t0 = docalltype [i];
-      n0 = docallvalue[i];     
+      n0 = docallvalue[i];
       if(t0==1){ prs("\n push "); prunsign1(n0);}
-      if(t0==2){ prs("\n push "); 
+      if(t0==2){ prs("\n push ");
         prs(fname);prc(95);prunsign1(n0);}
       if(t0==3){ prs("\n lea  ax, ");   v(n0);
         prs("\n push ax");}
-      if(t0==4){ gettypes(n0); 
+      if(t0==4){ gettypes(n0);
         if(wi==2) { prs("\n push word "); v(n0);}
         else { prs("\n mov al, byte ");   v(n0);
         prs("\n mov ah, 0\n push ax"); } }
@@ -606,64 +647,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
 	 prs("\n call "); prs(&procname);
 	 if (narg>0) {prs("\n add  sp, ");
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
-/****************************************************************************/
-int main() {
-  getarg();
-  setblock(4096);
-  if (DOS_ERR) error1("SetBlock , AX=");
-  segE=allocmem(4096);
-  if (DOS_ERR)  error1("alloc memory, AX=");
-  CNameTop=0;  
-  coname=0;
-  getfirstchar();
-  parse();
-  checkcalls(); epilog();
-}
-int getfirstchar() { fgetsp=&fgetsdest; *fgetsp=0; thechar=fgets1(); }
-char *arglen=0x80; char *argv=0x82;
-int getarg() { int arglen1; int i; char *c;
-  arglen1=*arglen;
-  if (arglen1) { i=arglen1+129; *i=0; }
-  else { cputs(Version1); cputs(" Usage: A.COM in_file[.C]: ");
-    DOS_NoBytes=readRL(argv, 0, CMDLENMAX); c=DOS_NoBytes+128; *c=0; prnl(); }
-  strcpy(namein, argv);
-  if (instr1(namein, '.') == 0) strcat1(namein, ".C");
-  toupper(namein);
-  strcpy(namelst, namein); i=strlen(namelst); i--; c=&namelst+i; *c='S';
- 
-  fdin=openR (namein);
-  if(DOS_ERR){cputs("Source file missing (.C): "); cputs(namein); exitR(1); }
-  fdout=creatR(namelst);
-  if(DOS_ERR){cputs("list file not creatable: ");cputs(namelst);exitR(2);}
-  prs("\n; ");prs(Version1);
-  prs(", Source: "); prs(namein);  prs(", Output asm: "); prs(namelst);
-  prs("\norg  256 \njmp main"); 
-}
-int parse() { token=getlex(); do {
-    if (token <= 0) return 1;
-    if (istoken('#')) {
-      if (istoken(T_DEFINE)) dodefine();
-      else if (istoken(T_INCLUDE)) doinclude();
-      else error1("define or include expected");  }
-    else{ typeName();  if (token=='(') dofunc();  else doglob(); }
-  } while(1);
-}
-int checkcalls() { int i; int j; int k;
-  prs("\n \n; missing functions: ");
-  i=0;  k=0;
-  while (i < CTop) {
-    pt=CAdr[i];
-    from_far(NameA, pt);
-    j=0;
-    do { p1=adrF(FNameField, j);
-      if (eqstr(NameA, p1)){ CType[i]=1; j=FTop; }
-      j++; } while (j < FTop);
-    if (j == FTop) { k++; prs("\n; "); prs(NameA); }
-    i++; }
-  prs("\n; Number of unresolved CALLs :"); printint51(k);
-  if (k!=0) error1("At least 1 function is missing! "); 
-    else prs(" All FUNCTIONs in place");
-}
+/***************************************************************/
 
 int doinclude() { int fdtemp;
   if (token==T_STRING) {  fdtemp=fdin;
@@ -684,43 +668,44 @@ int dodefine() { int i; int j; int fdtemp;
     strcpy(archivename, symbol); prs(archivename);
     } else error1("Name of archive file missing"); token=getlex(); return;}
    expect(T_NAME);
-  if (token==T_CONST) { 
+  if (token==T_CONST) {
     if (GTop >= LSTART) error1("global table (define) full");
     i=strlen(symbol); if (i>15) error1("Define name longer 15 char");
     GSign [GTop]='U'; GWidth[GTop]=1; GType [GTop]='#';
     GAdr [GTop]=lineno-1; GUsed [GTop]=0;
     pt=adrofname(GTop); strcpy(pt, symbol); GData[GTop]=lexval;
-    expect(T_CONST); GTop++;  } 
+    expect(T_CONST); GTop++;  }
 }
 int stmt() { int c; char cha;
        if(istoken('{'))     {while(istoken('}')==0) stmt();}
   else if(istoken(T_IF))    doif();
   else if(istoken(T_DO))    dodo();
   else if(istoken(T_WHILE)) dowhile();
-  else if(istoken(T_GOTO))  {prs("\n jmp .");name1();prs(symbol);expect(';');}
+  else if(istoken(T_GOTO))  {
+    prs("\n jmp .");name1();prs(symbol);expect(';');}
   else if(token==T_ASM)     {prs("\n"); c=next();
         while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
-  else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();  
+  else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
         while(cha!= '}') { prc(cha); cha=next(); }
         token=getlex(); }
-        else error1("Curly open expected"); 
+        else error1("Curly open expected");
         }
   else if(istoken(T_EMIT))   doemit();
   else if(istoken(';'))      { }
   else if(istoken(T_RETURN)) {
         if (token!=';') exprstart();
-        prs("\n jmp .retn"); 
+        prs("\n jmp .retn");
         prs(fname);
-        nreturn++; 
+        nreturn++;
         expect(';');
         }
   else if(thechar==':')      {
         prs("\n."); // Label
-        prs(symbol); prc(':');  
-        expect(T_NAME); 
-        expect(':'); 
+        prs(symbol); prc(':');
+        expect(T_NAME);
+        expect(':');
         }
-  else  {exprstart(); expect(';'); } 
+  else  {exprstart(); expect(';'); }
 }
 
 int doemit() {prs("\n db ");
@@ -760,9 +745,9 @@ int isrelational() {
   if (token==T_LE) goto w; if (token==T_GE) goto w;
   if (token=='<' ) goto w; if (token=='>' ) goto w;
   return 0;  w: iscmp=token; token=getlex(); return 1;}
- 
-char symboltemp[80];    
-int getlex() { char c; char *p; 
+
+char symboltemp[80];
+int getlex() { char c; char *p;
 g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
@@ -775,9 +760,9 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
   if (c=='+') {if(thechar=='=') {next(); return T_PLUSASS;   }}
   if (c=='-') {if(thechar=='=') {next(); return T_MINUSASS;  }}
   if (c=='&') {if(thechar=='=') {next(); return T_ANDASS;    }}
-  if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}    
+  if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}
   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
-  if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}        
+  if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
   if (c == '/') { if (thechar == '/') {
       do c=next(); while(ifEOL(c)==0) return getlex(); } }
@@ -790,9 +775,9 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (lexval==92) {lexval=next();
       if (lexval=='n') lexval=10; if (lexval=='t') lexval= 9;
       if (lexval=='0') lexval= 0; } next(); return T_CONST; }
-  if (alnum(c)) { 
+  if (alnum(c)) {
     strcpy(symboltemp, symbol); p=&symbol;  *p=c;  p++;
-    while(alnum(thechar)) {c=next(); *p=c;  p++; } 
+    while(alnum(thechar)) {c=next(); *p=c;  p++; }
       *p=0;
     if (eqstr(symbol,"signed"  )) return T_SIGNED;
     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
@@ -809,17 +794,17 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (eqstr(symbol,"while"   )) return T_WHILE;
     if (eqstr(symbol,"do"      )) return T_DO;
     if (eqstr(symbol,"goto"    )) return T_GOTO;
-    if (eqstr(symbol,"define"  )) return T_DEFINE;   
-    if (eqstr(symbol,"include" )) return T_INCLUDE;   
+    if (eqstr(symbol,"define"  )) return T_DEFINE;
+    if (eqstr(symbol,"include" )) return T_INCLUDE;
     if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
     return T_NAME; } error1("Input item not recognized"); }
 
 int convertdefine() { int i; int j;   i=0;
   while (i < GTop) {
-   j=adrofname(i); 
+   j=adrofname(i);
    if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
    return T_CONST; } }
-   i++; } 
+   i++; }
    return 0; }
 int getdigit(char c) { int i;
     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
@@ -827,8 +812,8 @@ int getdigit(char c) { int i;
       while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
 	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
      i=0; i=c; lexval=lexval+i;}
-    }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10; 
-     i=0; i=c; lexval=lexval+i; } } 
+    }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
+     i=0; i=c; lexval=lexval+i; } }
 }
 int getstring(int delim) {int c; char *p;  p=&symbol; c=next();
   while (c != delim) {*p=c; p++; c=next(); } *p=0; }
@@ -840,10 +825,10 @@ int expect(int t) {if (istoken(t)==0) { *cloc=0; prs(co); listproc();
 
 int eprc(char c)  {*cloc=c; cloc++; }
 int eprs(char *s) {char c;  while(*s) { c=*s; eprc(c); s++; } }
-int prc(unsigned char c) { 
+int prc(unsigned char c) {
   if (c==10) {_AX=13; writetty(); }
-  _AL=c; writetty(); 
-  fputcR(c, fdout); 
+  _AL=c; writetty();
+  fputcR(c, fdout);
   }
 int prscomment(unsigned char *s) {unsigned char c;
   while(*s){c=*s;prc(c);s++;} }
@@ -857,144 +842,342 @@ int prs(unsigned char *s) {unsigned char c; int com; com=0;
 int eprnum(int n){int e; if(n<0) { eprc('-'); n=mkneg(n); }
   if (n >= 10) {e=n/10; eprnum(e);}  n=n%10; n=n+'0'; eprc(n); }
 int pint1 (int n){int e; if(n<0) {  prc('-');  n=mkneg(n); }
-  if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }  
+  if (n >= 10) {e=n/10;  pint1(e);}  n=n%10; n += '0'; prc(n); }
 int prunsign1(unsigned int n) { unsigned int e;
   if ( _ n >= 10) {  e=n/10; prunsign1(e); }
-    n = n % 10; /*unsigned mod*/   n += '0'; prc(n); }  
+    n = n % 10; /*unsigned mod*/   n += '0'; prc(n); }
 int printint51(unsigned int j)  {
   if (j<10000) prc(32); if (j<1000) prc(32);  if (j<100) prc(32);
    if (j<10) prc(32);  prunsign1(j); }
 
 int fgets1() { char c; c=*fgetsp;
   if (c==0) { printinputline(); if (DOS_NoBytes == 0) return 0;
-    fgetsp=&fgetsdest; c=*fgetsp; spalte=0; }
-  fgetsp++; spalte++;  return c; }
-int printinputline() { fgetsp=&fgetsdest;
-  do {DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
-  if (DOS_NoBytes == 0) return; 
-    *fgetsp=DOS_ByteRead; fgetsp++;} 
-  while (DOS_ByteRead != 10); *fgetsp=0;
-    if (fdout) { prs("\n\n;-"); prunsign1(lineno); prc(' '); lineno++;
-      prscomment(&fgetsdest);}
+    fgetsp=&fgetsdest; c=*fgetsp; column=0; }
+  fgetsp++; column++;  return c; }
+int printinputline() {
+    int col; 
+    col=0;
+    fgetsp=&fgetsdest;
+    do {
+        DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+        if (DOS_NoBytes == 0) return;
+        *fgetsp=DOS_ByteRead; 
+        fgetsp++; 
+        col++;
+        if (col >80) error1("input line longer than 80 char");
+        }
+        while (DOS_ByteRead != 10); 
+    *fgetsp=0;
+    if (fdout) { 
+        prs("\n\n;-"); 
+        prunsign1(lineno); 
+        prc(' '); 
+        lineno++;
+        prscomment(&fgetsdest);
+        }
 }
 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
-  if (c == 10) return 1;//LF
-  if (c == 13) {//CR
-    if (thechar == 10) c=next();
-    return 1;
-  }
-  return 0;
+    if (c == 10) return 1;//LF
+    if (c == 13) {//CR
+        if (thechar == 10) c=next();
+        return 1;
+    }
+    return 0;
 }
 
-int end1(int n) {fcloseR(fdin); fcloseR(fdout); exitR(n); }
-int error1(char *s) { 
-  lineno--;
-  prnl(); prscomment(&fgetsdest);
-  prs(";Line: "); prunsign1(lineno);
-  prs(" ************** ERROR: "); prs(s);
-  prs("  in column: "); prunsign1(spalte);
-  prs("\nToken: "); prunsign1(token); prs(", globC: "); prc(globC);
-  prs(", thechar: "); prunsign1(thechar); prs(", symbol: "); prs(symbol);
-  end1(1); }
-int listproc() {int i; 
-  if (LTop > LSTART) {
-  prs("\n;Function : "); prs(fname);
-  prs(", Number of local variables: "); i=LTop - LSTART; prunsign1(i);
-  prs("\n;   # type sign width addr used name   list of local variables");
-    i=LSTART; 
-    while (i < LTop) { listvar(i); i++; } } 
+
+
+int end1(int n) {
+    fcloseR(fdin); 
+    fcloseR(fdout); 
+    exitR(n); 
 }
-int listvar(unsigned int i) {unsigned int j; char c;
-  prs("\n;"); printint51(i); prc(32);
-  c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
-               if(c=='&')prs("arr ");   if(c=='#')prs("def ");
-  c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
-  c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
-               if(c==  4)prs("dwrd " );
-  j=GAdr[i]; printint51(j);
-  j=GUsed[i]; if (j) printint51(j);
-  else {if(GType[i]=='#') prs("    -"); else prs(" NULL");}
-  prc(32);  pt=adrofname(i); prs(pt);
-  if(GType[i]=='#') { prc('='); j=GData[i]; prunsign1(j); }
-  if(GType[i]=='&') { prc('['); j=GData[i]; prunsign1(j); prc(']');}
-  if (i >= LSTART) { prs(" = bp"); j=GData[i];
-    if (j > 0) prc('+'); pint1(j);  }
+int error1(char *s) {
+    lineno--;
+    prnl(); 
+    prscomment(&fgetsdest);
+    prs(";Line: "); 
+    prunsign1(lineno);
+    prs(" ************** ERROR: "); 
+    prs(s);
+    prs("  in column: "); 
+    prunsign1(column);
+    prs("\nToken: "); 
+    prunsign1(token); 
+//    prs(", globC: "); 
+//    prc(globC);
+//    prs(", thechar: "); 
+//    prunsign1(thechar); 
+    prs(", symbol: "); 
+    prs(symbol);
+    end1(1); 
 }
-int listcall() { int i;
-  prs("\n\n;    #  addr name   list of CALLs\n");
-  i=0;  while (i< CTop) { calllisting(i); i++; } }
-int calllisting(int i) {char c; int j;
-  prs("\n;"); printint51(i); prc(32);
-  c=CType [i]; if(c==0)prs("unresolved ");
-  j=CAdr[i];            printint51(j); prc(32);
-  from_far(NameA, j);   prs(NameA);
+int listproc() {
+    int i;
+    if (LTop > LSTART) {
+        prs("\n;Function : "); prs(fname);
+        prs(", Number of local variables: "); 
+        i=LTop - LSTART; 
+        prunsign1(i);
+        prs("\n;   # type sign width addr used name");
+        prs("   list of local variables");
+        i=LSTART;
+        while (i < LTop) { 
+            listvar(i); 
+            i++; 
+            } 
+        }
 }
-int countcalls(int f) { unsigned int i;
-  pt=adrF(FNameField, f);
-  i=0;  while (i < CTop) {
-    p1=CAdr[i];
-    from_far(NameA, p1);
-    if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
-    i++; }
+int listcall() { 
+    int i;
+    prs("\n\n;    #  addr name   list of CALLs\n");
+    i=0;  
+    while (i< CTop) { 
+        calllisting(i); 
+        i++; 
+        } 
 }
-int listfunc() { int i;
-  prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
-  i=0;  while (i < FTop) { countcalls (i); i++; } 
-  i=0;  while (i < FTop) { funclisting(i); i++; } }
-int funclisting(int i) {int j;  char c;
-  prs("\n;");    printint51(i);
-  j = FCalls[i]; if (j) printint51(j); else prs(" NULL");
-  j = FAdr[i];   printint51(j); prc(32);
-  c=FType[i];
-  if(c=='V')prs("void " );    if(c=='B')prs("byte " );
-  if(c=='W')prs("word " );    if(c=='D')prs("dwrd " );
-  prc(32); prc(32);
-  pt=adrF(FNameField, i); prs(pt);
+int calllisting(int i) {
+    char c; int j;
+    prs("\n;"); 
+    printint51(i); 
+    prc(32);
+    c=CType [i]; 
+    if(c==0)prs("unresolved ");
+    j=CAdr[i];            
+    printint51(j); 
+    prc(32);
+    from_far(NameA, j);   
+    prs(NameA);
 }
+int countcalls(int f) { 
+    unsigned int i;
+    pt=adrF(FNameField, f);
+    i=0;  
+    while (i < CTop) {
+        p1=CAdr[i];
+        from_far(NameA, p1);
+        if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
+        i++; 
+        }
+}
+int listfunc() { 
+    int i;
+    prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
+    i=0;  
+    while (i < FTop) { 
+        countcalls (i); 
+        i++; 
+        }
+    i=0;  
+    while (i < FTop) { 
+        funclisting(i); 
+        i++; 
+        } 
+}
+int funclisting(int i) {
+    int j;  char c;
+    prs("\n;");    printint51(i);
+    j = FCalls[i]; 
+    if (j) printint51(j); 
+        else prs(" NULL");
+    j = FAdr[i];   
+    printint51(j); 
+    prc(32);
+    c=FType[i];
+    if(c=='V')prs("void " );    
+    if(c=='B')prs("byte " );
+    if(c=='W')prs("word " );    
+    if(c=='D')prs("dwrd " );
+    prc(32); prc(32);
+    pt=adrF(FNameField, i); 
+    prs(pt);
+}
+
+int listvar(unsigned int i) {
+    unsigned int j; char c;
+    prs("\n;"); printint51(i); prc(32);
+    c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
+                 if(c=='&')prs("arr ");   if(c=='#')prs("def ");
+    c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
+    c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
+                 if(c==  4)prs("dwrd " );
+    j=GAdr[i]; printint51(j);
+    j=GUsed[i]; 
+    if (j) printint51(j);
+    else {
+        if(GType[i]=='#') prs("    -"); 
+        else prs(" NULL");
+         }
+    prc(32);  
+    pt=adrofname(i); prs(pt);
+    if(GType[i]=='#') { 
+        prc('='); 
+        j=GData[i]; 
+        prunsign1(j); 
+        }
+    if(GType[i]=='&') { 
+        prc('['); 
+        j=GData[i]; 
+        prunsign1(j); 
+        prc(']');
+        }
+    if (i >= LSTART) { 
+        prs(" = bp"); 
+        j=GData[i];
+        if (j > 0) prc('+'); 
+        pint1(j);  
+    }
+}
+
 unsigned int MAXUI=65535;
-int epilog() {unsigned int i; 
-  strcpy(symbol, "LastFunctionByt");  storefunc();
-  prs("\nLastFunctionByt:db 0E8h, 0, 0\npop ax\nret");
-  prs("\n \n;   # type sign width  adr used name   list of global variables\n");
-  i=1;
-  while (i< GTop) { listvar(i); i++; }
-  listfunc();   listcall();
-
-  prs("\n;Input: "); prs(&namein);
-  prs(", List: ");   prs(&namelst);
-  prs(",  Lines:"); printint51(lineno);
-  prs("\n;Glob. variables:"); GTop--; printint51(GTop);
-  prs(" max.:"); printint51(LSTART);
-  prs("\n;Functions      :"); printint51(FTop);
-  prs(" max.:"); printint51(FUNCMAX);
-  prs("\n;Calls          :"); printint51(CTop);
-  prs(" max.:"); printint51(CALLMAX);
-  prs(", NameField:"); printint51(CNameTop);
-  prs(" max.:"); printint51(65535);
-//  prs(", segE:"); printint51(segE);
-  __asm{call LastFunctionByt}  _ i=ax;
-  prs("\n;Code until     :"); printint51(i);
-  prs(" max.: "); printint51(ORGDATAORIG); i=ORGDATAORIG-i; prs(", free:");
-  printint51(i); if (i <= 1000)prs(" *** Warning *** Code area too small");
-  prs("\n;Data (HeapEnd) :"); prunsign1(orgData); i=MAXUI-orgData;
-  prs(", resting stacksize: ");printint51(i);
-  if (i <= 5000) prs(" *** Warning *** Stack too small");
-  prs("\n;Max. Const in '"); prs(coname); prs("' :"); printint51(maxco);
-  prs(" max."); printint51(COMAX); i=COMAX; i=i-maxco; prs(", free:");
-  printint51(i);if (i <= 1000)prs(" *** Warning *** constant area too small");
+int epilog() {
+    unsigned int i;
+    prs("\n \n;   # type sign width  adr used name");
+    prs("   list of global variables\n");
+    i=1;
+    while (i< GTop) { 
+        listvar(i); 
+        i++; 
+        }
+    listfunc();   
+    listcall();
+    prs("\n;Input: "); prs(&namein);
+    prs(", List: ");   prs(&namelst);
+    prs(",  Lines:"); printint51(lineno);
+    prs("\n;Glob. variables:"); GTop--; printint51(GTop);
+    prs(" max.:"); printint51(LSTART);
+    prs("\n;Functions      :"); printint51(FTop);
+    prs(" max.:"); printint51(FUNCMAX);
+    prs("\n;Calls          :"); printint51(CTop);
+    prs(" max.:"); printint51(CALLMAX);
+    prs(", NameField:"); printint51(CNameTop);
+//    prs(" max.:"); 
+    prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
+    prs(" max.:"); printint51(COMAX); i=COMAX; i=i-maxco; 
+    if (i <= 1000)prs(" *** Warning *** constant area too small");
+    prs(", stacksize: ");  
+    i=MAXUI-orgData; printint51(i);
+    if (i <= 1000) prs(" *** Warning *** Stack too small");
   end1(0);}
-// while(expr) stmt; do stmt while(expr); FOR: i=0; while(i<10){stmt; i++;}
+
+int checkcalls() { 
+    int i; int j; int k;
+    prs("\n \n; missing functions: ");
+    i=0;  k=0;
+    while (i < CTop) {
+        pt=CAdr[i];
+        from_far(NameA, pt);
+        j=0;
+        do { 
+            p1=adrF(FNameField, j);
+            if (eqstr(NameA, p1)){ 
+                CType[i]=1; 
+                j=FTop; 
+                }
+            j++; 
+            } while (j < FTop);
+        if (j == FTop) { 
+            k++; prs("\n; "); 
+            prs(NameA); 
+        }
+        i++; 
+    }
+    prs("\n; Number of unresolved CALLs :"); printint51(k);
+    if (k!=0) error1("At least 1 function is missing! ");
+    else prs(" All FUNCTIONs in place");
+}
+
+int parse() { 
+    token=getlex(); 
+    do {
+        if (token <= 0) return 1;
+        if (istoken('#')) {
+             if (istoken(T_DEFINE))  dodefine();
+        else if (istoken(T_INCLUDE)) doinclude();
+        else error1("define or include expected");  
+        }
+    else{ 
+        typeName();  
+        if (token=='(') dofunc();  
+        else doglob(); }
+    } while(1);
+}
+
+int getfirstchar() { 
+    fgetsp=&fgetsdest; 
+    *fgetsp=0; 
+    thechar=fgets1(); 
+    }
+
+char *arglen=0x80; char *argv=0x82;
+int getarg() { 
+    int arglen1; int i; char *c;
+    arglen1=*arglen;
+    if (arglen1 == 0) { 
+        cputs(Version1); 
+        cputs(" Usage: A.COM in_file[.C]: "); 
+        exitR(3);
+        }
+    i=arglen1+129; 
+    *i=0;
+    arglen1--;
+    toupper(argv);     
+    strcpy(namein, argv);
+    if (instr1(namein, '.') == 0) strcat1(namein, ".C");
+    strcpy(namelst, namein); 
+    i=strlen(namelst); 
+    i--; 
+    c=&namelst+i; 
+    *c='S';
+
+    fdin=openR (namein);
+    if(DOS_ERR){
+        cputs("Source file missing (.C): "); 
+        cputs(namein); 
+        exitR(1); 
+        }
+    fdout=creatR(namelst);
+    if(DOS_ERR){
+        cputs("list file not creatable: ");
+        cputs(namelst);
+        exitR(2);
+        }
+    prs("\n; ");
+    prs(Version1);
+    prs(", Source: "); prs(namein);  
+    prs(", Output asm: "); prs(namelst);
+    prs("\norg  256 \njmp main");
+}
+
 int setblock(unsigned int i) {
-  DOS_ERR=0; _BX=i; _ ax=cs; _ es=ax; _AX=0x4A00; DosInt(); }
+    DOS_ERR=0; 
+    _BX=i; 
+    _ ax=cs; 
+    _ es=ax; 
+    _AX=0x4A00; 
+    DosInt();                                                             
+}
+int main() {
+    getarg();
+setblock(4096);
+if (DOS_ERR) error1("SetBlock , AX=");
+segE=allocmem(4096);
+if (DOS_ERR)  error1("alloc memory, AX=");
+    CNameTop=0;
+    coname=0;
+    orgData=ORGDATAORIG;
+    getfirstchar();
+    parse();
+  checkcalls(); 
+  epilog();
+}
+
+
+
 int allocmem(unsigned int i) { unsigned int vAX; unsigned int vBX;
   DOS_ERR=0; _BX=i;  _AX=0x4800; DosInt(); _ vAX=ax; _ vBX=bx;
   if(DOS_ERR) return vBX;   return vAX;
-}
-int copyF(char *dest, char *src, unsigned int sz) {
-  segE;  _ es=ax;  _ si=src;  _ di=dest; _ cx=sz;  // ds:si   es:di
-  asm cld
-  asm rep movsb
-  asm mov byte [es:di], 0
 }
 int to_far(char *dest, char *src) {
   segE;  _ es=ax;  _ si=src;  _ di=dest;  // ds:si   es:di
@@ -1013,3 +1196,4 @@ int from_far(char *dest, char *src) {
   asm inc di
   } while (al != 0);
 }
+
