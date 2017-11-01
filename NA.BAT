@@ -1,1 +1,0 @@
-NASM.EXE -oA.COM -fbin -O1 -dENDP -dPROC -lA.LS A.S 
