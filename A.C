@@ -1,4 +1,4 @@
-char Version1[]="A.COM V0.9.2";
+char Version1[]="A.COM V0.9.2";//todo: 2. op=reg not recognized
 #define LSTART        200//max global var
 #define VARMAX        300//max global and local var
 #define GNAMEMAX     4800// 16*VARMAX
@@ -7,11 +7,9 @@ char Version1[]="A.COM V0.9.2";
 #define CALLMAX      2000//max call
 #define IDLENMAX       15//max length of names
 #define COLUMNMAX     128
-#define _                // compare constants
 #define T_NAME        256//the following defines for better clearity
 #define T_CONST       257
 #define T_STRING      258
-#define T_INCLUDE     510
 #define T_DEFINE      511
 #define T_RETURN      512
 #define T_IF          513
@@ -45,7 +43,7 @@ char Version1[]="A.COM V0.9.2";
 
 unsigned int ORGDATAORIG=25000;//start of arrays
 unsigned int orgData;//actual max of array, must be less than stack
-#define COMAX        3000
+#define COMAX        2000
 char co[COMAX];//constant storage
 int maxco=0;
 int maxco1=0;
@@ -88,7 +86,9 @@ char CType[CALLMAX];
 int  FAdr  [FUNCMAX];
 int  CAdr [CALLMAX];
 int  FCalls[FUNCMAX];
-char FNameField[FNAMEMAX];   //char CNameField[CNAMEMAX];
+char FNameField[FNAMEMAX];
+//char CNameField[CNAMEMAX];
+
 char NameA[]="12345678901234567890123456789012"; //must be in low memory
 char fgetsdest[COLUMNMAX];
 unsigned char *CNameTop=0;
@@ -485,15 +485,16 @@ int isvariable() {
 v1: return 1;
 }
 
-int mod1; int ireg1; int idx1; int ids1; int idw1; int idt1; int val1;
-int mod2; int ireg2; int idx2; int ids2; int idw2; int idt2; int val2;
+int ireg1;
+int mod2; int ireg2;
 
 int pexpr() {expect('('); iscmp=0;
   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
     ireg1=checkreg();
     if (ireg1) { doreg1(1); return; }  }
-  exprstart(); if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
-  expect(')'); }           /*error1("Vergleich fehlt");*/
+  expr(0);
+  if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
+  expect(')'); }
 
 int constantexpr() { int mode; int id1;int ids;
   token=getlex();   mode=typeName();
@@ -505,56 +506,7 @@ int constantexpr() { int mode; int id1;int ids;
   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
   expect(')');
 }
-int exprstart() { if (eqstr(symbol, "_")) expr2(0); else expr(0); }
 
-int expr2(int kind) {  int i;
-  if(kind != 1) token=getlex();
-  mod1=typeName();
-  if (mod1) error1("Noch kein & und * im Text (Linke Hand) erlaubt");
-  ireg1=checkreg();
-  if (ireg1) { doreg1(0); return; }
-  if (ireg1 == 0) { idx1=searchname();
-    gettypes(idx1); ids1=signi; idw1=wi; idt1=typei;
-    if (idt1)  error1("Noch kein Array oder Pointer links erlaubt");  }
-
-  if (isrelational()) { error1("Vergleich noch nicht implementiert");
-  }
-  if (istoken('=') == 0) error1("Assign expected");
-  if (istoken(T_CONST) ) { val2=lexval; prs(" ; constant expression");
-    prs("\nmov ");
-    if (idw1 == 1) prs("byte ");
-    if (idw1 == 2) prs("word ");
-    if (idw1 == 4) prs("dword ");
-    v(idx1);
-    prs(", "); prunsign1(val2);
-    if (idx1 >= LSTART) { i=adrofname(idx1);  prs("; "); prs(i); } return; }
-
-  mod1=typeName(); ireg2=checkreg();
-  if (ireg2) { prs("\nmov ");
-    if (ireg1) printreg(ireg1);
-        else v(idx1);
-            prs(", "); printreg(ireg2);return;
-            }
-  else {
-    if (mod1 == 1) error1("Noch kein * im Text erlaubt");
-
-    idx2=searchname();
-    gettypes(idx2); ids2=signi; idw2=wi; idt2=typei;
-    if (idt2 == 1)  error1("Noch kein Array rechts erlaubt");
-    prs("\nmov ");
-    if (ireg1) printreg(ireg1);
-        else error1("Mem to Mem not allowed by x86-CPU");
-    prs(", ");
-    if (mod1 == 2) a(idx2);
-    else {
-      if (idw2 == 1) prs("byte ");
-      if (idw2 == 2) prs("word ");
-      if (idw2 == 4) prs("dword ");
-      v(idx2);
-      if (idx2 >= LSTART) { i=adrofname(idx2);  prs("; "); prs(i); }  }
-    return;
-  } error1("Internal error: only const or reg allowed");
-}
 char ops[5];
 int doreg1(int iscmp1) { int i;
   if (istoken('='))          strcpy(ops, "mov");
@@ -596,10 +548,10 @@ int checkreg() { // >=17 = 16bit, >=47 = 32bit
   if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
   if (eqstr(symbol,"cr0")) return 71;
   return 0;   }
+
 char printregstr[]
 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
-//          1         2         3         4         5         6         7
-// 1 3 5 7 901 3 5 7 901 3 5 7 901 3 5 7 901 3 5 7 901 3 5 7 901 3 5 7 901 3
+
 int printreg(int i) {  unsigned int k; unsigned char c;
   k = &printregstr + i; c=*k; prc(c); i++;
   k = &printregstr + i; c=*k; prc(c);
@@ -623,11 +575,11 @@ int expr(int isRight)
       ixconst=1; ixarr=lexval; expect(']');  }
     else {ixarr=searchname(); expect(T_NAME); expect(']');
     gettypes(ixarr);
-    if (widthi != 2) error1("Arrayindex muss Zahl oder int sein"); } }
-  if (istoken(T_PLUSPLUS  )) {if(mode)error1("Nur var erlaubt");
+    if (widthi != 2) error1("Array index must be number or int"); } }
+  if (istoken(T_PLUSPLUS  )) {if(mode)error1("Only var allowed");
      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
      v(id1); goto e1;}
-  if (istoken(T_MINUSMINUS)) {if(mode)error1("Nur var erlaubt");
+  if (istoken(T_MINUSMINUS)) {if(mode)error1("Only var allowed");
      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
      v(id1); goto e1;}
 
@@ -804,65 +756,6 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
 /***************************************************************/
 
-int doinclude() { int fdtemp;
-  if (token==T_STRING) {  fdtemp=fdin;
-  prs("\n;Use include file: "); prs(symbol);
-  fdin=openR(symbol);
-  if (DOS_ERR !=0) {prs("Include file missing: "); prs(symbol);
-    error1(" Stop!!"); }
-  linenoinclude=lineno; lineno=1;
-  parse(); lineno=linenoinclude;
-  fdin=fdtemp; prs("\n;Back to main program: "); prs(namein);
-  getfirstchar(); token=getlex(); }
-}
-int dodefine() { int i; int j; int fdtemp;
-  if (eqstr(symbol, "ORGDATA")) {token=getlex();
-    ORGDATAORIG=lexval; orgData=lexval; return; }
-  if (eqstr(symbol, "ARCHIVE")){token=getlex();  if (token==T_STRING) {
-    prs("\n;Use archive file: ");
-    strcpy(archivename, symbol); prs(archivename);
-    } else error1("Name of archive file missing"); token=getlex(); return;}
-   expect(T_NAME);
-  if (token==T_CONST) {
-    if (GTop >= LSTART) error1("global table (define) full");
-    i=strlen(symbol); if (i>15) error1("Define name longer 15 char");
-    GSign [GTop]='U'; GWidth[GTop]=1; GType [GTop]='#';
-    GAdr [GTop]=lineno-1; GUsed [GTop]=0;
-    pt=adrofname(GTop); strcpy(pt, symbol); GData[GTop]=lexval;
-    expect(T_CONST); GTop++;  }
-}
-int stmt() { int c; char cha;
-       if(istoken('{'))     {while(istoken('}')==0) stmt();}
-  else if(istoken(T_IF))    doif();
-  else if(istoken(T_DO))    dodo();
-  else if(istoken(T_WHILE)) dowhile();
-  else if(istoken(T_GOTO))  {
-    prs("\n jmp .");name1();prs(symbol);expect(';');}
-  else if(token==T_ASM)     {prs("\n"); c=next();
-        while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
-  else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
-        while(cha!= '}') { prc(cha); cha=next(); }
-        token=getlex(); }
-        else error1("Curly open expected");
-        }
-  else if(istoken(T_EMIT))   doemit();
-  else if(istoken(';'))      { }
-  else if(istoken(T_RETURN)) {
-        if (token!=';') exprstart();
-        prs("\n jmp .retn");
-        prs(fname);
-        nreturn++;
-        expect(';');
-        }
-  else if(thechar==':')      {
-        prs("\n."); // Label
-        prs(symbol); prc(':');
-        expect(T_NAME);
-        expect(':');
-        }
-  else  {exprstart(); expect(';'); }
-}
-
 int doemit() {prs("\n db ");
   L1: token=getlex(); prunsign1(lexval); token=getlex();
     if (token== ',') {prc(','); goto L1;} expect(')'); }
@@ -950,7 +843,6 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (eqstr(symbol,"do"      )) return T_DO;
     if (eqstr(symbol,"goto"    )) return T_GOTO;
     if (eqstr(symbol,"define"  )) return T_DEFINE;
-    if (eqstr(symbol,"include" )) return T_INCLUDE;
     if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
     return T_NAME; } error1("Input item not recognized"); }
 
@@ -961,6 +853,7 @@ int convertdefine() { int i; int j;   i=0;
    return T_CONST; } }
    i++; }
    return 0; }
+
 int getdigit(char c) { int i;
     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
     if (thechar=='x') thechar='X'; if (thechar=='X') { next();
@@ -970,9 +863,50 @@ int getdigit(char c) { int i;
     }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
      i=0; i=c; lexval=lexval+i; } }
 }
-int getstring(int delim) {int c; char *p;  p=&symbol; c=next();
-  while (c != delim) {*p=c; p++; c=next(); } *p=0; }
 
+int stmt() { int c; char cha;
+       if(istoken('{'))     {while(istoken('}')==0) stmt();}
+  else if(istoken(T_IF))    doif();
+  else if(istoken(T_DO))    dodo();
+  else if(istoken(T_WHILE)) dowhile();
+  else if(istoken(T_GOTO))  {
+    prs("\n jmp .");name1();prs(symbol);expect(';');}
+  else if(token==T_ASM)     {prs("\n"); c=next();
+        while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
+  else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
+        while(cha!= '}') { prc(cha); cha=next(); }
+        token=getlex(); }
+        else error1("Curly open expected");
+        }
+  else if(istoken(T_EMIT))   doemit();
+  else if(istoken(';'))      { }
+  else if(istoken(T_RETURN)) {
+        if (token!=';') expr(0);
+        prs("\n jmp .retn");
+        prs(fname);
+        nreturn++;
+        expect(';');
+        }
+  else if(thechar==':')      {
+        prs("\n."); // Label
+        prs(symbol); prc(':');
+        expect(T_NAME);
+        expect(':');
+        }
+  else  {expr(0);; expect(';'); }
+}
+
+int getstring(int delim) {
+    int c; char *p;
+    p=&symbol;
+    c=next();
+    while (c != delim) {
+        *p=c;
+        p++;
+        c=next();
+    }
+    *p=0;
+}
 
 int fgets1() {
     char c;
@@ -1018,8 +952,6 @@ int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
     }
     return 0;
 }
-
-
 
 int end1(int n) {
     fcloseR(fdin);
@@ -1222,14 +1154,39 @@ int checkcalls() {
     else prs(" All FUNCTIONs in place");
 }
 
+int dodefine() {
+    int i; int j; int fdtemp;
+    if (eqstr(symbol, "ORGDATA")) {
+        token=getlex();
+        ORGDATAORIG=lexval;
+        orgData=lexval;
+        return;
+    }
+    expect(T_NAME);
+    if (token==T_CONST) {
+        if (GTop >= LSTART) error1("global table (define) full");
+        i=strlen(symbol);
+        if (i>15) error1("Define name longer 15 char");
+        GSign [GTop]='U';
+        GWidth[GTop]=1;
+        GType [GTop]='#';
+        GAdr [GTop]=lineno-1;
+        GUsed [GTop]=0;
+        pt=adrofname(GTop);
+        strcpy(pt, symbol);
+        GData[GTop]=lexval;
+        expect(T_CONST);
+        GTop++;
+    }
+}
+
 int parse() {
     token=getlex();
     do {
         if (token <= 0) return 1;
         if (istoken('#')) {
              if (istoken(T_DEFINE))  dodefine();
-        else if (istoken(T_INCLUDE)) doinclude();
-        else error1("define or include expected");
+             else error1("define expected");
         }
     else{
         typeName();
