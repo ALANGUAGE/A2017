@@ -1315,8 +1315,8 @@ int allocmem(unsigned int i) {
     bx=i;
     ax=0x4800;
     DosInt();
-    _ vAX=ax;
-    _ vBX=bx;
+    asm mov [bp-2], ax; _ vAX=ax;
+    asm mov [bp-4], bx; _ vBX=bx;
     if(DOS_ERR) return vBX;
     return vAX;
 }

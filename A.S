@@ -11391,13 +11391,13 @@ allocmem: PROC
 
  call DosInt
 
-;-1318     _ vAX=ax;
+;-1318     asm mov [bp-2], ax; _ vAX=ax;
 
-mov [bp-2], ax
+ mov [bp-2], ax; _ vAX=ax;
 
-;-1319     _ vBX=bx;
+;-1319     asm mov [bp-4], bx; _ vBX=bx;
 
-mov [bp-4], bx
+ mov [bp-4], bx; _ vBX=bx;
 
 ;-1320     if(DOS_ERR) return vBX;
 

@@ -11646,13 +11646,13 @@
  11646                                  
  11647 000051D2 E8FBAE                   call DosInt
  11648                                  
- 11649                                  ;-1318     _ vAX=ax;
+ 11649                                  ;-1318     asm mov [bp-2], ax; _ vAX=ax;
  11650                                  
- 11651 000051D5 8946FE                  mov [bp-2], ax
+ 11651 000051D5 8946FE                   mov [bp-2], ax; _ vAX=ax;
  11652                                  
- 11653                                  ;-1319     _ vBX=bx;
+ 11653                                  ;-1319     asm mov [bp-4], bx; _ vBX=bx;
  11654                                  
- 11655 000051D8 895EFC                  mov [bp-4], bx
+ 11655 000051D8 895EFC                   mov [bp-4], bx; _ vBX=bx;
  11656                                  
  11657                                  ;-1320     if(DOS_ERR) return vBX;
  11658                                  
