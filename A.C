@@ -1,12 +1,6 @@
 char Version1[]="A.COM V0.9.2";//todo: 2. op=reg not recognized
-#define LSTART        200//max global var
-#define VARMAX        300//max global and local var
-#define GNAMEMAX     4800// 16*VARMAX
-#define FUNCMAX       300//max functions
-#define FNAMEMAX     4800// 16*FUNCMAX
-#define CALLMAX      2000//max call
 #define IDLENMAX       15//max length of names
-#define COLUMNMAX     128
+#define COLUMNMAX     128//output, input is 80
 #define T_NAME        256//the following defines for better clearity
 #define T_CONST       257
 #define T_STRING      258
@@ -53,7 +47,6 @@ char symbol[COLUMNMAX];
 char fname[CMDLENMAX];
 char namein[CMDLENMAX];
 char namelst[CMDLENMAX];
-char archivename[CMDLENMAX];
 char *cloc=0;
 int fdin=0;
 int fdout=0;
@@ -65,33 +58,42 @@ int iscmp=0;
 int nconst=0;
 int nreturn=0;
 int nlabel=0;
-int GTop=1;
-int LTop=LSTART;
 unsigned int lexval=0;
 int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
+int wi=0;
+#define VARMAX        300//max global and local var
+#define LSTART        200//max global var
+#define GNAMEMAX     4800// 16*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
-int GAdr [VARMAX];
-int GUsed[VARMAX];
-int GData[VARMAX];
+int GAdr  [VARMAX];
+int GUsed [VARMAX];
+int GData [VARMAX];
 char GNameField[GNAMEMAX];
-int wi=0;
-int  FTop=0;
-int  CTop=0;
+int GTop=1;
+int LTop=LSTART;
+#define FUNCMAX       300//max functions
+#define FNAMEMAX     4800// 16*FUNCMAX
 char FType [FUNCMAX];
-char CType[CALLMAX];
 int  FAdr  [FUNCMAX];
-int  CAdr [CALLMAX];
 int  FCalls[FUNCMAX];
 char FNameField[FNAMEMAX];
-//char CNameField[CNAMEMAX];
+int  FTop=0;
+#define CALLMAX      1500//max call
+char CType[CALLMAX];
+int  CAdr [CALLMAX];
+#define CNAMEMAX    10000//space for call names
+char CNameField[10016];//CNAMEMAX+IDLENMAX+1
+char *CNamePtr;     //first free position in CNameField
+unsigned char *CNameTop=0;
+int  CTop=0;
+
 
 char NameA[]="12345678901234567890123456789012"; //must be in low memory
 char fgetsdest[COLUMNMAX];
-unsigned char *CNameTop=0;
 unsigned char *fgetsp=0;
 unsigned int segE;
 unsigned int lineno=1;
@@ -412,6 +414,19 @@ int name1() {
     token=getlex();
 }
 
+int storeCall1() {//todo
+    unsigned int i;
+    CTop++;
+    if (CTop >= CALLMAX) error1("too many calls");
+    i = CNamePtr - &CNameField;
+    if (i >= CNAMEMAX) error1("too many call names");
+    CType[CTop]=0;
+    CAdr [CTop]=CNamePtr;
+    CNamePtr=strcpy(CNamePtr, symbol);
+    CNamePtr++;
+    CNameTop++;
+    CTop++;
+}
 int storecall() { int i; if (CTop >= CALLMAX) error1("Call table full");
   if (CNameTop >= 65468) error1("Call name table fuill");
     CType[CTop]=0;  CAdr [CTop]=CNameTop; i=strlen(symbol);
@@ -1181,6 +1196,7 @@ int dodefine() {
 }
 
 int parse() {
+    CNamePtr = &CNameField;
     token=getlex();
     do {
         if (token <= 0) return 1;
