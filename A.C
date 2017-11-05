@@ -83,21 +83,18 @@ int  FCalls[FUNCMAX];
 char FNameField[FNAMEMAX];
 int  FTop=0;
 #define CALLMAX      1500//max call
-char CType[CALLMAX];
-int  CAdr [CALLMAX];
+char CType[CALLMAX]; //0=unresolved,  1=resolved
+int  CAdr [CALLMAX]; //start of nameof address in CNameField
 #define CNAMEMAX    10000//space for call names
 char CNameField[10016];//CNAMEMAX+IDLENMAX+1
 char *CNamePtr;     //first free position in CNameField
 unsigned char *CNameTop=0;
 int  CTop=0;
 
-
-char NameA[]="12345678901234567890123456789012"; //must be in low memory
 char fgetsdest[COLUMNMAX];
 unsigned char *fgetsp=0;
 unsigned int segE;
 unsigned int lineno=1;
-unsigned int linenoinclude=1;
 unsigned char *pt=0;
 unsigned char *p1=0;
 int DOS_ERR=0;
@@ -111,7 +108,7 @@ int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
 int mkneg(int n)   { n; __asm {neg ax} }
 
 int DosInt() {
-    __emit__(0xCD,0x21);//inth 0x21;
+    asm int 0x21
     __emit__(0x73, 04); //ifcarry DOS_ERR++;
     DOS_ERR++;
 }
@@ -214,7 +211,6 @@ int expect(int t) {
     if (istoken(t)==0) {
         *cloc=0;
         prs(co);
-        listproc();
         prs("\nExpected ASCII(dez): ");
         pint1(t);
         error1(" not found");
@@ -424,15 +420,8 @@ int storeCall1() {//todo
     CAdr [CTop]=CNamePtr;
     CNamePtr=strcpy(CNamePtr, symbol);
     CNamePtr++;
-    CNameTop++;
-    CTop++;
 }
-int storecall() { int i; if (CTop >= CALLMAX) error1("Call table full");
-  if (CNameTop >= 65468) error1("Call name table fuill");
-    CType[CTop]=0;  CAdr [CTop]=CNameTop; i=strlen(symbol);
-    to_far(CNameTop, symbol);
-    CNameTop=CNameTop+i; CNameTop++; CTop++;
-}
+
 int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
     FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
     pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
@@ -474,7 +463,6 @@ int dofunc() { int nloc; int i; int narg;
             }
         LTop++;
       } while (istoken(',')); expect(';'); }
-  listproc();
   if (LTop>LSTART){prs(";\n ENTER  ");
     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
   while(istoken('}')==0)   stmt();
@@ -732,7 +720,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
   narg=0;  sz32=0;
   checknamelen();
   strcpy(&procname, symbol);
-  storecall();
+  storeCall1();
   expect('(');
 	if (istoken(')') ==0 ) {
 	  do { narg++;
@@ -993,136 +981,10 @@ int error1(char *s) {
     prs(symbol);
     end1(1);
 }
-int listproc() {
-    int i;
-    if (LTop > LSTART) {
-        prs("\n;Function : "); prs(fname);
-        prs(", Number of local variables: ");
-        i=LTop - LSTART;
-        prunsign1(i);
-        prs("\n;   # type sign width addr used name");
-        prs("   list of local variables");
-        i=LSTART;
-        while (i < LTop) {
-            listvar(i);
-            i++;
-            }
-        }
-}
-int listcall() {
-    int i;
-    prs("\n\n;    #  addr name   list of CALLs\n");
-    i=0;
-    while (i< CTop) {
-        calllisting(i);
-        i++;
-        }
-}
-int calllisting(int i) {
-    char c; int j;
-    prs("\n;");
-    printint51(i);
-    prc(32);
-    c=CType [i];
-    if(c==0)prs("unresolved ");
-    j=CAdr[i];
-    printint51(j);
-    prc(32);
-    from_far(NameA, j);
-    prs(NameA);
-}
-int countcalls(int f) {
-    unsigned int i;
-    pt=adrF(FNameField, f);
-    i=0;
-    while (i < CTop) {
-        p1=CAdr[i];
-        from_far(NameA, p1);
-        if (eqstr(pt,NameA))  FCalls[f] = FCalls[f] + 1;
-        i++;
-        }
-}
-int listfunc() {
-    int i;
-    prs("\n\n\n;   # Calls Line Width  Name   list of functions\n");
-    i=0;
-    while (i < FTop) {
-        countcalls (i);
-        i++;
-        }
-    i=0;
-    while (i < FTop) {
-        funclisting(i);
-        i++;
-        }
-}
-int funclisting(int i) {
-    int j;  char c;
-    prs("\n;");    printint51(i);
-    j = FCalls[i];
-    if (j) printint51(j);
-        else prs(" NULL");
-    j = FAdr[i];
-    printint51(j);
-    prc(32);
-    c=FType[i];
-    if(c=='V')prs("void " );
-    if(c=='B')prs("byte " );
-    if(c=='W')prs("word " );
-    if(c=='D')prs("dwrd " );
-    prc(32); prc(32);
-    pt=adrF(FNameField, i);
-    prs(pt);
-}
-
-int listvar(unsigned int i) {
-    unsigned int j; char c;
-    prs("\n;"); printint51(i); prc(32);
-    c=GType [i]; if(c=='V')prs("var ");   if(c=='*')prs("ptr ");
-                 if(c=='&')prs("arr ");   if(c=='#')prs("def ");
-    c=GSign [i]; if(c=='S')prs("sign ");  if(c=='U')prs("unsg ");
-    c=GWidth[i]; if(c==  1)prs("byte " ); if(c==  2)prs("word " );
-                 if(c==  4)prs("dwrd " );
-    j=GAdr[i]; printint51(j);
-    j=GUsed[i];
-    if (j) printint51(j);
-    else {
-        if(GType[i]=='#') prs("    -");
-        else prs(" NULL");
-         }
-    prc(32);
-    pt=adrofname(i); prs(pt);
-    if(GType[i]=='#') {
-        prc('=');
-        j=GData[i];
-        prunsign1(j);
-        }
-    if(GType[i]=='&') {
-        prc('[');
-        j=GData[i];
-        prunsign1(j);
-        prc(']');
-        }
-    if (i >= LSTART) {
-        prs(" = bp");
-        j=GData[i];
-        if (j > 0) prc('+');
-        pint1(j);
-    }
-}
 
 unsigned int MAXUI=65535;
 int epilog() {
     unsigned int i;
-    prs("\n \n;   # type sign width  adr used name");
-    prs("   list of global variables\n");
-    i=1;
-    while (i< GTop) {
-        listvar(i);
-        i++;
-        }
-    listfunc();
-    listcall();
     prs("\n;Input: "); prs(&namein);
     prs(", List: ");   prs(&namelst);
     prs(",  Lines:"); printint51(lineno);
@@ -1132,42 +994,17 @@ int epilog() {
     prs(" max.:"); printint51(FUNCMAX);
     prs("\n;Calls          :"); printint51(CTop);
     prs(" max.:"); printint51(CALLMAX);
-    prs(", NameField:"); printint51(CNameTop);
-//    prs(" max.:");
+    i = CNamePtr - &CNameField;
+    prs("\n;NameField      :"); printint51(i);
+    prs(" max.:"); printint51(CNAMEMAX);
     prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
-    prs(" max.:"); printint51(COMAX); i=COMAX; i=i-maxco;
+    prs(" max.:"); printint51(COMAX);
+    i=COMAX; i=i-maxco;
     if (i <= 1000)prs(" *** Warning *** constant area too small");
     prs(", stacksize: ");
     i=MAXUI-orgData; printint51(i);
     if (i <= 1000) prs(" *** Warning *** Stack too small");
   end1(0);}
-
-int checkcalls() {
-    int i; int j; int k;
-    prs("\n \n; missing functions: ");
-    i=0;  k=0;
-    while (i < CTop) {
-        pt=CAdr[i];
-        from_far(NameA, pt);
-        j=0;
-        do {
-            p1=adrF(FNameField, j);
-            if (eqstr(NameA, p1)){
-                CType[i]=1;
-                j=FTop;
-                }
-            j++;
-            } while (j < FTop);
-        if (j == FTop) {
-            k++; prs("\n; ");
-            prs(NameA);
-        }
-        i++;
-    }
-    prs("\n; Number of unresolved CALLs :"); printint51(k);
-    if (k!=0) error1("At least 1 function is missing! ");
-    else prs(" All FUNCTIONs in place");
-}
 
 int dodefine() {
     int i; int j; int fdtemp;
@@ -1257,56 +1094,12 @@ int getarg() {
     prs("\norg  256 \njmp main");
 }
 
-int setblock(unsigned int i) {
-    DOS_ERR=0;
-    bx=i;
-    ax=cs;
-    es=ax;
-    ax=0x4A00;
-    DosInt();
-}
 int main() {
     getarg();
-setblock(4096);
-if (DOS_ERR) error1("SetBlock , AX=");
-segE=allocmem(4096);
-if (DOS_ERR)  error1("alloc memory, AX=");
     CNameTop=0;
     coname=0;
     orgData=ORGDATAORIG;
     getfirstchar();
     parse();
-  checkcalls();
   epilog();
-}
-
-
-
-int allocmem(unsigned int i) {
-    unsigned int vAX; unsigned int vBX;
-    DOS_ERR=0;
-    bx=i;
-    ax=0x4800;
-    DosInt();
-    asm mov [bp-2], ax; _ vAX=ax;
-    asm mov [bp-4], bx; _ vBX=bx;
-    if(DOS_ERR) return vBX;
-    return vAX;
-}
-int to_far(char *dest, char *src) {
-  segE;  es=ax;  si=src;  di=dest;  // ds:si   es:di
-  asm cld
-  do{
-  asm lodsb  ; inc si
-  asm stosb  ; inc di
-  } while (al != 0);
-}
-int from_far(char *dest, char *src) {
-  segE;   es=ax;   si=src;   di=dest;  // ds:si   es:di
-  do{
-  asm mov al, [es:si]
-  asm inc si
-  asm mov [di], al
-  asm inc di
-  } while (al != 0);
 }
