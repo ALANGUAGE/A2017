@@ -508,9 +508,9 @@
    508                                  
    509                                  DosInt: PROC
    510                                  
-   511                                  ;-111     asm int 0x21
+   511                                  ;-111     __emit__(0xCD,0x21);//inth 0x21;
    512                                  
-   513 000000AF CD21                     int 0x21
+   513 000000AF CD21                     db 205,33
    514                                  
    515                                  ;-112     __emit__(0x73, 04); //ifcarry DOS_ERR++;
    516                                  
@@ -1038,8503 +1038,8515 @@
   1038                                  ;-182 
   1039                                  
   1040                                  
-  1041                                  ;-183 int a(unsigned int i) { printName(i);//address
+  1041                                  ;-183 int eprc(char c)  {
   1042                                  
   1043 00000346 C9                       .retninstr1: LEAVE
   1044 00000347 C3                       ret
   1045                                  ENDP
   1046                                  
-  1047                                  a: PROC;
-  1048 00000348 C8000000                 ENTER  0,0
-  1049 0000034C FF7604                   push word [bp+4]
-  1050 0000034F E8CD08                   call printName
-  1051 00000352 83C402                   add  sp, 2
-  1052                                  
-  1053                                  ;-184 }
-  1054                                  
+  1047                                  eprc: PROC
+  1048                                  
+  1049                                  ;-184     *cloc=c;
+  1050                                  ;
+  1051 00000348 C8000000                 ENTER  0,0
+  1052 0000034C 8A4604                   mov al, [bp+4]
+  1053 0000034F 8B1E[1800]               mov  bx, [cloc]
+  1054 00000353 8807                     mov  [bx], al
   1055                                  
-  1056                                  ;-185 int v(unsigned int i) {//value
-  1057 00000355 C9                       LEAVE
-  1058 00000356 C3                       ret
-  1059                                  ENDP
-  1060                                  
-  1061                                  v: PROC
+  1056                                  ;-185     cloc++;
+  1057                                  
+  1058 00000355 FF06[1800]               inc  word[cloc]
+  1059                                  
+  1060                                  ;-186 }
+  1061                                  
   1062                                  
-  1063                                  ;-186     if (i < LSTART) prc('[');
-  1064                                  ;
-  1065 00000357 C8000000                 ENTER  0,0
-  1066 0000035B 8B4604                   mov ax, [bp+4]
-  1067 0000035E 3DC800                   cmp ax, 200
-  1068 00000361 0F8D0800                 jge .v33
-  1069 00000365 6A5B                     push 91
-  1070 00000367 E85501                   call prc
-  1071 0000036A 83C402                   add  sp, 2
+  1063                                  ;-187 int eprs(char *s) {
+  1064 00000359 C9                       LEAVE
+  1065 0000035A C3                       ret
+  1066                                  ENDP
+  1067                                  
+  1068                                  eprs: PROC
+  1069                                  
+  1070                                  ;-188     char c;
+  1071                                  
   1072                                  
-  1073                                  ;-187     printName(i);
-  1074                                  
-  1075                                  .v33:
-  1076 0000036D FF7604                   push word [bp+4]
-  1077 00000370 E8AC08                   call printName
-  1078 00000373 83C402                   add  sp, 2
-  1079                                  
-  1080                                  ;-188     if (i < LSTART) prc(']');
-  1081                                  
-  1082 00000376 8B4604                   mov ax, [bp+4]
-  1083 00000379 3DC800                   cmp ax, 200
-  1084 0000037C 0F8D0800                 jge .v34
-  1085 00000380 6A5D                     push 93
-  1086 00000382 E83A01                   call prc
-  1087 00000385 83C402                   add  sp, 2
-  1088                                  
-  1089                                  ;-189 }
-  1090                                  
-  1091                                  .v34:
-  1092                                  
-  1093                                  ;-190 int checknamelen() {
-  1094 00000388 C9                       LEAVE
-  1095 00000389 C3                       ret
-  1096                                  ENDP
+  1073                                  ;-189     while(*s) {
+  1074                                  ;
+  1075 0000035B C8020000                 ENTER  2,0
+  1076                                  .eprs33:
+  1077 0000035F 8B5E04                   mov bx, [bp+4]
+  1078 00000362 8A07                     mov al, [bx]
+  1079 00000364 B400                     mov ah, 0
+  1080 00000366 08C0                     or  al, al
+  1081 00000368 0F841B00                 je .eprs34
+  1082                                  
+  1083                                  ;-190         c=*s;
+  1084                                  
+  1085 0000036C 8B5E04                   mov bx, [bp+4]
+  1086 0000036F 8A07                     mov al, [bx]
+  1087 00000371 B400                     mov ah, 0
+  1088 00000373 8846FE                   mov [bp-2], al
+  1089                                  
+  1090                                  ;-191         eprc(c);
+  1091                                  
+  1092 00000376 8A46FE                   mov al, byte [bp-2]
+  1093 00000379 B400                     mov ah, 0
+  1094 0000037B 50                       push ax
+  1095 0000037C E8C9FF                   call eprc
+  1096 0000037F 83C402                   add  sp, 2
   1097                                  
-  1098                                  checknamelen: PROC
+  1098                                  ;-192         s++;
   1099                                  
-  1100                                  ;-191     int i;
+  1100 00000382 FF4604                   inc  word[bp+4]
   1101                                  
-  1102                                  
-  1103                                  ;-192     i=strlen(symbol);
-  1104                                  ;
-  1105 0000038A C8020000                 ENTER  2,0
-  1106 0000038E 8D06BB69                 lea  ax, [symbol]
-  1107 00000392 50                       push ax
-  1108 00000393 E86EFE                   call strlen
-  1109 00000396 83C402                   add  sp, 2
-  1110 00000399 8946FE                   mov [bp-2], ax
-  1111                                  
-  1112                                  ;-193     if (i > IDLENMAX) error1("Item name is too long in characters)");
-  1113                                  
-  1114 0000039C 8B46FE                   mov ax, [bp-2]
-  1115 0000039F 83F80F                   cmp ax, 15
-  1116 000003A2 0F8E0900                 jle .checknamelen35
-  1117 000003A6 68[B103]                 push checknamelen_0
-  1118 000003A9 E8BF38                   call error1
-  1119 000003AC 83C402                   add  sp, 2
-  1120                                  
-  1121                                  ;-194 }
-  1122                                  
-  1123                                  .checknamelen35:
-  1124                                  
-  1125                                  ;-195 
-  1126                                  
+  1102                                  ;-193     }
+  1103                                  
+  1104                                  
+  1105                                  ;-194 }
+  1106                                  
+  1107 00000385 EBD8                     jmp .eprs33
+  1108                                  .eprs34:
+  1109                                  
+  1110                                  ;-195 int prc(unsigned char c) {
+  1111 00000387 C9                       LEAVE
+  1112 00000388 C3                       ret
+  1113                                  ENDP
+  1114                                  
+  1115                                  prc: PROC
+  1116                                  
+  1117                                  ;-196     if (c==10) {
+  1118                                  ;
+  1119 00000389 C8000000                 ENTER  0,0
+  1120 0000038D 8A4604                   mov al, [bp+4]
+  1121 00000390 3C0A                     cmp al, 10
+  1122 00000392 0F850600                 jne .prc35
+  1123                                  
+  1124                                  ;-197         _AX=13;
+  1125                                  
+  1126 00000396 B80D00                   mov  ax, 13
   1127                                  
-  1128                                  ;-196 int next() {
-  1129 000003AF C9                       LEAVE
-  1130 000003B0 C3                       ret
-  1131 000003B1 4974656D206E616D65-     checknamelen_0 db "Item name is too long in characters)",0
-  1132 000003BA 20697320746F6F206C-
-  1133 000003C3 6F6E6720696E206368-
-  1134 000003CC 617261637465727329-
-  1135 000003D5 00                 
-  1136                                  ENDP
-  1137                                  
-  1138                                  next: PROC
+  1128                                  ;-198         writetty();
+  1129                                  
+  1130 00000399 E8B8FC                   call writetty
+  1131                                  
+  1132                                  ;-199     }
+  1133                                  
+  1134                                  
+  1135                                  ;-200     _AL=c;
+  1136                                  
+  1137                                  .prc35:
+  1138 0000039C 8A4604                   mov  al, [bp+4]
   1139                                  
-  1140                                  ;-197     char r;
+  1140                                  ;-201     writetty();
   1141                                  
-  1142                                  
-  1143                                  ;-198     r = thechar;
-  1144                                  ;
-  1145 000003D6 C8020000                 ENTER  2,0
-  1146 000003DA A0[2300]                 mov al, [thechar]
-  1147 000003DD 8846FE                   mov [bp-2], al
-  1148                                  
-  1149                                  ;-199     globC=r;
-  1150                                  
-  1151 000003E0 8A46FE                   mov al, [bp-2]
-  1152 000003E3 A2[2000]                 mov byte [globC], al
-  1153                                  
-  1154                                  ;-200     thechar = fgets1();
+  1142 0000039F E8B2FC                   call writetty
+  1143                                  
+  1144                                  ;-202     fputcR(c, fdout);
+  1145                                  
+  1146 000003A2 FF36[1C00]               push word [fdout]
+  1147 000003A6 8A4604                   mov al, byte [bp+4]
+  1148 000003A9 B400                     mov ah, 0
+  1149 000003AB 50                       push ax
+  1150 000003AC E85CFD                   call fputcR
+  1151 000003AF 83C404                   add  sp, 4
+  1152                                  
+  1153                                  ;-203 }
+  1154                                  
   1155                                  
-  1156 000003E6 E81137                   call fgets1
-  1157 000003E9 A2[2300]                 mov byte [thechar], al
-  1158                                  
-  1159                                  ;-201     return r;
+  1156                                  ;-204 int prscomment(unsigned char *s) {
+  1157 000003B2 C9                       LEAVE
+  1158 000003B3 C3                       ret
+  1159                                  ENDP
   1160                                  
-  1161 000003EC 8A46FE                   mov al, [bp-2]
-  1162 000003EF E90000                   jmp .retnnext
-  1163                                  
-  1164                                  ;-202 }
+  1161                                  prscomment: PROC
+  1162                                  
+  1163                                  ;-205     unsigned char c;
+  1164                                  
   1165                                  
-  1166                                  
-  1167                                  ;-203 int istoken(int t) {
-  1168                                  
-  1169 000003F2 C9                       .retnnext: LEAVE
-  1170 000003F3 C3                       ret
-  1171                                  ENDP
-  1172                                  
-  1173                                  istoken: PROC
-  1174                                  
-  1175                                  ;-204     if (token == t) {
-  1176                                  ;
-  1177 000003F4 C8000000                 ENTER  0,0
-  1178 000003F8 A1[1E00]                 mov ax, [token]
-  1179 000003FB 3B4604                   cmp ax, [bp+4]
-  1180 000003FE 0F850C00                 jne .istoken36
-  1181                                  
-  1182                                  ;-205         token=getlex();
-  1183                                  
-  1184 00000402 E8EF2D                   call getlex
-  1185 00000405 A3[1E00]                 mov word [token], ax
-  1186                                  
-  1187                                  ;-206         return 1;
-  1188                                  
-  1189 00000408 B80100                   mov ax, 1
-  1190 0000040B E90600                   jmp .retnistoken
-  1191                                  
-  1192                                  ;-207     }
-  1193                                  
+  1166                                  ;-206     while(*s){
+  1167                                  ;
+  1168 000003B4 C8020000                 ENTER  2,0
+  1169                                  .prscomment36:
+  1170 000003B8 8B5E04                   mov bx, [bp+4]
+  1171 000003BB 8A07                     mov al, [bx]
+  1172 000003BD B400                     mov ah, 0
+  1173 000003BF 08C0                     or  al, al
+  1174 000003C1 0F841B00                 je .prscomment37
+  1175                                  
+  1176                                  ;-207         c=*s;
+  1177                                  
+  1178 000003C5 8B5E04                   mov bx, [bp+4]
+  1179 000003C8 8A07                     mov al, [bx]
+  1180 000003CA B400                     mov ah, 0
+  1181 000003CC 8846FE                   mov [bp-2], al
+  1182                                  
+  1183                                  ;-208         prc(c);
+  1184                                  
+  1185 000003CF 8A46FE                   mov al, byte [bp-2]
+  1186 000003D2 B400                     mov ah, 0
+  1187 000003D4 50                       push ax
+  1188 000003D5 E8B1FF                   call prc
+  1189 000003D8 83C402                   add  sp, 2
+  1190                                  
+  1191                                  ;-209         s++;
+  1192                                  
+  1193 000003DB FF4604                   inc  word[bp+4]
   1194                                  
-  1195                                  ;-208     return 0;
+  1195                                  ;-210     }
   1196                                  
-  1197                                  .istoken36:
-  1198 0000040E B80000                   mov ax, 0
-  1199 00000411 E90000                   jmp .retnistoken
-  1200                                  
-  1201                                  ;-209 }
+  1197                                  
+  1198                                  ;-211 }
+  1199                                  
+  1200 000003DE EBD8                     jmp .prscomment36
+  1201                                  .prscomment37:
   1202                                  
-  1203                                  
-  1204                                  ;-210 int expect(int t) {
-  1205                                  
-  1206 00000414 C9                       .retnistoken: LEAVE
-  1207 00000415 C3                       ret
-  1208                                  ENDP
+  1203                                  ;-212 int prs(unsigned char *s) {
+  1204 000003E0 C9                       LEAVE
+  1205 000003E1 C3                       ret
+  1206                                  ENDP
+  1207                                  
+  1208                                  prs: PROC
   1209                                  
-  1210                                  expect: PROC
+  1210                                  ;-213     unsigned char c; int com;
   1211                                  
-  1212                                  ;-211     if (istoken(t)==0) {
-  1213                                  ;
-  1214 00000416 C8000000                 ENTER  0,0
-  1215 0000041A FF7604                   push word [bp+4]
-  1216 0000041D E8D4FF                   call istoken
-  1217 00000420 83C402                   add  sp, 2
-  1218 00000423 83F800                   cmp ax, 0
-  1219 00000426 0F852F00                 jne .expect37
+  1212                                  
+  1213                                  ;-214     com=0;
+  1214                                  ;
+  1215 000003E2 C8040000                 ENTER  4,0
+  1216 000003E6 B80000                   mov ax, 0
+  1217 000003E9 8946FC                   mov [bp-4], ax
+  1218                                  
+  1219                                  ;-215     while(*s) {
   1220                                  
-  1221                                  ;-212         *cloc=0;
-  1222                                  
-  1223 0000042A B80000                   mov ax, 0
-  1224 0000042D 8B1E[1800]               mov  bx, [cloc]
-  1225 00000431 8807                     mov  [bx], al
-  1226                                  
-  1227                                  ;-213         prs(co);
-  1228                                  
-  1229 00000433 8D06A861                 lea  ax, [co]
-  1230 00000437 50                       push ax
-  1231 00000438 E8EB00                   call prs
-  1232 0000043B 83C402                   add  sp, 2
-  1233                                  
-  1234                                  ;-214         prs("\nExpected ASCII(dez): ");
-  1235                                  
-  1236 0000043E 68[5B04]                 push expect_0
-  1237 00000441 E8E200                   call prs
-  1238 00000444 83C402                   add  sp, 2
-  1239                                  
-  1240                                  ;-215         pint1(t);
-  1241                                  
-  1242 00000447 FF7604                   push word [bp+4]
-  1243 0000044A E8D001                   call pint1
-  1244 0000044D 83C402                   add  sp, 2
+  1221                                  .prs38:
+  1222 000003EC 8B5E04                   mov bx, [bp+4]
+  1223 000003EF 8A07                     mov al, [bx]
+  1224 000003F1 B400                     mov ah, 0
+  1225 000003F3 08C0                     or  al, al
+  1226 000003F5 0F847B00                 je .prs39
+  1227                                  
+  1228                                  ;-216         c=*s;
+  1229                                  
+  1230 000003F9 8B5E04                   mov bx, [bp+4]
+  1231 000003FC 8A07                     mov al, [bx]
+  1232 000003FE B400                     mov ah, 0
+  1233 00000400 8846FE                   mov [bp-2], al
+  1234                                  
+  1235                                  ;-217         if (c==34) if (com) com=0;
+  1236                                  
+  1237 00000403 8A46FE                   mov al, [bp-2]
+  1238 00000406 3C22                     cmp al, 34
+  1239 00000408 0F851800                 jne .prs40
+  1240 0000040C 8B46FC                   mov ax, [bp-4]
+  1241 0000040F 08C0                     or  al, al
+  1242 00000411 0F840900                 je .prs41
+  1243 00000415 B80000                   mov ax, 0
+  1244 00000418 8946FC                   mov [bp-4], ax
   1245                                  
-  1246                                  ;-216         error1(" not found");
+  1246                                  ;-218                    else com=1;
   1247                                  
-  1248 00000450 68[7304]                 push expect_1
-  1249 00000453 E81538                   call error1
-  1250 00000456 83C402                   add  sp, 2
-  1251                                  
-  1252                                  ;-217     }
-  1253                                  
+  1248 0000041B E90600                   jmp .prs42
+  1249                                  .prs41:
+  1250 0000041E B80100                   mov ax, 1
+  1251 00000421 8946FC                   mov [bp-4], ax
+  1252                                  
+  1253                                  ;-219         if (c==92) {
   1254                                  
-  1255                                  ;-218 }
-  1256                                  
-  1257                                  .expect37:
-  1258                                  
-  1259                                  ;-219 
+  1255                                  .prs42:
+  1256                                  .prs40:
+  1257 00000424 8A46FE                   mov al, [bp-2]
+  1258 00000427 3C5C                     cmp al, 92
+  1259 00000429 0F853500                 jne .prs43
   1260                                  
-  1261                                  
-  1262                                  ;-220 int eprc(char c)  {
-  1263 00000459 C9                       LEAVE
-  1264 0000045A C3                       ret
-  1265 0000045B 5C6E45787065637465-     expect_0 db "\nExpected ASCII(dez): ",0
-  1266 00000464 642041534349492864-
-  1267 0000046D 657A293A2000       
-  1268 00000473 206E6F7420666F756E-     expect_1 db " not found",0
-  1269 0000047C 6400               
-  1270                                  ENDP
-  1271                                  
-  1272                                  eprc: PROC
-  1273                                  
-  1274                                  ;-221     *cloc=c;
-  1275                                  ;
-  1276 0000047E C8000000                 ENTER  0,0
-  1277 00000482 8A4604                   mov al, [bp+4]
-  1278 00000485 8B1E[1800]               mov  bx, [cloc]
-  1279 00000489 8807                     mov  [bx], al
-  1280                                  
-  1281                                  ;-222     cloc++;
-  1282                                  
-  1283 0000048B FF06[1800]               inc  word[cloc]
-  1284                                  
-  1285                                  ;-223 }
-  1286                                  
+  1261                                  ;-220             if (com==0) {
+  1262                                  
+  1263 0000042D 8B46FC                   mov ax, [bp-4]
+  1264 00000430 83F800                   cmp ax, 0
+  1265 00000433 0F852B00                 jne .prs44
+  1266                                  
+  1267                                  ;-221                 s++;
+  1268                                  
+  1269 00000437 FF4604                   inc  word[bp+4]
+  1270                                  
+  1271                                  ;-222                 c=*s;
+  1272                                  
+  1273 0000043A 8B5E04                   mov bx, [bp+4]
+  1274 0000043D 8A07                     mov al, [bx]
+  1275 0000043F B400                     mov ah, 0
+  1276 00000441 8846FE                   mov [bp-2], al
+  1277                                  
+  1278                                  ;-223                 if (c=='n') c=10;
+  1279                                  
+  1280 00000444 8A46FE                   mov al, [bp-2]
+  1281 00000447 3C6E                     cmp al, 110
+  1282 00000449 0F850600                 jne .prs45
+  1283 0000044D B80A00                   mov ax, 10
+  1284 00000450 8846FE                   mov [bp-2], al
+  1285                                  
+  1286                                  ;-224                 if (c=='t') c= 9;
   1287                                  
-  1288                                  ;-224 int eprs(char *s) {
-  1289 0000048F C9                       LEAVE
-  1290 00000490 C3                       ret
-  1291                                  ENDP
-  1292                                  
-  1293                                  eprs: PROC
+  1288                                  .prs45:
+  1289 00000453 8A46FE                   mov al, [bp-2]
+  1290 00000456 3C74                     cmp al, 116
+  1291 00000458 0F850600                 jne .prs46
+  1292 0000045C B80900                   mov ax, 9
+  1293 0000045F 8846FE                   mov [bp-2], al
   1294                                  
-  1295                                  ;-225     char c;
+  1295                                  ;-225             }
   1296                                  
-  1297                                  
-  1298                                  ;-226     while(*s) {
-  1299                                  ;
-  1300 00000491 C8020000                 ENTER  2,0
-  1301                                  .eprs38:
-  1302 00000495 8B5E04                   mov bx, [bp+4]
-  1303 00000498 8A07                     mov al, [bx]
-  1304 0000049A B400                     mov ah, 0
-  1305 0000049C 08C0                     or  al, al
-  1306 0000049E 0F841B00                 je .eprs39
-  1307                                  
-  1308                                  ;-227         c=*s;
-  1309                                  
-  1310 000004A2 8B5E04                   mov bx, [bp+4]
-  1311 000004A5 8A07                     mov al, [bx]
-  1312 000004A7 B400                     mov ah, 0
-  1313 000004A9 8846FE                   mov [bp-2], al
-  1314                                  
-  1315                                  ;-228         eprc(c);
-  1316                                  
-  1317 000004AC 8A46FE                   mov al, byte [bp-2]
-  1318 000004AF B400                     mov ah, 0
-  1319 000004B1 50                       push ax
-  1320 000004B2 E8C9FF                   call eprc
-  1321 000004B5 83C402                   add  sp, 2
-  1322                                  
-  1323                                  ;-229         s++;
-  1324                                  
-  1325 000004B8 FF4604                   inc  word[bp+4]
-  1326                                  
-  1327                                  ;-230     }
+  1297                                  .prs46:
+  1298                                  
+  1299                                  ;-226         }
+  1300                                  
+  1301                                  .prs44:
+  1302                                  
+  1303                                  ;-227         prc(c);
+  1304                                  
+  1305                                  .prs43:
+  1306 00000462 8A46FE                   mov al, byte [bp-2]
+  1307 00000465 B400                     mov ah, 0
+  1308 00000467 50                       push ax
+  1309 00000468 E81EFF                   call prc
+  1310 0000046B 83C402                   add  sp, 2
+  1311                                  
+  1312                                  ;-228         s++;
+  1313                                  
+  1314 0000046E FF4604                   inc  word[bp+4]
+  1315                                  
+  1316                                  ;-229     }
+  1317                                  
+  1318                                  
+  1319                                  ;-230 }
+  1320                                  
+  1321 00000471 E978FF                   jmp .prs38
+  1322                                  .prs39:
+  1323                                  
+  1324                                  ;-231 int prnl() {
+  1325 00000474 C9                       LEAVE
+  1326 00000475 C3                       ret
+  1327                                  ENDP
   1328                                  
-  1329                                  
-  1330                                  ;-231 }
-  1331                                  
-  1332 000004BB EBD8                     jmp .eprs38
-  1333                                  .eprs39:
-  1334                                  
-  1335                                  ;-232 int prc(unsigned char c) {
-  1336 000004BD C9                       LEAVE
-  1337 000004BE C3                       ret
-  1338                                  ENDP
+  1329                                  prnl: PROC
+  1330                                  
+  1331                                  ;-232     prs("\n ");
+  1332                                  
+  1333 00000476 68[8004]                 push prnl_0
+  1334 00000479 E866FF                   call prs
+  1335 0000047C 83C402                   add  sp, 2
+  1336                                  
+  1337                                  ;-233 }
+  1338                                  
   1339                                  
-  1340                                  prc: PROC
+  1340                                  ;-234 
   1341                                  
-  1342                                  ;-233     if (c==10) {
-  1343                                  ;
-  1344 000004BF C8000000                 ENTER  0,0
-  1345 000004C3 8A4604                   mov al, [bp+4]
-  1346 000004C6 3C0A                     cmp al, 10
-  1347 000004C8 0F850600                 jne .prc40
-  1348                                  
-  1349                                  ;-234         _AX=13;
-  1350                                  
-  1351 000004CC B80D00                   mov  ax, 13
-  1352                                  
-  1353                                  ;-235         writetty();
-  1354                                  
-  1355 000004CF E882FB                   call writetty
+  1342                                  
+  1343                                  ;-235 
+  1344                                  
+  1345                                  
+  1346                                  ;-236 int eprnum(int n){//for docall1 procedure
+  1347                                  
+  1348 0000047F C3                       ret
+  1349 00000480 5C6E2000                prnl_0 db "\n ",0
+  1350                                  ENDP
+  1351                                  
+  1352                                  eprnum: PROC
+  1353                                  
+  1354                                  ;-237     int e;
+  1355                                  
   1356                                  
-  1357                                  ;-236     }
-  1358                                  
-  1359                                  
-  1360                                  ;-237     _AL=c;
-  1361                                  
-  1362                                  .prc40:
-  1363 000004D2 8A4604                   mov  al, [bp+4]
-  1364                                  
-  1365                                  ;-238     writetty();
-  1366                                  
-  1367 000004D5 E87CFB                   call writetty
-  1368                                  
-  1369                                  ;-239     fputcR(c, fdout);
-  1370                                  
-  1371 000004D8 FF36[1C00]               push word [fdout]
-  1372 000004DC 8A4604                   mov al, byte [bp+4]
-  1373 000004DF B400                     mov ah, 0
-  1374 000004E1 50                       push ax
-  1375 000004E2 E826FC                   call fputcR
-  1376 000004E5 83C404                   add  sp, 4
-  1377                                  
-  1378                                  ;-240 }
+  1357                                  ;-238     if(n<0) {
+  1358                                  ;
+  1359 00000484 C8020000                 ENTER  2,0
+  1360 00000488 8B4604                   mov ax, [bp+4]
+  1361 0000048B 83F800                   cmp ax, 0
+  1362 0000048E 0F8D1400                 jge .eprnum47
+  1363                                  
+  1364                                  ;-239         eprc('-');
+  1365                                  
+  1366 00000492 6A2D                     push 45
+  1367 00000494 E8B1FE                   call eprc
+  1368 00000497 83C402                   add  sp, 2
+  1369                                  
+  1370                                  ;-240         n=mkneg(n);
+  1371                                  
+  1372 0000049A FF7604                   push word [bp+4]
+  1373 0000049D E804FC                   call mkneg
+  1374 000004A0 83C402                   add  sp, 2
+  1375 000004A3 894604                   mov [bp+4], ax
+  1376                                  
+  1377                                  ;-241     }
+  1378                                  
   1379                                  
-  1380                                  
-  1381                                  ;-241 int prscomment(unsigned char *s) {
-  1382 000004E8 C9                       LEAVE
-  1383 000004E9 C3                       ret
-  1384                                  ENDP
-  1385                                  
-  1386                                  prscomment: PROC
-  1387                                  
-  1388                                  ;-242     unsigned char c;
-  1389                                  
-  1390                                  
-  1391                                  ;-243     while(*s){
-  1392                                  ;
-  1393 000004EA C8020000                 ENTER  2,0
-  1394                                  .prscomment41:
-  1395 000004EE 8B5E04                   mov bx, [bp+4]
-  1396 000004F1 8A07                     mov al, [bx]
-  1397 000004F3 B400                     mov ah, 0
-  1398 000004F5 08C0                     or  al, al
-  1399 000004F7 0F841B00                 je .prscomment42
+  1380                                  ;-242     if (n >= 10) {
+  1381                                  
+  1382                                  .eprnum47:
+  1383 000004A6 8B4604                   mov ax, [bp+4]
+  1384 000004A9 83F80A                   cmp ax, 10 ;unsigned : 1
+  1385 000004AC 0F8C1500                 jl  .eprnum48
+  1386                                  
+  1387                                  ;-243         e=n/10;
+  1388                                  
+  1389 000004B0 8B4604                   mov ax, [bp+4]
+  1390 000004B3 BB0A00                   mov bx, 10
+  1391 000004B6 99                       cwd
+  1392 000004B7 F7FB                     idiv bx
+  1393 000004B9 8946FE                   mov [bp-2], ax
+  1394                                  
+  1395                                  ;-244         eprnum(e);
+  1396                                  
+  1397 000004BC FF76FE                   push word [bp-2]
+  1398 000004BF E8C2FF                   call eprnum
+  1399 000004C2 83C402                   add  sp, 2
   1400                                  
-  1401                                  ;-244         c=*s;
+  1401                                  ;-245     }
   1402                                  
-  1403 000004FB 8B5E04                   mov bx, [bp+4]
-  1404 000004FE 8A07                     mov al, [bx]
-  1405 00000500 B400                     mov ah, 0
-  1406 00000502 8846FE                   mov [bp-2], al
-  1407                                  
-  1408                                  ;-245         prc(c);
-  1409                                  
-  1410 00000505 8A46FE                   mov al, byte [bp-2]
-  1411 00000508 B400                     mov ah, 0
-  1412 0000050A 50                       push ax
-  1413 0000050B E8B1FF                   call prc
-  1414 0000050E 83C402                   add  sp, 2
+  1403                                  
+  1404                                  ;-246     n=n%10;
+  1405                                  
+  1406                                  .eprnum48:
+  1407 000004C5 8B4604                   mov ax, [bp+4]
+  1408 000004C8 BB0A00                   mov bx, 10
+  1409 000004CB 99                       cwd
+  1410 000004CC F7FB                     idiv bx
+  1411 000004CE 89D0                     mov ax, dx
+  1412 000004D0 894604                   mov [bp+4], ax
+  1413                                  
+  1414                                  ;-247     n=n+'0';
   1415                                  
-  1416                                  ;-246         s++;
-  1417                                  
-  1418 00000511 FF4604                   inc  word[bp+4]
+  1416 000004D3 8B4604                   mov ax, [bp+4]
+  1417 000004D6 83C030                   add ax, 48
+  1418 000004D9 894604                   mov [bp+4], ax
   1419                                  
-  1420                                  ;-247     }
+  1420                                  ;-248     eprc(n);
   1421                                  
-  1422                                  
-  1423                                  ;-248 }
-  1424                                  
-  1425 00000514 EBD8                     jmp .prscomment41
-  1426                                  .prscomment42:
+  1422 000004DC FF7604                   push word [bp+4]
+  1423 000004DF E866FE                   call eprc
+  1424 000004E2 83C402                   add  sp, 2
+  1425                                  
+  1426                                  ;-249 }
   1427                                  
-  1428                                  ;-249 int prnl() {
-  1429 00000516 C9                       LEAVE
-  1430 00000517 C3                       ret
-  1431                                  ENDP
-  1432                                  
-  1433                                  prnl: PROC
-  1434                                  
-  1435                                  ;-250     prs("\n ");
-  1436                                  
-  1437 00000518 68[2205]                 push prnl_0
-  1438 0000051B E80800                   call prs
-  1439 0000051E 83C402                   add  sp, 2
-  1440                                  
-  1441                                  ;-251 }
-  1442                                  
-  1443                                  
-  1444                                  ;-252 
-  1445                                  
-  1446                                  
-  1447                                  ;-253 int prs(unsigned char *s) {
-  1448                                  
-  1449 00000521 C3                       ret
-  1450 00000522 5C6E2000                prnl_0 db "\n ",0
-  1451                                  ENDP
+  1428                                  
+  1429                                  ;-250 int pint1 (int n){
+  1430 000004E5 C9                       LEAVE
+  1431 000004E6 C3                       ret
+  1432                                  ENDP
+  1433                                  
+  1434                                  pint1: PROC
+  1435                                  
+  1436                                  ;-251     int e;
+  1437                                  
+  1438                                  
+  1439                                  ;-252     if(n<0) {  prc('-');  n=mkneg(n); }
+  1440                                  ;
+  1441 000004E7 C8020000                 ENTER  2,0
+  1442 000004EB 8B4604                   mov ax, [bp+4]
+  1443 000004EE 83F800                   cmp ax, 0
+  1444 000004F1 0F8D1400                 jge .pint149
+  1445 000004F5 6A2D                     push 45
+  1446 000004F7 E88FFE                   call prc
+  1447 000004FA 83C402                   add  sp, 2
+  1448 000004FD FF7604                   push word [bp+4]
+  1449 00000500 E8A1FB                   call mkneg
+  1450 00000503 83C402                   add  sp, 2
+  1451 00000506 894604                   mov [bp+4], ax
   1452                                  
-  1453                                  prs: PROC
+  1453                                  ;-253     if (n >= 10) {
   1454                                  
-  1455                                  ;-254     unsigned char c; int com;
-  1456                                  
-  1457                                  
-  1458                                  ;-255     com=0;
-  1459                                  ;
-  1460 00000526 C8040000                 ENTER  4,0
-  1461 0000052A B80000                   mov ax, 0
-  1462 0000052D 8946FC                   mov [bp-4], ax
-  1463                                  
-  1464                                  ;-256     while(*s) {
-  1465                                  
-  1466                                  .prs43:
-  1467 00000530 8B5E04                   mov bx, [bp+4]
-  1468 00000533 8A07                     mov al, [bx]
-  1469 00000535 B400                     mov ah, 0
-  1470 00000537 08C0                     or  al, al
-  1471 00000539 0F847B00                 je .prs44
-  1472                                  
-  1473                                  ;-257         c=*s;
-  1474                                  
-  1475 0000053D 8B5E04                   mov bx, [bp+4]
-  1476 00000540 8A07                     mov al, [bx]
-  1477 00000542 B400                     mov ah, 0
-  1478 00000544 8846FE                   mov [bp-2], al
-  1479                                  
-  1480                                  ;-258         if (c==34) if (com) com=0;
-  1481                                  
-  1482 00000547 8A46FE                   mov al, [bp-2]
-  1483 0000054A 3C22                     cmp al, 34
-  1484 0000054C 0F851800                 jne .prs45
-  1485 00000550 8B46FC                   mov ax, [bp-4]
-  1486 00000553 08C0                     or  al, al
-  1487 00000555 0F840900                 je .prs46
-  1488 00000559 B80000                   mov ax, 0
-  1489 0000055C 8946FC                   mov [bp-4], ax
+  1455                                  .pint149:
+  1456 00000509 8B4604                   mov ax, [bp+4]
+  1457 0000050C 83F80A                   cmp ax, 10 ;unsigned : 1
+  1458 0000050F 0F8C1500                 jl  .pint150
+  1459                                  
+  1460                                  ;-254         e=n/10;
+  1461                                  
+  1462 00000513 8B4604                   mov ax, [bp+4]
+  1463 00000516 BB0A00                   mov bx, 10
+  1464 00000519 99                       cwd
+  1465 0000051A F7FB                     idiv bx
+  1466 0000051C 8946FE                   mov [bp-2], ax
+  1467                                  
+  1468                                  ;-255         pint1(e);
+  1469                                  
+  1470 0000051F FF76FE                   push word [bp-2]
+  1471 00000522 E8C2FF                   call pint1
+  1472 00000525 83C402                   add  sp, 2
+  1473                                  
+  1474                                  ;-256     }
+  1475                                  
+  1476                                  
+  1477                                  ;-257     n=n%10;
+  1478                                  
+  1479                                  .pint150:
+  1480 00000528 8B4604                   mov ax, [bp+4]
+  1481 0000052B BB0A00                   mov bx, 10
+  1482 0000052E 99                       cwd
+  1483 0000052F F7FB                     idiv bx
+  1484 00000531 89D0                     mov ax, dx
+  1485 00000533 894604                   mov [bp+4], ax
+  1486                                  
+  1487                                  ;-258     n += '0';
+  1488                                  
+  1489 00000536 83460430                 add  word[bp+4], 48
   1490                                  
-  1491                                  ;-259                    else com=1;
+  1491                                  ;-259     prc(n);
   1492                                  
-  1493 0000055F E90600                   jmp .prs47
-  1494                                  .prs46:
-  1495 00000562 B80100                   mov ax, 1
-  1496 00000565 8946FC                   mov [bp-4], ax
-  1497                                  
-  1498                                  ;-260         if (c==92) {
+  1493 0000053A FF7604                   push word [bp+4]
+  1494 0000053D E849FE                   call prc
+  1495 00000540 83C402                   add  sp, 2
+  1496                                  
+  1497                                  ;-260 }
+  1498                                  
   1499                                  
-  1500                                  .prs47:
-  1501                                  .prs45:
-  1502 00000568 8A46FE                   mov al, [bp-2]
-  1503 0000056B 3C5C                     cmp al, 92
-  1504 0000056D 0F853500                 jne .prs48
-  1505                                  
-  1506                                  ;-261             if (com==0) {
-  1507                                  
-  1508 00000571 8B46FC                   mov ax, [bp-4]
-  1509 00000574 83F800                   cmp ax, 0
-  1510 00000577 0F852B00                 jne .prs49
-  1511                                  
-  1512                                  ;-262                 s++;
-  1513                                  
-  1514 0000057B FF4604                   inc  word[bp+4]
-  1515                                  
-  1516                                  ;-263                 c=*s;
-  1517                                  
-  1518 0000057E 8B5E04                   mov bx, [bp+4]
-  1519 00000581 8A07                     mov al, [bx]
-  1520 00000583 B400                     mov ah, 0
-  1521 00000585 8846FE                   mov [bp-2], al
-  1522                                  
-  1523                                  ;-264                 if (c=='n') c=10;
+  1500                                  ;-261 int prunsign1(unsigned int n) {
+  1501 00000543 C9                       LEAVE
+  1502 00000544 C3                       ret
+  1503                                  ENDP
+  1504                                  
+  1505                                  prunsign1: PROC
+  1506                                  
+  1507                                  ;-262     unsigned int e;
+  1508                                  
+  1509                                  
+  1510                                  ;-263     if (n >= 10) {
+  1511                                  ;
+  1512 00000545 C8020000                 ENTER  2,0
+  1513 00000549 8B4604                   mov ax, [bp+4]
+  1514 0000054C 83F80A                   cmp ax, 10 ;unsigned : 0
+  1515 0000054F 0F821700                 jb  .prunsign151
+  1516                                  
+  1517                                  ;-264         e=n/10;
+  1518                                  
+  1519 00000553 8B4604                   mov ax, [bp+4]
+  1520 00000556 BB0A00                   mov bx, 10
+  1521 00000559 BA0000                   mov dx, 0
+  1522 0000055C F7F3                     div bx
+  1523 0000055E 8946FE                   mov [bp-2], ax
   1524                                  
-  1525 00000588 8A46FE                   mov al, [bp-2]
-  1526 0000058B 3C6E                     cmp al, 110
-  1527 0000058D 0F850600                 jne .prs50
-  1528 00000591 B80A00                   mov ax, 10
-  1529 00000594 8846FE                   mov [bp-2], al
+  1525                                  ;-265         prunsign1(e);
+  1526                                  
+  1527 00000561 FF76FE                   push word [bp-2]
+  1528 00000564 E8DEFF                   call prunsign1
+  1529 00000567 83C402                   add  sp, 2
   1530                                  
-  1531                                  ;-265                 if (c=='t') c= 9;
+  1531                                  ;-266     }
   1532                                  
-  1533                                  .prs50:
-  1534 00000597 8A46FE                   mov al, [bp-2]
-  1535 0000059A 3C74                     cmp al, 116
-  1536 0000059C 0F850600                 jne .prs51
-  1537 000005A0 B80900                   mov ax, 9
-  1538 000005A3 8846FE                   mov [bp-2], al
-  1539                                  
-  1540                                  ;-266             }
-  1541                                  
-  1542                                  .prs51:
+  1533                                  
+  1534                                  ;-267     n = n % 10; /*unsigned mod*/
+  1535                                  
+  1536                                  .prunsign151:
+  1537 0000056A 8B4604                   mov ax, [bp+4]
+  1538 0000056D BB0A00                   mov bx, 10
+  1539 00000570 BA0000                   mov dx, 0
+  1540 00000573 F7F3                     div bx
+  1541 00000575 89D0                     mov ax, dx
+  1542 00000577 894604                   mov [bp+4], ax
   1543                                  
-  1544                                  ;-267         }
+  1544                                  ;-268     n += '0';
   1545                                  
-  1546                                  .prs49:
+  1546 0000057A 83460430                 add  word[bp+4], 48
   1547                                  
-  1548                                  ;-268         prc(c);
+  1548                                  ;-269     prc(n);
   1549                                  
-  1550                                  .prs48:
-  1551 000005A6 8A46FE                   mov al, byte [bp-2]
-  1552 000005A9 B400                     mov ah, 0
-  1553 000005AB 50                       push ax
-  1554 000005AC E810FF                   call prc
-  1555 000005AF 83C402                   add  sp, 2
+  1550 0000057E FF7604                   push word [bp+4]
+  1551 00000581 E805FE                   call prc
+  1552 00000584 83C402                   add  sp, 2
+  1553                                  
+  1554                                  ;-270 }
+  1555                                  
   1556                                  
-  1557                                  ;-269         s++;
-  1558                                  
-  1559 000005B2 FF4604                   inc  word[bp+4]
-  1560                                  
-  1561                                  ;-270     }
-  1562                                  
+  1557                                  ;-271 int printint51(unsigned int j)  {
+  1558 00000587 C9                       LEAVE
+  1559 00000588 C3                       ret
+  1560                                  ENDP
+  1561                                  
+  1562                                  printint51: PROC
   1563                                  
-  1564                                  ;-271 }
-  1565                                  
-  1566 000005B5 E978FF                   jmp .prs43
-  1567                                  .prs44:
-  1568                                  
-  1569                                  ;-272 int eprnum(int n){//for docall1 procedure
-  1570 000005B8 C9                       LEAVE
-  1571 000005B9 C3                       ret
-  1572                                  ENDP
+  1564                                  ;-272     if (j<10000) prc(32);
+  1565                                  ;
+  1566 00000589 C8000000                 ENTER  0,0
+  1567 0000058D 8B4604                   mov ax, [bp+4]
+  1568 00000590 3D1027                   cmp ax, 10000
+  1569 00000593 0F8D0800                 jge .printint5152
+  1570 00000597 6A20                     push 32
+  1571 00000599 E8EDFD                   call prc
+  1572 0000059C 83C402                   add  sp, 2
   1573                                  
-  1574                                  eprnum: PROC
+  1574                                  ;-273     if (j<1000) prc(32);
   1575                                  
-  1576                                  ;-273     int e;
-  1577                                  
-  1578                                  
-  1579                                  ;-274     if(n<0) {
-  1580                                  ;
-  1581 000005BA C8020000                 ENTER  2,0
-  1582 000005BE 8B4604                   mov ax, [bp+4]
-  1583 000005C1 83F800                   cmp ax, 0
-  1584 000005C4 0F8D1400                 jge .eprnum52
+  1576                                  .printint5152:
+  1577 0000059F 8B4604                   mov ax, [bp+4]
+  1578 000005A2 3DE803                   cmp ax, 1000
+  1579 000005A5 0F8D0800                 jge .printint5153
+  1580 000005A9 6A20                     push 32
+  1581 000005AB E8DBFD                   call prc
+  1582 000005AE 83C402                   add  sp, 2
+  1583                                  
+  1584                                  ;-274     if (j<100) prc(32);
   1585                                  
-  1586                                  ;-275         eprc('-');
-  1587                                  
-  1588 000005C8 6A2D                     push 45
-  1589 000005CA E8B1FE                   call eprc
-  1590 000005CD 83C402                   add  sp, 2
-  1591                                  
-  1592                                  ;-276         n=mkneg(n);
+  1586                                  .printint5153:
+  1587 000005B1 8B4604                   mov ax, [bp+4]
+  1588 000005B4 83F864                   cmp ax, 100
+  1589 000005B7 0F8D0800                 jge .printint5154
+  1590 000005BB 6A20                     push 32
+  1591 000005BD E8C9FD                   call prc
+  1592 000005C0 83C402                   add  sp, 2
   1593                                  
-  1594 000005D0 FF7604                   push word [bp+4]
-  1595 000005D3 E8CEFA                   call mkneg
-  1596 000005D6 83C402                   add  sp, 2
-  1597 000005D9 894604                   mov [bp+4], ax
-  1598                                  
-  1599                                  ;-277     }
-  1600                                  
-  1601                                  
-  1602                                  ;-278     if (n >= 10) {
+  1594                                  ;-275     if (j<10) prc(32);
+  1595                                  
+  1596                                  .printint5154:
+  1597 000005C3 8B4604                   mov ax, [bp+4]
+  1598 000005C6 83F80A                   cmp ax, 10
+  1599 000005C9 0F8D0800                 jge .printint5155
+  1600 000005CD 6A20                     push 32
+  1601 000005CF E8B7FD                   call prc
+  1602 000005D2 83C402                   add  sp, 2
   1603                                  
-  1604                                  .eprnum52:
-  1605 000005DC 8B4604                   mov ax, [bp+4]
-  1606 000005DF 83F80A                   cmp ax, 10 ;unsigned : 1
-  1607 000005E2 0F8C1500                 jl  .eprnum53
-  1608                                  
-  1609                                  ;-279         e=n/10;
+  1604                                  ;-276     prunsign1(j);
+  1605                                  
+  1606                                  .printint5155:
+  1607 000005D5 FF7604                   push word [bp+4]
+  1608 000005D8 E86AFF                   call prunsign1
+  1609 000005DB 83C402                   add  sp, 2
   1610                                  
-  1611 000005E6 8B4604                   mov ax, [bp+4]
-  1612 000005E9 BB0A00                   mov bx, 10
-  1613 000005EC 99                       cwd
-  1614 000005ED F7FB                     idiv bx
-  1615 000005EF 8946FE                   mov [bp-2], ax
+  1611                                  ;-277 }
+  1612                                  
+  1613                                  
+  1614                                  ;-278 
+  1615                                  
   1616                                  
-  1617                                  ;-280         eprnum(e);
-  1618                                  
-  1619 000005F2 FF76FE                   push word [bp-2]
-  1620 000005F5 E8C2FF                   call eprnum
-  1621 000005F8 83C402                   add  sp, 2
-  1622                                  
-  1623                                  ;-281     }
-  1624                                  
-  1625                                  
-  1626                                  ;-282     n=n%10;
-  1627                                  
-  1628                                  .eprnum53:
-  1629 000005FB 8B4604                   mov ax, [bp+4]
-  1630 000005FE BB0A00                   mov bx, 10
-  1631 00000601 99                       cwd
-  1632 00000602 F7FB                     idiv bx
-  1633 00000604 89D0                     mov ax, dx
-  1634 00000606 894604                   mov [bp+4], ax
-  1635                                  
-  1636                                  ;-283     n=n+'0';
-  1637                                  
-  1638 00000609 8B4604                   mov ax, [bp+4]
-  1639 0000060C 83C030                   add ax, 48
-  1640 0000060F 894604                   mov [bp+4], ax
+  1617                                  ;-279 int error1(char *s) {
+  1618 000005DE C9                       LEAVE
+  1619 000005DF C3                       ret
+  1620                                  ENDP
+  1621                                  
+  1622                                  error1: PROC
+  1623                                  
+  1624                                  ;-280     lineno--;
+  1625                                  ;
+  1626 000005E0 C8000000                 ENTER  0,0
+  1627 000005E4 FF0E[4900]               dec  word[lineno]
+  1628                                  
+  1629                                  ;-281     prnl();
+  1630                                  
+  1631 000005E8 E88BFE                   call prnl
+  1632                                  
+  1633                                  ;-282     prscomment(&fgetsdest);
+  1634                                  
+  1635 000005EB 8D06A0D9                 lea  ax, [fgetsdest]
+  1636 000005EF 50                       push ax
+  1637 000005F0 E8C1FD                   call prscomment
+  1638 000005F3 83C402                   add  sp, 2
+  1639                                  
+  1640                                  ;-283     prs(";Line: ");
   1641                                  
-  1642                                  ;-284     eprc(n);
-  1643                                  
-  1644 00000612 FF7604                   push word [bp+4]
-  1645 00000615 E866FE                   call eprc
-  1646 00000618 83C402                   add  sp, 2
+  1642 000005F6 68[5F06]                 push error1_0
+  1643 000005F9 E8E6FD                   call prs
+  1644 000005FC 83C402                   add  sp, 2
+  1645                                  
+  1646                                  ;-284     prunsign1(lineno);
   1647                                  
-  1648                                  ;-285 }
-  1649                                  
-  1650                                  
-  1651                                  ;-286 int pint1 (int n){
-  1652 0000061B C9                       LEAVE
-  1653 0000061C C3                       ret
-  1654                                  ENDP
-  1655                                  
-  1656                                  pint1: PROC
+  1648 000005FF FF36[4900]               push word [lineno]
+  1649 00000603 E83FFF                   call prunsign1
+  1650 00000606 83C402                   add  sp, 2
+  1651                                  
+  1652                                  ;-285     prs(" ************** ERROR: ");
+  1653                                  
+  1654 00000609 68[6706]                 push error1_1
+  1655 0000060C E8D3FD                   call prs
+  1656 0000060F 83C402                   add  sp, 2
   1657                                  
-  1658                                  ;-287     int e;
+  1658                                  ;-286     prs(s);
   1659                                  
-  1660                                  
-  1661                                  ;-288     if(n<0) {  prc('-');  n=mkneg(n); }
-  1662                                  ;
-  1663 0000061D C8020000                 ENTER  2,0
-  1664 00000621 8B4604                   mov ax, [bp+4]
-  1665 00000624 83F800                   cmp ax, 0
-  1666 00000627 0F8D1400                 jge .pint154
-  1667 0000062B 6A2D                     push 45
-  1668 0000062D E88FFE                   call prc
-  1669 00000630 83C402                   add  sp, 2
-  1670 00000633 FF7604                   push word [bp+4]
-  1671 00000636 E86BFA                   call mkneg
-  1672 00000639 83C402                   add  sp, 2
-  1673 0000063C 894604                   mov [bp+4], ax
-  1674                                  
-  1675                                  ;-289     if (n >= 10) {
-  1676                                  
-  1677                                  .pint154:
-  1678 0000063F 8B4604                   mov ax, [bp+4]
-  1679 00000642 83F80A                   cmp ax, 10 ;unsigned : 1
-  1680 00000645 0F8C1500                 jl  .pint155
+  1660 00000612 FF7604                   push word [bp+4]
+  1661 00000615 E8CAFD                   call prs
+  1662 00000618 83C402                   add  sp, 2
+  1663                                  
+  1664                                  ;-287     prs("  in column: ");
+  1665                                  
+  1666 0000061B 68[7F06]                 push error1_2
+  1667 0000061E E8C1FD                   call prs
+  1668 00000621 83C402                   add  sp, 2
+  1669                                  
+  1670                                  ;-288     prunsign1(column);
+  1671                                  
+  1672 00000624 FF36[2100]               push word [column]
+  1673 00000628 E81AFF                   call prunsign1
+  1674 0000062B 83C402                   add  sp, 2
+  1675                                  
+  1676                                  ;-289     prs("\nToken: ");
+  1677                                  
+  1678 0000062E 68[8D06]                 push error1_3
+  1679 00000631 E8AEFD                   call prs
+  1680 00000634 83C402                   add  sp, 2
   1681                                  
-  1682                                  ;-290         e=n/10;
+  1682                                  ;-290     prunsign1(token);
   1683                                  
-  1684 00000649 8B4604                   mov ax, [bp+4]
-  1685 0000064C BB0A00                   mov bx, 10
-  1686 0000064F 99                       cwd
-  1687 00000650 F7FB                     idiv bx
-  1688 00000652 8946FE                   mov [bp-2], ax
+  1684 00000637 FF36[1E00]               push word [token]
+  1685 0000063B E807FF                   call prunsign1
+  1686 0000063E 83C402                   add  sp, 2
+  1687                                  
+  1688                                  ;-291     prs(", symbol: ");
   1689                                  
-  1690                                  ;-291         pint1(e);
-  1691                                  
-  1692 00000655 FF76FE                   push word [bp-2]
-  1693 00000658 E8C2FF                   call pint1
-  1694 0000065B 83C402                   add  sp, 2
+  1690 00000641 68[9706]                 push error1_4
+  1691 00000644 E89BFD                   call prs
+  1692 00000647 83C402                   add  sp, 2
+  1693                                  
+  1694                                  ;-292     prs(symbol);
   1695                                  
-  1696                                  ;-292     }
-  1697                                  
-  1698                                  
-  1699                                  ;-293     n=n%10;
+  1696 0000064A 8D06BB69                 lea  ax, [symbol]
+  1697 0000064E 50                       push ax
+  1698 0000064F E890FD                   call prs
+  1699 00000652 83C402                   add  sp, 2
   1700                                  
-  1701                                  .pint155:
-  1702 0000065E 8B4604                   mov ax, [bp+4]
-  1703 00000661 BB0A00                   mov bx, 10
-  1704 00000664 99                       cwd
-  1705 00000665 F7FB                     idiv bx
-  1706 00000667 89D0                     mov ax, dx
-  1707 00000669 894604                   mov [bp+4], ax
+  1701                                  ;-293     end1(1);
+  1702                                  
+  1703 00000655 6A01                     push 1
+  1704 00000657 E8B036                   call end1
+  1705 0000065A 83C402                   add  sp, 2
+  1706                                  
+  1707                                  ;-294 }
   1708                                  
-  1709                                  ;-294     n += '0';
-  1710                                  
-  1711 0000066C 83460430                 add  word[bp+4], 48
+  1709                                  
+  1710                                  ;-295 
+  1711                                  
   1712                                  
-  1713                                  ;-295     prc(n);
-  1714                                  
-  1715 00000670 FF7604                   push word [bp+4]
-  1716 00000673 E849FE                   call prc
-  1717 00000676 83C402                   add  sp, 2
-  1718                                  
-  1719                                  ;-296 }
-  1720                                  
-  1721                                  
-  1722                                  ;-297 int prunsign1(unsigned int n) {
-  1723 00000679 C9                       LEAVE
-  1724 0000067A C3                       ret
-  1725                                  ENDP
-  1726                                  
-  1727                                  prunsign1: PROC
-  1728                                  
-  1729                                  ;-298     unsigned int e;
-  1730                                  
-  1731                                  
-  1732                                  ;-299     if (n >= 10) {
-  1733                                  ;
-  1734 0000067B C8020000                 ENTER  2,0
-  1735 0000067F 8B4604                   mov ax, [bp+4]
-  1736 00000682 83F80A                   cmp ax, 10 ;unsigned : 0
-  1737 00000685 0F821700                 jb  .prunsign156
+  1713                                  ;-296 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
+  1714 0000065D C9                       LEAVE
+  1715 0000065E C3                       ret
+  1716 0000065F 3B4C696E653A2000        error1_0 db ";Line: ",0
+  1717 00000667 202A2A2A2A2A2A2A2A-     error1_1 db " ************** ERROR: ",0
+  1718 00000670 2A2A2A2A2A2A204552-
+  1719 00000679 524F523A2000       
+  1720 0000067F 2020696E20636F6C75-     error1_2 db "  in column: ",0
+  1721 00000688 6D6E3A2000         
+  1722 0000068D 5C6E546F6B656E3A20-     error1_3 db "\nToken: ",0
+  1723 00000696 00                 
+  1724 00000697 2C2073796D626F6C3A-     error1_4 db ", symbol: ",0
+  1725 000006A0 2000               
+  1726                                  ENDP
+  1727                                  
+  1728                                  ifEOL: PROC
+  1729                                  
+  1730                                  ;-297     if (c == 10) return 1;//LF
+  1731                                  ;
+  1732 000006A2 C8000000                 ENTER  0,0
+  1733 000006A6 8A4604                   mov al, [bp+4]
+  1734 000006A9 3C0A                     cmp al, 10
+  1735 000006AB 0F850600                 jne .ifEOL56
+  1736 000006AF B80100                   mov ax, 1
+  1737 000006B2 E92400                   jmp .retnifEOL
   1738                                  
-  1739                                  ;-300         e=n/10;
+  1739                                  ;-298     if (c == 13) {//CR
   1740                                  
-  1741 00000689 8B4604                   mov ax, [bp+4]
-  1742 0000068C BB0A00                   mov bx, 10
-  1743 0000068F BA0000                   mov dx, 0
-  1744 00000692 F7F3                     div bx
-  1745 00000694 8946FE                   mov [bp-2], ax
-  1746                                  
-  1747                                  ;-301         prunsign1(e);
-  1748                                  
-  1749 00000697 FF76FE                   push word [bp-2]
-  1750 0000069A E8DEFF                   call prunsign1
-  1751 0000069D 83C402                   add  sp, 2
-  1752                                  
-  1753                                  ;-302     }
-  1754                                  
+  1741                                  .ifEOL56:
+  1742 000006B5 8A4604                   mov al, [bp+4]
+  1743 000006B8 3C0D                     cmp al, 13
+  1744 000006BA 0F851500                 jne .ifEOL57
+  1745                                  
+  1746                                  ;-299         if (thechar == 10) c=next();
+  1747                                  
+  1748 000006BE A0[2300]                 mov al, [thechar]
+  1749 000006C1 3C0A                     cmp al, 10
+  1750 000006C3 0F850600                 jne .ifEOL58
+  1751 000006C7 E82601                   call next
+  1752 000006CA 884604                   mov [bp+4], al
+  1753                                  
+  1754                                  ;-300         return 1;
   1755                                  
-  1756                                  ;-303     n = n % 10; /*unsigned mod*/
-  1757                                  
-  1758                                  .prunsign156:
-  1759 000006A0 8B4604                   mov ax, [bp+4]
-  1760 000006A3 BB0A00                   mov bx, 10
-  1761 000006A6 BA0000                   mov dx, 0
-  1762 000006A9 F7F3                     div bx
-  1763 000006AB 89D0                     mov ax, dx
-  1764 000006AD 894604                   mov [bp+4], ax
-  1765                                  
-  1766                                  ;-304     n += '0';
-  1767                                  
-  1768 000006B0 83460430                 add  word[bp+4], 48
-  1769                                  
-  1770                                  ;-305     prc(n);
+  1756                                  .ifEOL58:
+  1757 000006CD B80100                   mov ax, 1
+  1758 000006D0 E90600                   jmp .retnifEOL
+  1759                                  
+  1760                                  ;-301     }
+  1761                                  
+  1762                                  
+  1763                                  ;-302     return 0;
+  1764                                  
+  1765                                  .ifEOL57:
+  1766 000006D3 B80000                   mov ax, 0
+  1767 000006D6 E90000                   jmp .retnifEOL
+  1768                                  
+  1769                                  ;-303 }
+  1770                                  
   1771                                  
-  1772 000006B4 FF7604                   push word [bp+4]
-  1773 000006B7 E805FE                   call prc
-  1774 000006BA 83C402                   add  sp, 2
-  1775                                  
-  1776                                  ;-306 }
+  1772                                  ;-304 int printinputline() {
+  1773                                  
+  1774 000006D9 C9                       .retnifEOL: LEAVE
+  1775 000006DA C3                       ret
+  1776                                  ENDP
   1777                                  
-  1778                                  
-  1779                                  ;-307 int printint51(unsigned int j)  {
-  1780 000006BD C9                       LEAVE
-  1781 000006BE C3                       ret
-  1782                                  ENDP
-  1783                                  
-  1784                                  printint51: PROC
-  1785                                  
-  1786                                  ;-308     if (j<10000) prc(32);
-  1787                                  ;
-  1788 000006BF C8000000                 ENTER  0,0
-  1789 000006C3 8B4604                   mov ax, [bp+4]
-  1790 000006C6 3D1027                   cmp ax, 10000
-  1791 000006C9 0F8D0800                 jge .printint5157
-  1792 000006CD 6A20                     push 32
-  1793 000006CF E8EDFD                   call prc
-  1794 000006D2 83C402                   add  sp, 2
+  1778                                  printinputline: PROC
+  1779                                  
+  1780                                  ;-305     int col;
+  1781                                  
+  1782                                  
+  1783                                  ;-306     col=0;
+  1784                                  ;
+  1785 000006DB C8020000                 ENTER  2,0
+  1786 000006DF B80000                   mov ax, 0
+  1787 000006E2 8946FE                   mov [bp-2], ax
+  1788                                  
+  1789                                  ;-307     fgetsp=&fgetsdest;
+  1790                                  
+  1791 000006E5 B8A0D9                   mov ax, fgetsdest
+  1792 000006E8 A3[4500]                 mov word [fgetsp], ax
+  1793                                  
+  1794                                  ;-308     do {
   1795                                  
-  1796                                  ;-309     if (j<1000) prc(32);
+  1796                                  .printinputline59:
   1797                                  
-  1798                                  .printint5157:
-  1799 000006D5 8B4604                   mov ax, [bp+4]
-  1800 000006D8 3DE803                   cmp ax, 1000
-  1801 000006DB 0F8D0800                 jge .printint5158
-  1802 000006DF 6A20                     push 32
-  1803 000006E1 E8DBFD                   call prc
-  1804 000006E4 83C402                   add  sp, 2
-  1805                                  
-  1806                                  ;-310     if (j<100) prc(32);
+  1798                                  ;-309         DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+  1799                                  
+  1800 000006EB 6A01                     push 1
+  1801 000006ED FF36[1A00]               push word [fdin]
+  1802 000006F1 8D06[5300]               lea  ax, [DOS_ByteRead]
+  1803 000006F5 50                       push ax
+  1804 000006F6 E8FDF9                   call readRL
+  1805 000006F9 83C406                   add  sp, 6
+  1806 000006FC A3[5100]                 mov word [DOS_NoBytes], ax
   1807                                  
-  1808                                  .printint5158:
-  1809 000006E7 8B4604                   mov ax, [bp+4]
-  1810 000006EA 83F864                   cmp ax, 100
-  1811 000006ED 0F8D0800                 jge .printint5159
-  1812 000006F1 6A20                     push 32
-  1813 000006F3 E8C9FD                   call prc
-  1814 000006F6 83C402                   add  sp, 2
-  1815                                  
-  1816                                  ;-311     if (j<10) prc(32);
-  1817                                  
-  1818                                  .printint5159:
-  1819 000006F9 8B4604                   mov ax, [bp+4]
-  1820 000006FC 83F80A                   cmp ax, 10
-  1821 000006FF 0F8D0800                 jge .printint5160
-  1822 00000703 6A20                     push 32
-  1823 00000705 E8B7FD                   call prc
-  1824 00000708 83C402                   add  sp, 2
+  1808                                  ;-310         if (DOS_NoBytes == 0) return;
+  1809                                  
+  1810 000006FF A1[5100]                 mov ax, [DOS_NoBytes]
+  1811 00000702 83F800                   cmp ax, 0
+  1812 00000705 0F850300                 jne .printinputline60
+  1813 00000709 E96A00                   jmp .retnprintinputline
+  1814                                  
+  1815                                  ;-311         *fgetsp=DOS_ByteRead;
+  1816                                  
+  1817                                  .printinputline60:
+  1818 0000070C A0[5300]                 mov al, [DOS_ByteRead]
+  1819 0000070F 8B1E[4500]               mov  bx, [fgetsp]
+  1820 00000713 8807                     mov  [bx], al
+  1821                                  
+  1822                                  ;-312         fgetsp++;
+  1823                                  
+  1824 00000715 FF06[4500]               inc  word[fgetsp]
   1825                                  
-  1826                                  ;-312     prunsign1(j);
+  1826                                  ;-313         col++;
   1827                                  
-  1828                                  .printint5160:
-  1829 0000070B FF7604                   push word [bp+4]
-  1830 0000070E E86AFF                   call prunsign1
-  1831 00000711 83C402                   add  sp, 2
-  1832                                  
-  1833                                  ;-313 }
-  1834                                  
-  1835                                  
-  1836                                  ;-314 
-  1837                                  
+  1828 00000719 FF46FE                   inc  word[bp-2]
+  1829                                  
+  1830                                  ;-314         if (col >80) error1("input line longer than 80 char");
+  1831                                  
+  1832 0000071C 8B46FE                   mov ax, [bp-2]
+  1833 0000071F 83F850                   cmp ax, 80
+  1834 00000722 0F8E0900                 jle .printinputline61
+  1835 00000726 68[7807]                 push printinputline_0
+  1836 00000729 E8B4FE                   call error1
+  1837 0000072C 83C402                   add  sp, 2
   1838                                  
-  1839                                  ;-315 
+  1839                                  ;-315         }
   1840                                  
-  1841                                  
-  1842                                  ;-316 char doglobName[IDLENMAX];
-  1843 00000714 C9                       LEAVE
-  1844 00000715 C3                       ret
-  1845                                  ENDP
-  1846                                  section .bss
-  1847                                  absolute 55840
-  1848 0000DA20 <res 0000000F>          doglobName resb 15
-  1849                                  section .text
+  1841                                  .printinputline61:
+  1842                                  
+  1843                                  ;-316         while (DOS_ByteRead != 10);
+  1844                                  
+  1845 0000072F A0[5300]                 mov al, [DOS_ByteRead]
+  1846 00000732 3C0A                     cmp al, 10
+  1847 00000734 0F840200                 je  .printinputline62
+  1848 00000738 EBB1                     jmp .printinputline59
+  1849                                  .printinputline62:
   1850                                  
-  1851                                  ;-317 int doglob() {
+  1851                                  ;-317     *fgetsp=0;
   1852                                  
-  1853                                  
-  1854                                  doglob: PROC
-  1855                                  
-  1856                                  ;-318     int i; int j; int isstrarr; isstrarr=0;
-  1857                                  ;
-  1858 00000716 C8060000                 ENTER  6,0
-  1859 0000071A B80000                   mov ax, 0
-  1860 0000071D 8946FA                   mov [bp-6], ax
-  1861                                  
-  1862                                  ;-319   if (GTop >= LSTART) error1("Global table full");
-  1863                                  
-  1864 00000720 A1[3900]                 mov ax, [GTop]
-  1865 00000723 3DC800                   cmp ax, 200 ;unsigned : 1
-  1866 00000726 0F8C0900                 jl  .doglob61
-  1867 0000072A 68[6B0A]                 push doglob_0
-  1868 0000072D E83B35                   call error1
-  1869 00000730 83C402                   add  sp, 2
+  1853 0000073A B80000                   mov ax, 0
+  1854 0000073D 8B1E[4500]               mov  bx, [fgetsp]
+  1855 00000741 8807                     mov  [bx], al
+  1856                                  
+  1857                                  ;-318     if (fdout) {
+  1858                                  
+  1859 00000743 A1[1C00]                 mov ax, [fdout]
+  1860 00000746 08C0                     or  al, al
+  1861 00000748 0F842A00                 je .printinputline63
+  1862                                  
+  1863                                  ;-319         prs("\n\n;-");
+  1864                                  
+  1865 0000074C 68[9707]                 push printinputline_1
+  1866 0000074F E890FC                   call prs
+  1867 00000752 83C402                   add  sp, 2
+  1868                                  
+  1869                                  ;-320         prunsign1(lineno);
   1870                                  
-  1871                                  ;-320   if (iswidth == 0) error1("no VOID as var type");
-  1872                                  
-  1873                                  .doglob61:
-  1874 00000733 A0[3600]                 mov al, [iswidth]
-  1875 00000736 3C00                     cmp al, 0
-  1876 00000738 0F850900                 jne .doglob62
-  1877 0000073C 68[7D0A]                 push doglob_1
-  1878 0000073F E82935                   call error1
-  1879 00000742 83C402                   add  sp, 2
+  1871 00000755 FF36[4900]               push word [lineno]
+  1872 00000759 E8E9FD                   call prunsign1
+  1873 0000075C 83C402                   add  sp, 2
+  1874                                  
+  1875                                  ;-321         prc(' ');
+  1876                                  
+  1877 0000075F 6A20                     push 32
+  1878 00000761 E825FC                   call prc
+  1879 00000764 83C402                   add  sp, 2
   1880                                  
-  1881                                  ;-321   checknamelen();
+  1881                                  ;-322         lineno++;
   1882                                  
-  1883                                  .doglob62:
-  1884 00000745 E842FC                   call checknamelen
-  1885                                  
-  1886                                  ;-322   if (checkName() != 0) error1("Variable already defined");
-  1887                                  
-  1888 00000748 E88305                   call checkName
-  1889 0000074B 3C00                     cmp al, 0
-  1890 0000074D 0F840900                 je  .doglob63
-  1891 00000751 68[910A]                 push doglob_2
-  1892 00000754 E81435                   call error1
-  1893 00000757 83C402                   add  sp, 2
+  1883 00000767 FF06[4900]               inc  word[lineno]
+  1884                                  
+  1885                                  ;-323         prscomment(&fgetsdest);
+  1886                                  
+  1887 0000076B 8D06A0D9                 lea  ax, [fgetsdest]
+  1888 0000076F 50                       push ax
+  1889 00000770 E841FC                   call prscomment
+  1890 00000773 83C402                   add  sp, 2
+  1891                                  
+  1892                                  ;-324         }
+  1893                                  
   1894                                  
-  1895                                  ;-323   if (istoken('[')) { istype='&';
+  1895                                  ;-325 }
   1896                                  
-  1897                                  .doglob63:
-  1898 0000075A 6A5B                     push 91
-  1899 0000075C E895FC                   call istoken
-  1900 0000075F 83C402                   add  sp, 2
-  1901 00000762 08C0                     or  al, al
-  1902 00000764 0F84E201                 je .doglob64
-  1903 00000768 B82600                   mov ax, 38
-  1904 0000076B A2[3000]                 mov byte [istype], al
-  1905                                  
-  1906                                  ;-324     if (istoken(T_CONST)) {
-  1907                                  
-  1908 0000076E 680101                   push 257
-  1909 00000771 E880FC                   call istoken
-  1910 00000774 83C402                   add  sp, 2
-  1911 00000777 08C0                     or  al, al
-  1912 00000779 0F84C200                 je .doglob65
+  1897                                  .printinputline63:
+  1898                                  
+  1899                                  ;-326 int fgets1() {
+  1900                                  
+  1901 00000776 C9                       .retnprintinputline: LEAVE
+  1902 00000777 C3                       ret
+  1903 00000778 696E707574206C696E-     printinputline_0 db "input line longer than 80 char",0
+  1904 00000781 65206C6F6E67657220-
+  1905 0000078A 7468616E2038302063-
+  1906 00000793 68617200           
+  1907 00000797 5C6E5C6E3B2D00          printinputline_1 db "\n\n;-",0
+  1908                                  ENDP
+  1909                                  
+  1910                                  fgets1: PROC
+  1911                                  
+  1912                                  ;-327     char c;
   1913                                  
-  1914                                  ;-325       prs("\nsection .bss\nabsolute ");
-  1915                                  
-  1916 0000077D 68[AA0A]                 push doglob_3
-  1917 00000780 E8A3FD                   call prs
-  1918 00000783 83C402                   add  sp, 2
-  1919                                  
-  1920                                  ;-326       prunsign1(orgData);
-  1921                                  
-  1922 00000786 FF36[1200]               push word [orgData]
-  1923 0000078A E8EEFE                   call prunsign1
-  1924 0000078D 83C402                   add  sp, 2
-  1925                                  
-  1926                                  ;-327       prs("\n"); prs(symbol);
-  1927                                  
-  1928 00000790 68[C40A]                 push doglob_4
-  1929 00000793 E890FD                   call prs
-  1930 00000796 83C402                   add  sp, 2
-  1931 00000799 8D06BB69                 lea  ax, [symbol]
-  1932 0000079D 50                       push ax
-  1933 0000079E E885FD                   call prs
-  1934 000007A1 83C402                   add  sp, 2
-  1935                                  
-  1936                                  ;-328       if (iswidth==1) prs(" resb ");
-  1937                                  
-  1938 000007A4 A0[3600]                 mov al, [iswidth]
-  1939 000007A7 3C01                     cmp al, 1
-  1940 000007A9 0F850900                 jne .doglob66
-  1941 000007AD 68[C70A]                 push doglob_5
-  1942 000007B0 E873FD                   call prs
-  1943 000007B3 83C402                   add  sp, 2
-  1944                                  
-  1945                                  ;-329       if (iswidth==2) prs(" resw ");
+  1914                                  
+  1915                                  ;-328     c=*fgetsp;
+  1916                                  ;
+  1917 0000079E C8020000                 ENTER  2,0
+  1918 000007A2 8B1E[4500]               mov bx, [fgetsp]
+  1919 000007A6 8A07                     mov al, [bx]
+  1920 000007A8 B400                     mov ah, 0
+  1921 000007AA 8846FE                   mov [bp-2], al
+  1922                                  
+  1923                                  ;-329     if (c==0) {
+  1924                                  
+  1925 000007AD 8A46FE                   mov al, [bp-2]
+  1926 000007B0 3C00                     cmp al, 0
+  1927 000007B2 0F852A00                 jne .fgets164
+  1928                                  
+  1929                                  ;-330         printinputline();
+  1930                                  
+  1931 000007B6 E822FF                   call printinputline
+  1932                                  
+  1933                                  ;-331         if (DOS_NoBytes == 0) return 0;
+  1934                                  
+  1935 000007B9 A1[5100]                 mov ax, [DOS_NoBytes]
+  1936 000007BC 83F800                   cmp ax, 0
+  1937 000007BF 0F850600                 jne .fgets165
+  1938 000007C3 B80000                   mov ax, 0
+  1939 000007C6 E92500                   jmp .retnfgets1
+  1940                                  
+  1941                                  ;-332         fgetsp=&fgetsdest;
+  1942                                  
+  1943                                  .fgets165:
+  1944 000007C9 B8A0D9                   mov ax, fgetsdest
+  1945 000007CC A3[4500]                 mov word [fgetsp], ax
   1946                                  
-  1947                                  .doglob66:
-  1948 000007B6 A0[3600]                 mov al, [iswidth]
-  1949 000007B9 3C02                     cmp al, 2
-  1950 000007BB 0F850900                 jne .doglob67
-  1951 000007BF 68[CE0A]                 push doglob_6
-  1952 000007C2 E861FD                   call prs
-  1953 000007C5 83C402                   add  sp, 2
-  1954                                  
-  1955                                  ;-330       if (iswidth==4) prs(" resd ");
-  1956                                  
-  1957                                  .doglob67:
-  1958 000007C8 A0[3600]                 mov al, [iswidth]
-  1959 000007CB 3C04                     cmp al, 4
-  1960 000007CD 0F850900                 jne .doglob68
-  1961 000007D1 68[D50A]                 push doglob_7
-  1962 000007D4 E84FFD                   call prs
-  1963 000007D7 83C402                   add  sp, 2
-  1964                                  
-  1965                                  ;-331       prunsign1(lexval);
+  1947                                  ;-333         c=*fgetsp;
+  1948                                  
+  1949 000007CF 8B1E[4500]               mov bx, [fgetsp]
+  1950 000007D3 8A07                     mov al, [bx]
+  1951 000007D5 B400                     mov ah, 0
+  1952 000007D7 8846FE                   mov [bp-2], al
+  1953                                  
+  1954                                  ;-334         column=0;
+  1955                                  
+  1956 000007DA B80000                   mov ax, 0
+  1957 000007DD A3[2100]                 mov word [column], ax
+  1958                                  
+  1959                                  ;-335     }
+  1960                                  
+  1961                                  
+  1962                                  ;-336     fgetsp++;
+  1963                                  
+  1964                                  .fgets164:
+  1965 000007E0 FF06[4500]               inc  word[fgetsp]
   1966                                  
-  1967                                  .doglob68:
-  1968 000007DA FF36[2C00]               push word [lexval]
-  1969 000007DE E89AFE                   call prunsign1
-  1970 000007E1 83C402                   add  sp, 2
-  1971                                  
-  1972                                  ;-332       prs("\nsection .text");
-  1973                                  
-  1974 000007E4 68[DC0A]                 push doglob_8
-  1975 000007E7 E83CFD                   call prs
-  1976 000007EA 83C402                   add  sp, 2
+  1967                                  ;-337     column++;
+  1968                                  
+  1969 000007E4 FF06[2100]               inc  word[column]
+  1970                                  
+  1971                                  ;-338     return c;
+  1972                                  
+  1973 000007E8 8A46FE                   mov al, [bp-2]
+  1974 000007EB E90000                   jmp .retnfgets1
+  1975                                  
+  1976                                  ;-339 }
   1977                                  
-  1978                                  ;-333       orgData=orgData+lexval;
-  1979                                  
-  1980 000007ED A1[1200]                 mov ax, [orgData]
-  1981 000007F0 0306[2C00]               add ax, [lexval]
-  1982 000007F4 A3[1200]                 mov word [orgData], ax
+  1978                                  
+  1979                                  ;-340 
+  1980                                  
+  1981                                  
+  1982                                  ;-341 
   1983                                  
-  1984                                  ;-334       if (iswidth==2) orgData=orgData+lexval;
-  1985                                  
-  1986 000007F7 A0[3600]                 mov al, [iswidth]
-  1987 000007FA 3C02                     cmp al, 2
-  1988 000007FC 0F850A00                 jne .doglob69
-  1989 00000800 A1[1200]                 mov ax, [orgData]
-  1990 00000803 0306[2C00]               add ax, [lexval]
-  1991 00000807 A3[1200]                 mov word [orgData], ax
+  1984                                  
+  1985                                  ;-342 int next() {
+  1986                                  
+  1987 000007EE C9                       .retnfgets1: LEAVE
+  1988 000007EF C3                       ret
+  1989                                  ENDP
+  1990                                  
+  1991                                  next: PROC
   1992                                  
-  1993                                  ;-335       if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
+  1993                                  ;-343     char r;
   1994                                  
-  1995                                  .doglob69:
-  1996 0000080A A0[3600]                 mov al, [iswidth]
-  1997 0000080D 3C04                     cmp al, 4
-  1998 0000080F 0F851400                 jne .doglob70
-  1999 00000813 A1[2C00]                 mov ax, [lexval]
-  2000 00000816 BB0300                   mov bx, 3
-  2001 00000819 F7E3                     mul bx
-  2002 0000081B 8946FE                   mov [bp-2], ax
-  2003 0000081E A1[1200]                 mov ax, [orgData]
-  2004 00000821 0346FE                   add ax, [bp-2]
-  2005 00000824 A3[1200]                 mov word [orgData], ax
+  1995                                  
+  1996                                  ;-344     r = thechar;
+  1997                                  ;
+  1998 000007F0 C8020000                 ENTER  2,0
+  1999 000007F4 A0[2300]                 mov al, [thechar]
+  2000 000007F7 8846FE                   mov [bp-2], al
+  2001                                  
+  2002                                  ;-345     globC=r;
+  2003                                  
+  2004 000007FA 8A46FE                   mov al, [bp-2]
+  2005 000007FD A2[2000]                 mov byte [globC], al
   2006                                  
-  2007                                  ;-336       GData[GTop]=lexval; expect(']');
+  2007                                  ;-346     thechar = fgets1();
   2008                                  
-  2009                                  .doglob70:
-  2010 00000827 A1[2C00]                 mov ax, [lexval]
-  2011 0000082A 8B1E[3900]               mov bx, [GTop]
-  2012 0000082E D1E3                     shl bx, 1
-  2013 00000830 89873873                 mov [GData+bx], ax
-  2014 00000834 6A5D                     push 93
-  2015 00000836 E8DDFB                   call expect
-  2016 00000839 83C402                   add  sp, 2
-  2017                                  
-  2018                                  ;-337     }else { expect(']');
+  2009 00000800 E89BFF                   call fgets1
+  2010 00000803 A2[2300]                 mov byte [thechar], al
+  2011                                  
+  2012                                  ;-347     return r;
+  2013                                  
+  2014 00000806 8A46FE                   mov al, [bp-2]
+  2015 00000809 E90000                   jmp .retnnext
+  2016                                  
+  2017                                  ;-348 }
+  2018                                  
   2019                                  
-  2020 0000083C E90801                   jmp .doglob71
-  2021                                  .doglob65:
-  2022 0000083F 6A5D                     push 93
-  2023 00000841 E8D2FB                   call expect
-  2024 00000844 83C402                   add  sp, 2
+  2020                                  ;-349 int istoken(int t) {
+  2021                                  
+  2022 0000080C C9                       .retnnext: LEAVE
+  2023 0000080D C3                       ret
+  2024                                  ENDP
   2025                                  
-  2026                                  ;-338       if (iswidth != 1) error1("Only ByteArray allowed");
+  2026                                  istoken: PROC
   2027                                  
-  2028 00000847 A0[3600]                 mov al, [iswidth]
-  2029 0000084A 3C01                     cmp al, 1
-  2030 0000084C 0F840900                 je  .doglob72
-  2031 00000850 68[EC0A]                 push doglob_9
-  2032 00000853 E81534                   call error1
-  2033 00000856 83C402                   add  sp, 2
+  2028                                  ;-350     if (token == t) {
+  2029                                  ;
+  2030 0000080E C8000000                 ENTER  0,0
+  2031 00000812 A1[1E00]                 mov ax, [token]
+  2032 00000815 3B4604                   cmp ax, [bp+4]
+  2033 00000818 0F850C00                 jne .istoken66
   2034                                  
-  2035                                  ;-339       prs("\n"); prs(symbol); prs(" db ");
+  2035                                  ;-351         token=getlex();
   2036                                  
-  2037                                  .doglob72:
-  2038 00000859 68[030B]                 push doglob_10
-  2039 0000085C E8C7FC                   call prs
-  2040 0000085F 83C402                   add  sp, 2
-  2041 00000862 8D06BB69                 lea  ax, [symbol]
-  2042 00000866 50                       push ax
-  2043 00000867 E8BCFC                   call prs
-  2044 0000086A 83C402                   add  sp, 2
-  2045 0000086D 68[060B]                 push doglob_11
-  2046 00000870 E8B3FC                   call prs
-  2047 00000873 83C402                   add  sp, 2
-  2048                                  
-  2049                                  ;-340       isstrarr=1; strcpy(doglobName, symbol);
-  2050                                  
-  2051 00000876 B80100                   mov ax, 1
-  2052 00000879 8946FA                   mov [bp-6], ax
-  2053 0000087C 8D06BB69                 lea  ax, [symbol]
-  2054 00000880 50                       push ax
-  2055 00000881 8D0620DA                 lea  ax, [doglobName]
-  2056 00000885 50                       push ax
-  2057 00000886 E8A3F9                   call strcpy
-  2058 00000889 83C404                   add  sp, 4
-  2059                                  
-  2060                                  ;-341       expect('=');
-  2061                                  
-  2062 0000088C 6A3D                     push 61
-  2063 0000088E E885FB                   call expect
-  2064 00000891 83C402                   add  sp, 2
-  2065                                  
-  2066                                  ;-342       if (istoken(T_STRING)) {
-  2067                                  
-  2068 00000894 680201                   push 258
-  2069 00000897 E85AFB                   call istoken
-  2070 0000089A 83C402                   add  sp, 2
-  2071 0000089D 08C0                     or  al, al
-  2072 0000089F 0F844200                 je .doglob73
+  2037 0000081C E81D25                   call getlex
+  2038 0000081F A3[1E00]                 mov word [token], ax
+  2039                                  
+  2040                                  ;-352         return 1;
+  2041                                  
+  2042 00000822 B80100                   mov ax, 1
+  2043 00000825 E90600                   jmp .retnistoken
+  2044                                  
+  2045                                  ;-353     }
+  2046                                  
+  2047                                  
+  2048                                  ;-354     return 0;
+  2049                                  
+  2050                                  .istoken66:
+  2051 00000828 B80000                   mov ax, 0
+  2052 0000082B E90000                   jmp .retnistoken
+  2053                                  
+  2054                                  ;-355 }
+  2055                                  
+  2056                                  
+  2057                                  ;-356 int expect(int t) {
+  2058                                  
+  2059 0000082E C9                       .retnistoken: LEAVE
+  2060 0000082F C3                       ret
+  2061                                  ENDP
+  2062                                  
+  2063                                  expect: PROC
+  2064                                  
+  2065                                  ;-357     if (istoken(t)==0) {
+  2066                                  ;
+  2067 00000830 C8000000                 ENTER  0,0
+  2068 00000834 FF7604                   push word [bp+4]
+  2069 00000837 E8D4FF                   call istoken
+  2070 0000083A 83C402                   add  sp, 2
+  2071 0000083D 83F800                   cmp ax, 0
+  2072 00000840 0F852F00                 jne .expect67
   2073                                  
-  2074                                  ;-343         prc(34); prscomment(symbol); prc(34); prs(",0");
+  2074                                  ;-358         *cloc=0;
   2075                                  
-  2076 000008A3 6A22                     push 34
-  2077 000008A5 E817FC                   call prc
-  2078 000008A8 83C402                   add  sp, 2
-  2079 000008AB 8D06BB69                 lea  ax, [symbol]
-  2080 000008AF 50                       push ax
-  2081 000008B0 E837FC                   call prscomment
-  2082 000008B3 83C402                   add  sp, 2
-  2083 000008B6 6A22                     push 34
-  2084 000008B8 E804FC                   call prc
-  2085 000008BB 83C402                   add  sp, 2
-  2086 000008BE 68[0B0B]                 push doglob_12
-  2087 000008C1 E862FC                   call prs
-  2088 000008C4 83C402                   add  sp, 2
-  2089                                  
-  2090                                  ;-344         i=strlen(symbol); GData[GTop]=i; }
-  2091                                  
-  2092 000008C7 8D06BB69                 lea  ax, [symbol]
-  2093 000008CB 50                       push ax
-  2094 000008CC E835F9                   call strlen
-  2095 000008CF 83C402                   add  sp, 2
-  2096 000008D2 8946FE                   mov [bp-2], ax
-  2097 000008D5 8B46FE                   mov ax, [bp-2]
-  2098 000008D8 8B1E[3900]               mov bx, [GTop]
-  2099 000008DC D1E3                     shl bx, 1
-  2100 000008DE 89873873                 mov [GData+bx], ax
-  2101                                  
-  2102                                  ;-345       else if (istoken('{' )) { i=0;
-  2103                                  
-  2104 000008E2 E96200                   jmp .doglob74
-  2105                                  .doglob73:
-  2106 000008E5 6A7B                     push 123
-  2107 000008E7 E80AFB                   call istoken
-  2108 000008EA 83C402                   add  sp, 2
-  2109 000008ED 08C0                     or  al, al
-  2110 000008EF 0F844B00                 je .doglob75
-  2111 000008F3 B80000                   mov ax, 0
-  2112 000008F6 8946FE                   mov [bp-2], ax
+  2076 00000844 B80000                   mov ax, 0
+  2077 00000847 8B1E[1800]               mov  bx, [cloc]
+  2078 0000084B 8807                     mov  [bx], al
+  2079                                  
+  2080                                  ;-359         prs(co);
+  2081                                  
+  2082 0000084D 8D06A861                 lea  ax, [co]
+  2083 00000851 50                       push ax
+  2084 00000852 E88DFB                   call prs
+  2085 00000855 83C402                   add  sp, 2
+  2086                                  
+  2087                                  ;-360         prs("\nExpected ASCII(dez): ");
+  2088                                  
+  2089 00000858 68[7508]                 push expect_0
+  2090 0000085B E884FB                   call prs
+  2091 0000085E 83C402                   add  sp, 2
+  2092                                  
+  2093                                  ;-361         pint1(t);
+  2094                                  
+  2095 00000861 FF7604                   push word [bp+4]
+  2096 00000864 E880FC                   call pint1
+  2097 00000867 83C402                   add  sp, 2
+  2098                                  
+  2099                                  ;-362         error1(" not found");
+  2100                                  
+  2101 0000086A 68[8D08]                 push expect_1
+  2102 0000086D E870FD                   call error1
+  2103 00000870 83C402                   add  sp, 2
+  2104                                  
+  2105                                  ;-363     }
+  2106                                  
+  2107                                  
+  2108                                  ;-364 }
+  2109                                  
+  2110                                  .expect67:
+  2111                                  
+  2112                                  ;-365 
   2113                                  
-  2114                                  ;-346         do { if(i) prc(',');
-  2115                                  
-  2116                                  .doglob76:
-  2117 000008F9 8B46FE                   mov ax, [bp-2]
-  2118 000008FC 08C0                     or  al, al
-  2119 000008FE 0F840800                 je .doglob77
-  2120 00000902 6A2C                     push 44
-  2121 00000904 E8B8FB                   call prc
-  2122 00000907 83C402                   add  sp, 2
-  2123                                  
-  2124                                  ;-347           expect(T_CONST); prunsign1(lexval); i=1; }
-  2125                                  
-  2126                                  .doglob77:
-  2127 0000090A 680101                   push 257
-  2128 0000090D E806FB                   call expect
-  2129 00000910 83C402                   add  sp, 2
-  2130 00000913 FF36[2C00]               push word [lexval]
-  2131 00000917 E861FD                   call prunsign1
-  2132 0000091A 83C402                   add  sp, 2
-  2133 0000091D B80100                   mov ax, 1
-  2134 00000920 8946FE                   mov [bp-2], ax
-  2135                                  
-  2136                                  ;-348         while (istoken(',')); expect('}'); }
-  2137                                  
-  2138 00000923 6A2C                     push 44
-  2139 00000925 E8CCFA                   call istoken
-  2140 00000928 83C402                   add  sp, 2
-  2141 0000092B 08C0                     or  al, al
-  2142 0000092D 0F840200                 je .doglob78
-  2143 00000931 EBC6                     jmp .doglob76
-  2144                                  .doglob78:
-  2145 00000933 6A7D                     push 125
-  2146 00000935 E8DEFA                   call expect
-  2147 00000938 83C402                   add  sp, 2
-  2148                                  
-  2149                                  ;-349       else error1("String or number array expected");
-  2150                                  
-  2151 0000093B E90900                   jmp .doglob79
-  2152                                  .doglob75:
-  2153 0000093E 68[0E0B]                 push doglob_13
-  2154 00000941 E82733                   call error1
-  2155 00000944 83C402                   add  sp, 2
-  2156                                  
-  2157                                  ;-350       };
-  2158                                  
-  2159                                  .doglob79:
-  2160                                  .doglob74:
-  2161                                  .doglob71:
-  2162                                  
-  2163                                  ;-351   }else { //expect('=');
-  2164                                  
-  2165 00000947 E99E00                   jmp .doglob80
-  2166                                  .doglob64:
+  2114                                  
+  2115                                  ;-366 int printName(unsigned int i) {int j;
+  2116 00000873 C9                       LEAVE
+  2117 00000874 C3                       ret
+  2118 00000875 5C6E45787065637465-     expect_0 db "\nExpected ASCII(dez): ",0
+  2119 0000087E 642041534349492864-
+  2120 00000887 657A293A2000       
+  2121 0000088D 206E6F7420666F756E-     expect_1 db " not found",0
+  2122 00000896 6400               
+  2123                                  ENDP
+  2124                                  
+  2125                                  printName: PROC
+  2126                                  
+  2127                                  ;-367   if (i < LSTART) { i=adrofname(i); prs(i); }
+  2128                                  ;
+  2129 00000898 C8020000                 ENTER  2,0
+  2130 0000089C 8B4604                   mov ax, [bp+4]
+  2131 0000089F 3DC800                   cmp ax, 200
+  2132 000008A2 0F8D1800                 jge .printName68
+  2133 000008A6 FF7604                   push word [bp+4]
+  2134 000008A9 E8ED00                   call adrofname
+  2135 000008AC 83C402                   add  sp, 2
+  2136 000008AF 894604                   mov [bp+4], ax
+  2137 000008B2 FF7604                   push word [bp+4]
+  2138 000008B5 E82AFB                   call prs
+  2139 000008B8 83C402                   add  sp, 2
+  2140                                  
+  2141                                  ;-368   else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+  2142                                  
+  2143 000008BB E93800                   jmp .printName69
+  2144                                  .printName68:
+  2145 000008BE 68[F808]                 push printName_0
+  2146 000008C1 E81EFB                   call prs
+  2147 000008C4 83C402                   add  sp, 2
+  2148 000008C7 8B5E04                   mov bx, [bp+4]
+  2149 000008CA D1E3                     shl bx, 1
+  2150 000008CC 8B873873                 mov ax, [GData + bx]
+  2151 000008D0 8946FE                   mov [bp-2], ax
+  2152 000008D3 8B46FE                   mov ax, [bp-2]
+  2153 000008D6 83F800                   cmp ax, 0
+  2154 000008D9 0F8E0800                 jle .printName70
+  2155 000008DD 6A2B                     push 43
+  2156 000008DF E8A7FA                   call prc
+  2157 000008E2 83C402                   add  sp, 2
+  2158                                  .printName70:
+  2159 000008E5 FF76FE                   push word [bp-2]
+  2160 000008E8 E8FCFB                   call pint1
+  2161 000008EB 83C402                   add  sp, 2
+  2162 000008EE 6A5D                     push 93
+  2163 000008F0 E896FA                   call prc
+  2164 000008F3 83C402                   add  sp, 2
+  2165                                  
+  2166                                  ;-369 }
   2167                                  
-  2168                                  ;-352     prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
+  2168                                  .printName69:
   2169                                  
-  2170 0000094A 68[2E0B]                 push doglob_14
-  2171 0000094D E8D6FB                   call prs
-  2172 00000950 83C402                   add  sp, 2
-  2173 00000953 8D06BB69                 lea  ax, [symbol]
-  2174 00000957 50                       push ax
-  2175 00000958 E8CBFB                   call prs
-  2176 0000095B 83C402                   add  sp, 2
-  2177 0000095E A0[3000]                 mov al, [istype]
-  2178 00000961 3C2A                     cmp al, 42
-  2179 00000963 0F850C00                 jne .doglob81
-  2180 00000967 68[310B]                 push doglob_15
-  2181 0000096A E8B9FB                   call prs
-  2182 0000096D 83C402                   add  sp, 2
-  2183                                  
-  2184                                  ;-353     else {
-  2185                                  
-  2186 00000970 E93300                   jmp .doglob82
-  2187                                  .doglob81:
-  2188                                  
-  2189                                  ;-354       if      (iswidth==1) prs(" db ");
-  2190                                  
-  2191 00000973 A0[3600]                 mov al, [iswidth]
-  2192 00000976 3C01                     cmp al, 1
-  2193 00000978 0F850C00                 jne .doglob83
-  2194 0000097C 68[360B]                 push doglob_16
-  2195 0000097F E8A4FB                   call prs
-  2196 00000982 83C402                   add  sp, 2
-  2197                                  
-  2198                                  ;-355       else if (iswidth==2) prs(" dw ");
-  2199                                  
-  2200 00000985 E91E00                   jmp .doglob84
-  2201                                  .doglob83:
-  2202 00000988 A0[3600]                 mov al, [iswidth]
-  2203 0000098B 3C02                     cmp al, 2
-  2204 0000098D 0F850C00                 jne .doglob85
-  2205 00000991 68[3B0B]                 push doglob_17
-  2206 00000994 E88FFB                   call prs
-  2207 00000997 83C402                   add  sp, 2
-  2208                                  
-  2209                                  ;-356       else                 prs(" dd ");
-  2210                                  
-  2211 0000099A E90900                   jmp .doglob86
-  2212                                  .doglob85:
-  2213 0000099D 68[400B]                 push doglob_18
-  2214 000009A0 E883FB                   call prs
-  2215 000009A3 83C402                   add  sp, 2
-  2216                                  
-  2217                                  ;-357     }
-  2218                                  
-  2219                                  .doglob86:
-  2220                                  .doglob84:
-  2221                                  
-  2222                                  ;-358     if(istoken('-')) prc('-');
-  2223                                  
-  2224                                  .doglob82:
-  2225 000009A6 6A2D                     push 45
-  2226 000009A8 E849FA                   call istoken
-  2227 000009AB 83C402                   add  sp, 2
-  2228 000009AE 08C0                     or  al, al
-  2229 000009B0 0F840800                 je .doglob87
-  2230 000009B4 6A2D                     push 45
-  2231 000009B6 E806FB                   call prc
-  2232 000009B9 83C402                   add  sp, 2
+  2170                                  ;-370 
+  2171                                  
+  2172                                  
+  2173                                  ;-371 int a(unsigned int i) { printName(i);//address
+  2174 000008F6 C9                       LEAVE
+  2175 000008F7 C3                       ret
+  2176 000008F8 5B627000                printName_0 db "[bp",0
+  2177                                  ENDP
+  2178                                  
+  2179                                  a: PROC;
+  2180 000008FC C8000000                 ENTER  0,0
+  2181 00000900 FF7604                   push word [bp+4]
+  2182 00000903 E892FF                   call printName
+  2183 00000906 83C402                   add  sp, 2
+  2184                                  
+  2185                                  ;-372 }
+  2186                                  
+  2187                                  
+  2188                                  ;-373 int v(unsigned int i) {//value
+  2189 00000909 C9                       LEAVE
+  2190 0000090A C3                       ret
+  2191                                  ENDP
+  2192                                  
+  2193                                  v: PROC
+  2194                                  
+  2195                                  ;-374     if (i < LSTART) prc('[');
+  2196                                  ;
+  2197 0000090B C8000000                 ENTER  0,0
+  2198 0000090F 8B4604                   mov ax, [bp+4]
+  2199 00000912 3DC800                   cmp ax, 200
+  2200 00000915 0F8D0800                 jge .v71
+  2201 00000919 6A5B                     push 91
+  2202 0000091B E86BFA                   call prc
+  2203 0000091E 83C402                   add  sp, 2
+  2204                                  
+  2205                                  ;-375     printName(i);
+  2206                                  
+  2207                                  .v71:
+  2208 00000921 FF7604                   push word [bp+4]
+  2209 00000924 E871FF                   call printName
+  2210 00000927 83C402                   add  sp, 2
+  2211                                  
+  2212                                  ;-376     if (i < LSTART) prc(']');
+  2213                                  
+  2214 0000092A 8B4604                   mov ax, [bp+4]
+  2215 0000092D 3DC800                   cmp ax, 200
+  2216 00000930 0F8D0800                 jge .v72
+  2217 00000934 6A5D                     push 93
+  2218 00000936 E850FA                   call prc
+  2219 00000939 83C402                   add  sp, 2
+  2220                                  
+  2221                                  ;-377 }
+  2222                                  
+  2223                                  .v72:
+  2224                                  
+  2225                                  ;-378 int checknamelen() {
+  2226 0000093C C9                       LEAVE
+  2227 0000093D C3                       ret
+  2228                                  ENDP
+  2229                                  
+  2230                                  checknamelen: PROC
+  2231                                  
+  2232                                  ;-379     int i;
   2233                                  
-  2234                                  ;-359     if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
-  2235                                  
-  2236                                  .doglob87:
-  2237 000009BC 6A3D                     push 61
-  2238 000009BE E833FA                   call istoken
-  2239 000009C1 83C402                   add  sp, 2
-  2240 000009C4 08C0                     or  al, al
-  2241 000009C6 0F841600                 je .doglob88
-  2242 000009CA 680101                   push 257
-  2243 000009CD E846FA                   call expect
-  2244 000009D0 83C402                   add  sp, 2
-  2245 000009D3 FF36[2C00]               push word [lexval]
-  2246 000009D7 E8A1FC                   call prunsign1
-  2247 000009DA 83C402                   add  sp, 2
-  2248                                  
-  2249                                  ;-360     else prunsign1(0); }
-  2250                                  
-  2251 000009DD E90800                   jmp .doglob89
-  2252                                  .doglob88:
-  2253 000009E0 6A00                     push 0
-  2254 000009E2 E896FC                   call prunsign1
-  2255 000009E5 83C402                   add  sp, 2
-  2256                                  .doglob89:
-  2257                                  
-  2258                                  ;-361   GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
+  2234                                  
+  2235                                  ;-380     i=strlen(symbol);
+  2236                                  ;
+  2237 0000093E C8020000                 ENTER  2,0
+  2238 00000942 8D06BB69                 lea  ax, [symbol]
+  2239 00000946 50                       push ax
+  2240 00000947 E8BAF8                   call strlen
+  2241 0000094A 83C402                   add  sp, 2
+  2242 0000094D 8946FE                   mov [bp-2], ax
+  2243                                  
+  2244                                  ;-381     if (i > IDLENMAX) error1("Item name is too long in characters)");
+  2245                                  
+  2246 00000950 8B46FE                   mov ax, [bp-2]
+  2247 00000953 83F80F                   cmp ax, 15
+  2248 00000956 0F8E0900                 jle .checknamelen73
+  2249 0000095A 68[6509]                 push checknamelen_0
+  2250 0000095D E880FC                   call error1
+  2251 00000960 83C402                   add  sp, 2
+  2252                                  
+  2253                                  ;-382 }
+  2254                                  
+  2255                                  .checknamelen73:
+  2256                                  
+  2257                                  ;-383 
+  2258                                  
   2259                                  
-  2260                                  .doglob80:
-  2261 000009E8 A0[3300]                 mov al, [issign]
-  2262 000009EB 8B1E[3900]               mov bx, [GTop]
-  2263 000009EF 8887306C                 mov [GSign+bx], al
-  2264 000009F3 A0[3600]                 mov al, [iswidth]
-  2265 000009F6 8B1E[3900]               mov bx, [GTop]
-  2266 000009FA 88875C6D                 mov [GWidth+bx], al
-  2267 000009FE A0[3000]                 mov al, [istype]
-  2268 00000A01 8B1E[3900]               mov bx, [GTop]
-  2269 00000A05 8887046B                 mov [GType+bx], al
-  2270                                  
-  2271                                  ;-362   GAdr [GTop]=lineno-1; GUsed [GTop]=0;
-  2272                                  
-  2273 00000A09 A1[4900]                 mov ax, [lineno]
-  2274 00000A0C 83E801                   sub ax, 1
-  2275 00000A0F 8B1E[3900]               mov bx, [GTop]
-  2276 00000A13 D1E3                     shl bx, 1
-  2277 00000A15 8987886E                 mov [GAdr+bx], ax
-  2278 00000A19 B80000                   mov ax, 0
-  2279 00000A1C 8B1E[3900]               mov bx, [GTop]
-  2280 00000A20 D1E3                     shl bx, 1
-  2281 00000A22 8987E070                 mov [GUsed+bx], ax
-  2282                                  
-  2283                                  ;-363   pt=adrofname(GTop);
-  2284                                  
-  2285 00000A26 FF36[3900]               push word [GTop]
-  2286 00000A2A E8CF01                   call adrofname
-  2287 00000A2D 83C402                   add  sp, 2
-  2288 00000A30 A3[4B00]                 mov word [pt], ax
-  2289                                  
-  2290                                  ;-364   if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
-  2291                                  
-  2292 00000A33 8B46FA                   mov ax, [bp-6]
-  2293 00000A36 08C0                     or  al, al
-  2294 00000A38 0F841200                 je .doglob90
-  2295 00000A3C 8D0620DA                 lea  ax, [doglobName]
-  2296 00000A40 50                       push ax
-  2297 00000A41 FF36[4B00]               push word [pt]
-  2298 00000A45 E8E4F7                   call strcpy
-  2299 00000A48 83C404                   add  sp, 4
-  2300 00000A4B E90F00                   jmp .doglob91
-  2301                                  .doglob90:
-  2302 00000A4E 8D06BB69                 lea  ax, [symbol]
-  2303 00000A52 50                       push ax
-  2304 00000A53 FF36[4B00]               push word [pt]
-  2305 00000A57 E8D2F7                   call strcpy
-  2306 00000A5A 83C404                   add  sp, 4
-  2307                                  
-  2308                                  ;-365   GTop++; expect(';'); }
-  2309                                  
-  2310                                  .doglob91:
-  2311 00000A5D FF06[3900]               inc  word[GTop]
-  2312 00000A61 6A3B                     push 59
-  2313 00000A63 E8B0F9                   call expect
-  2314 00000A66 83C402                   add  sp, 2
-  2315                                  
-  2316                                  ;-366 
-  2317                                  
-  2318                                  
-  2319                                  ;-367 int gettypes(int i) {int j; char c;
-  2320 00000A69 C9                       LEAVE
-  2321 00000A6A C3                       ret
-  2322 00000A6B 476C6F62616C207461-     doglob_0 db "Global table full",0
-  2323 00000A74 626C652066756C6C00 
-  2324 00000A7D 6E6F20564F49442061-     doglob_1 db "no VOID as var type",0
-  2325 00000A86 732076617220747970-
-  2326 00000A8F 6500               
-  2327 00000A91 5661726961626C6520-     doglob_2 db "Variable already defined",0
-  2328 00000A9A 616C72656164792064-
-  2329 00000AA3 6566696E656400     
-  2330 00000AAA 5C6E73656374696F6E-     doglob_3 db "\nsection .bss\nabsolute ",0
-  2331 00000AB3 202E6273735C6E6162-
-  2332 00000ABC 736F6C7574652000   
-  2333 00000AC4 5C6E00                  doglob_4 db "\n",0
-  2334 00000AC7 20726573622000          doglob_5 db " resb ",0
-  2335 00000ACE 20726573772000          doglob_6 db " resw ",0
-  2336 00000AD5 20726573642000          doglob_7 db " resd ",0
-  2337 00000ADC 5C6E73656374696F6E-     doglob_8 db "\nsection .text",0
-  2338 00000AE5 202E7465787400     
-  2339 00000AEC 4F6E6C792042797465-     doglob_9 db "Only ByteArray allowed",0
-  2340 00000AF5 417272617920616C6C-
-  2341 00000AFE 6F77656400         
-  2342 00000B03 5C6E00                  doglob_10 db "\n",0
-  2343 00000B06 2064622000              doglob_11 db " db ",0
-  2344 00000B0B 2C3000                  doglob_12 db ",0",0
-  2345 00000B0E 537472696E67206F72-     doglob_13 db "String or number array expected",0
-  2346 00000B17 206E756D6265722061-
-  2347 00000B20 727261792065787065-
-  2348 00000B29 6374656400         
-  2349 00000B2E 5C6E00                  doglob_14 db "\n",0
-  2350 00000B31 2064772000              doglob_15 db " dw ",0
-  2351 00000B36 2064622000              doglob_16 db " db ",0
-  2352 00000B3B 2064772000              doglob_17 db " dw ",0
-  2353 00000B40 2064642000              doglob_18 db " dd ",0
-  2354                                  ENDP
-  2355                                  
-  2356                                  gettypes: PROC
-  2357                                  
-  2358                                  ;-368   c=GSign [i]; if (c=='S') signi =1;    else signi =0;
-  2359                                  ;
-  2360 00000B45 C8040000                 ENTER  4,0
-  2361 00000B49 8B5E04                   mov bx, [bp+4]
-  2362 00000B4C 8A87306C                 mov al, [GSign + bx]
-  2363 00000B50 8846FC                   mov [bp-4], al
-  2364 00000B53 8A46FC                   mov al, [bp-4]
-  2365 00000B56 3C53                     cmp al, 83
-  2366 00000B58 0F850900                 jne .gettypes92
-  2367 00000B5C B80100                   mov ax, 1
-  2368 00000B5F A3[3100]                 mov word [signi], ax
-  2369 00000B62 E90600                   jmp .gettypes93
-  2370                                  .gettypes92:
-  2371 00000B65 B80000                   mov ax, 0
-  2372 00000B68 A3[3100]                 mov word [signi], ax
-  2373                                  
-  2374                                  ;-369   c=GWidth[i]; widthi=0;wi=0;
-  2375                                  
-  2376                                  .gettypes93:
-  2377 00000B6B 8B5E04                   mov bx, [bp+4]
-  2378 00000B6E 8A875C6D                 mov al, [GWidth + bx]
-  2379 00000B72 8846FC                   mov [bp-4], al
-  2380 00000B75 B80000                   mov ax, 0
-  2381 00000B78 A3[3400]                 mov word [widthi], ax
-  2382 00000B7B B80000                   mov ax, 0
-  2383 00000B7E A3[3700]                 mov word [wi], ax
-  2384                                  
-  2385                                  ;-370   if (c==1) {widthi=1;wi=1;}
-  2386                                  
-  2387 00000B81 8A46FC                   mov al, [bp-4]
-  2388 00000B84 3C01                     cmp al, 1
-  2389 00000B86 0F850C00                 jne .gettypes94
-  2390 00000B8A B80100                   mov ax, 1
-  2391 00000B8D A3[3400]                 mov word [widthi], ax
-  2392 00000B90 B80100                   mov ax, 1
-  2393 00000B93 A3[3700]                 mov word [wi], ax
+  2260                                  ;-384 int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
+  2261 00000963 C9                       LEAVE
+  2262 00000964 C3                       ret
+  2263 00000965 4974656D206E616D65-     checknamelen_0 db "Item name is too long in characters)",0
+  2264 0000096E 20697320746F6F206C-
+  2265 00000977 6F6E6720696E206368-
+  2266 00000980 617261637465727329-
+  2267 00000989 00                 
+  2268                                  ENDP
+  2269                                  
+  2270                                  adrF: PROC;
+  2271 0000098A C8000000                 ENTER  0,0
+  2272 0000098E 8B4606                   mov ax, [bp+6]
+  2273 00000991 C1E004                   shl ax, 4
+  2274                                  
+  2275                                  ;-385   __asm{ add ax, [bp+4]  ; offset s } }
+  2276                                  
+  2277 00000994 034604                   add ax, [bp+4]  ; offset s 
+  2278                                  
+  2279                                  ;-386 
+  2280                                  
+  2281                                  
+  2282                                  ;-387   int adrofname(unsigned int i) { adrF(GNameField, i); }
+  2283 00000997 C9                       LEAVE
+  2284 00000998 C3                       ret
+  2285                                  ENDP
+  2286                                  
+  2287                                  adrofname: PROC;
+  2288 00000999 C8000000                 ENTER  0,0
+  2289 0000099D FF7604                   push word [bp+4]
+  2290 000009A0 8D069075                 lea  ax, [GNameField]
+  2291 000009A4 50                       push ax
+  2292 000009A5 E8E2FF                   call adrF
+  2293 000009A8 83C404                   add  sp, 4
+  2294                                  
+  2295                                  ;-388 
+  2296                                  
+  2297                                  
+  2298                                  ;-389 int gettypes(int i) {int j; char c;
+  2299 000009AB C9                       LEAVE
+  2300 000009AC C3                       ret
+  2301                                  ENDP
+  2302                                  
+  2303                                  gettypes: PROC
+  2304                                  
+  2305                                  ;-390   c=GSign [i]; if (c=='S') signi =1;    else signi =0;
+  2306                                  ;
+  2307 000009AD C8040000                 ENTER  4,0
+  2308 000009B1 8B5E04                   mov bx, [bp+4]
+  2309 000009B4 8A87306C                 mov al, [GSign + bx]
+  2310 000009B8 8846FC                   mov [bp-4], al
+  2311 000009BB 8A46FC                   mov al, [bp-4]
+  2312 000009BE 3C53                     cmp al, 83
+  2313 000009C0 0F850900                 jne .gettypes74
+  2314 000009C4 B80100                   mov ax, 1
+  2315 000009C7 A3[3100]                 mov word [signi], ax
+  2316 000009CA E90600                   jmp .gettypes75
+  2317                                  .gettypes74:
+  2318 000009CD B80000                   mov ax, 0
+  2319 000009D0 A3[3100]                 mov word [signi], ax
+  2320                                  
+  2321                                  ;-391   c=GWidth[i]; widthi=0;wi=0;
+  2322                                  
+  2323                                  .gettypes75:
+  2324 000009D3 8B5E04                   mov bx, [bp+4]
+  2325 000009D6 8A875C6D                 mov al, [GWidth + bx]
+  2326 000009DA 8846FC                   mov [bp-4], al
+  2327 000009DD B80000                   mov ax, 0
+  2328 000009E0 A3[3400]                 mov word [widthi], ax
+  2329 000009E3 B80000                   mov ax, 0
+  2330 000009E6 A3[3700]                 mov word [wi], ax
+  2331                                  
+  2332                                  ;-392   if (c==1) {widthi=1;wi=1;}
+  2333                                  
+  2334 000009E9 8A46FC                   mov al, [bp-4]
+  2335 000009EC 3C01                     cmp al, 1
+  2336 000009EE 0F850C00                 jne .gettypes76
+  2337 000009F2 B80100                   mov ax, 1
+  2338 000009F5 A3[3400]                 mov word [widthi], ax
+  2339 000009F8 B80100                   mov ax, 1
+  2340 000009FB A3[3700]                 mov word [wi], ax
+  2341                                  
+  2342                                  ;-393   if (c==2) {widthi=2;wi=2;}
+  2343                                  
+  2344                                  .gettypes76:
+  2345 000009FE 8A46FC                   mov al, [bp-4]
+  2346 00000A01 3C02                     cmp al, 2
+  2347 00000A03 0F850C00                 jne .gettypes77
+  2348 00000A07 B80200                   mov ax, 2
+  2349 00000A0A A3[3400]                 mov word [widthi], ax
+  2350 00000A0D B80200                   mov ax, 2
+  2351 00000A10 A3[3700]                 mov word [wi], ax
+  2352                                  
+  2353                                  ;-394   if (c==4) {widthi=4;wi=4;}
+  2354                                  
+  2355                                  .gettypes77:
+  2356 00000A13 8A46FC                   mov al, [bp-4]
+  2357 00000A16 3C04                     cmp al, 4
+  2358 00000A18 0F850C00                 jne .gettypes78
+  2359 00000A1C B80400                   mov ax, 4
+  2360 00000A1F A3[3400]                 mov word [widthi], ax
+  2361 00000A22 B80400                   mov ax, 4
+  2362 00000A25 A3[3700]                 mov word [wi], ax
+  2363                                  
+  2364                                  ;-395   c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
+  2365                                  
+  2366                                  .gettypes78:
+  2367 00000A28 8B5E04                   mov bx, [bp+4]
+  2368 00000A2B 8A87046B                 mov al, [GType + bx]
+  2369 00000A2F 8846FC                   mov [bp-4], al
+  2370 00000A32 B80000                   mov ax, 0
+  2371 00000A35 A3[2E00]                 mov word [typei], ax
+  2372 00000A38 8A46FC                   mov al, [bp-4]
+  2373 00000A3B 3C2A                     cmp al, 42
+  2374 00000A3D 0F850C00                 jne .gettypes79
+  2375 00000A41 B80100                   mov ax, 1
+  2376 00000A44 A3[2E00]                 mov word [typei], ax
+  2377 00000A47 B80200                   mov ax, 2
+  2378 00000A4A A3[3700]                 mov word [wi], ax
+  2379                                  
+  2380                                  ;-396   if (c=='&')  typei=2;
+  2381                                  
+  2382                                  .gettypes79:
+  2383 00000A4D 8A46FC                   mov al, [bp-4]
+  2384 00000A50 3C26                     cmp al, 38
+  2385 00000A52 0F850600                 jne .gettypes80
+  2386 00000A56 B80200                   mov ax, 2
+  2387 00000A59 A3[2E00]                 mov word [typei], ax
+  2388                                  
+  2389                                  ;-397   return i; }
+  2390                                  
+  2391                                  .gettypes80:
+  2392 00000A5C 8B4604                   mov ax, [bp+4]
+  2393 00000A5F E90000                   jmp .retngettypes
   2394                                  
-  2395                                  ;-371   if (c==2) {widthi=2;wi=2;}
+  2395                                  ;-398 int searchname() { unsigned int i;
   2396                                  
-  2397                                  .gettypes94:
-  2398 00000B96 8A46FC                   mov al, [bp-4]
-  2399 00000B99 3C02                     cmp al, 2
-  2400 00000B9B 0F850C00                 jne .gettypes95
-  2401 00000B9F B80200                   mov ax, 2
-  2402 00000BA2 A3[3400]                 mov word [widthi], ax
-  2403 00000BA5 B80200                   mov ax, 2
-  2404 00000BA8 A3[3700]                 mov word [wi], ax
-  2405                                  
-  2406                                  ;-372   if (c==4) {widthi=4;wi=4;}
-  2407                                  
-  2408                                  .gettypes95:
-  2409 00000BAB 8A46FC                   mov al, [bp-4]
-  2410 00000BAE 3C04                     cmp al, 4
-  2411 00000BB0 0F850C00                 jne .gettypes96
-  2412 00000BB4 B80400                   mov ax, 4
-  2413 00000BB7 A3[3400]                 mov word [widthi], ax
-  2414 00000BBA B80400                   mov ax, 4
-  2415 00000BBD A3[3700]                 mov word [wi], ax
+  2397 00000A62 C9                       .retngettypes: LEAVE
+  2398 00000A63 C3                       ret
+  2399                                  ENDP
+  2400                                  
+  2401                                  searchname: PROC
+  2402                                  
+  2403                                  ;-399   i=checkName(); if (i == 0) error1("Variable unknown");
+  2404                                  ;
+  2405 00000A64 C8020000                 ENTER  2,0
+  2406 00000A68 E84400                   call checkName
+  2407 00000A6B 8946FE                   mov [bp-2], ax
+  2408 00000A6E 8B46FE                   mov ax, [bp-2]
+  2409 00000A71 83F800                   cmp ax, 0
+  2410 00000A74 0F850900                 jne .searchname81
+  2411 00000A78 68[9E0A]                 push searchname_0
+  2412 00000A7B E862FB                   call error1
+  2413 00000A7E 83C402                   add  sp, 2
+  2414                                  
+  2415                                  ;-400   GUsed[i]=GUsed[i] + 1; return i;
   2416                                  
-  2417                                  ;-373   c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
-  2418                                  
-  2419                                  .gettypes96:
-  2420 00000BC0 8B5E04                   mov bx, [bp+4]
-  2421 00000BC3 8A87046B                 mov al, [GType + bx]
-  2422 00000BC7 8846FC                   mov [bp-4], al
-  2423 00000BCA B80000                   mov ax, 0
-  2424 00000BCD A3[2E00]                 mov word [typei], ax
-  2425 00000BD0 8A46FC                   mov al, [bp-4]
-  2426 00000BD3 3C2A                     cmp al, 42
-  2427 00000BD5 0F850C00                 jne .gettypes97
-  2428 00000BD9 B80100                   mov ax, 1
-  2429 00000BDC A3[2E00]                 mov word [typei], ax
-  2430 00000BDF B80200                   mov ax, 2
-  2431 00000BE2 A3[3700]                 mov word [wi], ax
+  2417                                  .searchname81:
+  2418 00000A81 8B5EFE                   mov bx, [bp-2]
+  2419 00000A84 D1E3                     shl bx, 1
+  2420 00000A86 8B87E070                 mov ax, [GUsed + bx]
+  2421 00000A8A 83C001                   add ax, 1
+  2422 00000A8D 8B5EFE                   mov bx, [bp-2]
+  2423 00000A90 D1E3                     shl bx, 1
+  2424 00000A92 8987E070                 mov [GUsed+bx], ax
+  2425 00000A96 8B46FE                   mov ax, [bp-2]
+  2426 00000A99 E90000                   jmp .retnsearchname
+  2427                                  
+  2428                                  ;-401 }
+  2429                                  
+  2430                                  
+  2431                                  ;-402 int checkName() { unsigned int i; unsigned int j;
   2432                                  
-  2433                                  ;-374   if (c=='&')  typei=2;
-  2434                                  
-  2435                                  .gettypes97:
-  2436 00000BE5 8A46FC                   mov al, [bp-4]
-  2437 00000BE8 3C26                     cmp al, 38
-  2438 00000BEA 0F850600                 jne .gettypes98
-  2439 00000BEE B80200                   mov ax, 2
-  2440 00000BF1 A3[2E00]                 mov word [typei], ax
-  2441                                  
-  2442                                  ;-375   return i; }
-  2443                                  
-  2444                                  .gettypes98:
-  2445 00000BF4 8B4604                   mov ax, [bp+4]
-  2446 00000BF7 E90000                   jmp .retngettypes
-  2447                                  
-  2448                                  ;-376 int adrofname(unsigned int i) { adrF(GNameField, i); }
-  2449                                  
-  2450 00000BFA C9                       .retngettypes: LEAVE
-  2451 00000BFB C3                       ret
-  2452                                  ENDP
-  2453                                  
-  2454                                  adrofname: PROC;
-  2455 00000BFC C8000000                 ENTER  0,0
-  2456 00000C00 FF7604                   push word [bp+4]
-  2457 00000C03 8D069075                 lea  ax, [GNameField]
-  2458 00000C07 50                       push ax
-  2459 00000C08 E80500                   call adrF
-  2460 00000C0B 83C404                   add  sp, 4
-  2461                                  
-  2462                                  ;-377 int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
-  2463 00000C0E C9                       LEAVE
-  2464 00000C0F C3                       ret
-  2465                                  ENDP
-  2466                                  
-  2467                                  adrF: PROC;
-  2468 00000C10 C8000000                 ENTER  0,0
-  2469 00000C14 8B4606                   mov ax, [bp+6]
-  2470 00000C17 C1E004                   shl ax, 4
-  2471                                  
-  2472                                  ;-378   __asm{ add ax, [bp+4]  ; offset s } }
-  2473                                  
-  2474 00000C1A 034604                   add ax, [bp+4]  ; offset s 
-  2475                                  
-  2476                                  ;-379 int printName(unsigned int i) {int j;
-  2477 00000C1D C9                       LEAVE
-  2478 00000C1E C3                       ret
-  2479                                  ENDP
-  2480                                  
-  2481                                  printName: PROC
-  2482                                  
-  2483                                  ;-380   if (i < LSTART) { i=adrofname(i); prs(i); }
-  2484                                  ;
-  2485 00000C1F C8020000                 ENTER  2,0
-  2486 00000C23 8B4604                   mov ax, [bp+4]
-  2487 00000C26 3DC800                   cmp ax, 200
-  2488 00000C29 0F8D1800                 jge .printName99
-  2489 00000C2D FF7604                   push word [bp+4]
-  2490 00000C30 E8C9FF                   call adrofname
-  2491 00000C33 83C402                   add  sp, 2
-  2492 00000C36 894604                   mov [bp+4], ax
-  2493 00000C39 FF7604                   push word [bp+4]
-  2494 00000C3C E8E7F8                   call prs
-  2495 00000C3F 83C402                   add  sp, 2
-  2496                                  
-  2497                                  ;-381   else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+  2433 00000A9C C9                       .retnsearchname: LEAVE
+  2434 00000A9D C3                       ret
+  2435 00000A9E 5661726961626C6520-     searchname_0 db "Variable unknown",0
+  2436 00000AA7 756E6B6E6F776E00   
+  2437                                  ENDP
+  2438                                  
+  2439                                  checkName: PROC
+  2440                                  
+  2441                                  ;-403   i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
+  2442                                  ;
+  2443 00000AAF C8040000                 ENTER  4,0
+  2444 00000AB3 B8C800                   mov ax, 200
+  2445 00000AB6 8946FE                   mov [bp-2], ax
+  2446                                  .checkName82:
+  2447 00000AB9 8B46FE                   mov ax, [bp-2]
+  2448 00000ABC 3B06[3B00]               cmp ax, [LTop]
+  2449 00000AC0 0F8D2B00                 jge .checkName83
+  2450 00000AC4 FF76FE                   push word [bp-2]
+  2451 00000AC7 E8CFFE                   call adrofname
+  2452 00000ACA 83C402                   add  sp, 2
+  2453 00000ACD 8946FC                   mov [bp-4], ax
+  2454 00000AD0 FF76FC                   push word [bp-4]
+  2455 00000AD3 8D06BB69                 lea  ax, [symbol]
+  2456 00000AD7 50                       push ax
+  2457 00000AD8 E887F7                   call eqstr
+  2458 00000ADB 83C404                   add  sp, 4
+  2459 00000ADE 08C0                     or  al, al
+  2460 00000AE0 0F840600                 je .checkName84
+  2461 00000AE4 8B46FE                   mov ax, [bp-2]
+  2462 00000AE7 E94700                   jmp .retncheckName
+  2463                                  .checkName84:
+  2464 00000AEA FF46FE                   inc  word[bp-2]
+  2465                                  
+  2466                                  ;-404   i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
+  2467                                  
+  2468 00000AED EBCA                     jmp .checkName82
+  2469                                  .checkName83:
+  2470 00000AEF B80100                   mov ax, 1
+  2471 00000AF2 8946FE                   mov [bp-2], ax
+  2472                                  .checkName85:
+  2473 00000AF5 8B46FE                   mov ax, [bp-2]
+  2474 00000AF8 3B06[3900]               cmp ax, [GTop]
+  2475 00000AFC 0F8D2B00                 jge .checkName86
+  2476 00000B00 FF76FE                   push word [bp-2]
+  2477 00000B03 E893FE                   call adrofname
+  2478 00000B06 83C402                   add  sp, 2
+  2479 00000B09 8946FC                   mov [bp-4], ax
+  2480 00000B0C FF76FC                   push word [bp-4]
+  2481 00000B0F 8D06BB69                 lea  ax, [symbol]
+  2482 00000B13 50                       push ax
+  2483 00000B14 E84BF7                   call eqstr
+  2484 00000B17 83C404                   add  sp, 4
+  2485 00000B1A 08C0                     or  al, al
+  2486 00000B1C 0F840600                 je .checkName87
+  2487 00000B20 8B46FE                   mov ax, [bp-2]
+  2488 00000B23 E90B00                   jmp .retncheckName
+  2489                                  .checkName87:
+  2490 00000B26 FF46FE                   inc  word[bp-2]
+  2491                                  
+  2492                                  ;-405   return 0;
+  2493                                  
+  2494 00000B29 EBCA                     jmp .checkName85
+  2495                                  .checkName86:
+  2496 00000B2B B80000                   mov ax, 0
+  2497 00000B2E E90000                   jmp .retncheckName
   2498                                  
-  2499 00000C42 E93800                   jmp .printName100
-  2500                                  .printName99:
-  2501 00000C45 68[7F0C]                 push printName_0
-  2502 00000C48 E8DBF8                   call prs
-  2503 00000C4B 83C402                   add  sp, 2
-  2504 00000C4E 8B5E04                   mov bx, [bp+4]
-  2505 00000C51 D1E3                     shl bx, 1
-  2506 00000C53 8B873873                 mov ax, [GData + bx]
-  2507 00000C57 8946FE                   mov [bp-2], ax
-  2508 00000C5A 8B46FE                   mov ax, [bp-2]
-  2509 00000C5D 83F800                   cmp ax, 0
-  2510 00000C60 0F8E0800                 jle .printName101
-  2511 00000C64 6A2B                     push 43
-  2512 00000C66 E856F8                   call prc
-  2513 00000C69 83C402                   add  sp, 2
-  2514                                  .printName101:
-  2515 00000C6C FF76FE                   push word [bp-2]
-  2516 00000C6F E8ABF9                   call pint1
-  2517 00000C72 83C402                   add  sp, 2
-  2518 00000C75 6A5D                     push 93
-  2519 00000C77 E845F8                   call prc
-  2520 00000C7A 83C402                   add  sp, 2
-  2521                                  
-  2522                                  ;-382 }
-  2523                                  
-  2524                                  .printName100:
+  2499                                  ;-406 }
+  2500                                  
+  2501                                  
+  2502                                  ;-407 int typeName() { int m; //0=V,1=*,2=&
+  2503                                  
+  2504 00000B31 C9                       .retncheckName: LEAVE
+  2505 00000B32 C3                       ret
+  2506                                  ENDP
+  2507                                  
+  2508                                  typeName: PROC
+  2509                                  
+  2510                                  ;-408     issign='S';
+  2511                                  ;
+  2512 00000B33 C8020000                 ENTER  2,0
+  2513 00000B37 B85300                   mov ax, 83
+  2514 00000B3A A2[3300]                 mov byte [issign], al
+  2515                                  
+  2516                                  ;-409     if(istoken(T_SIGNED))   issign='S';
+  2517                                  
+  2518 00000B3D 681302                   push 531
+  2519 00000B40 E8CBFC                   call istoken
+  2520 00000B43 83C402                   add  sp, 2
+  2521 00000B46 08C0                     or  al, al
+  2522 00000B48 0F840600                 je .typeName88
+  2523 00000B4C B85300                   mov ax, 83
+  2524 00000B4F A2[3300]                 mov byte [issign], al
   2525                                  
-  2526                                  ;-383 int searchname() { unsigned int i;
-  2527 00000C7D C9                       LEAVE
-  2528 00000C7E C3                       ret
-  2529 00000C7F 5B627000                printName_0 db "[bp",0
-  2530                                  ENDP
-  2531                                  
-  2532                                  searchname: PROC
-  2533                                  
-  2534                                  ;-384   i=checkName(); if (i == 0) error1("Variable unknown");
-  2535                                  ;
-  2536 00000C83 C8020000                 ENTER  2,0
-  2537 00000C87 E84400                   call checkName
-  2538 00000C8A 8946FE                   mov [bp-2], ax
-  2539 00000C8D 8B46FE                   mov ax, [bp-2]
-  2540 00000C90 83F800                   cmp ax, 0
-  2541 00000C93 0F850900                 jne .searchname102
-  2542 00000C97 68[BD0C]                 push searchname_0
-  2543 00000C9A E8CE2F                   call error1
-  2544 00000C9D 83C402                   add  sp, 2
-  2545                                  
-  2546                                  ;-385   GUsed[i]=GUsed[i] + 1; return i;
-  2547                                  
-  2548                                  .searchname102:
-  2549 00000CA0 8B5EFE                   mov bx, [bp-2]
-  2550 00000CA3 D1E3                     shl bx, 1
-  2551 00000CA5 8B87E070                 mov ax, [GUsed + bx]
-  2552 00000CA9 83C001                   add ax, 1
-  2553 00000CAC 8B5EFE                   mov bx, [bp-2]
-  2554 00000CAF D1E3                     shl bx, 1
-  2555 00000CB1 8987E070                 mov [GUsed+bx], ax
-  2556 00000CB5 8B46FE                   mov ax, [bp-2]
-  2557 00000CB8 E90000                   jmp .retnsearchname
-  2558                                  
-  2559                                  ;-386 }
-  2560                                  
-  2561                                  
-  2562                                  ;-387 int checkName() { unsigned int i; unsigned int j;
+  2526                                  ;-410     if(istoken(T_UNSIGNED)) issign='U';
+  2527                                  
+  2528                                  .typeName88:
+  2529 00000B52 681402                   push 532
+  2530 00000B55 E8B6FC                   call istoken
+  2531 00000B58 83C402                   add  sp, 2
+  2532 00000B5B 08C0                     or  al, al
+  2533 00000B5D 0F840600                 je .typeName89
+  2534 00000B61 B85500                   mov ax, 85
+  2535 00000B64 A2[3300]                 mov byte [issign], al
+  2536                                  
+  2537                                  ;-411     iswidth=2;
+  2538                                  
+  2539                                  .typeName89:
+  2540 00000B67 B80200                   mov ax, 2
+  2541 00000B6A A2[3600]                 mov byte [iswidth], al
+  2542                                  
+  2543                                  ;-412     if(istoken(T_VOID))     iswidth=0;
+  2544                                  
+  2545 00000B6D 681102                   push 529
+  2546 00000B70 E89BFC                   call istoken
+  2547 00000B73 83C402                   add  sp, 2
+  2548 00000B76 08C0                     or  al, al
+  2549 00000B78 0F840600                 je .typeName90
+  2550 00000B7C B80000                   mov ax, 0
+  2551 00000B7F A2[3600]                 mov byte [iswidth], al
+  2552                                  
+  2553                                  ;-413     if(istoken(T_CHAR))     iswidth=1;
+  2554                                  
+  2555                                  .typeName90:
+  2556 00000B82 681202                   push 530
+  2557 00000B85 E886FC                   call istoken
+  2558 00000B88 83C402                   add  sp, 2
+  2559 00000B8B 08C0                     or  al, al
+  2560 00000B8D 0F840600                 je .typeName91
+  2561 00000B91 B80100                   mov ax, 1
+  2562 00000B94 A2[3600]                 mov byte [iswidth], al
   2563                                  
-  2564 00000CBB C9                       .retnsearchname: LEAVE
-  2565 00000CBC C3                       ret
-  2566 00000CBD 5661726961626C6520-     searchname_0 db "Variable unknown",0
-  2567 00000CC6 756E6B6E6F776E00   
-  2568                                  ENDP
-  2569                                  
-  2570                                  checkName: PROC
-  2571                                  
-  2572                                  ;-388   i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
-  2573                                  ;
-  2574 00000CCE C8040000                 ENTER  4,0
-  2575 00000CD2 B8C800                   mov ax, 200
-  2576 00000CD5 8946FE                   mov [bp-2], ax
-  2577                                  .checkName103:
-  2578 00000CD8 8B46FE                   mov ax, [bp-2]
-  2579 00000CDB 3B06[3B00]               cmp ax, [LTop]
-  2580 00000CDF 0F8D2B00                 jge .checkName104
-  2581 00000CE3 FF76FE                   push word [bp-2]
-  2582 00000CE6 E813FF                   call adrofname
-  2583 00000CE9 83C402                   add  sp, 2
-  2584 00000CEC 8946FC                   mov [bp-4], ax
-  2585 00000CEF FF76FC                   push word [bp-4]
-  2586 00000CF2 8D06BB69                 lea  ax, [symbol]
-  2587 00000CF6 50                       push ax
-  2588 00000CF7 E868F5                   call eqstr
-  2589 00000CFA 83C404                   add  sp, 4
-  2590 00000CFD 08C0                     or  al, al
-  2591 00000CFF 0F840600                 je .checkName105
-  2592 00000D03 8B46FE                   mov ax, [bp-2]
-  2593 00000D06 E94700                   jmp .retncheckName
-  2594                                  .checkName105:
-  2595 00000D09 FF46FE                   inc  word[bp-2]
+  2564                                  ;-414     if(istoken(T_INT))      iswidth=2;
+  2565                                  
+  2566                                  .typeName91:
+  2567 00000B97 680502                   push 517
+  2568 00000B9A E871FC                   call istoken
+  2569 00000B9D 83C402                   add  sp, 2
+  2570 00000BA0 08C0                     or  al, al
+  2571 00000BA2 0F840600                 je .typeName92
+  2572 00000BA6 B80200                   mov ax, 2
+  2573 00000BA9 A2[3600]                 mov byte [iswidth], al
+  2574                                  
+  2575                                  ;-415     if(istoken(T_LONG))     iswidth=4;
+  2576                                  
+  2577                                  .typeName92:
+  2578 00000BAC 681502                   push 533
+  2579 00000BAF E85CFC                   call istoken
+  2580 00000BB2 83C402                   add  sp, 2
+  2581 00000BB5 08C0                     or  al, al
+  2582 00000BB7 0F840600                 je .typeName93
+  2583 00000BBB B80400                   mov ax, 4
+  2584 00000BBE A2[3600]                 mov byte [iswidth], al
+  2585                                  
+  2586                                  ;-416     istype='V';
+  2587                                  
+  2588                                  .typeName93:
+  2589 00000BC1 B85600                   mov ax, 86
+  2590 00000BC4 A2[3000]                 mov byte [istype], al
+  2591                                  
+  2592                                  ;-417     m=0;
+  2593                                  
+  2594 00000BC7 B80000                   mov ax, 0
+  2595 00000BCA 8946FE                   mov [bp-2], ax
   2596                                  
-  2597                                  ;-389   i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
+  2597                                  ;-418     if(istoken('*'))  {istype='*'; m=1;}
   2598                                  
-  2599 00000D0C EBCA                     jmp .checkName103
-  2600                                  .checkName104:
-  2601 00000D0E B80100                   mov ax, 1
-  2602 00000D11 8946FE                   mov [bp-2], ax
-  2603                                  .checkName106:
-  2604 00000D14 8B46FE                   mov ax, [bp-2]
-  2605 00000D17 3B06[3900]               cmp ax, [GTop]
-  2606 00000D1B 0F8D2B00                 jge .checkName107
-  2607 00000D1F FF76FE                   push word [bp-2]
-  2608 00000D22 E8D7FE                   call adrofname
-  2609 00000D25 83C402                   add  sp, 2
-  2610 00000D28 8946FC                   mov [bp-4], ax
-  2611 00000D2B FF76FC                   push word [bp-4]
-  2612 00000D2E 8D06BB69                 lea  ax, [symbol]
-  2613 00000D32 50                       push ax
-  2614 00000D33 E82CF5                   call eqstr
-  2615 00000D36 83C404                   add  sp, 4
-  2616 00000D39 08C0                     or  al, al
-  2617 00000D3B 0F840600                 je .checkName108
-  2618 00000D3F 8B46FE                   mov ax, [bp-2]
-  2619 00000D42 E90B00                   jmp .retncheckName
-  2620                                  .checkName108:
-  2621 00000D45 FF46FE                   inc  word[bp-2]
-  2622                                  
-  2623                                  ;-390   return 0;
-  2624                                  
-  2625 00000D48 EBCA                     jmp .checkName106
-  2626                                  .checkName107:
-  2627 00000D4A B80000                   mov ax, 0
-  2628 00000D4D E90000                   jmp .retncheckName
-  2629                                  
-  2630                                  ;-391 }
+  2599 00000BCD 6A2A                     push 42
+  2600 00000BCF E83CFC                   call istoken
+  2601 00000BD2 83C402                   add  sp, 2
+  2602 00000BD5 08C0                     or  al, al
+  2603 00000BD7 0F840C00                 je .typeName94
+  2604 00000BDB B82A00                   mov ax, 42
+  2605 00000BDE A2[3000]                 mov byte [istype], al
+  2606 00000BE1 B80100                   mov ax, 1
+  2607 00000BE4 8946FE                   mov [bp-2], ax
+  2608                                  
+  2609                                  ;-419     if(istoken('&'))  {istype='&'; m=2;}
+  2610                                  
+  2611                                  .typeName94:
+  2612 00000BE7 6A26                     push 38
+  2613 00000BE9 E822FC                   call istoken
+  2614 00000BEC 83C402                   add  sp, 2
+  2615 00000BEF 08C0                     or  al, al
+  2616 00000BF1 0F840C00                 je .typeName95
+  2617 00000BF5 B82600                   mov ax, 38
+  2618 00000BF8 A2[3000]                 mov byte [istype], al
+  2619 00000BFB B80200                   mov ax, 2
+  2620 00000BFE 8946FE                   mov [bp-2], ax
+  2621                                  
+  2622                                  ;-420     name1();
+  2623                                  
+  2624                                  .typeName95:
+  2625 00000C01 E80800                   call name1
+  2626                                  
+  2627                                  ;-421     return m;
+  2628                                  
+  2629 00000C04 8B46FE                   mov ax, [bp-2]
+  2630 00000C07 E90000                   jmp .retntypeName
   2631                                  
-  2632                                  
-  2633                                  ;-392 int typeName() { int m; //0=V,1=*,2=&
+  2632                                  ;-422 }
+  2633                                  
   2634                                  
-  2635 00000D50 C9                       .retncheckName: LEAVE
-  2636 00000D51 C3                       ret
-  2637                                  ENDP
-  2638                                  
-  2639                                  typeName: PROC
+  2635                                  ;-423 int name1() {
+  2636                                  
+  2637 00000C0A C9                       .retntypeName: LEAVE
+  2638 00000C0B C3                       ret
+  2639                                  ENDP
   2640                                  
-  2641                                  ;-393     issign='S';
-  2642                                  ;
-  2643 00000D52 C8020000                 ENTER  2,0
-  2644 00000D56 B85300                   mov ax, 83
-  2645 00000D59 A2[3300]                 mov byte [issign], al
-  2646                                  
-  2647                                  ;-394     if(istoken(T_SIGNED))   issign='S';
-  2648                                  
-  2649 00000D5C 681302                   push 531
-  2650 00000D5F E892F6                   call istoken
-  2651 00000D62 83C402                   add  sp, 2
-  2652 00000D65 08C0                     or  al, al
-  2653 00000D67 0F840600                 je .typeName109
-  2654 00000D6B B85300                   mov ax, 83
-  2655 00000D6E A2[3300]                 mov byte [issign], al
-  2656                                  
-  2657                                  ;-395     if(istoken(T_UNSIGNED)) issign='U';
-  2658                                  
-  2659                                  .typeName109:
-  2660 00000D71 681402                   push 532
-  2661 00000D74 E87DF6                   call istoken
-  2662 00000D77 83C402                   add  sp, 2
-  2663 00000D7A 08C0                     or  al, al
-  2664 00000D7C 0F840600                 je .typeName110
-  2665 00000D80 B85500                   mov ax, 85
-  2666 00000D83 A2[3300]                 mov byte [issign], al
-  2667                                  
-  2668                                  ;-396     iswidth=2;
-  2669                                  
-  2670                                  .typeName110:
-  2671 00000D86 B80200                   mov ax, 2
-  2672 00000D89 A2[3600]                 mov byte [iswidth], al
-  2673                                  
-  2674                                  ;-397     if(istoken(T_VOID))     iswidth=0;
+  2641                                  name1: PROC
+  2642                                  
+  2643                                  ;-424     if (token!=T_NAME) error1("Name expected");
+  2644                                  
+  2645 00000C0C A1[1E00]                 mov ax, [token]
+  2646 00000C0F 3D0001                   cmp ax, 256
+  2647 00000C12 0F840900                 je  .name196
+  2648 00000C16 68[260C]                 push name1_0
+  2649 00000C19 E8C4F9                   call error1
+  2650 00000C1C 83C402                   add  sp, 2
+  2651                                  
+  2652                                  ;-425     token=getlex();
+  2653                                  
+  2654                                  .name196:
+  2655 00000C1F E81A21                   call getlex
+  2656 00000C22 A3[1E00]                 mov word [token], ax
+  2657                                  
+  2658                                  ;-426 }
+  2659                                  
+  2660                                  
+  2661                                  ;-427 
+  2662                                  
+  2663                                  
+  2664                                  ;-428 int storeCall1() {//todo
+  2665                                  
+  2666 00000C25 C3                       ret
+  2667 00000C26 4E616D652065787065-     name1_0 db "Name expected",0
+  2668 00000C2F 6374656400         
+  2669                                  ENDP
+  2670                                  
+  2671                                  storeCall1: PROC
+  2672                                  
+  2673                                  ;-429     unsigned int i;
+  2674                                  
   2675                                  
-  2676 00000D8C 681102                   push 529
-  2677 00000D8F E862F6                   call istoken
-  2678 00000D92 83C402                   add  sp, 2
-  2679 00000D95 08C0                     or  al, al
-  2680 00000D97 0F840600                 je .typeName111
-  2681 00000D9B B80000                   mov ax, 0
-  2682 00000D9E A2[3600]                 mov byte [iswidth], al
-  2683                                  
-  2684                                  ;-398     if(istoken(T_CHAR))     iswidth=1;
-  2685                                  
-  2686                                  .typeName111:
-  2687 00000DA1 681202                   push 530
-  2688 00000DA4 E84DF6                   call istoken
-  2689 00000DA7 83C402                   add  sp, 2
-  2690 00000DAA 08C0                     or  al, al
-  2691 00000DAC 0F840600                 je .typeName112
-  2692 00000DB0 B80100                   mov ax, 1
-  2693 00000DB3 A2[3600]                 mov byte [iswidth], al
-  2694                                  
-  2695                                  ;-399     if(istoken(T_INT))      iswidth=2;
+  2676                                  ;-430     CTop++;
+  2677                                  ;
+  2678 00000C34 C8020000                 ENTER  2,0
+  2679 00000C38 FF06[4300]               inc  word[CTop]
+  2680                                  
+  2681                                  ;-431     if (CTop >= CALLMAX) error1("too many calls");
+  2682                                  
+  2683 00000C3C A1[4300]                 mov ax, [CTop]
+  2684 00000C3F 3DDC05                   cmp ax, 1500 ;unsigned : 1
+  2685 00000C42 0F8C0900                 jl  .storeCall197
+  2686 00000C46 68[9B0C]                 push storeCall1_0
+  2687 00000C49 E894F9                   call error1
+  2688 00000C4C 83C402                   add  sp, 2
+  2689                                  
+  2690                                  ;-432     i = CNamePtr - &CNameField;
+  2691                                  
+  2692                                  .storeCall197:
+  2693 00000C4F A1[3F00]                 mov ax, [CNamePtr]
+  2694 00000C52 2D80B2                   sub ax, CNameField
+  2695 00000C55 8946FE                   mov [bp-2], ax
   2696                                  
-  2697                                  .typeName112:
-  2698 00000DB6 680502                   push 517
-  2699 00000DB9 E838F6                   call istoken
-  2700 00000DBC 83C402                   add  sp, 2
-  2701 00000DBF 08C0                     or  al, al
-  2702 00000DC1 0F840600                 je .typeName113
-  2703 00000DC5 B80200                   mov ax, 2
-  2704 00000DC8 A2[3600]                 mov byte [iswidth], al
+  2697                                  ;-433     if (i >= CNAMEMAX) error1("too many call names");
+  2698                                  
+  2699 00000C58 8B46FE                   mov ax, [bp-2]
+  2700 00000C5B 3D1027                   cmp ax, 10000 ;unsigned : 0
+  2701 00000C5E 0F820900                 jb  .storeCall198
+  2702 00000C62 68[AA0C]                 push storeCall1_1
+  2703 00000C65 E878F9                   call error1
+  2704 00000C68 83C402                   add  sp, 2
   2705                                  
-  2706                                  ;-400     if(istoken(T_LONG))     iswidth=4;
+  2706                                  ;-434     CType[CTop]=0;
   2707                                  
-  2708                                  .typeName113:
-  2709 00000DCB 681502                   push 533
-  2710 00000DCE E823F6                   call istoken
-  2711 00000DD1 83C402                   add  sp, 2
-  2712 00000DD4 08C0                     or  al, al
-  2713 00000DD6 0F840600                 je .typeName114
-  2714 00000DDA B80400                   mov ax, 4
-  2715 00000DDD A2[3600]                 mov byte [iswidth], al
-  2716                                  
-  2717                                  ;-401     istype='V';
-  2718                                  
-  2719                                  .typeName114:
-  2720 00000DE0 B85600                   mov ax, 86
-  2721 00000DE3 A2[3000]                 mov byte [istype], al
-  2722                                  
-  2723                                  ;-402     m=0;
-  2724                                  
-  2725 00000DE6 B80000                   mov ax, 0
-  2726 00000DE9 8946FE                   mov [bp-2], ax
-  2727                                  
-  2728                                  ;-403     if(istoken('*'))  {istype='*'; m=1;}
-  2729                                  
-  2730 00000DEC 6A2A                     push 42
-  2731 00000DEE E803F6                   call istoken
-  2732 00000DF1 83C402                   add  sp, 2
-  2733 00000DF4 08C0                     or  al, al
-  2734 00000DF6 0F840C00                 je .typeName115
-  2735 00000DFA B82A00                   mov ax, 42
-  2736 00000DFD A2[3000]                 mov byte [istype], al
-  2737 00000E00 B80100                   mov ax, 1
-  2738 00000E03 8946FE                   mov [bp-2], ax
-  2739                                  
-  2740                                  ;-404     if(istoken('&'))  {istype='&'; m=2;}
-  2741                                  
-  2742                                  .typeName115:
-  2743 00000E06 6A26                     push 38
-  2744 00000E08 E8E9F5                   call istoken
-  2745 00000E0B 83C402                   add  sp, 2
-  2746 00000E0E 08C0                     or  al, al
-  2747 00000E10 0F840C00                 je .typeName116
-  2748 00000E14 B82600                   mov ax, 38
-  2749 00000E17 A2[3000]                 mov byte [istype], al
-  2750 00000E1A B80200                   mov ax, 2
-  2751 00000E1D 8946FE                   mov [bp-2], ax
-  2752                                  
-  2753                                  ;-405     name1();
-  2754                                  
-  2755                                  .typeName116:
-  2756 00000E20 E80800                   call name1
-  2757                                  
-  2758                                  ;-406     return m;
-  2759                                  
-  2760 00000E23 8B46FE                   mov ax, [bp-2]
-  2761 00000E26 E90000                   jmp .retntypeName
-  2762                                  
-  2763                                  ;-407 }
-  2764                                  
-  2765                                  
-  2766                                  ;-408 int name1() {
-  2767                                  
-  2768 00000E29 C9                       .retntypeName: LEAVE
-  2769 00000E2A C3                       ret
-  2770                                  ENDP
-  2771                                  
-  2772                                  name1: PROC
-  2773                                  
-  2774                                  ;-409     if (token!=T_NAME) error1("Name expected");
-  2775                                  
-  2776 00000E2B A1[1E00]                 mov ax, [token]
-  2777 00000E2E 3D0001                   cmp ax, 256
-  2778 00000E31 0F840900                 je  .name1117
-  2779 00000E35 68[450E]                 push name1_0
-  2780 00000E38 E8302E                   call error1
-  2781 00000E3B 83C402                   add  sp, 2
-  2782                                  
-  2783                                  ;-410     token=getlex();
-  2784                                  
-  2785                                  .name1117:
-  2786 00000E3E E8B323                   call getlex
-  2787 00000E41 A3[1E00]                 mov word [token], ax
-  2788                                  
-  2789                                  ;-411 }
+  2708                                  .storeCall198:
+  2709 00000C6B B80000                   mov ax, 0
+  2710 00000C6E 8B1E[4300]               mov bx, [CTop]
+  2711 00000C72 8887ECA0                 mov [CType+bx], al
+  2712                                  
+  2713                                  ;-435     CAdr [CTop]=CNamePtr;
+  2714                                  
+  2715 00000C76 A1[3F00]                 mov ax, [CNamePtr]
+  2716 00000C79 8B1E[4300]               mov bx, [CTop]
+  2717 00000C7D D1E3                     shl bx, 1
+  2718 00000C7F 8987C8A6                 mov [CAdr+bx], ax
+  2719                                  
+  2720                                  ;-436     CNamePtr=strcpy(CNamePtr, symbol);
+  2721                                  
+  2722 00000C83 8D06BB69                 lea  ax, [symbol]
+  2723 00000C87 50                       push ax
+  2724 00000C88 FF36[3F00]               push word [CNamePtr]
+  2725 00000C8C E89DF5                   call strcpy
+  2726 00000C8F 83C404                   add  sp, 4
+  2727 00000C92 A3[3F00]                 mov word [CNamePtr], ax
+  2728                                  
+  2729                                  ;-437     CNamePtr++;
+  2730                                  
+  2731 00000C95 FF06[3F00]               inc  word[CNamePtr]
+  2732                                  
+  2733                                  ;-438 }
+  2734                                  
+  2735                                  
+  2736                                  ;-439 
+  2737                                  
+  2738                                  
+  2739                                  ;-440 int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
+  2740 00000C99 C9                       LEAVE
+  2741 00000C9A C3                       ret
+  2742 00000C9B 746F6F206D616E7920-     storeCall1_0 db "too many calls",0
+  2743 00000CA4 63616C6C7300       
+  2744 00000CAA 746F6F206D616E7920-     storeCall1_1 db "too many call names",0
+  2745 00000CB3 63616C6C206E616D65-
+  2746 00000CBC 7300               
+  2747                                  ENDP
+  2748                                  
+  2749                                  storefunc: PROC
+  2750 00000CBE A1[3D00]                 mov ax, [FTop]
+  2751 00000CC1 3D2C01                   cmp ax, 300 ;unsigned : 1
+  2752 00000CC4 0F8C0900                 jl  .storefunc99
+  2753 00000CC8 68[1F0D]                 push storefunc_0
+  2754 00000CCB E812F9                   call error1
+  2755 00000CCE 83C402                   add  sp, 2
+  2756                                  
+  2757                                  ;-441     FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
+  2758                                  
+  2759                                  .storefunc99:
+  2760 00000CD1 A1[4900]                 mov ax, [lineno]
+  2761 00000CD4 83E801                   sub ax, 1
+  2762 00000CD7 8B1E[3D00]               mov bx, [FTop]
+  2763 00000CDB D1E3                     shl bx, 1
+  2764 00000CDD 89877C89                 mov [FAdr+bx], ax
+  2765 00000CE1 B80000                   mov ax, 0
+  2766 00000CE4 8B1E[3D00]               mov bx, [FTop]
+  2767 00000CE8 D1E3                     shl bx, 1
+  2768 00000CEA 8987D48B                 mov [FCalls+bx], ax
+  2769 00000CEE A0[3600]                 mov al, [iswidth]
+  2770 00000CF1 8B1E[3D00]               mov bx, [FTop]
+  2771 00000CF5 88875088                 mov [FType+bx], al
+  2772                                  
+  2773                                  ;-442     pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
+  2774                                  
+  2775 00000CF9 FF36[3D00]               push word [FTop]
+  2776 00000CFD 8D062C8E                 lea  ax, [FNameField]
+  2777 00000D01 50                       push ax
+  2778 00000D02 E885FC                   call adrF
+  2779 00000D05 83C404                   add  sp, 4
+  2780 00000D08 A3[4B00]                 mov word [pt], ax
+  2781 00000D0B 8D06BB69                 lea  ax, [symbol]
+  2782 00000D0F 50                       push ax
+  2783 00000D10 FF36[4B00]               push word [pt]
+  2784 00000D14 E815F5                   call strcpy
+  2785 00000D17 83C404                   add  sp, 4
+  2786 00000D1A FF06[3D00]               inc  word[FTop]
+  2787                                  
+  2788                                  ;-443 }
+  2789                                  
   2790                                  
-  2791                                  
-  2792                                  ;-412 
-  2793                                  
-  2794                                  
-  2795                                  ;-413 int storeCall1() {//todo
-  2796                                  
-  2797 00000E44 C3                       ret
-  2798 00000E45 4E616D652065787065-     name1_0 db "Name expected",0
-  2799 00000E4E 6374656400         
-  2800                                  ENDP
-  2801                                  
-  2802                                  storeCall1: PROC
-  2803                                  
-  2804                                  ;-414     unsigned int i;
-  2805                                  
+  2791                                  ;-444 int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
+  2792                                  
+  2793 00000D1E C3                       ret
+  2794 00000D1F 46756E6374696F6E20-     storefunc_0 db "Function table full",0
+  2795 00000D28 7461626C652066756C-
+  2796 00000D31 6C00               
+  2797                                  ENDP
+  2798                                  
+  2799                                  addlocal: PROC
+  2800 00000D33 A1[3B00]                 mov ax, [LTop]
+  2801 00000D36 3D2C01                   cmp ax, 300 ;unsigned : 1
+  2802 00000D39 0F8C0900                 jl  .addlocal100
+  2803 00000D3D 68[B90D]                 push addlocal_0
+  2804 00000D40 E89DF8                   call error1
+  2805 00000D43 83C402                   add  sp, 2
   2806                                  
-  2807                                  ;-415     CTop++;
-  2808                                  ;
-  2809 00000E53 C8020000                 ENTER  2,0
-  2810 00000E57 FF06[4300]               inc  word[CTop]
-  2811                                  
-  2812                                  ;-416     if (CTop >= CALLMAX) error1("too many calls");
-  2813                                  
-  2814 00000E5B A1[4300]                 mov ax, [CTop]
-  2815 00000E5E 3DDC05                   cmp ax, 1500 ;unsigned : 1
-  2816 00000E61 0F8C0900                 jl  .storeCall1118
-  2817 00000E65 68[BA0E]                 push storeCall1_0
-  2818 00000E68 E8002E                   call error1
-  2819 00000E6B 83C402                   add  sp, 2
-  2820                                  
-  2821                                  ;-417     i = CNamePtr - &CNameField;
-  2822                                  
-  2823                                  .storeCall1118:
-  2824 00000E6E A1[3F00]                 mov ax, [CNamePtr]
-  2825 00000E71 2D80B2                   sub ax, CNameField
-  2826 00000E74 8946FE                   mov [bp-2], ax
-  2827                                  
-  2828                                  ;-418     if (i >= CNAMEMAX) error1("too many call names");
+  2807                                  ;-445   if (checkName() != 0) error1("Variable already defined");
+  2808                                  
+  2809                                  .addlocal100:
+  2810 00000D46 E866FD                   call checkName
+  2811 00000D49 83F800                   cmp ax, 0
+  2812 00000D4C 0F840900                 je  .addlocal101
+  2813 00000D50 68[D30D]                 push addlocal_1
+  2814 00000D53 E88AF8                   call error1
+  2815 00000D56 83C402                   add  sp, 2
+  2816                                  
+  2817                                  ;-446   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
+  2818                                  
+  2819                                  .addlocal101:
+  2820 00000D59 A0[3300]                 mov al, [issign]
+  2821 00000D5C 8B1E[3B00]               mov bx, [LTop]
+  2822 00000D60 8887306C                 mov [GSign+bx], al
+  2823 00000D64 A0[3600]                 mov al, [iswidth]
+  2824 00000D67 8B1E[3B00]               mov bx, [LTop]
+  2825 00000D6B 88875C6D                 mov [GWidth+bx], al
+  2826 00000D6F A0[3000]                 mov al, [istype]
+  2827 00000D72 8B1E[3B00]               mov bx, [LTop]
+  2828 00000D76 8887046B                 mov [GType+bx], al
   2829                                  
-  2830 00000E77 8B46FE                   mov ax, [bp-2]
-  2831 00000E7A 3D1027                   cmp ax, 10000 ;unsigned : 0
-  2832 00000E7D 0F820900                 jb  .storeCall1119
-  2833 00000E81 68[C90E]                 push storeCall1_1
-  2834 00000E84 E8E42D                   call error1
-  2835 00000E87 83C402                   add  sp, 2
-  2836                                  
-  2837                                  ;-419     CType[CTop]=0;
-  2838                                  
-  2839                                  .storeCall1119:
-  2840 00000E8A B80000                   mov ax, 0
-  2841 00000E8D 8B1E[4300]               mov bx, [CTop]
-  2842 00000E91 8887ECA0                 mov [CType+bx], al
+  2830                                  ;-447   GAdr [LTop]=lineno-1; GUsed[LTop]=0;
+  2831                                  
+  2832 00000D7A A1[4900]                 mov ax, [lineno]
+  2833 00000D7D 83E801                   sub ax, 1
+  2834 00000D80 8B1E[3B00]               mov bx, [LTop]
+  2835 00000D84 D1E3                     shl bx, 1
+  2836 00000D86 8987886E                 mov [GAdr+bx], ax
+  2837 00000D8A B80000                   mov ax, 0
+  2838 00000D8D 8B1E[3B00]               mov bx, [LTop]
+  2839 00000D91 D1E3                     shl bx, 1
+  2840 00000D93 8987E070                 mov [GUsed+bx], ax
+  2841                                  
+  2842                                  ;-448   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
   2843                                  
-  2844                                  ;-420     CAdr [CTop]=CNamePtr;
-  2845                                  
-  2846 00000E95 A1[3F00]                 mov ax, [CNamePtr]
-  2847 00000E98 8B1E[4300]               mov bx, [CTop]
-  2848 00000E9C D1E3                     shl bx, 1
-  2849 00000E9E 8987C8A6                 mov [CAdr+bx], ax
-  2850                                  
-  2851                                  ;-421     CNamePtr=strcpy(CNamePtr, symbol);
-  2852                                  
-  2853 00000EA2 8D06BB69                 lea  ax, [symbol]
-  2854 00000EA6 50                       push ax
-  2855 00000EA7 FF36[3F00]               push word [CNamePtr]
-  2856 00000EAB E87EF3                   call strcpy
-  2857 00000EAE 83C404                   add  sp, 4
-  2858 00000EB1 A3[3F00]                 mov word [CNamePtr], ax
-  2859                                  
-  2860                                  ;-422     CNamePtr++;
-  2861                                  
-  2862 00000EB4 FF06[3F00]               inc  word[CNamePtr]
-  2863                                  
-  2864                                  ;-423 }
-  2865                                  
-  2866                                  
-  2867                                  ;-424 
-  2868                                  
+  2844 00000D97 FF36[3B00]               push word [LTop]
+  2845 00000D9B 8D069075                 lea  ax, [GNameField]
+  2846 00000D9F 50                       push ax
+  2847 00000DA0 E8E7FB                   call adrF
+  2848 00000DA3 83C404                   add  sp, 4
+  2849 00000DA6 A3[4B00]                 mov word [pt], ax
+  2850 00000DA9 8D06BB69                 lea  ax, [symbol]
+  2851 00000DAD 50                       push ax
+  2852 00000DAE FF36[4B00]               push word [pt]
+  2853 00000DB2 E877F4                   call strcpy
+  2854 00000DB5 83C404                   add  sp, 4
+  2855                                  
+  2856                                  ;-449 }
+  2857                                  
+  2858                                  
+  2859                                  ;-450 int checkFunction() { unsigned int i; unsigned int j; i=0;
+  2860                                  
+  2861 00000DB8 C3                       ret
+  2862 00000DB9 4C6F63616C20766172-     addlocal_0 db "Local variable table full",0
+  2863 00000DC2 6961626C6520746162-
+  2864 00000DCB 6C652066756C6C00   
+  2865 00000DD3 5661726961626C6520-     addlocal_1 db "Variable already defined",0
+  2866 00000DDC 616C72656164792064-
+  2867 00000DE5 6566696E656400     
+  2868                                  ENDP
   2869                                  
-  2870                                  ;-425 int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
-  2871 00000EB8 C9                       LEAVE
-  2872 00000EB9 C3                       ret
-  2873 00000EBA 746F6F206D616E7920-     storeCall1_0 db "too many calls",0
-  2874 00000EC3 63616C6C7300       
-  2875 00000EC9 746F6F206D616E7920-     storeCall1_1 db "too many call names",0
-  2876 00000ED2 63616C6C206E616D65-
-  2877 00000EDB 7300               
-  2878                                  ENDP
-  2879                                  
-  2880                                  storefunc: PROC
-  2881 00000EDD A1[3D00]                 mov ax, [FTop]
-  2882 00000EE0 3D2C01                   cmp ax, 300 ;unsigned : 1
-  2883 00000EE3 0F8C0900                 jl  .storefunc120
-  2884 00000EE7 68[3E0F]                 push storefunc_0
-  2885 00000EEA E87E2D                   call error1
-  2886 00000EED 83C402                   add  sp, 2
-  2887                                  
-  2888                                  ;-426     FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
-  2889                                  
-  2890                                  .storefunc120:
-  2891 00000EF0 A1[4900]                 mov ax, [lineno]
-  2892 00000EF3 83E801                   sub ax, 1
-  2893 00000EF6 8B1E[3D00]               mov bx, [FTop]
-  2894 00000EFA D1E3                     shl bx, 1
-  2895 00000EFC 89877C89                 mov [FAdr+bx], ax
-  2896 00000F00 B80000                   mov ax, 0
-  2897 00000F03 8B1E[3D00]               mov bx, [FTop]
-  2898 00000F07 D1E3                     shl bx, 1
-  2899 00000F09 8987D48B                 mov [FCalls+bx], ax
-  2900 00000F0D A0[3600]                 mov al, [iswidth]
-  2901 00000F10 8B1E[3D00]               mov bx, [FTop]
-  2902 00000F14 88875088                 mov [FType+bx], al
+  2870                                  checkFunction: PROC;
+  2871 00000DEC C8040000                 ENTER  4,0
+  2872 00000DF0 B80000                   mov ax, 0
+  2873 00000DF3 8946FE                   mov [bp-2], ax
+  2874                                  
+  2875                                  ;-451   while (i < FTop) {
+  2876                                  
+  2877                                  .checkFunction102:
+  2878 00000DF6 8B46FE                   mov ax, [bp-2]
+  2879 00000DF9 3B06[3D00]               cmp ax, [FTop]
+  2880 00000DFD 0F8D3000                 jge .checkFunction103
+  2881                                  
+  2882                                  ;-452     j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
+  2883                                  
+  2884 00000E01 FF76FE                   push word [bp-2]
+  2885 00000E04 8D062C8E                 lea  ax, [FNameField]
+  2886 00000E08 50                       push ax
+  2887 00000E09 E87EFB                   call adrF
+  2888 00000E0C 83C404                   add  sp, 4
+  2889 00000E0F 8946FC                   mov [bp-4], ax
+  2890 00000E12 FF76FC                   push word [bp-4]
+  2891 00000E15 8D06BB69                 lea  ax, [symbol]
+  2892 00000E19 50                       push ax
+  2893 00000E1A E845F4                   call eqstr
+  2894 00000E1D 83C404                   add  sp, 4
+  2895 00000E20 08C0                     or  al, al
+  2896 00000E22 0F840600                 je .checkFunction104
+  2897 00000E26 8B46FE                   mov ax, [bp-2]
+  2898 00000E29 E90B00                   jmp .retncheckFunction
+  2899                                  .checkFunction104:
+  2900 00000E2C FF46FE                   inc  word[bp-2]
+  2901                                  
+  2902                                  ;-453   return 0; }
   2903                                  
-  2904                                  ;-427     pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
-  2905                                  
-  2906 00000F18 FF36[3D00]               push word [FTop]
-  2907 00000F1C 8D062C8E                 lea  ax, [FNameField]
-  2908 00000F20 50                       push ax
-  2909 00000F21 E8ECFC                   call adrF
-  2910 00000F24 83C404                   add  sp, 4
-  2911 00000F27 A3[4B00]                 mov word [pt], ax
-  2912 00000F2A 8D06BB69                 lea  ax, [symbol]
-  2913 00000F2E 50                       push ax
-  2914 00000F2F FF36[4B00]               push word [pt]
-  2915 00000F33 E8F6F2                   call strcpy
-  2916 00000F36 83C404                   add  sp, 4
-  2917 00000F39 FF06[3D00]               inc  word[FTop]
-  2918                                  
-  2919                                  ;-428 }
-  2920                                  
+  2904 00000E2F EBC5                     jmp .checkFunction102
+  2905                                  .checkFunction103:
+  2906 00000E31 B80000                   mov ax, 0
+  2907 00000E34 E90000                   jmp .retncheckFunction
+  2908                                  
+  2909                                  ;-454 
+  2910                                  
+  2911                                  
+  2912                                  ;-455 int isvariable() {
+  2913                                  
+  2914 00000E37 C9                       .retncheckFunction: LEAVE
+  2915 00000E38 C3                       ret
+  2916                                  ENDP
+  2917                                  
+  2918                                  isvariable: PROC
+  2919                                  
+  2920                                  ;-456     if(token==T_SIGNED)   goto v1;
   2921                                  
-  2922                                  ;-429 int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
-  2923                                  
-  2924 00000F3D C3                       ret
-  2925 00000F3E 46756E6374696F6E20-     storefunc_0 db "Function table full",0
-  2926 00000F47 7461626C652066756C-
-  2927 00000F50 6C00               
-  2928                                  ENDP
-  2929                                  
-  2930                                  addlocal: PROC
-  2931 00000F52 A1[3B00]                 mov ax, [LTop]
-  2932 00000F55 3D2C01                   cmp ax, 300 ;unsigned : 1
-  2933 00000F58 0F8C0900                 jl  .addlocal121
-  2934 00000F5C 68[D80F]                 push addlocal_0
-  2935 00000F5F E8092D                   call error1
-  2936 00000F62 83C402                   add  sp, 2
-  2937                                  
-  2938                                  ;-430   if (checkName() != 0) error1("Variable already defined");
-  2939                                  
-  2940                                  .addlocal121:
-  2941 00000F65 E866FD                   call checkName
-  2942 00000F68 83F800                   cmp ax, 0
-  2943 00000F6B 0F840900                 je  .addlocal122
-  2944 00000F6F 68[F20F]                 push addlocal_1
-  2945 00000F72 E8F62C                   call error1
-  2946 00000F75 83C402                   add  sp, 2
-  2947                                  
-  2948                                  ;-431   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
-  2949                                  
-  2950                                  .addlocal122:
-  2951 00000F78 A0[3300]                 mov al, [issign]
-  2952 00000F7B 8B1E[3B00]               mov bx, [LTop]
-  2953 00000F7F 8887306C                 mov [GSign+bx], al
-  2954 00000F83 A0[3600]                 mov al, [iswidth]
-  2955 00000F86 8B1E[3B00]               mov bx, [LTop]
-  2956 00000F8A 88875C6D                 mov [GWidth+bx], al
-  2957 00000F8E A0[3000]                 mov al, [istype]
-  2958 00000F91 8B1E[3B00]               mov bx, [LTop]
-  2959 00000F95 8887046B                 mov [GType+bx], al
+  2922 00000E39 A1[1E00]                 mov ax, [token]
+  2923 00000E3C 3D1302                   cmp ax, 531
+  2924 00000E3F 0F850300                 jne .isvariable105
+  2925 00000E43 E93A00                   jmp .v1
+  2926                                  
+  2927                                  ;-457     if(token==T_UNSIGNED) goto v1;
+  2928                                  
+  2929                                  .isvariable105:
+  2930 00000E46 A1[1E00]                 mov ax, [token]
+  2931 00000E49 3D1402                   cmp ax, 532
+  2932 00000E4C 0F850300                 jne .isvariable106
+  2933 00000E50 E92D00                   jmp .v1
+  2934                                  
+  2935                                  ;-458     if(token==T_CHAR)     goto v1;
+  2936                                  
+  2937                                  .isvariable106:
+  2938 00000E53 A1[1E00]                 mov ax, [token]
+  2939 00000E56 3D1202                   cmp ax, 530
+  2940 00000E59 0F850300                 jne .isvariable107
+  2941 00000E5D E92000                   jmp .v1
+  2942                                  
+  2943                                  ;-459     if(token==T_INT)      goto v1;
+  2944                                  
+  2945                                  .isvariable107:
+  2946 00000E60 A1[1E00]                 mov ax, [token]
+  2947 00000E63 3D0502                   cmp ax, 517
+  2948 00000E66 0F850300                 jne .isvariable108
+  2949 00000E6A E91300                   jmp .v1
+  2950                                  
+  2951                                  ;-460     if(token==T_LONG)     goto v1;
+  2952                                  
+  2953                                  .isvariable108:
+  2954 00000E6D A1[1E00]                 mov ax, [token]
+  2955 00000E70 3D1502                   cmp ax, 533
+  2956 00000E73 0F850300                 jne .isvariable109
+  2957 00000E77 E90600                   jmp .v1
+  2958                                  
+  2959                                  ;-461     return 0;
   2960                                  
-  2961                                  ;-432   GAdr [LTop]=lineno-1; GUsed[LTop]=0;
-  2962                                  
-  2963 00000F99 A1[4900]                 mov ax, [lineno]
-  2964 00000F9C 83E801                   sub ax, 1
-  2965 00000F9F 8B1E[3B00]               mov bx, [LTop]
-  2966 00000FA3 D1E3                     shl bx, 1
-  2967 00000FA5 8987886E                 mov [GAdr+bx], ax
-  2968 00000FA9 B80000                   mov ax, 0
-  2969 00000FAC 8B1E[3B00]               mov bx, [LTop]
-  2970 00000FB0 D1E3                     shl bx, 1
-  2971 00000FB2 8987E070                 mov [GUsed+bx], ax
+  2961                                  .isvariable109:
+  2962 00000E7A B80000                   mov ax, 0
+  2963 00000E7D E90600                   jmp .retnisvariable
+  2964                                  
+  2965                                  ;-462 v1: return 1;
+  2966                                  
+  2967                                  .v1:
+  2968 00000E80 B80100                   mov ax, 1
+  2969 00000E83 E90000                   jmp .retnisvariable
+  2970                                  
+  2971                                  ;-463 }
   2972                                  
-  2973                                  ;-433   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
-  2974                                  
-  2975 00000FB6 FF36[3B00]               push word [LTop]
-  2976 00000FBA 8D069075                 lea  ax, [GNameField]
-  2977 00000FBE 50                       push ax
-  2978 00000FBF E84EFC                   call adrF
-  2979 00000FC2 83C404                   add  sp, 4
-  2980 00000FC5 A3[4B00]                 mov word [pt], ax
-  2981 00000FC8 8D06BB69                 lea  ax, [symbol]
-  2982 00000FCC 50                       push ax
-  2983 00000FCD FF36[4B00]               push word [pt]
-  2984 00000FD1 E858F2                   call strcpy
-  2985 00000FD4 83C404                   add  sp, 4
-  2986                                  
-  2987                                  ;-434 }
+  2973                                  
+  2974                                  ;-464 
+  2975                                  
+  2976                                  
+  2977                                  ;-465 int ireg1;
+  2978                                  
+  2979                                   .retnisvariable:
+  2980 00000E86 C3                       ret
+  2981                                  ENDP
+  2982 00000E87 0000                    ireg1 dw 0
+  2983                                  
+  2984                                  ;-466 int mod2; int ireg2;
+  2985                                  
+  2986 00000E89 0000                    mod2 dw 0
+  2987 00000E8B 0000                    ireg2 dw 0
   2988                                  
-  2989                                  
-  2990                                  ;-435 int checkFunction() { unsigned int i; unsigned int j; i=0;
+  2989                                  ;-467 
+  2990                                  
   2991                                  
-  2992 00000FD7 C3                       ret
-  2993 00000FD8 4C6F63616C20766172-     addlocal_0 db "Local variable table full",0
-  2994 00000FE1 6961626C6520746162-
-  2995 00000FEA 6C652066756C6C00   
-  2996 00000FF2 5661726961626C6520-     addlocal_1 db "Variable already defined",0
-  2997 00000FFB 616C72656164792064-
-  2998 00001004 6566696E656400     
-  2999                                  ENDP
-  3000                                  
-  3001                                  checkFunction: PROC;
-  3002 0000100B C8040000                 ENTER  4,0
-  3003 0000100F B80000                   mov ax, 0
-  3004 00001012 8946FE                   mov [bp-2], ax
-  3005                                  
-  3006                                  ;-436   while (i < FTop) {
-  3007                                  
-  3008                                  .checkFunction123:
-  3009 00001015 8B46FE                   mov ax, [bp-2]
-  3010 00001018 3B06[3D00]               cmp ax, [FTop]
-  3011 0000101C 0F8D3000                 jge .checkFunction124
-  3012                                  
-  3013                                  ;-437     j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
-  3014                                  
-  3015 00001020 FF76FE                   push word [bp-2]
-  3016 00001023 8D062C8E                 lea  ax, [FNameField]
-  3017 00001027 50                       push ax
-  3018 00001028 E8E5FB                   call adrF
-  3019 0000102B 83C404                   add  sp, 4
-  3020 0000102E 8946FC                   mov [bp-4], ax
-  3021 00001031 FF76FC                   push word [bp-4]
-  3022 00001034 8D06BB69                 lea  ax, [symbol]
-  3023 00001038 50                       push ax
-  3024 00001039 E826F2                   call eqstr
-  3025 0000103C 83C404                   add  sp, 4
-  3026 0000103F 08C0                     or  al, al
-  3027 00001041 0F840600                 je .checkFunction125
-  3028 00001045 8B46FE                   mov ax, [bp-2]
-  3029 00001048 E90B00                   jmp .retncheckFunction
-  3030                                  .checkFunction125:
-  3031 0000104B FF46FE                   inc  word[bp-2]
-  3032                                  
-  3033                                  ;-438   return 0; }
-  3034                                  
-  3035 0000104E EBC5                     jmp .checkFunction123
-  3036                                  .checkFunction124:
-  3037 00001050 B80000                   mov ax, 0
-  3038 00001053 E90000                   jmp .retncheckFunction
-  3039                                  
-  3040                                  ;-439 int dofunc() { int nloc; int i; int narg;
-  3041                                  
-  3042 00001056 C9                       .retncheckFunction: LEAVE
-  3043 00001057 C3                       ret
-  3044                                  ENDP
-  3045                                  
-  3046                                  dofunc: PROC
-  3047                                  
-  3048                                  ;-440   cloc=&co;
-  3049                                  ;
-  3050 00001058 C8060000                 ENTER  6,0
-  3051 0000105C B8A861                   mov ax, co
-  3052 0000105F A3[1800]                 mov word [cloc], ax
-  3053                                  
-  3054                                  ;-441   checknamelen();
-  3055                                  
-  3056 00001062 E825F3                   call checknamelen
-  3057                                  
-  3058                                  ;-442   strcpy(fname, symbol);
-  3059                                  
-  3060 00001065 8D06BB69                 lea  ax, [symbol]
-  3061 00001069 50                       push ax
-  3062 0000106A 8D063B6A                 lea  ax, [fname]
-  3063 0000106E 50                       push ax
-  3064 0000106F E8BAF1                   call strcpy
-  3065 00001072 83C404                   add  sp, 4
-  3066                                  
-  3067                                  ;-443   if (checkFunction() ) error1("Function already defined");
-  3068                                  
-  3069 00001075 E893FF                   call checkFunction
-  3070 00001078 08C0                     or  al, al
-  3071 0000107A 0F840900                 je .dofunc126
-  3072 0000107E 68[9F12]                 push dofunc_0
-  3073 00001081 E8E72B                   call error1
-  3074 00001084 83C402                   add  sp, 2
+  2992                                  ;-468 int pexpr() {expect('('); iscmp=0;
+  2993                                  
+  2994                                  
+  2995                                  pexpr: PROC
+  2996 00000E8D 6A28                     push 40
+  2997 00000E8F E89EF9                   call expect
+  2998 00000E92 83C402                   add  sp, 2
+  2999 00000E95 B80000                   mov ax, 0
+  3000 00000E98 A3[2400]                 mov word [iscmp], ax
+  3001                                  
+  3002                                  ;-469   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
+  3003                                  
+  3004 00000E9B A1[1E00]                 mov ax, [token]
+  3005 00000E9E 3D0001                   cmp ax, 256
+  3006 00000EA1 0F853400                 jne .pexpr110
+  3007 00000EA5 68[080F]                 push pexpr_0
+  3008 00000EA8 8D06BB69                 lea  ax, [symbol]
+  3009 00000EAC 50                       push ax
+  3010 00000EAD E8B2F3                   call eqstr
+  3011 00000EB0 83C404                   add  sp, 4
+  3012 00000EB3 08C0                     or  al, al
+  3013 00000EB5 0F840600                 je .pexpr111
+  3014 00000EB9 E86300                   call constantexpr
+  3015 00000EBC E94800                   jmp .retnpexpr
+  3016                                  
+  3017                                  ;-470     ireg1=checkreg();
+  3018                                  
+  3019                                  .pexpr111:
+  3020 00000EBF E84803                   call checkreg
+  3021 00000EC2 A3[870E]                 mov word [ireg1], ax
+  3022                                  
+  3023                                  ;-471     if (ireg1) { doreg1(1); return; }  }
+  3024                                  
+  3025 00000EC5 A1[870E]                 mov ax, [ireg1]
+  3026 00000EC8 08C0                     or  al, al
+  3027 00000ECA 0F840B00                 je .pexpr112
+  3028 00000ECE 6A01                     push 1
+  3029 00000ED0 E84B01                   call doreg1
+  3030 00000ED3 83C402                   add  sp, 2
+  3031 00000ED6 E92E00                   jmp .retnpexpr
+  3032                                  .pexpr112:
+  3033                                  
+  3034                                  ;-472   expr(0);
+  3035                                  
+  3036                                  .pexpr110:
+  3037 00000ED9 6A00                     push 0
+  3038 00000EDB E8AB07                   call expr
+  3039 00000EDE 83C402                   add  sp, 2
+  3040                                  
+  3041                                  ;-473   if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
+  3042                                  
+  3043 00000EE1 A1[2400]                 mov ax, [iscmp]
+  3044 00000EE4 83F800                   cmp ax, 0
+  3045 00000EE7 0F850900                 jne .pexpr113
+  3046 00000EEB 68[0A0F]                 push pexpr_1
+  3047 00000EEE E8F1F4                   call prs
+  3048 00000EF1 83C402                   add  sp, 2
+  3049                                  .pexpr113:
+  3050 00000EF4 8D063B6A                 lea  ax, [fname]
+  3051 00000EF8 50                       push ax
+  3052 00000EF9 E8E6F4                   call prs
+  3053 00000EFC 83C402                   add  sp, 2
+  3054                                  
+  3055                                  ;-474   expect(')'); }
+  3056                                  
+  3057 00000EFF 6A29                     push 41
+  3058 00000F01 E82CF9                   call expect
+  3059 00000F04 83C402                   add  sp, 2
+  3060                                  
+  3061                                  ;-475 
+  3062                                  
+  3063                                  
+  3064                                  ;-476 int constantexpr() { int mode; int id1;int ids;
+  3065                                  
+  3066                                   .retnpexpr:
+  3067 00000F07 C3                       ret
+  3068 00000F08 5F00                    pexpr_0 db "_",0
+  3069 00000F0A 5C6E206F722020616C-     pexpr_1 db "\n or  al, al\n je .",0
+  3070 00000F13 2C20616C5C6E206A65-
+  3071 00000F1C 202E00             
+  3072                                  ENDP
+  3073                                  
+  3074                                  constantexpr: PROC
   3075                                  
-  3076                                  ;-444   storefunc();
-  3077                                  
-  3078                                  .dofunc126:
-  3079 00001087 E853FE                   call storefunc
-  3080                                  
-  3081                                  ;-445   prs("\n\n"); prs(symbol); prs(": PROC");
-  3082                                  
-  3083 0000108A 68[B812]                 push dofunc_1
-  3084 0000108D E896F4                   call prs
-  3085 00001090 83C402                   add  sp, 2
-  3086 00001093 8D06BB69                 lea  ax, [symbol]
-  3087 00001097 50                       push ax
-  3088 00001098 E88BF4                   call prs
-  3089 0000109B 83C402                   add  sp, 2
-  3090 0000109E 68[BD12]                 push dofunc_2
-  3091 000010A1 E882F4                   call prs
-  3092 000010A4 83C402                   add  sp, 2
+  3076                                  ;-477   token=getlex();   mode=typeName();
+  3077                                  ;
+  3078 00000F1F C8060000                 ENTER  6,0
+  3079 00000F23 E8161E                   call getlex
+  3080 00000F26 A3[1E00]                 mov word [token], ax
+  3081 00000F29 E807FC                   call typeName
+  3082 00000F2C 8946FE                   mov [bp-2], ax
+  3083                                  
+  3084                                  ;-478   id1=searchname(); gettypes(id1); ids=signi;
+  3085                                  
+  3086 00000F2F E832FB                   call searchname
+  3087 00000F32 8946FC                   mov [bp-4], ax
+  3088 00000F35 FF76FC                   push word [bp-4]
+  3089 00000F38 E872FA                   call gettypes
+  3090 00000F3B 83C402                   add  sp, 2
+  3091 00000F3E A1[3100]                 mov ax, [signi]
+  3092 00000F41 8946FA                   mov [bp-6], ax
   3093                                  
-  3094                                  ;-446   expect('('); LTop=LSTART;  i=0;
+  3094                                  ;-479   if (isrelational() ==0) error1("Relational expression expected");
   3095                                  
-  3096 000010A7 6A28                     push 40
-  3097 000010A9 E86AF3                   call expect
-  3098 000010AC 83C402                   add  sp, 2
-  3099 000010AF B8C800                   mov ax, 200
-  3100 000010B2 A3[3B00]                 mov word [LTop], ax
-  3101 000010B5 B80000                   mov ax, 0
-  3102 000010B8 8946FC                   mov [bp-4], ax
-  3103                                  
-  3104                                  ;-447   if (istoken(')')==0) { narg=2;
-  3105                                  
-  3106 000010BB 6A29                     push 41
-  3107 000010BD E834F3                   call istoken
-  3108 000010C0 83C402                   add  sp, 2
-  3109 000010C3 83F800                   cmp ax, 0
-  3110 000010C6 0F854600                 jne .dofunc127
-  3111 000010CA B80200                   mov ax, 2
-  3112 000010CD 8946FA                   mov [bp-6], ax
-  3113                                  
-  3114                                  ;-448     do { typeName();  addlocal(); narg+=2;
-  3115                                  
-  3116                                  .dofunc128:
-  3117 000010D0 E87FFC                   call typeName
-  3118 000010D3 E87CFE                   call addlocal
-  3119 000010D6 8346FA02                 add  word[bp-6], 2
+  3096 00000F44 E88E1D                   call isrelational
+  3097 00000F47 83F800                   cmp ax, 0
+  3098 00000F4A 0F850900                 jne .constantexpr114
+  3099 00000F4E 68[D40F]                 push constantexpr_0
+  3100 00000F51 E88CF6                   call error1
+  3101 00000F54 83C402                   add  sp, 2
+  3102                                  
+  3103                                  ;-480   expect(T_CONST);  prs(" ; constant expression");
+  3104                                  
+  3105                                  .constantexpr114:
+  3106 00000F57 680101                   push 257
+  3107 00000F5A E8D3F8                   call expect
+  3108 00000F5D 83C402                   add  sp, 2
+  3109 00000F60 68[F30F]                 push constantexpr_1
+  3110 00000F63 E87CF4                   call prs
+  3111 00000F66 83C402                   add  sp, 2
+  3112                                  
+  3113                                  ;-481   prs("\ncmp ");
+  3114                                  
+  3115 00000F69 68[0A10]                 push constantexpr_2
+  3116 00000F6C E873F4                   call prs
+  3117 00000F6F 83C402                   add  sp, 2
+  3118                                  
+  3119                                  ;-482   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
   3120                                  
-  3121                                  ;-449          GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
-  3122                                  
-  3123 000010DA 8B46FA                   mov ax, [bp-6]
-  3124 000010DD 8B1E[3B00]               mov bx, [LTop]
-  3125 000010E1 D1E3                     shl bx, 1
-  3126 000010E3 89873873                 mov [GData+bx], ax
-  3127 000010E7 A0[3600]                 mov al, [iswidth]
-  3128 000010EA 3C04                     cmp al, 4
-  3129 000010EC 0F850400                 jne .dofunc129
-  3130 000010F0 8346FA02                 add  word[bp-6], 2
-  3131                                  .dofunc129:
-  3132 000010F4 FF06[3B00]               inc  word[LTop]
-  3133                                  
-  3134                                  ;-450     while (istoken(','));  expect(')'); }
+  3121 00000F72 FF76FC                   push word [bp-4]
+  3122 00000F75 E835FA                   call gettypes
+  3123 00000F78 83C402                   add  sp, 2
+  3124 00000F7B A1[3700]                 mov ax, [wi]
+  3125 00000F7E 83F802                   cmp ax, 2
+  3126 00000F81 0F850C00                 jne .constantexpr115
+  3127 00000F85 68[1110]                 push constantexpr_3
+  3128 00000F88 E857F4                   call prs
+  3129 00000F8B 83C402                   add  sp, 2
+  3130 00000F8E E90900                   jmp .constantexpr116
+  3131                                  .constantexpr115:
+  3132 00000F91 68[1610]                 push constantexpr_4
+  3133 00000F94 E84BF4                   call prs
+  3134 00000F97 83C402                   add  sp, 2
   3135                                  
-  3136 000010F8 6A2C                     push 44
-  3137 000010FA E8F7F2                   call istoken
-  3138 000010FD 83C402                   add  sp, 2
-  3139 00001100 08C0                     or  al, al
-  3140 00001102 0F840200                 je .dofunc130
-  3141 00001106 EBC8                     jmp .dofunc128
-  3142                                  .dofunc130:
-  3143 00001108 6A29                     push 41
-  3144 0000110A E809F3                   call expect
-  3145 0000110D 83C402                   add  sp, 2
-  3146                                  
-  3147                                  ;-451 
-  3148                                  
-  3149                                  
-  3150                                  ;-452   expect('{'); /*body*/
-  3151                                  
-  3152                                  .dofunc127:
-  3153 00001110 6A7B                     push 123
-  3154 00001112 E801F3                   call expect
-  3155 00001115 83C402                   add  sp, 2
-  3156                                  
-  3157                                  ;-453   nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
-  3158                                  
-  3159 00001118 B80000                   mov ax, 0
-  3160 0000111B 8946FE                   mov [bp-2], ax
-  3161 0000111E B80000                   mov ax, 0
-  3162 00001121 A3[2800]                 mov word [nreturn], ax
-  3163 00001124 B80000                   mov ax, 0
-  3164 00001127 A3[2600]                 mov word [nconst], ax
-  3165 0000112A B80000                   mov ax, 0
-  3166 0000112D 8946FC                   mov [bp-4], ax
+  3136                                  ;-483   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
+  3137                                  
+  3138                                  .constantexpr116:
+  3139 00000F9A FF76FC                   push word [bp-4]
+  3140 00000F9D E86BF9                   call v
+  3141 00000FA0 83C402                   add  sp, 2
+  3142 00000FA3 68[1B10]                 push constantexpr_5
+  3143 00000FA6 E839F4                   call prs
+  3144 00000FA9 83C402                   add  sp, 2
+  3145 00000FAC FF36[2C00]               push word [lexval]
+  3146 00000FB0 E892F5                   call prunsign1
+  3147 00000FB3 83C402                   add  sp, 2
+  3148 00000FB6 FF76FA                   push word [bp-6]
+  3149 00000FB9 E85B1A                   call cmpneg
+  3150 00000FBC 83C402                   add  sp, 2
+  3151 00000FBF 8D063B6A                 lea  ax, [fname]
+  3152 00000FC3 50                       push ax
+  3153 00000FC4 E81BF4                   call prs
+  3154 00000FC7 83C402                   add  sp, 2
+  3155                                  
+  3156                                  ;-484   expect(')');
+  3157                                  
+  3158 00000FCA 6A29                     push 41
+  3159 00000FCC E861F8                   call expect
+  3160 00000FCF 83C402                   add  sp, 2
+  3161                                  
+  3162                                  ;-485 }
+  3163                                  
+  3164                                  
+  3165                                  ;-486 
+  3166                                  
   3167                                  
-  3168                                  ;-454   while(isvariable()) {
-  3169                                  
-  3170                                  .dofunc131:
-  3171 00001130 E8BE01                   call isvariable
-  3172 00001133 08C0                     or  al, al
-  3173 00001135 0F849200                 je .dofunc132
-  3174                                  
-  3175                                  ;-455     do {typeName();
-  3176                                  
-  3177                                  .dofunc133:
-  3178 00001139 E816FC                   call typeName
-  3179                                  
-  3180                                  ;-456         checknamelen();
-  3181                                  
-  3182 0000113C E84BF2                   call checknamelen
-  3183                                  
-  3184                                  ;-457         addlocal(); nloc-=2;
-  3185                                  
-  3186 0000113F E810FE                   call addlocal
-  3187 00001142 836EFE02                 sub  word[bp-2], 2
-  3188                                  
-  3189                                  ;-458         if (iswidth == 4) nloc-=2;
+  3168                                  ;-487 char ops[5];
+  3169 00000FD2 C9                       LEAVE
+  3170 00000FD3 C3                       ret
+  3171 00000FD4 52656C6174696F6E61-     constantexpr_0 db "Relational expression expected",0
+  3172 00000FDD 6C2065787072657373-
+  3173 00000FE6 696F6E206578706563-
+  3174 00000FEF 74656400           
+  3175 00000FF3 203B20636F6E737461-     constantexpr_1 db " ; constant expression",0
+  3176 00000FFC 6E7420657870726573-
+  3177 00001005 73696F6E00         
+  3178 0000100A 5C6E636D702000          constantexpr_2 db "\ncmp ",0
+  3179 00001011 776F726400              constantexpr_3 db "word",0
+  3180 00001016 6279746500              constantexpr_4 db "byte",0
+  3181 0000101B 2C2000                  constantexpr_5 db ", ",0
+  3182                                  ENDP
+  3183                                  section .bss
+  3184                                  absolute 55840
+  3185 0000DA20 <res 00000005>          ops resb 5
+  3186                                  section .text
+  3187                                  
+  3188                                  ;-488 int doreg1(int iscmp1) { int i;
+  3189                                  
   3190                                  
-  3191 00001146 A0[3600]                 mov al, [iswidth]
-  3192 00001149 3C04                     cmp al, 4
-  3193 0000114B 0F850400                 jne .dofunc134
-  3194 0000114F 836EFE02                 sub  word[bp-2], 2
-  3195                                  
-  3196                                  ;-459         GData[LTop]=nloc;
-  3197                                  
-  3198                                  .dofunc134:
-  3199 00001153 8B46FE                   mov ax, [bp-2]
-  3200 00001156 8B1E[3B00]               mov bx, [LTop]
-  3201 0000115A D1E3                     shl bx, 1
-  3202 0000115C 89873873                 mov [GData+bx], ax
-  3203                                  
-  3204                                  ;-460         if (istoken('[')){
-  3205                                  
-  3206 00001160 6A5B                     push 91
-  3207 00001162 E88FF2                   call istoken
-  3208 00001165 83C402                   add  sp, 2
-  3209 00001168 08C0                     or  al, al
-  3210 0000116A 0F843D00                 je .dofunc135
-  3211                                  
-  3212                                  ;-461             istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
-  3213                                  
-  3214 0000116E B82600                   mov ax, 38
-  3215 00001171 A2[3000]                 mov byte [istype], al
-  3216 00001174 B82600                   mov ax, 38
-  3217 00001177 8B1E[3B00]               mov bx, [LTop]
-  3218 0000117B 8887046B                 mov [GType+bx], al
-  3219 0000117F 680101                   push 257
-  3220 00001182 E891F2                   call expect
-  3221 00001185 83C402                   add  sp, 2
-  3222 00001188 6A5D                     push 93
-  3223 0000118A E889F2                   call expect
-  3224 0000118D 83C402                   add  sp, 2
-  3225                                  
-  3226                                  ;-462             nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc;
-  3227                                  
-  3228 00001190 8B46FE                   mov ax, [bp-2]
-  3229 00001193 2B06[2C00]               sub ax, [lexval]
-  3230 00001197 8946FE                   mov [bp-2], ax
-  3231 0000119A 8346FE02                 add  word[bp-2], 2
-  3232 0000119E 8B46FE                   mov ax, [bp-2]
-  3233 000011A1 8B1E[3B00]               mov bx, [LTop]
-  3234 000011A5 D1E3                     shl bx, 1
-  3235 000011A7 89873873                 mov [GData+bx], ax
+  3191                                  doreg1: PROC
+  3192                                  
+  3193                                  ;-489   if (istoken('='))          strcpy(ops, "mov");
+  3194                                  ;
+  3195 0000101E C8020000                 ENTER  2,0
+  3196 00001022 6A3D                     push 61
+  3197 00001024 E8E7F7                   call istoken
+  3198 00001027 83C402                   add  sp, 2
+  3199 0000102A 08C0                     or  al, al
+  3200 0000102C 0F840E00                 je .doreg1117
+  3201 00001030 68[D111]                 push doreg1_0
+  3202 00001033 8D0620DA                 lea  ax, [ops]
+  3203 00001037 50                       push ax
+  3204 00001038 E8F1F1                   call strcpy
+  3205 0000103B 83C404                   add  sp, 4
+  3206                                  
+  3207                                  ;-490   if (istoken(T_PLUSASS))    strcpy(ops, "add");
+  3208                                  
+  3209                                  .doreg1117:
+  3210 0000103E 68CE04                   push 1230
+  3211 00001041 E8CAF7                   call istoken
+  3212 00001044 83C402                   add  sp, 2
+  3213 00001047 08C0                     or  al, al
+  3214 00001049 0F840E00                 je .doreg1118
+  3215 0000104D 68[D511]                 push doreg1_1
+  3216 00001050 8D0620DA                 lea  ax, [ops]
+  3217 00001054 50                       push ax
+  3218 00001055 E8D4F1                   call strcpy
+  3219 00001058 83C404                   add  sp, 4
+  3220                                  
+  3221                                  ;-491   if (istoken(T_MINUSASS))   strcpy(ops, "sub");
+  3222                                  
+  3223                                  .doreg1118:
+  3224 0000105B 68CF04                   push 1231
+  3225 0000105E E8ADF7                   call istoken
+  3226 00001061 83C402                   add  sp, 2
+  3227 00001064 08C0                     or  al, al
+  3228 00001066 0F840E00                 je .doreg1119
+  3229 0000106A 68[D911]                 push doreg1_2
+  3230 0000106D 8D0620DA                 lea  ax, [ops]
+  3231 00001071 50                       push ax
+  3232 00001072 E8B7F1                   call strcpy
+  3233 00001075 83C404                   add  sp, 4
+  3234                                  
+  3235                                  ;-492   if (istoken(T_ANDASS))     strcpy(ops, "and");
   3236                                  
-  3237                                  ;-463             }
-  3238                                  
-  3239                                  
-  3240                                  ;-464         LTop++;
-  3241                                  
-  3242                                  .dofunc135:
-  3243 000011AB FF06[3B00]               inc  word[LTop]
-  3244                                  
-  3245                                  ;-465       } while (istoken(',')); expect(';'); }
-  3246                                  
-  3247 000011AF 6A2C                     push 44
-  3248 000011B1 E840F2                   call istoken
-  3249 000011B4 83C402                   add  sp, 2
-  3250 000011B7 08C0                     or  al, al
-  3251 000011B9 0F840300                 je .dofunc136
-  3252 000011BD E979FF                   jmp .dofunc133
-  3253                                  .dofunc136:
-  3254 000011C0 6A3B                     push 59
-  3255 000011C2 E851F2                   call expect
-  3256 000011C5 83C402                   add  sp, 2
-  3257                                  
-  3258                                  ;-466   if (LTop>LSTART){prs(";\n ENTER  ");
-  3259                                  
-  3260 000011C8 E965FF                   jmp .dofunc131
-  3261                                  .dofunc132:
-  3262 000011CB A1[3B00]                 mov ax, [LTop]
-  3263 000011CE 3DC800                   cmp ax, 200
-  3264 000011D1 0F8E2700                 jle .dofunc137
-  3265 000011D5 68[C412]                 push dofunc_3
-  3266 000011D8 E84BF3                   call prs
-  3267 000011DB 83C402                   add  sp, 2
-  3268                                  
-  3269                                  ;-467     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
-  3270                                  
-  3271 000011DE FF76FE                   push word [bp-2]
-  3272 000011E1 E8C0EE                   call mkneg
-  3273 000011E4 83C402                   add  sp, 2
-  3274 000011E7 8946FE                   mov [bp-2], ax
-  3275 000011EA FF76FE                   push word [bp-2]
-  3276 000011ED E88BF4                   call prunsign1
-  3277 000011F0 83C402                   add  sp, 2
-  3278 000011F3 68[D012]                 push dofunc_4
-  3279 000011F6 E82DF3                   call prs
-  3280 000011F9 83C402                   add  sp, 2
-  3281                                  
-  3282                                  ;-468   while(istoken('}')==0)   stmt();
-  3283                                  
-  3284                                  .dofunc137:
-  3285                                  .dofunc138:
-  3286 000011FC 6A7D                     push 125
-  3287 000011FE E8F3F1                   call istoken
-  3288 00001201 83C402                   add  sp, 2
-  3289 00001204 83F800                   cmp ax, 0
-  3290 00001207 0F850500                 jne .dofunc139
-  3291 0000120B E89C26                   call stmt
+  3237                                  .doreg1119:
+  3238 00001078 68D204                   push 1234
+  3239 0000107B E890F7                   call istoken
+  3240 0000107E 83C402                   add  sp, 2
+  3241 00001081 08C0                     or  al, al
+  3242 00001083 0F840E00                 je .doreg1120
+  3243 00001087 68[DD11]                 push doreg1_3
+  3244 0000108A 8D0620DA                 lea  ax, [ops]
+  3245 0000108E 50                       push ax
+  3246 0000108F E89AF1                   call strcpy
+  3247 00001092 83C404                   add  sp, 4
+  3248                                  
+  3249                                  ;-493   if (istoken(T_ORASS))      strcpy(ops, "or" );
+  3250                                  
+  3251                                  .doreg1120:
+  3252 00001095 68D304                   push 1235
+  3253 00001098 E873F7                   call istoken
+  3254 0000109B 83C402                   add  sp, 2
+  3255 0000109E 08C0                     or  al, al
+  3256 000010A0 0F840E00                 je .doreg1121
+  3257 000010A4 68[E111]                 push doreg1_4
+  3258 000010A7 8D0620DA                 lea  ax, [ops]
+  3259 000010AB 50                       push ax
+  3260 000010AC E87DF1                   call strcpy
+  3261 000010AF 83C404                   add  sp, 4
+  3262                                  
+  3263                                  ;-494   if (istoken(T_LESSLESS))   strcpy(ops, "shl");
+  3264                                  
+  3265                                  .doreg1121:
+  3266 000010B2 68D804                   push 1240
+  3267 000010B5 E856F7                   call istoken
+  3268 000010B8 83C402                   add  sp, 2
+  3269 000010BB 08C0                     or  al, al
+  3270 000010BD 0F840E00                 je .doreg1122
+  3271 000010C1 68[E411]                 push doreg1_5
+  3272 000010C4 8D0620DA                 lea  ax, [ops]
+  3273 000010C8 50                       push ax
+  3274 000010C9 E860F1                   call strcpy
+  3275 000010CC 83C404                   add  sp, 4
+  3276                                  
+  3277                                  ;-495   if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
+  3278                                  
+  3279                                  .doreg1122:
+  3280 000010CF 68D904                   push 1241
+  3281 000010D2 E839F7                   call istoken
+  3282 000010D5 83C402                   add  sp, 2
+  3283 000010D8 08C0                     or  al, al
+  3284 000010DA 0F840E00                 je .doreg1123
+  3285 000010DE 68[E811]                 push doreg1_6
+  3286 000010E1 8D0620DA                 lea  ax, [ops]
+  3287 000010E5 50                       push ax
+  3288 000010E6 E843F1                   call strcpy
+  3289 000010E9 83C404                   add  sp, 4
+  3290                                  
+  3291                                  ;-496   if (iscmp1 == 1) { token=getlex();
   3292                                  
-  3293                                  ;-469   if (nreturn) {
-  3294                                  
-  3295 0000120E EBEC                     jmp .dofunc138
-  3296                                  .dofunc139:
-  3297 00001210 A1[2800]                 mov ax, [nreturn]
-  3298 00001213 08C0                     or  al, al
-  3299 00001215 0F841C00                 je .dofunc140
-  3300                                  
-  3301                                  ;-470         prs("\n .retn");
-  3302                                  
-  3303 00001219 68[D312]                 push dofunc_5
-  3304 0000121C E807F3                   call prs
-  3305 0000121F 83C402                   add  sp, 2
-  3306                                  
-  3307                                  ;-471         prs(fname);
+  3293                                  .doreg1123:
+  3294 000010EC 8B4604                   mov ax, [bp+4]
+  3295 000010EF 83F801                   cmp ax, 1
+  3296 000010F2 0F852700                 jne .doreg1124
+  3297 000010F6 E8431C                   call getlex
+  3298 000010F9 A3[1E00]                 mov word [token], ax
+  3299                                  
+  3300                                  ;-497       if (isrelational() ==0) error1("Relational expected");
+  3301                                  
+  3302 000010FC E8D61B                   call isrelational
+  3303 000010FF 83F800                   cmp ax, 0
+  3304 00001102 0F850900                 jne .doreg1125
+  3305 00001106 68[EC11]                 push doreg1_7
+  3306 00001109 E8D4F4                   call error1
+  3307 0000110C 83C402                   add  sp, 2
   3308                                  
-  3309 00001222 8D063B6A                 lea  ax, [fname]
-  3310 00001226 50                       push ax
-  3311 00001227 E8FCF2                   call prs
-  3312 0000122A 83C402                   add  sp, 2
-  3313                                  
-  3314                                  ;-472         prc(':');
-  3315                                  
-  3316 0000122D 6A3A                     push 58
-  3317 0000122F E88DF2                   call prc
-  3318 00001232 83C402                   add  sp, 2
+  3309                                  ;-498       strcpy(ops, "cmp"); }
+  3310                                  
+  3311                                  .doreg1125:
+  3312 0000110F 68[0012]                 push doreg1_8
+  3313 00001112 8D0620DA                 lea  ax, [ops]
+  3314 00001116 50                       push ax
+  3315 00001117 E812F1                   call strcpy
+  3316 0000111A 83C404                   add  sp, 4
+  3317                                  
+  3318                                  ;-499   prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
   3319                                  
-  3320                                  ;-473         }
-  3321                                  
-  3322                                  
-  3323                                  ;-474   if (LTop > LSTART) prs(" LEAVE");
-  3324                                  
-  3325                                  .dofunc140:
-  3326 00001235 A1[3B00]                 mov ax, [LTop]
-  3327 00001238 3DC800                   cmp ax, 200
-  3328 0000123B 0F8E0900                 jle .dofunc141
-  3329 0000123F 68[DC12]                 push dofunc_6
-  3330 00001242 E8E1F2                   call prs
-  3331 00001245 83C402                   add  sp, 2
-  3332                                  
-  3333                                  ;-475   prs("\n ret");
-  3334                                  
-  3335                                  .dofunc141:
-  3336 00001248 68[E312]                 push dofunc_7
-  3337 0000124B E8D8F2                   call prs
-  3338 0000124E 83C402                   add  sp, 2
-  3339                                  
-  3340                                  ;-476   *cloc=0; prs(co);
-  3341                                  
-  3342 00001251 B80000                   mov ax, 0
-  3343 00001254 8B1E[1800]               mov  bx, [cloc]
-  3344 00001258 8807                     mov  [bx], al
-  3345 0000125A 8D06A861                 lea  ax, [co]
-  3346 0000125E 50                       push ax
-  3347 0000125F E8C4F2                   call prs
-  3348 00001262 83C402                   add  sp, 2
-  3349                                  
-  3350                                  ;-477   maxco1=strlen(co);
-  3351                                  
-  3352 00001265 8D06A861                 lea  ax, [co]
-  3353 00001269 50                       push ax
-  3354 0000126A E897EF                   call strlen
-  3355 0000126D 83C402                   add  sp, 2
-  3356 00001270 A3[1600]                 mov word [maxco1], ax
-  3357                                  
-  3358                                  ;-478   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
-  3359                                  
-  3360 00001273 A1[1600]                 mov ax, [maxco1]
-  3361 00001276 3B06[1400]               cmp ax, [maxco]
-  3362 0000127A 0F8E1600                 jle .dofunc142
-  3363 0000127E A1[1600]                 mov ax, [maxco1]
-  3364 00001281 A3[1400]                 mov word [maxco], ax
-  3365 00001284 8D063B6A                 lea  ax, [fname]
-  3366 00001288 50                       push ax
-  3367 00001289 8D067869                 lea  ax, [coname]
-  3368 0000128D 50                       push ax
-  3369 0000128E E89BEF                   call strcpy
-  3370 00001291 83C404                   add  sp, 4
-  3371                                  
-  3372                                  ;-479   prs("\nENDP");
-  3373                                  
-  3374                                  .dofunc142:
-  3375 00001294 68[EA12]                 push dofunc_8
-  3376 00001297 E88CF2                   call prs
-  3377 0000129A 83C402                   add  sp, 2
-  3378                                  
-  3379                                  ;-480 }
-  3380                                  
-  3381                                  
-  3382                                  ;-481 int isvariable() {
-  3383 0000129D C9                       LEAVE
-  3384 0000129E C3                       ret
-  3385 0000129F 46756E6374696F6E20-     dofunc_0 db "Function already defined",0
-  3386 000012A8 616C72656164792064-
-  3387 000012B1 6566696E656400     
-  3388 000012B8 5C6E5C6E00              dofunc_1 db "\n\n",0
-  3389 000012BD 3A2050524F4300          dofunc_2 db ": PROC",0
-  3390 000012C4 3B5C6E20454E544552-     dofunc_3 db ";\n ENTER  ",0
-  3391 000012CD 202000             
-  3392 000012D0 2C3000                  dofunc_4 db ",0",0
-  3393 000012D3 5C6E202E7265746E00      dofunc_5 db "\n .retn",0
-  3394 000012DC 204C4541564500          dofunc_6 db " LEAVE",0
-  3395 000012E3 5C6E2072657400          dofunc_7 db "\n ret",0
-  3396 000012EA 5C6E454E445000          dofunc_8 db "\nENDP",0
-  3397                                  ENDP
-  3398                                  
-  3399                                  isvariable: PROC
-  3400                                  
-  3401                                  ;-482     if(token==T_SIGNED)   goto v1;
-  3402                                  
-  3403 000012F1 A1[1E00]                 mov ax, [token]
-  3404 000012F4 3D1302                   cmp ax, 531
-  3405 000012F7 0F850300                 jne .isvariable143
-  3406 000012FB E93A00                   jmp .v1
+  3320                                  .doreg1124:
+  3321 0000111D E856F3                   call prnl
+  3322 00001120 8D0620DA                 lea  ax, [ops]
+  3323 00001124 50                       push ax
+  3324 00001125 E8BAF2                   call prs
+  3325 00001128 83C402                   add  sp, 2
+  3326 0000112B 68[0412]                 push doreg1_9
+  3327 0000112E E8B1F2                   call prs
+  3328 00001131 83C402                   add  sp, 2
+  3329 00001134 FF36[870E]               push word [ireg1]
+  3330 00001138 E8DD04                   call printreg
+  3331 0000113B 83C402                   add  sp, 2
+  3332 0000113E 68[0712]                 push doreg1_10
+  3333 00001141 E89EF2                   call prs
+  3334 00001144 83C402                   add  sp, 2
+  3335                                  
+  3336                                  ;-500 
+  3337                                  
+  3338                                  
+  3339                                  ;-501   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
+  3340                                  
+  3341 00001147 680101                   push 257
+  3342 0000114A E8C1F6                   call istoken
+  3343 0000114D 83C402                   add  sp, 2
+  3344 00001150 08C0                     or  al, al
+  3345 00001152 0F840D00                 je .doreg1126
+  3346 00001156 FF36[2C00]               push word [lexval]
+  3347 0000115A E8E8F3                   call prunsign1
+  3348 0000115D 83C402                   add  sp, 2
+  3349 00001160 E94700                   jmp .reg1
+  3350                                  
+  3351                                  ;-502   mod2=typeName(); ireg2=checkreg();
+  3352                                  
+  3353                                  .doreg1126:
+  3354 00001163 E8CDF9                   call typeName
+  3355 00001166 A3[890E]                 mov word [mod2], ax
+  3356 00001169 E89E00                   call checkreg
+  3357 0000116C A3[8B0E]                 mov word [ireg2], ax
+  3358                                  
+  3359                                  ;-503   if (ireg2) {printreg(ireg2); goto reg1;}
+  3360                                  
+  3361 0000116F A1[8B0E]                 mov ax, [ireg2]
+  3362 00001172 08C0                     or  al, al
+  3363 00001174 0F840D00                 je .doreg1127
+  3364 00001178 FF36[8B0E]               push word [ireg2]
+  3365 0000117C E89904                   call printreg
+  3366 0000117F 83C402                   add  sp, 2
+  3367 00001182 E92500                   jmp .reg1
+  3368                                  
+  3369                                  ;-504   i=searchname();  if (mod2 == 2) a(i); else v(i);
+  3370                                  
+  3371                                  .doreg1127:
+  3372 00001185 E8DCF8                   call searchname
+  3373 00001188 8946FE                   mov [bp-2], ax
+  3374 0000118B A1[890E]                 mov ax, [mod2]
+  3375 0000118E 83F802                   cmp ax, 2
+  3376 00001191 0F850C00                 jne .doreg1128
+  3377 00001195 FF76FE                   push word [bp-2]
+  3378 00001198 E861F7                   call a
+  3379 0000119B 83C402                   add  sp, 2
+  3380 0000119E E90900                   jmp .doreg1129
+  3381                                  .doreg1128:
+  3382 000011A1 FF76FE                   push word [bp-2]
+  3383 000011A4 E864F7                   call v
+  3384 000011A7 83C402                   add  sp, 2
+  3385                                  
+  3386                                  ;-505   reg1: if (iscmp1 == 1) {cmpneg(0); prs(fname); expect(')'); }
+  3387                                  
+  3388                                  .doreg1129:
+  3389                                  .reg1:
+  3390 000011AA 8B4604                   mov ax, [bp+4]
+  3391 000011AD 83F801                   cmp ax, 1
+  3392 000011B0 0F851B00                 jne .doreg1130
+  3393 000011B4 6A00                     push 0
+  3394 000011B6 E85E18                   call cmpneg
+  3395 000011B9 83C402                   add  sp, 2
+  3396 000011BC 8D063B6A                 lea  ax, [fname]
+  3397 000011C0 50                       push ax
+  3398 000011C1 E81EF2                   call prs
+  3399 000011C4 83C402                   add  sp, 2
+  3400 000011C7 6A29                     push 41
+  3401 000011C9 E864F6                   call expect
+  3402 000011CC 83C402                   add  sp, 2
+  3403                                  
+  3404                                  ;-506 }
+  3405                                  
+  3406                                  .doreg1130:
   3407                                  
-  3408                                  ;-483     if(token==T_UNSIGNED) goto v1;
-  3409                                  
-  3410                                  .isvariable143:
-  3411 000012FE A1[1E00]                 mov ax, [token]
-  3412 00001301 3D1402                   cmp ax, 532
-  3413 00001304 0F850300                 jne .isvariable144
-  3414 00001308 E92D00                   jmp .v1
-  3415                                  
-  3416                                  ;-484     if(token==T_CHAR)     goto v1;
-  3417                                  
-  3418                                  .isvariable144:
-  3419 0000130B A1[1E00]                 mov ax, [token]
-  3420 0000130E 3D1202                   cmp ax, 530
-  3421 00001311 0F850300                 jne .isvariable145
-  3422 00001315 E92000                   jmp .v1
-  3423                                  
-  3424                                  ;-485     if(token==T_INT)      goto v1;
+  3408                                  ;-507 int checkreg() { // >=17 = 16bit, >=47 = 32bit
+  3409 000011CF C9                       LEAVE
+  3410 000011D0 C3                       ret
+  3411 000011D1 6D6F7600                doreg1_0 db "mov",0
+  3412 000011D5 61646400                doreg1_1 db "add",0
+  3413 000011D9 73756200                doreg1_2 db "sub",0
+  3414 000011DD 616E6400                doreg1_3 db "and",0
+  3415 000011E1 6F7200                  doreg1_4 db "or",0
+  3416 000011E4 73686C00                doreg1_5 db "shl",0
+  3417 000011E8 73687200                doreg1_6 db "shr",0
+  3418 000011EC 52656C6174696F6E61-     doreg1_7 db "Relational expected",0
+  3419 000011F5 6C2065787065637465-
+  3420 000011FE 6400               
+  3421 00001200 636D7000                doreg1_8 db "cmp",0
+  3422 00001204 202000                  doreg1_9 db "  ",0
+  3423 00001207 2C2000                  doreg1_10 db ", ",0
+  3424                                  ENDP
   3425                                  
-  3426                                  .isvariable145:
-  3427 00001318 A1[1E00]                 mov ax, [token]
-  3428 0000131B 3D0502                   cmp ax, 517
-  3429 0000131E 0F850300                 jne .isvariable146
-  3430 00001322 E91300                   jmp .v1
-  3431                                  
-  3432                                  ;-486     if(token==T_LONG)     goto v1;
-  3433                                  
-  3434                                  .isvariable146:
-  3435 00001325 A1[1E00]                 mov ax, [token]
-  3436 00001328 3D1502                   cmp ax, 533
-  3437 0000132B 0F850300                 jne .isvariable147
-  3438 0000132F E90600                   jmp .v1
-  3439                                  
-  3440                                  ;-487     return 0;
-  3441                                  
-  3442                                  .isvariable147:
-  3443 00001332 B80000                   mov ax, 0
-  3444 00001335 E90600                   jmp .retnisvariable
-  3445                                  
-  3446                                  ;-488 v1: return 1;
-  3447                                  
-  3448                                  .v1:
-  3449 00001338 B80100                   mov ax, 1
-  3450 0000133B E90000                   jmp .retnisvariable
-  3451                                  
-  3452                                  ;-489 }
-  3453                                  
-  3454                                  
-  3455                                  ;-490 
-  3456                                  
-  3457                                  
-  3458                                  ;-491 int ireg1;
-  3459                                  
-  3460                                   .retnisvariable:
-  3461 0000133E C3                       ret
-  3462                                  ENDP
-  3463 0000133F 0000                    ireg1 dw 0
-  3464                                  
-  3465                                  ;-492 int mod2; int ireg2;
-  3466                                  
-  3467 00001341 0000                    mod2 dw 0
-  3468 00001343 0000                    ireg2 dw 0
-  3469                                  
-  3470                                  ;-493 
-  3471                                  
-  3472                                  
-  3473                                  ;-494 int pexpr() {expect('('); iscmp=0;
-  3474                                  
-  3475                                  
-  3476                                  pexpr: PROC
-  3477 00001345 6A28                     push 40
-  3478 00001347 E8CCF0                   call expect
-  3479 0000134A 83C402                   add  sp, 2
-  3480 0000134D B80000                   mov ax, 0
-  3481 00001350 A3[2400]                 mov word [iscmp], ax
-  3482                                  
-  3483                                  ;-495   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
+  3426                                  checkreg: PROC
+  3427                                  
+  3428                                  ;-508   if (strlen(symbol) <  2) return 0;
+  3429                                  
+  3430 0000120A 8D06BB69                 lea  ax, [symbol]
+  3431 0000120E 50                       push ax
+  3432 0000120F E8F2EF                   call strlen
+  3433 00001212 83C402                   add  sp, 2
+  3434 00001215 83F802                   cmp ax, 2
+  3435 00001218 0F8D0600                 jge .checkreg131
+  3436 0000121C B80000                   mov ax, 0
+  3437 0000121F E94403                   jmp .retncheckreg
+  3438                                  
+  3439                                  ;-509   if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
+  3440                                  
+  3441                                  .checkreg131:
+  3442 00001222 68[6715]                 push checkreg_0
+  3443 00001225 8D06BB69                 lea  ax, [symbol]
+  3444 00001229 50                       push ax
+  3445 0000122A E835F0                   call eqstr
+  3446 0000122D 83C404                   add  sp, 4
+  3447 00001230 08C0                     or  al, al
+  3448 00001232 0F840600                 je .checkreg132
+  3449 00001236 B80100                   mov ax, 1
+  3450 00001239 E92A03                   jmp .retncheckreg
+  3451                                  .checkreg132:
+  3452 0000123C 68[6A15]                 push checkreg_1
+  3453 0000123F 8D06BB69                 lea  ax, [symbol]
+  3454 00001243 50                       push ax
+  3455 00001244 E81BF0                   call eqstr
+  3456 00001247 83C404                   add  sp, 4
+  3457 0000124A 08C0                     or  al, al
+  3458 0000124C 0F840600                 je .checkreg133
+  3459 00001250 B80300                   mov ax, 3
+  3460 00001253 E91003                   jmp .retncheckreg
+  3461                                  
+  3462                                  ;-510   if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
+  3463                                  
+  3464                                  .checkreg133:
+  3465 00001256 68[6D15]                 push checkreg_2
+  3466 00001259 8D06BB69                 lea  ax, [symbol]
+  3467 0000125D 50                       push ax
+  3468 0000125E E801F0                   call eqstr
+  3469 00001261 83C404                   add  sp, 4
+  3470 00001264 08C0                     or  al, al
+  3471 00001266 0F840600                 je .checkreg134
+  3472 0000126A B80500                   mov ax, 5
+  3473 0000126D E9F602                   jmp .retncheckreg
+  3474                                  .checkreg134:
+  3475 00001270 68[7015]                 push checkreg_3
+  3476 00001273 8D06BB69                 lea  ax, [symbol]
+  3477 00001277 50                       push ax
+  3478 00001278 E8E7EF                   call eqstr
+  3479 0000127B 83C404                   add  sp, 4
+  3480 0000127E 08C0                     or  al, al
+  3481 00001280 0F840600                 je .checkreg135
+  3482 00001284 B80700                   mov ax, 7
+  3483 00001287 E9DC02                   jmp .retncheckreg
   3484                                  
-  3485 00001353 A1[1E00]                 mov ax, [token]
-  3486 00001356 3D0001                   cmp ax, 256
-  3487 00001359 0F853400                 jne .pexpr148
-  3488 0000135D 68[C013]                 push pexpr_0
-  3489 00001360 8D06BB69                 lea  ax, [symbol]
-  3490 00001364 50                       push ax
-  3491 00001365 E8FAEE                   call eqstr
-  3492 00001368 83C404                   add  sp, 4
-  3493 0000136B 08C0                     or  al, al
-  3494 0000136D 0F840600                 je .pexpr149
-  3495 00001371 E86300                   call constantexpr
-  3496 00001374 E94800                   jmp .retnpexpr
-  3497                                  
-  3498                                  ;-496     ireg1=checkreg();
-  3499                                  
-  3500                                  .pexpr149:
-  3501 00001377 E84803                   call checkreg
-  3502 0000137A A3[3F13]                 mov word [ireg1], ax
-  3503                                  
-  3504                                  ;-497     if (ireg1) { doreg1(1); return; }  }
-  3505                                  
-  3506 0000137D A1[3F13]                 mov ax, [ireg1]
-  3507 00001380 08C0                     or  al, al
-  3508 00001382 0F840B00                 je .pexpr150
-  3509 00001386 6A01                     push 1
-  3510 00001388 E84B01                   call doreg1
-  3511 0000138B 83C402                   add  sp, 2
-  3512 0000138E E92E00                   jmp .retnpexpr
-  3513                                  .pexpr150:
-  3514                                  
-  3515                                  ;-498   expr(0);
-  3516                                  
-  3517                                  .pexpr148:
-  3518 00001391 6A00                     push 0
-  3519 00001393 E8AB07                   call expr
-  3520 00001396 83C402                   add  sp, 2
-  3521                                  
-  3522                                  ;-499   if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
-  3523                                  
-  3524 00001399 A1[2400]                 mov ax, [iscmp]
-  3525 0000139C 83F800                   cmp ax, 0
-  3526 0000139F 0F850900                 jne .pexpr151
-  3527 000013A3 68[C213]                 push pexpr_1
-  3528 000013A6 E87DF1                   call prs
-  3529 000013A9 83C402                   add  sp, 2
-  3530                                  .pexpr151:
-  3531 000013AC 8D063B6A                 lea  ax, [fname]
-  3532 000013B0 50                       push ax
-  3533 000013B1 E872F1                   call prs
-  3534 000013B4 83C402                   add  sp, 2
-  3535                                  
-  3536                                  ;-500   expect(')'); }
-  3537                                  
-  3538 000013B7 6A29                     push 41
-  3539 000013B9 E85AF0                   call expect
-  3540 000013BC 83C402                   add  sp, 2
-  3541                                  
-  3542                                  ;-501 
-  3543                                  
-  3544                                  
-  3545                                  ;-502 int constantexpr() { int mode; int id1;int ids;
-  3546                                  
-  3547                                   .retnpexpr:
-  3548 000013BF C3                       ret
-  3549 000013C0 5F00                    pexpr_0 db "_",0
-  3550 000013C2 5C6E206F722020616C-     pexpr_1 db "\n or  al, al\n je .",0
-  3551 000013CB 2C20616C5C6E206A65-
-  3552 000013D4 202E00             
-  3553                                  ENDP
-  3554                                  
-  3555                                  constantexpr: PROC
-  3556                                  
-  3557                                  ;-503   token=getlex();   mode=typeName();
-  3558                                  ;
-  3559 000013D7 C8060000                 ENTER  6,0
-  3560 000013DB E8161E                   call getlex
-  3561 000013DE A3[1E00]                 mov word [token], ax
-  3562 000013E1 E86EF9                   call typeName
-  3563 000013E4 8946FE                   mov [bp-2], ax
-  3564                                  
-  3565                                  ;-504   id1=searchname(); gettypes(id1); ids=signi;
-  3566                                  
-  3567 000013E7 E899F8                   call searchname
-  3568 000013EA 8946FC                   mov [bp-4], ax
-  3569 000013ED FF76FC                   push word [bp-4]
-  3570 000013F0 E852F7                   call gettypes
-  3571 000013F3 83C402                   add  sp, 2
-  3572 000013F6 A1[3100]                 mov ax, [signi]
-  3573 000013F9 8946FA                   mov [bp-6], ax
-  3574                                  
-  3575                                  ;-505   if (isrelational() ==0) error1("Relational expression expected");
+  3485                                  ;-511   if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
+  3486                                  
+  3487                                  .checkreg135:
+  3488 0000128A 68[7315]                 push checkreg_4
+  3489 0000128D 8D06BB69                 lea  ax, [symbol]
+  3490 00001291 50                       push ax
+  3491 00001292 E8CDEF                   call eqstr
+  3492 00001295 83C404                   add  sp, 4
+  3493 00001298 08C0                     or  al, al
+  3494 0000129A 0F840600                 je .checkreg136
+  3495 0000129E B80900                   mov ax, 9
+  3496 000012A1 E9C202                   jmp .retncheckreg
+  3497                                  .checkreg136:
+  3498 000012A4 68[7615]                 push checkreg_5
+  3499 000012A7 8D06BB69                 lea  ax, [symbol]
+  3500 000012AB 50                       push ax
+  3501 000012AC E8B3EF                   call eqstr
+  3502 000012AF 83C404                   add  sp, 4
+  3503 000012B2 08C0                     or  al, al
+  3504 000012B4 0F840600                 je .checkreg137
+  3505 000012B8 B80B00                   mov ax, 11
+  3506 000012BB E9A802                   jmp .retncheckreg
+  3507                                  
+  3508                                  ;-512   if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
+  3509                                  
+  3510                                  .checkreg137:
+  3511 000012BE 68[7915]                 push checkreg_6
+  3512 000012C1 8D06BB69                 lea  ax, [symbol]
+  3513 000012C5 50                       push ax
+  3514 000012C6 E899EF                   call eqstr
+  3515 000012C9 83C404                   add  sp, 4
+  3516 000012CC 08C0                     or  al, al
+  3517 000012CE 0F840600                 je .checkreg138
+  3518 000012D2 B80D00                   mov ax, 13
+  3519 000012D5 E98E02                   jmp .retncheckreg
+  3520                                  .checkreg138:
+  3521 000012D8 68[7C15]                 push checkreg_7
+  3522 000012DB 8D06BB69                 lea  ax, [symbol]
+  3523 000012DF 50                       push ax
+  3524 000012E0 E87FEF                   call eqstr
+  3525 000012E3 83C404                   add  sp, 4
+  3526 000012E6 08C0                     or  al, al
+  3527 000012E8 0F840600                 je .checkreg139
+  3528 000012EC B80F00                   mov ax, 15
+  3529 000012EF E97402                   jmp .retncheckreg
+  3530                                  
+  3531                                  ;-513   if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
+  3532                                  
+  3533                                  .checkreg139:
+  3534 000012F2 68[7F15]                 push checkreg_8
+  3535 000012F5 8D06BB69                 lea  ax, [symbol]
+  3536 000012F9 50                       push ax
+  3537 000012FA E865EF                   call eqstr
+  3538 000012FD 83C404                   add  sp, 4
+  3539 00001300 08C0                     or  al, al
+  3540 00001302 0F840600                 je .checkreg140
+  3541 00001306 B81100                   mov ax, 17
+  3542 00001309 E95A02                   jmp .retncheckreg
+  3543                                  .checkreg140:
+  3544 0000130C 68[8215]                 push checkreg_9
+  3545 0000130F 8D06BB69                 lea  ax, [symbol]
+  3546 00001313 50                       push ax
+  3547 00001314 E84BEF                   call eqstr
+  3548 00001317 83C404                   add  sp, 4
+  3549 0000131A 08C0                     or  al, al
+  3550 0000131C 0F840600                 je .checkreg141
+  3551 00001320 B81300                   mov ax, 19
+  3552 00001323 E94002                   jmp .retncheckreg
+  3553                                  
+  3554                                  ;-514   if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
+  3555                                  
+  3556                                  .checkreg141:
+  3557 00001326 68[8515]                 push checkreg_10
+  3558 00001329 8D06BB69                 lea  ax, [symbol]
+  3559 0000132D 50                       push ax
+  3560 0000132E E831EF                   call eqstr
+  3561 00001331 83C404                   add  sp, 4
+  3562 00001334 08C0                     or  al, al
+  3563 00001336 0F840600                 je .checkreg142
+  3564 0000133A B81500                   mov ax, 21
+  3565 0000133D E92602                   jmp .retncheckreg
+  3566                                  .checkreg142:
+  3567 00001340 68[8815]                 push checkreg_11
+  3568 00001343 8D06BB69                 lea  ax, [symbol]
+  3569 00001347 50                       push ax
+  3570 00001348 E817EF                   call eqstr
+  3571 0000134B 83C404                   add  sp, 4
+  3572 0000134E 08C0                     or  al, al
+  3573 00001350 0F840600                 je .checkreg143
+  3574 00001354 B81700                   mov ax, 23
+  3575 00001357 E90C02                   jmp .retncheckreg
   3576                                  
-  3577 000013FC E88E1D                   call isrelational
-  3578 000013FF 83F800                   cmp ax, 0
-  3579 00001402 0F850900                 jne .constantexpr152
-  3580 00001406 68[8C14]                 push constantexpr_0
-  3581 00001409 E85F28                   call error1
-  3582 0000140C 83C402                   add  sp, 2
-  3583                                  
-  3584                                  ;-506   expect(T_CONST);  prs(" ; constant expression");
-  3585                                  
-  3586                                  .constantexpr152:
-  3587 0000140F 680101                   push 257
-  3588 00001412 E801F0                   call expect
-  3589 00001415 83C402                   add  sp, 2
-  3590 00001418 68[AB14]                 push constantexpr_1
-  3591 0000141B E808F1                   call prs
-  3592 0000141E 83C402                   add  sp, 2
-  3593                                  
-  3594                                  ;-507   prs("\ncmp ");
-  3595                                  
-  3596 00001421 68[C214]                 push constantexpr_2
-  3597 00001424 E8FFF0                   call prs
-  3598 00001427 83C402                   add  sp, 2
+  3577                                  ;-515   if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
+  3578                                  
+  3579                                  .checkreg143:
+  3580 0000135A 68[8B15]                 push checkreg_12
+  3581 0000135D 8D06BB69                 lea  ax, [symbol]
+  3582 00001361 50                       push ax
+  3583 00001362 E8FDEE                   call eqstr
+  3584 00001365 83C404                   add  sp, 4
+  3585 00001368 08C0                     or  al, al
+  3586 0000136A 0F840600                 je .checkreg144
+  3587 0000136E B81900                   mov ax, 25
+  3588 00001371 E9F201                   jmp .retncheckreg
+  3589                                  .checkreg144:
+  3590 00001374 68[8E15]                 push checkreg_13
+  3591 00001377 8D06BB69                 lea  ax, [symbol]
+  3592 0000137B 50                       push ax
+  3593 0000137C E8E3EE                   call eqstr
+  3594 0000137F 83C404                   add  sp, 4
+  3595 00001382 08C0                     or  al, al
+  3596 00001384 0F840600                 je .checkreg145
+  3597 00001388 B81B00                   mov ax, 27
+  3598 0000138B E9D801                   jmp .retncheckreg
   3599                                  
-  3600                                  ;-508   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
+  3600                                  ;-516   if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
   3601                                  
-  3602 0000142A FF76FC                   push word [bp-4]
-  3603 0000142D E815F7                   call gettypes
-  3604 00001430 83C402                   add  sp, 2
-  3605 00001433 A1[3700]                 mov ax, [wi]
-  3606 00001436 83F802                   cmp ax, 2
-  3607 00001439 0F850C00                 jne .constantexpr153
-  3608 0000143D 68[C914]                 push constantexpr_3
-  3609 00001440 E8E3F0                   call prs
-  3610 00001443 83C402                   add  sp, 2
-  3611 00001446 E90900                   jmp .constantexpr154
-  3612                                  .constantexpr153:
-  3613 00001449 68[CE14]                 push constantexpr_4
-  3614 0000144C E8D7F0                   call prs
-  3615 0000144F 83C402                   add  sp, 2
-  3616                                  
-  3617                                  ;-509   v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
-  3618                                  
-  3619                                  .constantexpr154:
-  3620 00001452 FF76FC                   push word [bp-4]
-  3621 00001455 E8FFEE                   call v
-  3622 00001458 83C402                   add  sp, 2
-  3623 0000145B 68[D314]                 push constantexpr_5
-  3624 0000145E E8C5F0                   call prs
-  3625 00001461 83C402                   add  sp, 2
-  3626 00001464 FF36[2C00]               push word [lexval]
-  3627 00001468 E810F2                   call prunsign1
-  3628 0000146B 83C402                   add  sp, 2
-  3629 0000146E FF76FA                   push word [bp-6]
-  3630 00001471 E85B1A                   call cmpneg
-  3631 00001474 83C402                   add  sp, 2
-  3632 00001477 8D063B6A                 lea  ax, [fname]
-  3633 0000147B 50                       push ax
-  3634 0000147C E8A7F0                   call prs
-  3635 0000147F 83C402                   add  sp, 2
-  3636                                  
-  3637                                  ;-510   expect(')');
-  3638                                  
-  3639 00001482 6A29                     push 41
-  3640 00001484 E88FEF                   call expect
-  3641 00001487 83C402                   add  sp, 2
-  3642                                  
-  3643                                  ;-511 }
-  3644                                  
+  3602                                  .checkreg145:
+  3603 0000138E 68[9115]                 push checkreg_14
+  3604 00001391 8D06BB69                 lea  ax, [symbol]
+  3605 00001395 50                       push ax
+  3606 00001396 E8C9EE                   call eqstr
+  3607 00001399 83C404                   add  sp, 4
+  3608 0000139C 08C0                     or  al, al
+  3609 0000139E 0F840600                 je .checkreg146
+  3610 000013A2 B81D00                   mov ax, 29
+  3611 000013A5 E9BE01                   jmp .retncheckreg
+  3612                                  .checkreg146:
+  3613 000013A8 68[9415]                 push checkreg_15
+  3614 000013AB 8D06BB69                 lea  ax, [symbol]
+  3615 000013AF 50                       push ax
+  3616 000013B0 E8AFEE                   call eqstr
+  3617 000013B3 83C404                   add  sp, 4
+  3618 000013B6 08C0                     or  al, al
+  3619 000013B8 0F840600                 je .checkreg147
+  3620 000013BC B81F00                   mov ax, 31
+  3621 000013BF E9A401                   jmp .retncheckreg
+  3622                                  
+  3623                                  ;-517   if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
+  3624                                  
+  3625                                  .checkreg147:
+  3626 000013C2 68[9715]                 push checkreg_16
+  3627 000013C5 8D06BB69                 lea  ax, [symbol]
+  3628 000013C9 50                       push ax
+  3629 000013CA E895EE                   call eqstr
+  3630 000013CD 83C404                   add  sp, 4
+  3631 000013D0 08C0                     or  al, al
+  3632 000013D2 0F840600                 je .checkreg148
+  3633 000013D6 B82100                   mov ax, 33
+  3634 000013D9 E98A01                   jmp .retncheckreg
+  3635                                  .checkreg148:
+  3636 000013DC 68[9A15]                 push checkreg_17
+  3637 000013DF 8D06BB69                 lea  ax, [symbol]
+  3638 000013E3 50                       push ax
+  3639 000013E4 E87BEE                   call eqstr
+  3640 000013E7 83C404                   add  sp, 4
+  3641 000013EA 08C0                     or  al, al
+  3642 000013EC 0F840600                 je .checkreg149
+  3643 000013F0 B82300                   mov ax, 35
+  3644 000013F3 E97001                   jmp .retncheckreg
   3645                                  
-  3646                                  ;-512 
+  3646                                  ;-518   if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
   3647                                  
-  3648                                  
-  3649                                  ;-513 char ops[5];
-  3650 0000148A C9                       LEAVE
-  3651 0000148B C3                       ret
-  3652 0000148C 52656C6174696F6E61-     constantexpr_0 db "Relational expression expected",0
-  3653 00001495 6C2065787072657373-
-  3654 0000149E 696F6E206578706563-
-  3655 000014A7 74656400           
-  3656 000014AB 203B20636F6E737461-     constantexpr_1 db " ; constant expression",0
-  3657 000014B4 6E7420657870726573-
-  3658 000014BD 73696F6E00         
-  3659 000014C2 5C6E636D702000          constantexpr_2 db "\ncmp ",0
-  3660 000014C9 776F726400              constantexpr_3 db "word",0
-  3661 000014CE 6279746500              constantexpr_4 db "byte",0
-  3662 000014D3 2C2000                  constantexpr_5 db ", ",0
-  3663                                  ENDP
-  3664                                  section .bss
-  3665                                  absolute 55855
-  3666 0000DA2F <res 00000005>          ops resb 5
-  3667                                  section .text
+  3648                                  .checkreg149:
+  3649 000013F6 68[9D15]                 push checkreg_18
+  3650 000013F9 8D06BB69                 lea  ax, [symbol]
+  3651 000013FD 50                       push ax
+  3652 000013FE E861EE                   call eqstr
+  3653 00001401 83C404                   add  sp, 4
+  3654 00001404 08C0                     or  al, al
+  3655 00001406 0F840600                 je .checkreg150
+  3656 0000140A B82500                   mov ax, 37
+  3657 0000140D E95601                   jmp .retncheckreg
+  3658                                  .checkreg150:
+  3659 00001410 68[A015]                 push checkreg_19
+  3660 00001413 8D06BB69                 lea  ax, [symbol]
+  3661 00001417 50                       push ax
+  3662 00001418 E847EE                   call eqstr
+  3663 0000141B 83C404                   add  sp, 4
+  3664 0000141E 08C0                     or  al, al
+  3665 00001420 0F840600                 je .checkreg151
+  3666 00001424 B82700                   mov ax, 39
+  3667 00001427 E93C01                   jmp .retncheckreg
   3668                                  
-  3669                                  ;-514 int doreg1(int iscmp1) { int i;
+  3669                                  ;-519   if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
   3670                                  
-  3671                                  
-  3672                                  doreg1: PROC
-  3673                                  
-  3674                                  ;-515   if (istoken('='))          strcpy(ops, "mov");
-  3675                                  ;
-  3676 000014D6 C8020000                 ENTER  2,0
-  3677 000014DA 6A3D                     push 61
-  3678 000014DC E815EF                   call istoken
-  3679 000014DF 83C402                   add  sp, 2
-  3680 000014E2 08C0                     or  al, al
-  3681 000014E4 0F840E00                 je .doreg1155
-  3682 000014E8 68[8916]                 push doreg1_0
-  3683 000014EB 8D062FDA                 lea  ax, [ops]
-  3684 000014EF 50                       push ax
-  3685 000014F0 E839ED                   call strcpy
-  3686 000014F3 83C404                   add  sp, 4
-  3687                                  
-  3688                                  ;-516   if (istoken(T_PLUSASS))    strcpy(ops, "add");
-  3689                                  
-  3690                                  .doreg1155:
-  3691 000014F6 68CE04                   push 1230
-  3692 000014F9 E8F8EE                   call istoken
-  3693 000014FC 83C402                   add  sp, 2
-  3694 000014FF 08C0                     or  al, al
-  3695 00001501 0F840E00                 je .doreg1156
-  3696 00001505 68[8D16]                 push doreg1_1
-  3697 00001508 8D062FDA                 lea  ax, [ops]
-  3698 0000150C 50                       push ax
-  3699 0000150D E81CED                   call strcpy
-  3700 00001510 83C404                   add  sp, 4
-  3701                                  
-  3702                                  ;-517   if (istoken(T_MINUSASS))   strcpy(ops, "sub");
-  3703                                  
-  3704                                  .doreg1156:
-  3705 00001513 68CF04                   push 1231
-  3706 00001516 E8DBEE                   call istoken
-  3707 00001519 83C402                   add  sp, 2
-  3708 0000151C 08C0                     or  al, al
-  3709 0000151E 0F840E00                 je .doreg1157
-  3710 00001522 68[9116]                 push doreg1_2
-  3711 00001525 8D062FDA                 lea  ax, [ops]
-  3712 00001529 50                       push ax
-  3713 0000152A E8FFEC                   call strcpy
-  3714 0000152D 83C404                   add  sp, 4
-  3715                                  
-  3716                                  ;-518   if (istoken(T_ANDASS))     strcpy(ops, "and");
-  3717                                  
-  3718                                  .doreg1157:
-  3719 00001530 68D204                   push 1234
-  3720 00001533 E8BEEE                   call istoken
-  3721 00001536 83C402                   add  sp, 2
-  3722 00001539 08C0                     or  al, al
-  3723 0000153B 0F840E00                 je .doreg1158
-  3724 0000153F 68[9516]                 push doreg1_3
-  3725 00001542 8D062FDA                 lea  ax, [ops]
-  3726 00001546 50                       push ax
-  3727 00001547 E8E2EC                   call strcpy
-  3728 0000154A 83C404                   add  sp, 4
+  3671                                  .checkreg151:
+  3672 0000142A 68[A315]                 push checkreg_20
+  3673 0000142D 8D06BB69                 lea  ax, [symbol]
+  3674 00001431 50                       push ax
+  3675 00001432 E82DEE                   call eqstr
+  3676 00001435 83C404                   add  sp, 4
+  3677 00001438 08C0                     or  al, al
+  3678 0000143A 0F840600                 je .checkreg152
+  3679 0000143E B82900                   mov ax, 41
+  3680 00001441 E92201                   jmp .retncheckreg
+  3681                                  .checkreg152:
+  3682 00001444 68[A615]                 push checkreg_21
+  3683 00001447 8D06BB69                 lea  ax, [symbol]
+  3684 0000144B 50                       push ax
+  3685 0000144C E813EE                   call eqstr
+  3686 0000144F 83C404                   add  sp, 4
+  3687 00001452 08C0                     or  al, al
+  3688 00001454 0F840600                 je .checkreg153
+  3689 00001458 B82B00                   mov ax, 43
+  3690 0000145B E90801                   jmp .retncheckreg
+  3691                                  
+  3692                                  ;-520   // (eqstr(symbol,"ip")) return 45;
+  3693                                  
+  3694                                  
+  3695                                  ;-521   if (strlen(symbol) >   3) return 0;
+  3696                                  
+  3697                                  .checkreg153:
+  3698 0000145E 8D06BB69                 lea  ax, [symbol]
+  3699 00001462 50                       push ax
+  3700 00001463 E89EED                   call strlen
+  3701 00001466 83C402                   add  sp, 2
+  3702 00001469 83F803                   cmp ax, 3
+  3703 0000146C 0F8E0600                 jle .checkreg154
+  3704 00001470 B80000                   mov ax, 0
+  3705 00001473 E9F000                   jmp .retncheckreg
+  3706                                  
+  3707                                  ;-522   if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
+  3708                                  
+  3709                                  .checkreg154:
+  3710 00001476 68[A915]                 push checkreg_22
+  3711 00001479 8D06BB69                 lea  ax, [symbol]
+  3712 0000147D 50                       push ax
+  3713 0000147E E8E1ED                   call eqstr
+  3714 00001481 83C404                   add  sp, 4
+  3715 00001484 08C0                     or  al, al
+  3716 00001486 0F840600                 je .checkreg155
+  3717 0000148A B82F00                   mov ax, 47
+  3718 0000148D E9D600                   jmp .retncheckreg
+  3719                                  .checkreg155:
+  3720 00001490 68[AD15]                 push checkreg_23
+  3721 00001493 8D06BB69                 lea  ax, [symbol]
+  3722 00001497 50                       push ax
+  3723 00001498 E8C7ED                   call eqstr
+  3724 0000149B 83C404                   add  sp, 4
+  3725 0000149E 08C0                     or  al, al
+  3726 000014A0 0F840600                 je .checkreg156
+  3727 000014A4 B83200                   mov ax, 50
+  3728 000014A7 E9BC00                   jmp .retncheckreg
   3729                                  
-  3730                                  ;-519   if (istoken(T_ORASS))      strcpy(ops, "or" );
+  3730                                  ;-523   if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
   3731                                  
-  3732                                  .doreg1158:
-  3733 0000154D 68D304                   push 1235
-  3734 00001550 E8A1EE                   call istoken
-  3735 00001553 83C402                   add  sp, 2
-  3736 00001556 08C0                     or  al, al
-  3737 00001558 0F840E00                 je .doreg1159
-  3738 0000155C 68[9916]                 push doreg1_4
-  3739 0000155F 8D062FDA                 lea  ax, [ops]
-  3740 00001563 50                       push ax
-  3741 00001564 E8C5EC                   call strcpy
-  3742 00001567 83C404                   add  sp, 4
-  3743                                  
-  3744                                  ;-520   if (istoken(T_LESSLESS))   strcpy(ops, "shl");
-  3745                                  
-  3746                                  .doreg1159:
-  3747 0000156A 68D804                   push 1240
-  3748 0000156D E884EE                   call istoken
-  3749 00001570 83C402                   add  sp, 2
-  3750 00001573 08C0                     or  al, al
-  3751 00001575 0F840E00                 je .doreg1160
-  3752 00001579 68[9C16]                 push doreg1_5
-  3753 0000157C 8D062FDA                 lea  ax, [ops]
-  3754 00001580 50                       push ax
-  3755 00001581 E8A8EC                   call strcpy
-  3756 00001584 83C404                   add  sp, 4
-  3757                                  
-  3758                                  ;-521   if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
-  3759                                  
-  3760                                  .doreg1160:
-  3761 00001587 68D904                   push 1241
-  3762 0000158A E867EE                   call istoken
-  3763 0000158D 83C402                   add  sp, 2
-  3764 00001590 08C0                     or  al, al
-  3765 00001592 0F840E00                 je .doreg1161
-  3766 00001596 68[A016]                 push doreg1_6
-  3767 00001599 8D062FDA                 lea  ax, [ops]
-  3768 0000159D 50                       push ax
-  3769 0000159E E88BEC                   call strcpy
-  3770 000015A1 83C404                   add  sp, 4
-  3771                                  
-  3772                                  ;-522   if (iscmp1 == 1) { token=getlex();
-  3773                                  
-  3774                                  .doreg1161:
-  3775 000015A4 8B4604                   mov ax, [bp+4]
-  3776 000015A7 83F801                   cmp ax, 1
-  3777 000015AA 0F852700                 jne .doreg1162
-  3778 000015AE E8431C                   call getlex
-  3779 000015B1 A3[1E00]                 mov word [token], ax
-  3780                                  
-  3781                                  ;-523       if (isrelational() ==0) error1("Relational expected");
-  3782                                  
-  3783 000015B4 E8D61B                   call isrelational
-  3784 000015B7 83F800                   cmp ax, 0
-  3785 000015BA 0F850900                 jne .doreg1163
-  3786 000015BE 68[A416]                 push doreg1_7
-  3787 000015C1 E8A726                   call error1
-  3788 000015C4 83C402                   add  sp, 2
-  3789                                  
-  3790                                  ;-524       strcpy(ops, "cmp"); }
-  3791                                  
-  3792                                  .doreg1163:
-  3793 000015C7 68[B816]                 push doreg1_8
-  3794 000015CA 8D062FDA                 lea  ax, [ops]
-  3795 000015CE 50                       push ax
-  3796 000015CF E85AEC                   call strcpy
-  3797 000015D2 83C404                   add  sp, 4
+  3732                                  .checkreg156:
+  3733 000014AA 68[B115]                 push checkreg_24
+  3734 000014AD 8D06BB69                 lea  ax, [symbol]
+  3735 000014B1 50                       push ax
+  3736 000014B2 E8ADED                   call eqstr
+  3737 000014B5 83C404                   add  sp, 4
+  3738 000014B8 08C0                     or  al, al
+  3739 000014BA 0F840600                 je .checkreg157
+  3740 000014BE B83500                   mov ax, 53
+  3741 000014C1 E9A200                   jmp .retncheckreg
+  3742                                  .checkreg157:
+  3743 000014C4 68[B515]                 push checkreg_25
+  3744 000014C7 8D06BB69                 lea  ax, [symbol]
+  3745 000014CB 50                       push ax
+  3746 000014CC E893ED                   call eqstr
+  3747 000014CF 83C404                   add  sp, 4
+  3748 000014D2 08C0                     or  al, al
+  3749 000014D4 0F840600                 je .checkreg158
+  3750 000014D8 B83800                   mov ax, 56
+  3751 000014DB E98800                   jmp .retncheckreg
+  3752                                  
+  3753                                  ;-524   if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
+  3754                                  
+  3755                                  .checkreg158:
+  3756 000014DE 68[B915]                 push checkreg_26
+  3757 000014E1 8D06BB69                 lea  ax, [symbol]
+  3758 000014E5 50                       push ax
+  3759 000014E6 E879ED                   call eqstr
+  3760 000014E9 83C404                   add  sp, 4
+  3761 000014EC 08C0                     or  al, al
+  3762 000014EE 0F840600                 je .checkreg159
+  3763 000014F2 B83B00                   mov ax, 59
+  3764 000014F5 E96E00                   jmp .retncheckreg
+  3765                                  .checkreg159:
+  3766 000014F8 68[BD15]                 push checkreg_27
+  3767 000014FB 8D06BB69                 lea  ax, [symbol]
+  3768 000014FF 50                       push ax
+  3769 00001500 E85FED                   call eqstr
+  3770 00001503 83C404                   add  sp, 4
+  3771 00001506 08C0                     or  al, al
+  3772 00001508 0F840600                 je .checkreg160
+  3773 0000150C B83E00                   mov ax, 62
+  3774 0000150F E95400                   jmp .retncheckreg
+  3775                                  
+  3776                                  ;-525   if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
+  3777                                  
+  3778                                  .checkreg160:
+  3779 00001512 68[C115]                 push checkreg_28
+  3780 00001515 8D06BB69                 lea  ax, [symbol]
+  3781 00001519 50                       push ax
+  3782 0000151A E845ED                   call eqstr
+  3783 0000151D 83C404                   add  sp, 4
+  3784 00001520 08C0                     or  al, al
+  3785 00001522 0F840600                 je .checkreg161
+  3786 00001526 B84100                   mov ax, 65
+  3787 00001529 E93A00                   jmp .retncheckreg
+  3788                                  .checkreg161:
+  3789 0000152C 68[C515]                 push checkreg_29
+  3790 0000152F 8D06BB69                 lea  ax, [symbol]
+  3791 00001533 50                       push ax
+  3792 00001534 E82BED                   call eqstr
+  3793 00001537 83C404                   add  sp, 4
+  3794 0000153A 08C0                     or  al, al
+  3795 0000153C 0F840600                 je .checkreg162
+  3796 00001540 B84400                   mov ax, 68
+  3797 00001543 E92000                   jmp .retncheckreg
   3798                                  
-  3799                                  ;-525   prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
+  3799                                  ;-526   if (eqstr(symbol,"cr0")) return 71;
   3800                                  
-  3801                                  .doreg1162:
-  3802 000015D5 E840EF                   call prnl
-  3803 000015D8 8D062FDA                 lea  ax, [ops]
-  3804 000015DC 50                       push ax
-  3805 000015DD E846EF                   call prs
-  3806 000015E0 83C402                   add  sp, 2
-  3807 000015E3 68[BC16]                 push doreg1_9
-  3808 000015E6 E83DEF                   call prs
-  3809 000015E9 83C402                   add  sp, 2
-  3810 000015EC FF36[3F13]               push word [ireg1]
-  3811 000015F0 E8DD04                   call printreg
-  3812 000015F3 83C402                   add  sp, 2
-  3813 000015F6 68[BF16]                 push doreg1_10
-  3814 000015F9 E82AEF                   call prs
-  3815 000015FC 83C402                   add  sp, 2
-  3816                                  
-  3817                                  ;-526 
-  3818                                  
+  3801                                  .checkreg162:
+  3802 00001546 68[C915]                 push checkreg_30
+  3803 00001549 8D06BB69                 lea  ax, [symbol]
+  3804 0000154D 50                       push ax
+  3805 0000154E E811ED                   call eqstr
+  3806 00001551 83C404                   add  sp, 4
+  3807 00001554 08C0                     or  al, al
+  3808 00001556 0F840600                 je .checkreg163
+  3809 0000155A B84700                   mov ax, 71
+  3810 0000155D E90600                   jmp .retncheckreg
+  3811                                  
+  3812                                  ;-527   return 0;   }
+  3813                                  
+  3814                                  .checkreg163:
+  3815 00001560 B80000                   mov ax, 0
+  3816 00001563 E90000                   jmp .retncheckreg
+  3817                                  
+  3818                                  ;-528 
   3819                                  
-  3820                                  ;-527   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
-  3821                                  
-  3822 000015FF 680101                   push 257
-  3823 00001602 E8EFED                   call istoken
-  3824 00001605 83C402                   add  sp, 2
-  3825 00001608 08C0                     or  al, al
-  3826 0000160A 0F840D00                 je .doreg1164
-  3827 0000160E FF36[2C00]               push word [lexval]
-  3828 00001612 E866F0                   call prunsign1
-  3829 00001615 83C402                   add  sp, 2
-  3830 00001618 E94700                   jmp .reg1
-  3831                                  
-  3832                                  ;-528   mod2=typeName(); ireg2=checkreg();
-  3833                                  
-  3834                                  .doreg1164:
-  3835 0000161B E834F7                   call typeName
-  3836 0000161E A3[4113]                 mov word [mod2], ax
-  3837 00001621 E89E00                   call checkreg
-  3838 00001624 A3[4313]                 mov word [ireg2], ax
-  3839                                  
-  3840                                  ;-529   if (ireg2) {printreg(ireg2); goto reg1;}
-  3841                                  
-  3842 00001627 A1[4313]                 mov ax, [ireg2]
-  3843 0000162A 08C0                     or  al, al
-  3844 0000162C 0F840D00                 je .doreg1165
-  3845 00001630 FF36[4313]               push word [ireg2]
-  3846 00001634 E89904                   call printreg
-  3847 00001637 83C402                   add  sp, 2
-  3848 0000163A E92500                   jmp .reg1
-  3849                                  
-  3850                                  ;-530   i=searchname();  if (mod2 == 2) a(i); else v(i);
-  3851                                  
-  3852                                  .doreg1165:
-  3853 0000163D E843F6                   call searchname
-  3854 00001640 8946FE                   mov [bp-2], ax
-  3855 00001643 A1[4113]                 mov ax, [mod2]
-  3856 00001646 83F802                   cmp ax, 2
-  3857 00001649 0F850C00                 jne .doreg1166
-  3858 0000164D FF76FE                   push word [bp-2]
-  3859 00001650 E8F5EC                   call a
-  3860 00001653 83C402                   add  sp, 2
-  3861 00001656 E90900                   jmp .doreg1167
-  3862                                  .doreg1166:
-  3863 00001659 FF76FE                   push word [bp-2]
-  3864 0000165C E8F8EC                   call v
-  3865 0000165F 83C402                   add  sp, 2
-  3866                                  
-  3867                                  ;-531   reg1: if (iscmp1 == 1) {cmpneg(0); prs(fname); expect(')'); }
-  3868                                  
-  3869                                  .doreg1167:
-  3870                                  .reg1:
-  3871 00001662 8B4604                   mov ax, [bp+4]
-  3872 00001665 83F801                   cmp ax, 1
-  3873 00001668 0F851B00                 jne .doreg1168
-  3874 0000166C 6A00                     push 0
-  3875 0000166E E85E18                   call cmpneg
-  3876 00001671 83C402                   add  sp, 2
-  3877 00001674 8D063B6A                 lea  ax, [fname]
-  3878 00001678 50                       push ax
-  3879 00001679 E8AAEE                   call prs
-  3880 0000167C 83C402                   add  sp, 2
-  3881 0000167F 6A29                     push 41
-  3882 00001681 E892ED                   call expect
-  3883 00001684 83C402                   add  sp, 2
-  3884                                  
-  3885                                  ;-532 }
-  3886                                  
-  3887                                  .doreg1168:
-  3888                                  
-  3889                                  ;-533 int checkreg() { // >=17 = 16bit, >=47 = 32bit
-  3890 00001687 C9                       LEAVE
-  3891 00001688 C3                       ret
-  3892 00001689 6D6F7600                doreg1_0 db "mov",0
-  3893 0000168D 61646400                doreg1_1 db "add",0
-  3894 00001691 73756200                doreg1_2 db "sub",0
-  3895 00001695 616E6400                doreg1_3 db "and",0
-  3896 00001699 6F7200                  doreg1_4 db "or",0
-  3897 0000169C 73686C00                doreg1_5 db "shl",0
-  3898 000016A0 73687200                doreg1_6 db "shr",0
-  3899 000016A4 52656C6174696F6E61-     doreg1_7 db "Relational expected",0
-  3900 000016AD 6C2065787065637465-
-  3901 000016B6 6400               
-  3902 000016B8 636D7000                doreg1_8 db "cmp",0
-  3903 000016BC 202000                  doreg1_9 db "  ",0
-  3904 000016BF 2C2000                  doreg1_10 db ", ",0
-  3905                                  ENDP
-  3906                                  
-  3907                                  checkreg: PROC
-  3908                                  
-  3909                                  ;-534   if (strlen(symbol) <  2) return 0;
-  3910                                  
-  3911 000016C2 8D06BB69                 lea  ax, [symbol]
-  3912 000016C6 50                       push ax
-  3913 000016C7 E83AEB                   call strlen
-  3914 000016CA 83C402                   add  sp, 2
-  3915 000016CD 83F802                   cmp ax, 2
-  3916 000016D0 0F8D0600                 jge .checkreg169
-  3917 000016D4 B80000                   mov ax, 0
-  3918 000016D7 E94403                   jmp .retncheckreg
-  3919                                  
-  3920                                  ;-535   if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
-  3921                                  
-  3922                                  .checkreg169:
-  3923 000016DA 68[1F1A]                 push checkreg_0
-  3924 000016DD 8D06BB69                 lea  ax, [symbol]
-  3925 000016E1 50                       push ax
-  3926 000016E2 E87DEB                   call eqstr
-  3927 000016E5 83C404                   add  sp, 4
-  3928 000016E8 08C0                     or  al, al
-  3929 000016EA 0F840600                 je .checkreg170
-  3930 000016EE B80100                   mov ax, 1
-  3931 000016F1 E92A03                   jmp .retncheckreg
-  3932                                  .checkreg170:
-  3933 000016F4 68[221A]                 push checkreg_1
-  3934 000016F7 8D06BB69                 lea  ax, [symbol]
-  3935 000016FB 50                       push ax
-  3936 000016FC E863EB                   call eqstr
-  3937 000016FF 83C404                   add  sp, 4
-  3938 00001702 08C0                     or  al, al
-  3939 00001704 0F840600                 je .checkreg171
-  3940 00001708 B80300                   mov ax, 3
-  3941 0000170B E91003                   jmp .retncheckreg
-  3942                                  
-  3943                                  ;-536   if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
+  3820                                  
+  3821                                  ;-529 char printregstr[]
+  3822                                  
+  3823                                   .retncheckreg:
+  3824 00001566 C3                       ret
+  3825 00001567 616C00                  checkreg_0 db "al",0
+  3826 0000156A 636C00                  checkreg_1 db "cl",0
+  3827 0000156D 646C00                  checkreg_2 db "dl",0
+  3828 00001570 626C00                  checkreg_3 db "bl",0
+  3829 00001573 616800                  checkreg_4 db "ah",0
+  3830 00001576 636800                  checkreg_5 db "ch",0
+  3831 00001579 646800                  checkreg_6 db "dh",0
+  3832 0000157C 626800                  checkreg_7 db "bh",0
+  3833 0000157F 617800                  checkreg_8 db "ax",0
+  3834 00001582 637800                  checkreg_9 db "cx",0
+  3835 00001585 647800                  checkreg_10 db "dx",0
+  3836 00001588 627800                  checkreg_11 db "bx",0
+  3837 0000158B 737000                  checkreg_12 db "sp",0
+  3838 0000158E 627000                  checkreg_13 db "bp",0
+  3839 00001591 736900                  checkreg_14 db "si",0
+  3840 00001594 646900                  checkreg_15 db "di",0
+  3841 00001597 657300                  checkreg_16 db "es",0
+  3842 0000159A 637300                  checkreg_17 db "cs",0
+  3843 0000159D 737300                  checkreg_18 db "ss",0
+  3844 000015A0 647300                  checkreg_19 db "ds",0
+  3845 000015A3 667300                  checkreg_20 db "fs",0
+  3846 000015A6 677300                  checkreg_21 db "gs",0
+  3847 000015A9 65617800                checkreg_22 db "eax",0
+  3848 000015AD 65637800                checkreg_23 db "ecx",0
+  3849 000015B1 65647800                checkreg_24 db "edx",0
+  3850 000015B5 65627800                checkreg_25 db "ebx",0
+  3851 000015B9 65737000                checkreg_26 db "esp",0
+  3852 000015BD 65627000                checkreg_27 db "ebp",0
+  3853 000015C1 65736900                checkreg_28 db "esi",0
+  3854 000015C5 65646900                checkreg_29 db "edi",0
+  3855 000015C9 63723000                checkreg_30 db "cr0",0
+  3856                                  ENDP
+  3857                                  
+  3858                                  ;-530 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
+  3859                                  
+  3860 000015CD 2A616C636C646C626C-     printregstr db "*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0",0
+  3861 000015D6 616863686468626861-
+  3862 000015DF 786378647862787370-
+  3863 000015E8 627073696469657363-
+  3864 000015F1 737373647366736773-
+  3865 000015FA 697065617865637865-
+  3866 00001603 647865627865737065-
+  3867 0000160C 627065736965646963-
+  3868 00001615 723000             
+  3869                                  
+  3870                                  ;-531 
+  3871                                  
+  3872                                  
+  3873                                  ;-532 int printreg(int i) {  unsigned int k; unsigned char c;
+  3874                                  
+  3875                                  
+  3876                                  printreg: PROC
+  3877                                  
+  3878                                  ;-533   k = &printregstr + i; c=*k; prc(c); i++;
+  3879                                  ;
+  3880 00001618 C8040000                 ENTER  4,0
+  3881 0000161C B8[CD15]                 mov ax, printregstr
+  3882 0000161F 034604                   add ax, [bp+4]
+  3883 00001622 8946FE                   mov [bp-2], ax
+  3884 00001625 8B5EFE                   mov bx, [bp-2]
+  3885 00001628 8B07                     mov ax, [bx]
+  3886 0000162A 8846FC                   mov [bp-4], al
+  3887 0000162D 8A46FC                   mov al, byte [bp-4]
+  3888 00001630 B400                     mov ah, 0
+  3889 00001632 50                       push ax
+  3890 00001633 E853ED                   call prc
+  3891 00001636 83C402                   add  sp, 2
+  3892 00001639 FF4604                   inc  word[bp+4]
+  3893                                  
+  3894                                  ;-534   k = &printregstr + i; c=*k; prc(c);
+  3895                                  
+  3896 0000163C B8[CD15]                 mov ax, printregstr
+  3897 0000163F 034604                   add ax, [bp+4]
+  3898 00001642 8946FE                   mov [bp-2], ax
+  3899 00001645 8B5EFE                   mov bx, [bp-2]
+  3900 00001648 8B07                     mov ax, [bx]
+  3901 0000164A 8846FC                   mov [bp-4], al
+  3902 0000164D 8A46FC                   mov al, byte [bp-4]
+  3903 00001650 B400                     mov ah, 0
+  3904 00001652 50                       push ax
+  3905 00001653 E833ED                   call prc
+  3906 00001656 83C402                   add  sp, 2
+  3907                                  
+  3908                                  ;-535   if (i > 47) { i++; k = &printregstr + i; c=*k; prc(c); }
+  3909                                  
+  3910 00001659 8B4604                   mov ax, [bp+4]
+  3911 0000165C 83F82F                   cmp ax, 47
+  3912 0000165F 0F8E2000                 jle .printreg164
+  3913 00001663 FF4604                   inc  word[bp+4]
+  3914 00001666 B8[CD15]                 mov ax, printregstr
+  3915 00001669 034604                   add ax, [bp+4]
+  3916 0000166C 8946FE                   mov [bp-2], ax
+  3917 0000166F 8B5EFE                   mov bx, [bp-2]
+  3918 00001672 8B07                     mov ax, [bx]
+  3919 00001674 8846FC                   mov [bp-4], al
+  3920 00001677 8A46FC                   mov al, byte [bp-4]
+  3921 0000167A B400                     mov ah, 0
+  3922 0000167C 50                       push ax
+  3923 0000167D E809ED                   call prc
+  3924 00001680 83C402                   add  sp, 2
+  3925                                  
+  3926                                  ;-536 }
+  3927                                  
+  3928                                  .printreg164:
+  3929                                  
+  3930                                  ;-537 int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
+  3931 00001683 C9                       LEAVE
+  3932 00001684 C3                       ret
+  3933                                  ENDP
+  3934 00001685 0000                    evalue dw 0
+  3935 00001687 0A00                    exprtype dw 10
+  3936                                  
+  3937                                  ;-538 int expr(int isRight)
+  3938                                  
+  3939                                  
+  3940                                  expr: PROC
+  3941                                  
+  3942                                  ;-539 { int mode; int id1;     int ixarr; int ixconst;
+  3943                                  
   3944                                  
-  3945                                  .checkreg171:
-  3946 0000170E 68[251A]                 push checkreg_2
-  3947 00001711 8D06BB69                 lea  ax, [symbol]
-  3948 00001715 50                       push ax
-  3949 00001716 E849EB                   call eqstr
-  3950 00001719 83C404                   add  sp, 4
-  3951 0000171C 08C0                     or  al, al
-  3952 0000171E 0F840600                 je .checkreg172
-  3953 00001722 B80500                   mov ax, 5
-  3954 00001725 E9F602                   jmp .retncheckreg
-  3955                                  .checkreg172:
-  3956 00001728 68[281A]                 push checkreg_3
-  3957 0000172B 8D06BB69                 lea  ax, [symbol]
-  3958 0000172F 50                       push ax
-  3959 00001730 E82FEB                   call eqstr
-  3960 00001733 83C404                   add  sp, 4
-  3961 00001736 08C0                     or  al, al
-  3962 00001738 0F840600                 je .checkreg173
-  3963 0000173C B80700                   mov ax, 7
-  3964 0000173F E9DC02                   jmp .retncheckreg
-  3965                                  
-  3966                                  ;-537   if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
-  3967                                  
-  3968                                  .checkreg173:
-  3969 00001742 68[2B1A]                 push checkreg_4
-  3970 00001745 8D06BB69                 lea  ax, [symbol]
-  3971 00001749 50                       push ax
-  3972 0000174A E815EB                   call eqstr
-  3973 0000174D 83C404                   add  sp, 4
-  3974 00001750 08C0                     or  al, al
-  3975 00001752 0F840600                 je .checkreg174
-  3976 00001756 B80900                   mov ax, 9
-  3977 00001759 E9C202                   jmp .retncheckreg
-  3978                                  .checkreg174:
-  3979 0000175C 68[2E1A]                 push checkreg_5
-  3980 0000175F 8D06BB69                 lea  ax, [symbol]
-  3981 00001763 50                       push ax
-  3982 00001764 E8FBEA                   call eqstr
-  3983 00001767 83C404                   add  sp, 4
-  3984 0000176A 08C0                     or  al, al
-  3985 0000176C 0F840600                 je .checkreg175
-  3986 00001770 B80B00                   mov ax, 11
-  3987 00001773 E9A802                   jmp .retncheckreg
-  3988                                  
-  3989                                  ;-538   if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
+  3945                                  ;-540   int ids;  int isCONST; int i;     unsigned char *p;
+  3946                                  
+  3947                                  
+  3948                                  ;-541   if (istoken(T_CONST)) { evalue=lexval;
+  3949                                  ;
+  3950 00001689 C8100000                 ENTER  16,0
+  3951 0000168D 680101                   push 257
+  3952 00001690 E87BF1                   call istoken
+  3953 00001693 83C402                   add  sp, 2
+  3954 00001696 08C0                     or  al, al
+  3955 00001698 0F841F00                 je .expr165
+  3956 0000169C A1[2C00]                 mov ax, [lexval]
+  3957 0000169F A3[8516]                 mov word [evalue], ax
+  3958                                  
+  3959                                  ;-542     prs("\n mov ax, "); prunsign1(lexval); return 4; }
+  3960                                  
+  3961 000016A2 68[291A]                 push expr_0
+  3962 000016A5 E83AED                   call prs
+  3963 000016A8 83C402                   add  sp, 2
+  3964 000016AB FF36[2C00]               push word [lexval]
+  3965 000016AF E893EE                   call prunsign1
+  3966 000016B2 83C402                   add  sp, 2
+  3967 000016B5 B80400                   mov ax, 4
+  3968 000016B8 E96C03                   jmp .retnexpr
+  3969                                  
+  3970                                  ;-543   mode=typeName(); /*0=V,1=*,2=&*/
+  3971                                  
+  3972                                  .expr165:
+  3973 000016BB E875F4                   call typeName
+  3974 000016BE 8946FE                   mov [bp-2], ax
+  3975                                  
+  3976                                  ;-544   ireg1=checkreg();
+  3977                                  
+  3978 000016C1 E846FB                   call checkreg
+  3979 000016C4 A3[870E]                 mov word [ireg1], ax
+  3980                                  
+  3981                                  ;-545   if (ireg1) { doreg1(0); return; }
+  3982                                  
+  3983 000016C7 A1[870E]                 mov ax, [ireg1]
+  3984 000016CA 08C0                     or  al, al
+  3985 000016CC 0F840B00                 je .expr166
+  3986 000016D0 6A00                     push 0
+  3987 000016D2 E849F9                   call doreg1
+  3988 000016D5 83C402                   add  sp, 2
+  3989 000016D8 E94C03                   jmp .retnexpr
   3990                                  
-  3991                                  .checkreg175:
-  3992 00001776 68[311A]                 push checkreg_6
-  3993 00001779 8D06BB69                 lea  ax, [symbol]
-  3994 0000177D 50                       push ax
-  3995 0000177E E8E1EA                   call eqstr
-  3996 00001781 83C404                   add  sp, 4
-  3997 00001784 08C0                     or  al, al
-  3998 00001786 0F840600                 je .checkreg176
-  3999 0000178A B80D00                   mov ax, 13
-  4000 0000178D E98E02                   jmp .retncheckreg
-  4001                                  .checkreg176:
-  4002 00001790 68[341A]                 push checkreg_7
-  4003 00001793 8D06BB69                 lea  ax, [symbol]
-  4004 00001797 50                       push ax
-  4005 00001798 E8C7EA                   call eqstr
-  4006 0000179B 83C404                   add  sp, 4
-  4007 0000179E 08C0                     or  al, al
-  4008 000017A0 0F840600                 je .checkreg177
-  4009 000017A4 B80F00                   mov ax, 15
-  4010 000017A7 E97402                   jmp .retncheckreg
-  4011                                  
-  4012                                  ;-539   if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
-  4013                                  
-  4014                                  .checkreg177:
-  4015 000017AA 68[371A]                 push checkreg_8
-  4016 000017AD 8D06BB69                 lea  ax, [symbol]
-  4017 000017B1 50                       push ax
-  4018 000017B2 E8ADEA                   call eqstr
-  4019 000017B5 83C404                   add  sp, 4
-  4020 000017B8 08C0                     or  al, al
-  4021 000017BA 0F840600                 je .checkreg178
-  4022 000017BE B81100                   mov ax, 17
-  4023 000017C1 E95A02                   jmp .retncheckreg
-  4024                                  .checkreg178:
-  4025 000017C4 68[3A1A]                 push checkreg_9
-  4026 000017C7 8D06BB69                 lea  ax, [symbol]
-  4027 000017CB 50                       push ax
-  4028 000017CC E893EA                   call eqstr
-  4029 000017CF 83C404                   add  sp, 4
-  4030 000017D2 08C0                     or  al, al
-  4031 000017D4 0F840600                 je .checkreg179
-  4032 000017D8 B81300                   mov ax, 19
-  4033 000017DB E94002                   jmp .retncheckreg
-  4034                                  
-  4035                                  ;-540   if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
-  4036                                  
-  4037                                  .checkreg179:
-  4038 000017DE 68[3D1A]                 push checkreg_10
-  4039 000017E1 8D06BB69                 lea  ax, [symbol]
-  4040 000017E5 50                       push ax
-  4041 000017E6 E879EA                   call eqstr
-  4042 000017E9 83C404                   add  sp, 4
-  4043 000017EC 08C0                     or  al, al
-  4044 000017EE 0F840600                 je .checkreg180
-  4045 000017F2 B81500                   mov ax, 21
-  4046 000017F5 E92602                   jmp .retncheckreg
-  4047                                  .checkreg180:
-  4048 000017F8 68[401A]                 push checkreg_11
-  4049 000017FB 8D06BB69                 lea  ax, [symbol]
-  4050 000017FF 50                       push ax
-  4051 00001800 E85FEA                   call eqstr
-  4052 00001803 83C404                   add  sp, 4
-  4053 00001806 08C0                     or  al, al
-  4054 00001808 0F840600                 je .checkreg181
-  4055 0000180C B81700                   mov ax, 23
-  4056 0000180F E90C02                   jmp .retncheckreg
-  4057                                  
-  4058                                  ;-541   if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
-  4059                                  
-  4060                                  .checkreg181:
-  4061 00001812 68[431A]                 push checkreg_12
-  4062 00001815 8D06BB69                 lea  ax, [symbol]
-  4063 00001819 50                       push ax
-  4064 0000181A E845EA                   call eqstr
-  4065 0000181D 83C404                   add  sp, 4
-  4066 00001820 08C0                     or  al, al
-  4067 00001822 0F840600                 je .checkreg182
-  4068 00001826 B81900                   mov ax, 25
-  4069 00001829 E9F201                   jmp .retncheckreg
-  4070                                  .checkreg182:
-  4071 0000182C 68[461A]                 push checkreg_13
-  4072 0000182F 8D06BB69                 lea  ax, [symbol]
-  4073 00001833 50                       push ax
-  4074 00001834 E82BEA                   call eqstr
-  4075 00001837 83C404                   add  sp, 4
-  4076 0000183A 08C0                     or  al, al
-  4077 0000183C 0F840600                 je .checkreg183
-  4078 00001840 B81B00                   mov ax, 27
-  4079 00001843 E9D801                   jmp .retncheckreg
-  4080                                  
-  4081                                  ;-542   if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
-  4082                                  
-  4083                                  .checkreg183:
-  4084 00001846 68[491A]                 push checkreg_14
-  4085 00001849 8D06BB69                 lea  ax, [symbol]
-  4086 0000184D 50                       push ax
-  4087 0000184E E811EA                   call eqstr
-  4088 00001851 83C404                   add  sp, 4
-  4089 00001854 08C0                     or  al, al
-  4090 00001856 0F840600                 je .checkreg184
-  4091 0000185A B81D00                   mov ax, 29
-  4092 0000185D E9BE01                   jmp .retncheckreg
-  4093                                  .checkreg184:
-  4094 00001860 68[4C1A]                 push checkreg_15
-  4095 00001863 8D06BB69                 lea  ax, [symbol]
-  4096 00001867 50                       push ax
-  4097 00001868 E8F7E9                   call eqstr
-  4098 0000186B 83C404                   add  sp, 4
-  4099 0000186E 08C0                     or  al, al
-  4100 00001870 0F840600                 je .checkreg185
-  4101 00001874 B81F00                   mov ax, 31
-  4102 00001877 E9A401                   jmp .retncheckreg
-  4103                                  
-  4104                                  ;-543   if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
-  4105                                  
-  4106                                  .checkreg185:
-  4107 0000187A 68[4F1A]                 push checkreg_16
-  4108 0000187D 8D06BB69                 lea  ax, [symbol]
-  4109 00001881 50                       push ax
-  4110 00001882 E8DDE9                   call eqstr
-  4111 00001885 83C404                   add  sp, 4
-  4112 00001888 08C0                     or  al, al
-  4113 0000188A 0F840600                 je .checkreg186
-  4114 0000188E B82100                   mov ax, 33
-  4115 00001891 E98A01                   jmp .retncheckreg
-  4116                                  .checkreg186:
-  4117 00001894 68[521A]                 push checkreg_17
-  4118 00001897 8D06BB69                 lea  ax, [symbol]
-  4119 0000189B 50                       push ax
-  4120 0000189C E8C3E9                   call eqstr
-  4121 0000189F 83C404                   add  sp, 4
-  4122 000018A2 08C0                     or  al, al
-  4123 000018A4 0F840600                 je .checkreg187
-  4124 000018A8 B82300                   mov ax, 35
-  4125 000018AB E97001                   jmp .retncheckreg
-  4126                                  
-  4127                                  ;-544   if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
-  4128                                  
-  4129                                  .checkreg187:
-  4130 000018AE 68[551A]                 push checkreg_18
-  4131 000018B1 8D06BB69                 lea  ax, [symbol]
-  4132 000018B5 50                       push ax
-  4133 000018B6 E8A9E9                   call eqstr
-  4134 000018B9 83C404                   add  sp, 4
-  4135 000018BC 08C0                     or  al, al
-  4136 000018BE 0F840600                 je .checkreg188
-  4137 000018C2 B82500                   mov ax, 37
-  4138 000018C5 E95601                   jmp .retncheckreg
-  4139                                  .checkreg188:
-  4140 000018C8 68[581A]                 push checkreg_19
-  4141 000018CB 8D06BB69                 lea  ax, [symbol]
-  4142 000018CF 50                       push ax
-  4143 000018D0 E88FE9                   call eqstr
-  4144 000018D3 83C404                   add  sp, 4
-  4145 000018D6 08C0                     or  al, al
-  4146 000018D8 0F840600                 je .checkreg189
-  4147 000018DC B82700                   mov ax, 39
-  4148 000018DF E93C01                   jmp .retncheckreg
-  4149                                  
-  4150                                  ;-545   if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
-  4151                                  
-  4152                                  .checkreg189:
-  4153 000018E2 68[5B1A]                 push checkreg_20
-  4154 000018E5 8D06BB69                 lea  ax, [symbol]
-  4155 000018E9 50                       push ax
-  4156 000018EA E875E9                   call eqstr
-  4157 000018ED 83C404                   add  sp, 4
-  4158 000018F0 08C0                     or  al, al
-  4159 000018F2 0F840600                 je .checkreg190
-  4160 000018F6 B82900                   mov ax, 41
-  4161 000018F9 E92201                   jmp .retncheckreg
-  4162                                  .checkreg190:
-  4163 000018FC 68[5E1A]                 push checkreg_21
-  4164 000018FF 8D06BB69                 lea  ax, [symbol]
-  4165 00001903 50                       push ax
-  4166 00001904 E85BE9                   call eqstr
-  4167 00001907 83C404                   add  sp, 4
-  4168 0000190A 08C0                     or  al, al
-  4169 0000190C 0F840600                 je .checkreg191
-  4170 00001910 B82B00                   mov ax, 43
-  4171 00001913 E90801                   jmp .retncheckreg
-  4172                                  
-  4173                                  ;-546   // (eqstr(symbol,"ip")) return 45;
-  4174                                  
-  4175                                  
-  4176                                  ;-547   if (strlen(symbol) >   3) return 0;
-  4177                                  
-  4178                                  .checkreg191:
-  4179 00001916 8D06BB69                 lea  ax, [symbol]
-  4180 0000191A 50                       push ax
-  4181 0000191B E8E6E8                   call strlen
-  4182 0000191E 83C402                   add  sp, 2
-  4183 00001921 83F803                   cmp ax, 3
-  4184 00001924 0F8E0600                 jle .checkreg192
-  4185 00001928 B80000                   mov ax, 0
-  4186 0000192B E9F000                   jmp .retncheckreg
-  4187                                  
-  4188                                  ;-548   if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
-  4189                                  
-  4190                                  .checkreg192:
-  4191 0000192E 68[611A]                 push checkreg_22
-  4192 00001931 8D06BB69                 lea  ax, [symbol]
-  4193 00001935 50                       push ax
-  4194 00001936 E829E9                   call eqstr
-  4195 00001939 83C404                   add  sp, 4
-  4196 0000193C 08C0                     or  al, al
-  4197 0000193E 0F840600                 je .checkreg193
-  4198 00001942 B82F00                   mov ax, 47
-  4199 00001945 E9D600                   jmp .retncheckreg
-  4200                                  .checkreg193:
-  4201 00001948 68[651A]                 push checkreg_23
-  4202 0000194B 8D06BB69                 lea  ax, [symbol]
-  4203 0000194F 50                       push ax
-  4204 00001950 E80FE9                   call eqstr
-  4205 00001953 83C404                   add  sp, 4
-  4206 00001956 08C0                     or  al, al
-  4207 00001958 0F840600                 je .checkreg194
-  4208 0000195C B83200                   mov ax, 50
-  4209 0000195F E9BC00                   jmp .retncheckreg
-  4210                                  
-  4211                                  ;-549   if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
-  4212                                  
-  4213                                  .checkreg194:
-  4214 00001962 68[691A]                 push checkreg_24
-  4215 00001965 8D06BB69                 lea  ax, [symbol]
-  4216 00001969 50                       push ax
-  4217 0000196A E8F5E8                   call eqstr
-  4218 0000196D 83C404                   add  sp, 4
-  4219 00001970 08C0                     or  al, al
-  4220 00001972 0F840600                 je .checkreg195
-  4221 00001976 B83500                   mov ax, 53
-  4222 00001979 E9A200                   jmp .retncheckreg
-  4223                                  .checkreg195:
-  4224 0000197C 68[6D1A]                 push checkreg_25
-  4225 0000197F 8D06BB69                 lea  ax, [symbol]
-  4226 00001983 50                       push ax
-  4227 00001984 E8DBE8                   call eqstr
-  4228 00001987 83C404                   add  sp, 4
-  4229 0000198A 08C0                     or  al, al
-  4230 0000198C 0F840600                 je .checkreg196
-  4231 00001990 B83800                   mov ax, 56
-  4232 00001993 E98800                   jmp .retncheckreg
-  4233                                  
-  4234                                  ;-550   if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
-  4235                                  
-  4236                                  .checkreg196:
-  4237 00001996 68[711A]                 push checkreg_26
-  4238 00001999 8D06BB69                 lea  ax, [symbol]
-  4239 0000199D 50                       push ax
-  4240 0000199E E8C1E8                   call eqstr
-  4241 000019A1 83C404                   add  sp, 4
-  4242 000019A4 08C0                     or  al, al
-  4243 000019A6 0F840600                 je .checkreg197
-  4244 000019AA B83B00                   mov ax, 59
-  4245 000019AD E96E00                   jmp .retncheckreg
-  4246                                  .checkreg197:
-  4247 000019B0 68[751A]                 push checkreg_27
-  4248 000019B3 8D06BB69                 lea  ax, [symbol]
-  4249 000019B7 50                       push ax
-  4250 000019B8 E8A7E8                   call eqstr
-  4251 000019BB 83C404                   add  sp, 4
-  4252 000019BE 08C0                     or  al, al
-  4253 000019C0 0F840600                 je .checkreg198
-  4254 000019C4 B83E00                   mov ax, 62
-  4255 000019C7 E95400                   jmp .retncheckreg
-  4256                                  
-  4257                                  ;-551   if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
-  4258                                  
-  4259                                  .checkreg198:
-  4260 000019CA 68[791A]                 push checkreg_28
-  4261 000019CD 8D06BB69                 lea  ax, [symbol]
-  4262 000019D1 50                       push ax
-  4263 000019D2 E88DE8                   call eqstr
-  4264 000019D5 83C404                   add  sp, 4
-  4265 000019D8 08C0                     or  al, al
-  4266 000019DA 0F840600                 je .checkreg199
-  4267 000019DE B84100                   mov ax, 65
-  4268 000019E1 E93A00                   jmp .retncheckreg
-  4269                                  .checkreg199:
-  4270 000019E4 68[7D1A]                 push checkreg_29
-  4271 000019E7 8D06BB69                 lea  ax, [symbol]
-  4272 000019EB 50                       push ax
-  4273 000019EC E873E8                   call eqstr
-  4274 000019EF 83C404                   add  sp, 4
-  4275 000019F2 08C0                     or  al, al
-  4276 000019F4 0F840600                 je .checkreg200
-  4277 000019F8 B84400                   mov ax, 68
-  4278 000019FB E92000                   jmp .retncheckreg
-  4279                                  
-  4280                                  ;-552   if (eqstr(symbol,"cr0")) return 71;
-  4281                                  
-  4282                                  .checkreg200:
-  4283 000019FE 68[811A]                 push checkreg_30
-  4284 00001A01 8D06BB69                 lea  ax, [symbol]
-  4285 00001A05 50                       push ax
-  4286 00001A06 E859E8                   call eqstr
-  4287 00001A09 83C404                   add  sp, 4
-  4288 00001A0C 08C0                     or  al, al
-  4289 00001A0E 0F840600                 je .checkreg201
-  4290 00001A12 B84700                   mov ax, 71
-  4291 00001A15 E90600                   jmp .retncheckreg
-  4292                                  
-  4293                                  ;-553   return 0;   }
-  4294                                  
-  4295                                  .checkreg201:
-  4296 00001A18 B80000                   mov ax, 0
-  4297 00001A1B E90000                   jmp .retncheckreg
-  4298                                  
-  4299                                  ;-554 
-  4300                                  
+  3991                                  ;-546   if (token=='(')  {docall1(); goto e1; }
+  3992                                  
+  3993                                  .expr166:
+  3994 000016DB A1[1E00]                 mov ax, [token]
+  3995 000016DE 83F828                   cmp ax, 40
+  3996 000016E1 0F850600                 jne .expr167
+  3997 000016E5 E82F0F                   call docall1
+  3998 000016E8 E93202                   jmp .e1
+  3999                                  
+  4000                                  ;-547   if (isreg()) goto e1;
+  4001                                  
+  4002                                  .expr167:
+  4003 000016EB E88407                   call isreg
+  4004 000016EE 08C0                     or  al, al
+  4005 000016F0 0F840300                 je .expr168
+  4006 000016F4 E92602                   jmp .e1
+  4007                                  
+  4008                                  ;-548 
+  4009                                  
+  4010                                  
+  4011                                  ;-549   id1=searchname(); gettypes(id1); ids=signi;
+  4012                                  
+  4013                                  .expr168:
+  4014 000016F7 E86AF3                   call searchname
+  4015 000016FA 8946FC                   mov [bp-4], ax
+  4016 000016FD FF76FC                   push word [bp-4]
+  4017 00001700 E8AAF2                   call gettypes
+  4018 00001703 83C402                   add  sp, 2
+  4019 00001706 A1[3100]                 mov ax, [signi]
+  4020 00001709 8946F6                   mov [bp-10], ax
+  4021                                  
+  4022                                  ;-550   ixarr=0;  ixconst=0;
+  4023                                  
+  4024 0000170C B80000                   mov ax, 0
+  4025 0000170F 8946FA                   mov [bp-6], ax
+  4026 00001712 B80000                   mov ax, 0
+  4027 00001715 8946F8                   mov [bp-8], ax
+  4028                                  
+  4029                                  ;-551     if (istoken('[')) { if (istoken(T_CONST)) {
+  4030                                  
+  4031 00001718 6A5B                     push 91
+  4032 0000171A E8F1F0                   call istoken
+  4033 0000171D 83C402                   add  sp, 2
+  4034 00001720 08C0                     or  al, al
+  4035 00001722 0F845900                 je .expr169
+  4036 00001726 680101                   push 257
+  4037 00001729 E8E2F0                   call istoken
+  4038 0000172C 83C402                   add  sp, 2
+  4039 0000172F 08C0                     or  al, al
+  4040 00001731 0F841700                 je .expr170
+  4041                                  
+  4042                                  ;-552       ixconst=1; ixarr=lexval; expect(']');  }
+  4043                                  
+  4044 00001735 B80100                   mov ax, 1
+  4045 00001738 8946F8                   mov [bp-8], ax
+  4046 0000173B A1[2C00]                 mov ax, [lexval]
+  4047 0000173E 8946FA                   mov [bp-6], ax
+  4048 00001741 6A5D                     push 93
+  4049 00001743 E8EAF0                   call expect
+  4050 00001746 83C402                   add  sp, 2
+  4051                                  
+  4052                                  ;-553     else {ixarr=searchname(); expect(T_NAME); expect(']');
+  4053                                  
+  4054 00001749 E93300                   jmp .expr171
+  4055                                  .expr170:
+  4056 0000174C E815F3                   call searchname
+  4057 0000174F 8946FA                   mov [bp-6], ax
+  4058 00001752 680001                   push 256
+  4059 00001755 E8D8F0                   call expect
+  4060 00001758 83C402                   add  sp, 2
+  4061 0000175B 6A5D                     push 93
+  4062 0000175D E8D0F0                   call expect
+  4063 00001760 83C402                   add  sp, 2
+  4064                                  
+  4065                                  ;-554     gettypes(ixarr);
+  4066                                  
+  4067 00001763 FF76FA                   push word [bp-6]
+  4068 00001766 E844F2                   call gettypes
+  4069 00001769 83C402                   add  sp, 2
+  4070                                  
+  4071                                  ;-555     if (widthi != 2) error1("Array index must be number or int"); } }
+  4072                                  
+  4073 0000176C A1[3400]                 mov ax, [widthi]
+  4074 0000176F 83F802                   cmp ax, 2
+  4075 00001772 0F840900                 je  .expr172
+  4076 00001776 68[351A]                 push expr_1
+  4077 00001779 E864EE                   call error1
+  4078 0000177C 83C402                   add  sp, 2
+  4079                                  .expr172:
+  4080                                  .expr171:
+  4081                                  
+  4082                                  ;-556   if (istoken(T_PLUSPLUS  )) {if(mode)error1("Only var allowed");
+  4083                                  
+  4084                                  .expr169:
+  4085 0000177F 68C304                   push 1219
+  4086 00001782 E889F0                   call istoken
+  4087 00001785 83C402                   add  sp, 2
+  4088 00001788 08C0                     or  al, al
+  4089 0000178A 0F844600                 je .expr173
+  4090 0000178E 8B46FE                   mov ax, [bp-2]
+  4091 00001791 08C0                     or  al, al
+  4092 00001793 0F840900                 je .expr174
+  4093 00001797 68[571A]                 push expr_2
+  4094 0000179A E843EE                   call error1
+  4095 0000179D 83C402                   add  sp, 2
+  4096                                  
+  4097                                  ;-557      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
+  4098                                  
+  4099                                  .expr174:
+  4100 000017A0 68[681A]                 push expr_3
+  4101 000017A3 E83CEC                   call prs
+  4102 000017A6 83C402                   add  sp, 2
+  4103 000017A9 A1[3700]                 mov ax, [wi]
+  4104 000017AC 83F802                   cmp ax, 2
+  4105 000017AF 0F850C00                 jne .expr175
+  4106 000017B3 68[711A]                 push expr_4
+  4107 000017B6 E829EC                   call prs
+  4108 000017B9 83C402                   add  sp, 2
+  4109 000017BC E90900                   jmp .expr176
+  4110                                  .expr175:
+  4111 000017BF 68[761A]                 push expr_5
+  4112 000017C2 E81DEC                   call prs
+  4113 000017C5 83C402                   add  sp, 2
+  4114                                  
+  4115                                  ;-558      v(id1); goto e1;}
+  4116                                  
+  4117                                  .expr176:
+  4118 000017C8 FF76FC                   push word [bp-4]
+  4119 000017CB E83DF1                   call v
+  4120 000017CE 83C402                   add  sp, 2
+  4121 000017D1 E94901                   jmp .e1
+  4122                                  
+  4123                                  ;-559   if (istoken(T_MINUSMINUS)) {if(mode)error1("Only var allowed");
+  4124                                  
+  4125                                  .expr173:
+  4126 000017D4 68C904                   push 1225
+  4127 000017D7 E834F0                   call istoken
+  4128 000017DA 83C402                   add  sp, 2
+  4129 000017DD 08C0                     or  al, al
+  4130 000017DF 0F844600                 je .expr177
+  4131 000017E3 8B46FE                   mov ax, [bp-2]
+  4132 000017E6 08C0                     or  al, al
+  4133 000017E8 0F840900                 je .expr178
+  4134 000017EC 68[7B1A]                 push expr_6
+  4135 000017EF E8EEED                   call error1
+  4136 000017F2 83C402                   add  sp, 2
+  4137                                  
+  4138                                  ;-560      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
+  4139                                  
+  4140                                  .expr178:
+  4141 000017F5 68[8C1A]                 push expr_7
+  4142 000017F8 E8E7EB                   call prs
+  4143 000017FB 83C402                   add  sp, 2
+  4144 000017FE A1[3700]                 mov ax, [wi]
+  4145 00001801 83F802                   cmp ax, 2
+  4146 00001804 0F850C00                 jne .expr179
+  4147 00001808 68[951A]                 push expr_8
+  4148 0000180B E8D4EB                   call prs
+  4149 0000180E 83C402                   add  sp, 2
+  4150 00001811 E90900                   jmp .expr180
+  4151                                  .expr179:
+  4152 00001814 68[9A1A]                 push expr_9
+  4153 00001817 E8C8EB                   call prs
+  4154 0000181A 83C402                   add  sp, 2
+  4155                                  
+  4156                                  ;-561      v(id1); goto e1;}
+  4157                                  
+  4158                                  .expr180:
+  4159 0000181D FF76FC                   push word [bp-4]
+  4160 00001820 E8E8F0                   call v
+  4161 00001823 83C402                   add  sp, 2
+  4162 00001826 E9F400                   jmp .e1
+  4163                                  
+  4164                                  ;-562 
+  4165                                  
+  4166                                  
+  4167                                  ;-563   if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
+  4168                                  
+  4169                                  .expr177:
+  4170 00001829 68CE04                   push 1230
+  4171 0000182C E8DFEF                   call istoken
+  4172 0000182F 83C402                   add  sp, 2
+  4173 00001832 08C0                     or  al, al
+  4174 00001834 0F841200                 je .expr181
+  4175 00001838 FF76FC                   push word [bp-4]
+  4176 0000183B FF76FE                   push word [bp-2]
+  4177 0000183E 68[9F1A]                 push expr_10
+  4178 00001841 E8A902                   call compoundass
+  4179 00001844 83C406                   add  sp, 6
+  4180 00001847 E9D300                   jmp .e1
+  4181                                  
+  4182                                  ;-564   if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
+  4183                                  
+  4184                                  .expr181:
+  4185 0000184A 68CF04                   push 1231
+  4186 0000184D E8BEEF                   call istoken
+  4187 00001850 83C402                   add  sp, 2
+  4188 00001853 08C0                     or  al, al
+  4189 00001855 0F841200                 je .expr182
+  4190 00001859 FF76FC                   push word [bp-4]
+  4191 0000185C FF76FE                   push word [bp-2]
+  4192 0000185F 68[A31A]                 push expr_11
+  4193 00001862 E88802                   call compoundass
+  4194 00001865 83C406                   add  sp, 6
+  4195 00001868 E9B200                   jmp .e1
+  4196                                  
+  4197                                  ;-565   if (istoken(T_ANDASS    )) {compoundass("and", mode, id1); goto e1;}
+  4198                                  
+  4199                                  .expr182:
+  4200 0000186B 68D204                   push 1234
+  4201 0000186E E89DEF                   call istoken
+  4202 00001871 83C402                   add  sp, 2
+  4203 00001874 08C0                     or  al, al
+  4204 00001876 0F841200                 je .expr183
+  4205 0000187A FF76FC                   push word [bp-4]
+  4206 0000187D FF76FE                   push word [bp-2]
+  4207 00001880 68[A71A]                 push expr_12
+  4208 00001883 E86702                   call compoundass
+  4209 00001886 83C406                   add  sp, 6
+  4210 00001889 E99100                   jmp .e1
+  4211                                  
+  4212                                  ;-566   if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}
+  4213                                  
+  4214                                  .expr183:
+  4215 0000188C 68D304                   push 1235
+  4216 0000188F E87CEF                   call istoken
+  4217 00001892 83C402                   add  sp, 2
+  4218 00001895 08C0                     or  al, al
+  4219 00001897 0F841200                 je .expr184
+  4220 0000189B FF76FC                   push word [bp-4]
+  4221 0000189E FF76FE                   push word [bp-2]
+  4222 000018A1 68[AB1A]                 push expr_13
+  4223 000018A4 E84602                   call compoundass
+  4224 000018A7 83C406                   add  sp, 6
+  4225 000018AA E97000                   jmp .e1
+  4226                                  
+  4227                                  ;-567   if (istoken(T_MULASS    )) {error1("not implemented");}
+  4228                                  
+  4229                                  .expr184:
+  4230 000018AD 68D004                   push 1232
+  4231 000018B0 E85BEF                   call istoken
+  4232 000018B3 83C402                   add  sp, 2
+  4233 000018B6 08C0                     or  al, al
+  4234 000018B8 0F840900                 je .expr185
+  4235 000018BC 68[AE1A]                 push expr_14
+  4236 000018BF E81EED                   call error1
+  4237 000018C2 83C402                   add  sp, 2
+  4238                                  
+  4239                                  ;-568   if (istoken(T_DIVASS    )) {error1("not implemented");}
+  4240                                  
+  4241                                  .expr185:
+  4242 000018C5 68D104                   push 1233
+  4243 000018C8 E843EF                   call istoken
+  4244 000018CB 83C402                   add  sp, 2
+  4245 000018CE 08C0                     or  al, al
+  4246 000018D0 0F840900                 je .expr186
+  4247 000018D4 68[BE1A]                 push expr_15
+  4248 000018D7 E806ED                   call error1
+  4249 000018DA 83C402                   add  sp, 2
+  4250                                  
+  4251                                  ;-569 
+  4252                                  
+  4253                                  
+  4254                                  ;-570   if (istoken('=')) { exprtype= expr(1);
+  4255                                  
+  4256                                  .expr186:
+  4257 000018DD 6A3D                     push 61
+  4258 000018DF E82CEF                   call istoken
+  4259 000018E2 83C402                   add  sp, 2
+  4260 000018E5 08C0                     or  al, al
+  4261 000018E7 0F842000                 je .expr187
+  4262 000018EB 6A01                     push 1
+  4263 000018ED E899FD                   call expr
+  4264 000018F0 83C402                   add  sp, 2
+  4265 000018F3 A3[8716]                 mov word [exprtype], ax
+  4266                                  
+  4267                                  ;-571   doassign(mode, id1, ixarr, ixconst); goto e1;  }
+  4268                                  
+  4269 000018F6 FF76F8                   push word [bp-8]
+  4270 000018F9 FF76FA                   push word [bp-6]
+  4271 000018FC FF76FC                   push word [bp-4]
+  4272 000018FF FF76FE                   push word [bp-2]
+  4273 00001902 E85F08                   call doassign
+  4274 00001905 83C408                   add  sp, 8
+  4275 00001908 E91200                   jmp .e1
+  4276                                  
+  4277                                  ;-572   dovar1(mode, "mov", ixarr, id1);
+  4278                                  
+  4279                                  .expr187:
+  4280 0000190B FF76FC                   push word [bp-4]
+  4281 0000190E FF76FA                   push word [bp-6]
+  4282 00001911 68[CE1A]                 push expr_16
+  4283 00001914 FF76FE                   push word [bp-2]
+  4284 00001917 E87502                   call dovar1
+  4285 0000191A 83C408                   add  sp, 8
+  4286                                  
+  4287                                  ;-573 
+  4288                                  
+  4289                                  
+  4290                                  ;-574 e1:    if (istoken('+')) rterm("add");
+  4291                                  
+  4292                                  .e1:
+  4293 0000191D 6A2B                     push 43
+  4294 0000191F E8ECEE                   call istoken
+  4295 00001922 83C402                   add  sp, 2
+  4296 00001925 08C0                     or  al, al
+  4297 00001927 0F840C00                 je .expr188
+  4298 0000192B 68[D21A]                 push expr_17
+  4299 0000192E E82804                   call rterm
+  4300 00001931 83C402                   add  sp, 2
   4301                                  
-  4302                                  ;-555 char printregstr[]
+  4302                                  ;-575   else if (istoken('-')) rterm("sub" );
   4303                                  
-  4304                                   .retncheckreg:
-  4305 00001A1E C3                       ret
-  4306 00001A1F 616C00                  checkreg_0 db "al",0
-  4307 00001A22 636C00                  checkreg_1 db "cl",0
-  4308 00001A25 646C00                  checkreg_2 db "dl",0
-  4309 00001A28 626C00                  checkreg_3 db "bl",0
-  4310 00001A2B 616800                  checkreg_4 db "ah",0
-  4311 00001A2E 636800                  checkreg_5 db "ch",0
-  4312 00001A31 646800                  checkreg_6 db "dh",0
-  4313 00001A34 626800                  checkreg_7 db "bh",0
-  4314 00001A37 617800                  checkreg_8 db "ax",0
-  4315 00001A3A 637800                  checkreg_9 db "cx",0
-  4316 00001A3D 647800                  checkreg_10 db "dx",0
-  4317 00001A40 627800                  checkreg_11 db "bx",0
-  4318 00001A43 737000                  checkreg_12 db "sp",0
-  4319 00001A46 627000                  checkreg_13 db "bp",0
-  4320 00001A49 736900                  checkreg_14 db "si",0
-  4321 00001A4C 646900                  checkreg_15 db "di",0
-  4322 00001A4F 657300                  checkreg_16 db "es",0
-  4323 00001A52 637300                  checkreg_17 db "cs",0
-  4324 00001A55 737300                  checkreg_18 db "ss",0
-  4325 00001A58 647300                  checkreg_19 db "ds",0
-  4326 00001A5B 667300                  checkreg_20 db "fs",0
-  4327 00001A5E 677300                  checkreg_21 db "gs",0
-  4328 00001A61 65617800                checkreg_22 db "eax",0
-  4329 00001A65 65637800                checkreg_23 db "ecx",0
-  4330 00001A69 65647800                checkreg_24 db "edx",0
-  4331 00001A6D 65627800                checkreg_25 db "ebx",0
-  4332 00001A71 65737000                checkreg_26 db "esp",0
-  4333 00001A75 65627000                checkreg_27 db "ebp",0
-  4334 00001A79 65736900                checkreg_28 db "esi",0
-  4335 00001A7D 65646900                checkreg_29 db "edi",0
-  4336 00001A81 63723000                checkreg_30 db "cr0",0
-  4337                                  ENDP
-  4338                                  
-  4339                                  ;-556 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
+  4304 00001934 E9CF00                   jmp .expr189
+  4305                                  .expr188:
+  4306 00001937 6A2D                     push 45
+  4307 00001939 E8D2EE                   call istoken
+  4308 0000193C 83C402                   add  sp, 2
+  4309 0000193F 08C0                     or  al, al
+  4310 00001941 0F840C00                 je .expr190
+  4311 00001945 68[D61A]                 push expr_18
+  4312 00001948 E80E04                   call rterm
+  4313 0000194B 83C402                   add  sp, 2
+  4314                                  
+  4315                                  ;-576   else if (istoken('&')) rterm("and" );
+  4316                                  
+  4317 0000194E E9B500                   jmp .expr191
+  4318                                  .expr190:
+  4319 00001951 6A26                     push 38
+  4320 00001953 E8B8EE                   call istoken
+  4321 00001956 83C402                   add  sp, 2
+  4322 00001959 08C0                     or  al, al
+  4323 0000195B 0F840C00                 je .expr192
+  4324 0000195F 68[DA1A]                 push expr_19
+  4325 00001962 E8F403                   call rterm
+  4326 00001965 83C402                   add  sp, 2
+  4327                                  
+  4328                                  ;-577   else if (istoken('|')) rterm("or" );
+  4329                                  
+  4330 00001968 E99B00                   jmp .expr193
+  4331                                  .expr192:
+  4332 0000196B 6A7C                     push 124
+  4333 0000196D E89EEE                   call istoken
+  4334 00001970 83C402                   add  sp, 2
+  4335 00001973 08C0                     or  al, al
+  4336 00001975 0F840C00                 je .expr194
+  4337 00001979 68[DE1A]                 push expr_20
+  4338 0000197C E8DA03                   call rterm
+  4339 0000197F 83C402                   add  sp, 2
   4340                                  
-  4341 00001A85 2A616C636C646C626C-     printregstr db "*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0",0
-  4342 00001A8E 616863686468626861-
-  4343 00001A97 786378647862787370-
-  4344 00001AA0 627073696469657363-
-  4345 00001AA9 737373647366736773-
-  4346 00001AB2 697065617865637865-
-  4347 00001ABB 647865627865737065-
-  4348 00001AC4 627065736965646963-
-  4349 00001ACD 723000             
-  4350                                  
-  4351                                  ;-557 
-  4352                                  
+  4341                                  ;-578   else if (istoken(T_LESSLESS)) rterm("shl");
+  4342                                  
+  4343 00001982 E98100                   jmp .expr195
+  4344                                  .expr194:
+  4345 00001985 68D804                   push 1240
+  4346 00001988 E883EE                   call istoken
+  4347 0000198B 83C402                   add  sp, 2
+  4348 0000198E 08C0                     or  al, al
+  4349 00001990 0F840C00                 je .expr196
+  4350 00001994 68[E11A]                 push expr_21
+  4351 00001997 E8BF03                   call rterm
+  4352 0000199A 83C402                   add  sp, 2
   4353                                  
-  4354                                  ;-558 int printreg(int i) {  unsigned int k; unsigned char c;
+  4354                                  ;-579   else if (istoken(T_GREATGREAT)) rterm("shr");
   4355                                  
-  4356                                  
-  4357                                  printreg: PROC
-  4358                                  
-  4359                                  ;-559   k = &printregstr + i; c=*k; prc(c); i++;
-  4360                                  ;
-  4361 00001AD0 C8040000                 ENTER  4,0
-  4362 00001AD4 B8[851A]                 mov ax, printregstr
-  4363 00001AD7 034604                   add ax, [bp+4]
-  4364 00001ADA 8946FE                   mov [bp-2], ax
-  4365 00001ADD 8B5EFE                   mov bx, [bp-2]
-  4366 00001AE0 8B07                     mov ax, [bx]
-  4367 00001AE2 8846FC                   mov [bp-4], al
-  4368 00001AE5 8A46FC                   mov al, byte [bp-4]
-  4369 00001AE8 B400                     mov ah, 0
-  4370 00001AEA 50                       push ax
-  4371 00001AEB E8D1E9                   call prc
-  4372 00001AEE 83C402                   add  sp, 2
-  4373 00001AF1 FF4604                   inc  word[bp+4]
-  4374                                  
-  4375                                  ;-560   k = &printregstr + i; c=*k; prc(c);
-  4376                                  
-  4377 00001AF4 B8[851A]                 mov ax, printregstr
-  4378 00001AF7 034604                   add ax, [bp+4]
-  4379 00001AFA 8946FE                   mov [bp-2], ax
-  4380 00001AFD 8B5EFE                   mov bx, [bp-2]
-  4381 00001B00 8B07                     mov ax, [bx]
-  4382 00001B02 8846FC                   mov [bp-4], al
-  4383 00001B05 8A46FC                   mov al, byte [bp-4]
-  4384 00001B08 B400                     mov ah, 0
-  4385 00001B0A 50                       push ax
-  4386 00001B0B E8B1E9                   call prc
-  4387 00001B0E 83C402                   add  sp, 2
-  4388                                  
-  4389                                  ;-561   if (i > 47) { i++; k = &printregstr + i; c=*k; prc(c); }
-  4390                                  
-  4391 00001B11 8B4604                   mov ax, [bp+4]
-  4392 00001B14 83F82F                   cmp ax, 47
-  4393 00001B17 0F8E2000                 jle .printreg202
-  4394 00001B1B FF4604                   inc  word[bp+4]
-  4395 00001B1E B8[851A]                 mov ax, printregstr
-  4396 00001B21 034604                   add ax, [bp+4]
-  4397 00001B24 8946FE                   mov [bp-2], ax
-  4398 00001B27 8B5EFE                   mov bx, [bp-2]
-  4399 00001B2A 8B07                     mov ax, [bx]
-  4400 00001B2C 8846FC                   mov [bp-4], al
-  4401 00001B2F 8A46FC                   mov al, byte [bp-4]
-  4402 00001B32 B400                     mov ah, 0
-  4403 00001B34 50                       push ax
-  4404 00001B35 E887E9                   call prc
-  4405 00001B38 83C402                   add  sp, 2
-  4406                                  
-  4407                                  ;-562 }
-  4408                                  
-  4409                                  .printreg202:
-  4410                                  
-  4411                                  ;-563 int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
-  4412 00001B3B C9                       LEAVE
-  4413 00001B3C C3                       ret
-  4414                                  ENDP
-  4415 00001B3D 0000                    evalue dw 0
-  4416 00001B3F 0A00                    exprtype dw 10
-  4417                                  
-  4418                                  ;-564 int expr(int isRight)
-  4419                                  
-  4420                                  
-  4421                                  expr: PROC
-  4422                                  
-  4423                                  ;-565 { int mode; int id1;     int ixarr; int ixconst;
-  4424                                  
-  4425                                  
-  4426                                  ;-566   int ids;  int isCONST; int i;     unsigned char *p;
-  4427                                  
+  4356 0000199D E96600                   jmp .expr197
+  4357                                  .expr196:
+  4358 000019A0 68D904                   push 1241
+  4359 000019A3 E868EE                   call istoken
+  4360 000019A6 83C402                   add  sp, 2
+  4361 000019A9 08C0                     or  al, al
+  4362 000019AB 0F840C00                 je .expr198
+  4363 000019AF 68[E51A]                 push expr_22
+  4364 000019B2 E8A403                   call rterm
+  4365 000019B5 83C402                   add  sp, 2
+  4366                                  
+  4367                                  ;-580   else if (istoken('*')) domul (ids);
+  4368                                  
+  4369 000019B8 E94B00                   jmp .expr199
+  4370                                  .expr198:
+  4371 000019BB 6A2A                     push 42
+  4372 000019BD E84EEE                   call istoken
+  4373 000019C0 83C402                   add  sp, 2
+  4374 000019C3 08C0                     or  al, al
+  4375 000019C5 0F840C00                 je .expr200
+  4376 000019C9 FF76F6                   push word [bp-10]
+  4377 000019CC E8DE09                   call domul
+  4378 000019CF 83C402                   add  sp, 2
+  4379                                  
+  4380                                  ;-581   else if (istoken('/')) doidiv(ids);
+  4381                                  
+  4382 000019D2 E93100                   jmp .expr201
+  4383                                  .expr200:
+  4384 000019D5 6A2F                     push 47
+  4385 000019D7 E834EE                   call istoken
+  4386 000019DA 83C402                   add  sp, 2
+  4387 000019DD 08C0                     or  al, al
+  4388 000019DF 0F840C00                 je .expr202
+  4389 000019E3 FF76F6                   push word [bp-10]
+  4390 000019E6 E8650A                   call doidiv
+  4391 000019E9 83C402                   add  sp, 2
+  4392                                  
+  4393                                  ;-582   else if (istoken('%')) domod (ids);
+  4394                                  
+  4395 000019EC E91700                   jmp .expr203
+  4396                                  .expr202:
+  4397 000019EF 6A25                     push 37
+  4398 000019F1 E81AEE                   call istoken
+  4399 000019F4 83C402                   add  sp, 2
+  4400 000019F7 08C0                     or  al, al
+  4401 000019F9 0F840900                 je .expr204
+  4402 000019FD FF76F6                   push word [bp-10]
+  4403 00001A00 E8EE0B                   call domod
+  4404 00001A03 83C402                   add  sp, 2
+  4405                                  
+  4406                                  ;-583   if (isrelational()) { rterm("cmp"); cmpneg(ids);}
+  4407                                  
+  4408                                  .expr204:
+  4409                                  .expr203:
+  4410                                  .expr201:
+  4411                                  .expr199:
+  4412                                  .expr197:
+  4413                                  .expr195:
+  4414                                  .expr193:
+  4415                                  .expr191:
+  4416                                  .expr189:
+  4417 00001A06 E8CC12                   call isrelational
+  4418 00001A09 08C0                     or  al, al
+  4419 00001A0B 0F841200                 je .expr205
+  4420 00001A0F 68[E91A]                 push expr_23
+  4421 00001A12 E84403                   call rterm
+  4422 00001A15 83C402                   add  sp, 2
+  4423 00001A18 FF76F6                   push word [bp-10]
+  4424 00001A1B E8F90F                   call cmpneg
+  4425 00001A1E 83C402                   add  sp, 2
+  4426                                  
+  4427                                  ;-584   return 0;
   4428                                  
-  4429                                  ;-567   if (istoken(T_CONST)) { evalue=lexval;
-  4430                                  ;
-  4431 00001B41 C8100000                 ENTER  16,0
-  4432 00001B45 680101                   push 257
-  4433 00001B48 E8A9E8                   call istoken
-  4434 00001B4B 83C402                   add  sp, 2
-  4435 00001B4E 08C0                     or  al, al
-  4436 00001B50 0F841F00                 je .expr203
-  4437 00001B54 A1[2C00]                 mov ax, [lexval]
-  4438 00001B57 A3[3D1B]                 mov word [evalue], ax
-  4439                                  
-  4440                                  ;-568     prs("\n mov ax, "); prunsign1(lexval); return 4; }
-  4441                                  
-  4442 00001B5A 68[E11E]                 push expr_0
-  4443 00001B5D E8C6E9                   call prs
-  4444 00001B60 83C402                   add  sp, 2
-  4445 00001B63 FF36[2C00]               push word [lexval]
-  4446 00001B67 E811EB                   call prunsign1
-  4447 00001B6A 83C402                   add  sp, 2
-  4448 00001B6D B80400                   mov ax, 4
-  4449 00001B70 E96C03                   jmp .retnexpr
-  4450                                  
-  4451                                  ;-569   mode=typeName(); /*0=V,1=*,2=&*/
-  4452                                  
-  4453                                  .expr203:
-  4454 00001B73 E8DCF1                   call typeName
-  4455 00001B76 8946FE                   mov [bp-2], ax
-  4456                                  
-  4457                                  ;-570   ireg1=checkreg();
-  4458                                  
-  4459 00001B79 E846FB                   call checkreg
-  4460 00001B7C A3[3F13]                 mov word [ireg1], ax
-  4461                                  
-  4462                                  ;-571   if (ireg1) { doreg1(0); return; }
-  4463                                  
-  4464 00001B7F A1[3F13]                 mov ax, [ireg1]
-  4465 00001B82 08C0                     or  al, al
-  4466 00001B84 0F840B00                 je .expr204
-  4467 00001B88 6A00                     push 0
-  4468 00001B8A E849F9                   call doreg1
-  4469 00001B8D 83C402                   add  sp, 2
-  4470 00001B90 E94C03                   jmp .retnexpr
-  4471                                  
-  4472                                  ;-572   if (token=='(')  {docall1(); goto e1; }
-  4473                                  
-  4474                                  .expr204:
-  4475 00001B93 A1[1E00]                 mov ax, [token]
-  4476 00001B96 83F828                   cmp ax, 40
-  4477 00001B99 0F850600                 jne .expr205
-  4478 00001B9D E82F0F                   call docall1
-  4479 00001BA0 E93202                   jmp .e1
-  4480                                  
-  4481                                  ;-573   if (isreg()) goto e1;
-  4482                                  
-  4483                                  .expr205:
-  4484 00001BA3 E88407                   call isreg
-  4485 00001BA6 08C0                     or  al, al
-  4486 00001BA8 0F840300                 je .expr206
-  4487 00001BAC E92602                   jmp .e1
+  4429                                  .expr205:
+  4430 00001A21 B80000                   mov ax, 0
+  4431 00001A24 E90000                   jmp .retnexpr
+  4432                                  
+  4433                                  ;-585 }
+  4434                                  
+  4435                                  
+  4436                                  ;-586 
+  4437                                  
+  4438                                  
+  4439                                  ;-587 int compoundass(char *op, int mode, int id1) {
+  4440                                  
+  4441 00001A27 C9                       .retnexpr: LEAVE
+  4442 00001A28 C3                       ret
+  4443 00001A29 5C6E206D6F76206178-     expr_0 db "\n mov ax, ",0
+  4444 00001A32 2C2000             
+  4445 00001A35 417272617920696E64-     expr_1 db "Array index must be number or int",0
+  4446 00001A3E 6578206D7573742062-
+  4447 00001A47 65206E756D62657220-
+  4448 00001A50 6F7220696E7400     
+  4449 00001A57 4F6E6C792076617220-     expr_2 db "Only var allowed",0
+  4450 00001A60 616C6C6F77656400   
+  4451 00001A68 5C6E20696E63202000      expr_3 db "\n inc  ",0
+  4452 00001A71 776F726400              expr_4 db "word",0
+  4453 00001A76 6279746500              expr_5 db "byte",0
+  4454 00001A7B 4F6E6C792076617220-     expr_6 db "Only var allowed",0
+  4455 00001A84 616C6C6F77656400   
+  4456 00001A8C 5C6E20646563202000      expr_7 db "\n dec  ",0
+  4457 00001A95 776F726400              expr_8 db "word",0
+  4458 00001A9A 6279746500              expr_9 db "byte",0
+  4459 00001A9F 61646400                expr_10 db "add",0
+  4460 00001AA3 73756200                expr_11 db "sub",0
+  4461 00001AA7 616E6400                expr_12 db "and",0
+  4462 00001AAB 6F7200                  expr_13 db "or",0
+  4463 00001AAE 6E6F7420696D706C65-     expr_14 db "not implemented",0
+  4464 00001AB7 6D656E74656400     
+  4465 00001ABE 6E6F7420696D706C65-     expr_15 db "not implemented",0
+  4466 00001AC7 6D656E74656400     
+  4467 00001ACE 6D6F7600                expr_16 db "mov",0
+  4468 00001AD2 61646400                expr_17 db "add",0
+  4469 00001AD6 73756200                expr_18 db "sub",0
+  4470 00001ADA 616E6400                expr_19 db "and",0
+  4471 00001ADE 6F7200                  expr_20 db "or",0
+  4472 00001AE1 73686C00                expr_21 db "shl",0
+  4473 00001AE5 73687200                expr_22 db "shr",0
+  4474 00001AE9 636D7000                expr_23 db "cmp",0
+  4475                                  ENDP
+  4476                                  
+  4477                                  compoundass: PROC
+  4478                                  
+  4479                                  ;-588   if(mode) error1("only scalar Var allowed");
+  4480                                  ;
+  4481 00001AED C8000000                 ENTER  0,0
+  4482 00001AF1 8B4606                   mov ax, [bp+6]
+  4483 00001AF4 08C0                     or  al, al
+  4484 00001AF6 0F840900                 je .compoundass206
+  4485 00001AFA 68[671B]                 push compoundass_0
+  4486 00001AFD E8E0EA                   call error1
+  4487 00001B00 83C402                   add  sp, 2
   4488                                  
-  4489                                  ;-574 
+  4489                                  ;-589   prnl(); prs(op); prs("  ");
   4490                                  
-  4491                                  
-  4492                                  ;-575   id1=searchname(); gettypes(id1); ids=signi;
-  4493                                  
-  4494                                  .expr206:
-  4495 00001BAF E8D1F0                   call searchname
-  4496 00001BB2 8946FC                   mov [bp-4], ax
-  4497 00001BB5 FF76FC                   push word [bp-4]
-  4498 00001BB8 E88AEF                   call gettypes
-  4499 00001BBB 83C402                   add  sp, 2
-  4500 00001BBE A1[3100]                 mov ax, [signi]
-  4501 00001BC1 8946F6                   mov [bp-10], ax
-  4502                                  
-  4503                                  ;-576   ixarr=0;  ixconst=0;
-  4504                                  
-  4505 00001BC4 B80000                   mov ax, 0
-  4506 00001BC7 8946FA                   mov [bp-6], ax
-  4507 00001BCA B80000                   mov ax, 0
-  4508 00001BCD 8946F8                   mov [bp-8], ax
-  4509                                  
-  4510                                  ;-577     if (istoken('[')) { if (istoken(T_CONST)) {
-  4511                                  
-  4512 00001BD0 6A5B                     push 91
-  4513 00001BD2 E81FE8                   call istoken
-  4514 00001BD5 83C402                   add  sp, 2
-  4515 00001BD8 08C0                     or  al, al
-  4516 00001BDA 0F845900                 je .expr207
-  4517 00001BDE 680101                   push 257
-  4518 00001BE1 E810E8                   call istoken
-  4519 00001BE4 83C402                   add  sp, 2
-  4520 00001BE7 08C0                     or  al, al
-  4521 00001BE9 0F841700                 je .expr208
-  4522                                  
-  4523                                  ;-578       ixconst=1; ixarr=lexval; expect(']');  }
-  4524                                  
-  4525 00001BED B80100                   mov ax, 1
-  4526 00001BF0 8946F8                   mov [bp-8], ax
-  4527 00001BF3 A1[2C00]                 mov ax, [lexval]
-  4528 00001BF6 8946FA                   mov [bp-6], ax
-  4529 00001BF9 6A5D                     push 93
-  4530 00001BFB E818E8                   call expect
-  4531 00001BFE 83C402                   add  sp, 2
-  4532                                  
-  4533                                  ;-579     else {ixarr=searchname(); expect(T_NAME); expect(']');
-  4534                                  
-  4535 00001C01 E93300                   jmp .expr209
-  4536                                  .expr208:
-  4537 00001C04 E87CF0                   call searchname
-  4538 00001C07 8946FA                   mov [bp-6], ax
-  4539 00001C0A 680001                   push 256
-  4540 00001C0D E806E8                   call expect
-  4541 00001C10 83C402                   add  sp, 2
-  4542 00001C13 6A5D                     push 93
-  4543 00001C15 E8FEE7                   call expect
-  4544 00001C18 83C402                   add  sp, 2
-  4545                                  
-  4546                                  ;-580     gettypes(ixarr);
-  4547                                  
-  4548 00001C1B FF76FA                   push word [bp-6]
-  4549 00001C1E E824EF                   call gettypes
-  4550 00001C21 83C402                   add  sp, 2
-  4551                                  
-  4552                                  ;-581     if (widthi != 2) error1("Array index must be number or int"); } }
-  4553                                  
-  4554 00001C24 A1[3400]                 mov ax, [widthi]
-  4555 00001C27 83F802                   cmp ax, 2
-  4556 00001C2A 0F840900                 je  .expr210
-  4557 00001C2E 68[ED1E]                 push expr_1
-  4558 00001C31 E83720                   call error1
-  4559 00001C34 83C402                   add  sp, 2
-  4560                                  .expr210:
-  4561                                  .expr209:
-  4562                                  
-  4563                                  ;-582   if (istoken(T_PLUSPLUS  )) {if(mode)error1("Only var allowed");
-  4564                                  
-  4565                                  .expr207:
-  4566 00001C37 68C304                   push 1219
-  4567 00001C3A E8B7E7                   call istoken
-  4568 00001C3D 83C402                   add  sp, 2
-  4569 00001C40 08C0                     or  al, al
-  4570 00001C42 0F844600                 je .expr211
-  4571 00001C46 8B46FE                   mov ax, [bp-2]
-  4572 00001C49 08C0                     or  al, al
-  4573 00001C4B 0F840900                 je .expr212
-  4574 00001C4F 68[0F1F]                 push expr_2
-  4575 00001C52 E81620                   call error1
-  4576 00001C55 83C402                   add  sp, 2
+  4491                                  .compoundass206:
+  4492 00001B03 E870E9                   call prnl
+  4493 00001B06 FF7604                   push word [bp+4]
+  4494 00001B09 E8D6E8                   call prs
+  4495 00001B0C 83C402                   add  sp, 2
+  4496 00001B0F 68[7F1B]                 push compoundass_1
+  4497 00001B12 E8CDE8                   call prs
+  4498 00001B15 83C402                   add  sp, 2
+  4499                                  
+  4500                                  ;-590   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
+  4501                                  
+  4502 00001B18 FF7608                   push word [bp+8]
+  4503 00001B1B E88FEE                   call gettypes
+  4504 00001B1E 83C402                   add  sp, 2
+  4505 00001B21 A1[3700]                 mov ax, [wi]
+  4506 00001B24 83F802                   cmp ax, 2
+  4507 00001B27 0F850C00                 jne .compoundass207
+  4508 00001B2B 68[821B]                 push compoundass_2
+  4509 00001B2E E8B1E8                   call prs
+  4510 00001B31 83C402                   add  sp, 2
+  4511 00001B34 E90900                   jmp .compoundass208
+  4512                                  .compoundass207:
+  4513 00001B37 68[871B]                 push compoundass_3
+  4514 00001B3A E8A5E8                   call prs
+  4515 00001B3D 83C402                   add  sp, 2
+  4516                                  
+  4517                                  ;-591   v(id1); prs(", ");
+  4518                                  
+  4519                                  .compoundass208:
+  4520 00001B40 FF7608                   push word [bp+8]
+  4521 00001B43 E8C5ED                   call v
+  4522 00001B46 83C402                   add  sp, 2
+  4523 00001B49 68[8C1B]                 push compoundass_4
+  4524 00001B4C E893E8                   call prs
+  4525 00001B4F 83C402                   add  sp, 2
+  4526                                  
+  4527                                  ;-592   expect(T_CONST); prunsign1(lexval);
+  4528                                  
+  4529 00001B52 680101                   push 257
+  4530 00001B55 E8D8EC                   call expect
+  4531 00001B58 83C402                   add  sp, 2
+  4532 00001B5B FF36[2C00]               push word [lexval]
+  4533 00001B5F E8E3E9                   call prunsign1
+  4534 00001B62 83C402                   add  sp, 2
+  4535                                  
+  4536                                  ;-593 }
+  4537                                  
+  4538                                  
+  4539                                  ;-594 int dovar1(int mode, int op, int ixarr, int id1) {
+  4540 00001B65 C9                       LEAVE
+  4541 00001B66 C3                       ret
+  4542 00001B67 6F6E6C79207363616C-     compoundass_0 db "only scalar Var allowed",0
+  4543 00001B70 61722056617220616C-
+  4544 00001B79 6C6F77656400       
+  4545 00001B7F 202000                  compoundass_1 db "  ",0
+  4546 00001B82 776F726400              compoundass_2 db "word",0
+  4547 00001B87 6279746500              compoundass_3 db "byte",0
+  4548 00001B8C 2C2000                  compoundass_4 db ", ",0
+  4549                                  ENDP
+  4550                                  
+  4551                                  dovar1: PROC
+  4552                                  
+  4553                                  ;-595   gettypes(id1);
+  4554                                  ;
+  4555 00001B8F C8000000                 ENTER  0,0
+  4556 00001B93 FF760A                   push word [bp+10]
+  4557 00001B96 E814EE                   call gettypes
+  4558 00001B99 83C402                   add  sp, 2
+  4559                                  
+  4560                                  ;-596   if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
+  4561                                  
+  4562 00001B9C 8B4604                   mov ax, [bp+4]
+  4563 00001B9F 83F801                   cmp ax, 1
+  4564 00001BA2 0F854700                 jne .dovar1209
+  4565 00001BA6 68[E41C]                 push dovar1_0
+  4566 00001BA9 E836E8                   call prs
+  4567 00001BAC 83C402                   add  sp, 2
+  4568 00001BAF FF760A                   push word [bp+10]
+  4569 00001BB2 E856ED                   call v
+  4570 00001BB5 83C402                   add  sp, 2
+  4571 00001BB8 E8BBE8                   call prnl
+  4572 00001BBB FF7606                   push word [bp+6]
+  4573 00001BBE E821E8                   call prs
+  4574 00001BC1 83C402                   add  sp, 2
+  4575                                  
+  4576                                  ;-597     if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
   4577                                  
-  4578                                  ;-583      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
-  4579                                  
-  4580                                  .expr212:
-  4581 00001C58 68[201F]                 push expr_3
-  4582 00001C5B E8C8E8                   call prs
-  4583 00001C5E 83C402                   add  sp, 2
-  4584 00001C61 A1[3700]                 mov ax, [wi]
-  4585 00001C64 83F802                   cmp ax, 2
-  4586 00001C67 0F850C00                 jne .expr213
-  4587 00001C6B 68[291F]                 push expr_4
-  4588 00001C6E E8B5E8                   call prs
-  4589 00001C71 83C402                   add  sp, 2
-  4590 00001C74 E90900                   jmp .expr214
-  4591                                  .expr213:
-  4592 00001C77 68[2E1F]                 push expr_5
-  4593 00001C7A E8A9E8                   call prs
-  4594 00001C7D 83C402                   add  sp, 2
-  4595                                  
-  4596                                  ;-584      v(id1); goto e1;}
-  4597                                  
-  4598                                  .expr214:
-  4599 00001C80 FF76FC                   push word [bp-4]
-  4600 00001C83 E8D1E6                   call v
-  4601 00001C86 83C402                   add  sp, 2
-  4602 00001C89 E94901                   jmp .e1
-  4603                                  
-  4604                                  ;-585   if (istoken(T_MINUSMINUS)) {if(mode)error1("Only var allowed");
-  4605                                  
-  4606                                  .expr211:
-  4607 00001C8C 68C904                   push 1225
-  4608 00001C8F E862E7                   call istoken
-  4609 00001C92 83C402                   add  sp, 2
-  4610 00001C95 08C0                     or  al, al
-  4611 00001C97 0F844600                 je .expr215
-  4612 00001C9B 8B46FE                   mov ax, [bp-2]
-  4613 00001C9E 08C0                     or  al, al
-  4614 00001CA0 0F840900                 je .expr216
-  4615 00001CA4 68[331F]                 push expr_6
-  4616 00001CA7 E8C11F                   call error1
-  4617 00001CAA 83C402                   add  sp, 2
-  4618                                  
-  4619                                  ;-586      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
-  4620                                  
-  4621                                  .expr216:
-  4622 00001CAD 68[441F]                 push expr_7
-  4623 00001CB0 E873E8                   call prs
-  4624 00001CB3 83C402                   add  sp, 2
-  4625 00001CB6 A1[3700]                 mov ax, [wi]
-  4626 00001CB9 83F802                   cmp ax, 2
-  4627 00001CBC 0F850C00                 jne .expr217
-  4628 00001CC0 68[4D1F]                 push expr_8
-  4629 00001CC3 E860E8                   call prs
-  4630 00001CC6 83C402                   add  sp, 2
-  4631 00001CC9 E90900                   jmp .expr218
-  4632                                  .expr217:
-  4633 00001CCC 68[521F]                 push expr_9
-  4634 00001CCF E854E8                   call prs
-  4635 00001CD2 83C402                   add  sp, 2
-  4636                                  
-  4637                                  ;-587      v(id1); goto e1;}
-  4638                                  
-  4639                                  .expr218:
-  4640 00001CD5 FF76FC                   push word [bp-4]
-  4641 00001CD8 E87CE6                   call v
-  4642 00001CDB 83C402                   add  sp, 2
-  4643 00001CDE E9F400                   jmp .e1
+  4578 00001BC4 A1[3400]                 mov ax, [widthi]
+  4579 00001BC7 83F801                   cmp ax, 1
+  4580 00001BCA 0F850900                 jne .dovar1210
+  4581 00001BCE 68[F01C]                 push dovar1_1
+  4582 00001BD1 E80EE8                   call prs
+  4583 00001BD4 83C402                   add  sp, 2
+  4584                                  
+  4585                                  ;-598     if(widthi == 2) prs(" ax, [bx]");
+  4586                                  
+  4587                                  .dovar1210:
+  4588 00001BD7 A1[3400]                 mov ax, [widthi]
+  4589 00001BDA 83F802                   cmp ax, 2
+  4590 00001BDD 0F850900                 jne .dovar1211
+  4591 00001BE1 68[061D]                 push dovar1_2
+  4592 00001BE4 E8FBE7                   call prs
+  4593 00001BE7 83C402                   add  sp, 2
+  4594                                  
+  4595                                  ;-599     return; }
+  4596                                  
+  4597                                  .dovar1211:
+  4598 00001BEA E9F500                   jmp .retndovar1
+  4599                                  
+  4600                                  ;-600   if (mode==2){prnl();prs(op);prs(" ax, "); a(id1); return; }
+  4601                                  
+  4602                                  .dovar1209:
+  4603 00001BED 8B4604                   mov ax, [bp+4]
+  4604 00001BF0 83F802                   cmp ax, 2
+  4605 00001BF3 0F852100                 jne .dovar1212
+  4606 00001BF7 E87CE8                   call prnl
+  4607 00001BFA FF7606                   push word [bp+6]
+  4608 00001BFD E8E2E7                   call prs
+  4609 00001C00 83C402                   add  sp, 2
+  4610 00001C03 68[101D]                 push dovar1_3
+  4611 00001C06 E8D9E7                   call prs
+  4612 00001C09 83C402                   add  sp, 2
+  4613 00001C0C FF760A                   push word [bp+10]
+  4614 00001C0F E8EAEC                   call a
+  4615 00001C12 83C402                   add  sp, 2
+  4616 00001C15 E9CA00                   jmp .retndovar1
+  4617                                  
+  4618                                  ;-601   if (ixarr) {
+  4619                                  
+  4620                                  .dovar1212:
+  4621 00001C18 8B4608                   mov ax, [bp+8]
+  4622 00001C1B 08C0                     or  al, al
+  4623 00001C1D 0F847300                 je .dovar1213
+  4624                                  
+  4625                                  ;-602     prs("\n mov bx, "); v(ixarr);
+  4626                                  
+  4627 00001C21 68[161D]                 push dovar1_4
+  4628 00001C24 E8BBE7                   call prs
+  4629 00001C27 83C402                   add  sp, 2
+  4630 00001C2A FF7608                   push word [bp+8]
+  4631 00001C2D E8DBEC                   call v
+  4632 00001C30 83C402                   add  sp, 2
+  4633                                  
+  4634                                  ;-603     if (wi==2) prs("\n shl bx, 1");
+  4635                                  
+  4636 00001C33 A1[3700]                 mov ax, [wi]
+  4637 00001C36 83F802                   cmp ax, 2
+  4638 00001C39 0F850900                 jne .dovar1214
+  4639 00001C3D 68[221D]                 push dovar1_5
+  4640 00001C40 E89FE7                   call prs
+  4641 00001C43 83C402                   add  sp, 2
+  4642                                  
+  4643                                  ;-604     prs("\n "); prs(op);
   4644                                  
-  4645                                  ;-588 
-  4646                                  
-  4647                                  
-  4648                                  ;-589   if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
-  4649                                  
-  4650                                  .expr215:
-  4651 00001CE1 68CE04                   push 1230
-  4652 00001CE4 E80DE7                   call istoken
-  4653 00001CE7 83C402                   add  sp, 2
-  4654 00001CEA 08C0                     or  al, al
-  4655 00001CEC 0F841200                 je .expr219
-  4656 00001CF0 FF76FC                   push word [bp-4]
-  4657 00001CF3 FF76FE                   push word [bp-2]
-  4658 00001CF6 68[571F]                 push expr_10
-  4659 00001CF9 E8A902                   call compoundass
-  4660 00001CFC 83C406                   add  sp, 6
-  4661 00001CFF E9D300                   jmp .e1
-  4662                                  
-  4663                                  ;-590   if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
-  4664                                  
-  4665                                  .expr219:
-  4666 00001D02 68CF04                   push 1231
-  4667 00001D05 E8ECE6                   call istoken
-  4668 00001D08 83C402                   add  sp, 2
-  4669 00001D0B 08C0                     or  al, al
-  4670 00001D0D 0F841200                 je .expr220
-  4671 00001D11 FF76FC                   push word [bp-4]
-  4672 00001D14 FF76FE                   push word [bp-2]
-  4673 00001D17 68[5B1F]                 push expr_11
-  4674 00001D1A E88802                   call compoundass
-  4675 00001D1D 83C406                   add  sp, 6
-  4676 00001D20 E9B200                   jmp .e1
-  4677                                  
-  4678                                  ;-591   if (istoken(T_ANDASS    )) {compoundass("and", mode, id1); goto e1;}
-  4679                                  
-  4680                                  .expr220:
-  4681 00001D23 68D204                   push 1234
-  4682 00001D26 E8CBE6                   call istoken
-  4683 00001D29 83C402                   add  sp, 2
-  4684 00001D2C 08C0                     or  al, al
-  4685 00001D2E 0F841200                 je .expr221
-  4686 00001D32 FF76FC                   push word [bp-4]
-  4687 00001D35 FF76FE                   push word [bp-2]
-  4688 00001D38 68[5F1F]                 push expr_12
-  4689 00001D3B E86702                   call compoundass
-  4690 00001D3E 83C406                   add  sp, 6
-  4691 00001D41 E99100                   jmp .e1
-  4692                                  
-  4693                                  ;-592   if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}
+  4645                                  .dovar1214:
+  4646 00001C46 68[2F1D]                 push dovar1_6
+  4647 00001C49 E896E7                   call prs
+  4648 00001C4C 83C402                   add  sp, 2
+  4649 00001C4F FF7606                   push word [bp+6]
+  4650 00001C52 E88DE7                   call prs
+  4651 00001C55 83C402                   add  sp, 2
+  4652                                  
+  4653                                  ;-605     if (wi==2) prs(" ax, "); else prs(" al, ");
+  4654                                  
+  4655 00001C58 A1[3700]                 mov ax, [wi]
+  4656 00001C5B 83F802                   cmp ax, 2
+  4657 00001C5E 0F850C00                 jne .dovar1215
+  4658 00001C62 68[331D]                 push dovar1_7
+  4659 00001C65 E87AE7                   call prs
+  4660 00001C68 83C402                   add  sp, 2
+  4661 00001C6B E90900                   jmp .dovar1216
+  4662                                  .dovar1215:
+  4663 00001C6E 68[391D]                 push dovar1_8
+  4664 00001C71 E86EE7                   call prs
+  4665 00001C74 83C402                   add  sp, 2
+  4666                                  
+  4667                                  ;-606 // v(id1); prs(" [bx]");
+  4668                                  
+  4669                                  
+  4670                                  ;-607     prc('['); printName(id1); prs(" + bx]");
+  4671                                  
+  4672                                  .dovar1216:
+  4673 00001C77 6A5B                     push 91
+  4674 00001C79 E80DE7                   call prc
+  4675 00001C7C 83C402                   add  sp, 2
+  4676 00001C7F FF760A                   push word [bp+10]
+  4677 00001C82 E813EC                   call printName
+  4678 00001C85 83C402                   add  sp, 2
+  4679 00001C88 68[3F1D]                 push dovar1_9
+  4680 00001C8B E854E7                   call prs
+  4681 00001C8E 83C402                   add  sp, 2
+  4682                                  
+  4683                                  ;-608     return; }
+  4684                                  
+  4685 00001C91 E94E00                   jmp .retndovar1
+  4686                                  
+  4687                                  ;-609   prnl();prs(op);
+  4688                                  
+  4689                                  .dovar1213:
+  4690 00001C94 E8DFE7                   call prnl
+  4691 00001C97 FF7606                   push word [bp+6]
+  4692 00001C9A E845E7                   call prs
+  4693 00001C9D 83C402                   add  sp, 2
   4694                                  
-  4695                                  .expr221:
-  4696 00001D44 68D304                   push 1235
-  4697 00001D47 E8AAE6                   call istoken
-  4698 00001D4A 83C402                   add  sp, 2
-  4699 00001D4D 08C0                     or  al, al
-  4700 00001D4F 0F841200                 je .expr222
-  4701 00001D53 FF76FC                   push word [bp-4]
-  4702 00001D56 FF76FE                   push word [bp-2]
-  4703 00001D59 68[631F]                 push expr_13
-  4704 00001D5C E84602                   call compoundass
-  4705 00001D5F 83C406                   add  sp, 6
-  4706 00001D62 E97000                   jmp .e1
-  4707                                  
-  4708                                  ;-593   if (istoken(T_MULASS    )) {error1("not implemented");}
-  4709                                  
-  4710                                  .expr222:
-  4711 00001D65 68D004                   push 1232
-  4712 00001D68 E889E6                   call istoken
-  4713 00001D6B 83C402                   add  sp, 2
-  4714 00001D6E 08C0                     or  al, al
-  4715 00001D70 0F840900                 je .expr223
-  4716 00001D74 68[661F]                 push expr_14
-  4717 00001D77 E8F11E                   call error1
-  4718 00001D7A 83C402                   add  sp, 2
-  4719                                  
-  4720                                  ;-594   if (istoken(T_DIVASS    )) {error1("not implemented");}
-  4721                                  
-  4722                                  .expr223:
-  4723 00001D7D 68D104                   push 1233
-  4724 00001D80 E871E6                   call istoken
-  4725 00001D83 83C402                   add  sp, 2
-  4726 00001D86 08C0                     or  al, al
-  4727 00001D88 0F840900                 je .expr224
-  4728 00001D8C 68[761F]                 push expr_15
-  4729 00001D8F E8D91E                   call error1
-  4730 00001D92 83C402                   add  sp, 2
-  4731                                  
-  4732                                  ;-595 
+  4695                                  ;-610   if(wi==1) prs(" al, ");
+  4696                                  
+  4697 00001CA0 A1[3700]                 mov ax, [wi]
+  4698 00001CA3 83F801                   cmp ax, 1
+  4699 00001CA6 0F850900                 jne .dovar1217
+  4700 00001CAA 68[461D]                 push dovar1_10
+  4701 00001CAD E832E7                   call prs
+  4702 00001CB0 83C402                   add  sp, 2
+  4703                                  
+  4704                                  ;-611   if(wi==2) prs(" ax, ");
+  4705                                  
+  4706                                  .dovar1217:
+  4707 00001CB3 A1[3700]                 mov ax, [wi]
+  4708 00001CB6 83F802                   cmp ax, 2
+  4709 00001CB9 0F850900                 jne .dovar1218
+  4710 00001CBD 68[4C1D]                 push dovar1_11
+  4711 00001CC0 E81FE7                   call prs
+  4712 00001CC3 83C402                   add  sp, 2
+  4713                                  
+  4714                                  ;-612   if(wi==4) prs(" eax, ");
+  4715                                  
+  4716                                  .dovar1218:
+  4717 00001CC6 A1[3700]                 mov ax, [wi]
+  4718 00001CC9 83F804                   cmp ax, 4
+  4719 00001CCC 0F850900                 jne .dovar1219
+  4720 00001CD0 68[521D]                 push dovar1_12
+  4721 00001CD3 E80CE7                   call prs
+  4722 00001CD6 83C402                   add  sp, 2
+  4723                                  
+  4724                                  ;-613   v(id1);
+  4725                                  
+  4726                                  .dovar1219:
+  4727 00001CD9 FF760A                   push word [bp+10]
+  4728 00001CDC E82CEC                   call v
+  4729 00001CDF 83C402                   add  sp, 2
+  4730                                  
+  4731                                  ;-614 }
+  4732                                  
   4733                                  
-  4734                                  
-  4735                                  ;-596   if (istoken('=')) { exprtype= expr(1);
-  4736                                  
-  4737                                  .expr224:
-  4738 00001D95 6A3D                     push 61
-  4739 00001D97 E85AE6                   call istoken
-  4740 00001D9A 83C402                   add  sp, 2
-  4741 00001D9D 08C0                     or  al, al
-  4742 00001D9F 0F842000                 je .expr225
-  4743 00001DA3 6A01                     push 1
-  4744 00001DA5 E899FD                   call expr
-  4745 00001DA8 83C402                   add  sp, 2
-  4746 00001DAB A3[3F1B]                 mov word [exprtype], ax
-  4747                                  
-  4748                                  ;-597   doassign(mode, id1, ixarr, ixconst); goto e1;  }
-  4749                                  
-  4750 00001DAE FF76F8                   push word [bp-8]
-  4751 00001DB1 FF76FA                   push word [bp-6]
-  4752 00001DB4 FF76FC                   push word [bp-4]
-  4753 00001DB7 FF76FE                   push word [bp-2]
-  4754 00001DBA E85F08                   call doassign
-  4755 00001DBD 83C408                   add  sp, 8
-  4756 00001DC0 E91200                   jmp .e1
-  4757                                  
-  4758                                  ;-598   dovar1(mode, "mov", ixarr, id1);
-  4759                                  
-  4760                                  .expr225:
-  4761 00001DC3 FF76FC                   push word [bp-4]
-  4762 00001DC6 FF76FA                   push word [bp-6]
-  4763 00001DC9 68[861F]                 push expr_16
-  4764 00001DCC FF76FE                   push word [bp-2]
-  4765 00001DCF E87502                   call dovar1
-  4766 00001DD2 83C408                   add  sp, 8
-  4767                                  
-  4768                                  ;-599 
-  4769                                  
-  4770                                  
-  4771                                  ;-600 e1:    if (istoken('+')) rterm("add");
-  4772                                  
-  4773                                  .e1:
-  4774 00001DD5 6A2B                     push 43
-  4775 00001DD7 E81AE6                   call istoken
-  4776 00001DDA 83C402                   add  sp, 2
-  4777 00001DDD 08C0                     or  al, al
-  4778 00001DDF 0F840C00                 je .expr226
-  4779 00001DE3 68[8A1F]                 push expr_17
-  4780 00001DE6 E82804                   call rterm
-  4781 00001DE9 83C402                   add  sp, 2
+  4734                                  ;-615 int rterm(char *op) {int mode; int opint; int ixarr; int id1;
+  4735                                  
+  4736 00001CE2 C9                       .retndovar1: LEAVE
+  4737 00001CE3 C3                       ret
+  4738 00001CE4 5C6E206D6F76206278-     dovar1_0 db "\n mov bx, ",0
+  4739 00001CED 2C2000             
+  4740 00001CF0 20616C2C205B62785D-     dovar1_1 db " al, [bx]\n mov ah, 0",0
+  4741 00001CF9 5C6E206D6F76206168-
+  4742 00001D02 2C203000           
+  4743 00001D06 2061782C205B62785D-     dovar1_2 db " ax, [bx]",0
+  4744 00001D0F 00                 
+  4745 00001D10 2061782C2000            dovar1_3 db " ax, ",0
+  4746 00001D16 5C6E206D6F76206278-     dovar1_4 db "\n mov bx, ",0
+  4747 00001D1F 2C2000             
+  4748 00001D22 5C6E2073686C206278-     dovar1_5 db "\n shl bx, 1",0
+  4749 00001D2B 2C203100           
+  4750 00001D2F 5C6E2000                dovar1_6 db "\n ",0
+  4751 00001D33 2061782C2000            dovar1_7 db " ax, ",0
+  4752 00001D39 20616C2C2000            dovar1_8 db " al, ",0
+  4753 00001D3F 202B2062785D00          dovar1_9 db " + bx]",0
+  4754 00001D46 20616C2C2000            dovar1_10 db " al, ",0
+  4755 00001D4C 2061782C2000            dovar1_11 db " ax, ",0
+  4756 00001D52 206561782C2000          dovar1_12 db " eax, ",0
+  4757                                  ENDP
+  4758                                  
+  4759                                  rterm: PROC
+  4760                                  
+  4761                                  ;-616   if (istoken(T_CONST)) { prnl(); prs(op);
+  4762                                  ;
+  4763 00001D59 C8080000                 ENTER  8,0
+  4764 00001D5D 680101                   push 257
+  4765 00001D60 E8ABEA                   call istoken
+  4766 00001D63 83C402                   add  sp, 2
+  4767 00001D66 08C0                     or  al, al
+  4768 00001D68 0F845200                 je .rterm220
+  4769 00001D6C E807E7                   call prnl
+  4770 00001D6F FF7604                   push word [bp+4]
+  4771 00001D72 E86DE6                   call prs
+  4772 00001D75 83C402                   add  sp, 2
+  4773                                  
+  4774                                  ;-617     if (wi==1) prs(" al, ");
+  4775                                  
+  4776 00001D78 A1[3700]                 mov ax, [wi]
+  4777 00001D7B 83F801                   cmp ax, 1
+  4778 00001D7E 0F850900                 jne .rterm221
+  4779 00001D82 68[421E]                 push rterm_0
+  4780 00001D85 E85AE6                   call prs
+  4781 00001D88 83C402                   add  sp, 2
   4782                                  
-  4783                                  ;-601   else if (istoken('-')) rterm("sub" );
+  4783                                  ;-618     if (wi==2) prs(" ax, ");
   4784                                  
-  4785 00001DEC E9CF00                   jmp .expr227
-  4786                                  .expr226:
-  4787 00001DEF 6A2D                     push 45
-  4788 00001DF1 E800E6                   call istoken
-  4789 00001DF4 83C402                   add  sp, 2
-  4790 00001DF7 08C0                     or  al, al
-  4791 00001DF9 0F840C00                 je .expr228
-  4792 00001DFD 68[8E1F]                 push expr_18
-  4793 00001E00 E80E04                   call rterm
-  4794 00001E03 83C402                   add  sp, 2
-  4795                                  
-  4796                                  ;-602   else if (istoken('&')) rterm("and" );
-  4797                                  
-  4798 00001E06 E9B500                   jmp .expr229
-  4799                                  .expr228:
-  4800 00001E09 6A26                     push 38
-  4801 00001E0B E8E6E5                   call istoken
-  4802 00001E0E 83C402                   add  sp, 2
-  4803 00001E11 08C0                     or  al, al
-  4804 00001E13 0F840C00                 je .expr230
-  4805 00001E17 68[921F]                 push expr_19
-  4806 00001E1A E8F403                   call rterm
-  4807 00001E1D 83C402                   add  sp, 2
-  4808                                  
-  4809                                  ;-603   else if (istoken('|')) rterm("or" );
+  4785                                  .rterm221:
+  4786 00001D8B A1[3700]                 mov ax, [wi]
+  4787 00001D8E 83F802                   cmp ax, 2
+  4788 00001D91 0F850900                 jne .rterm222
+  4789 00001D95 68[481E]                 push rterm_1
+  4790 00001D98 E847E6                   call prs
+  4791 00001D9B 83C402                   add  sp, 2
+  4792                                  
+  4793                                  ;-619     if (wi==4) prs(" eax, ");
+  4794                                  
+  4795                                  .rterm222:
+  4796 00001D9E A1[3700]                 mov ax, [wi]
+  4797 00001DA1 83F804                   cmp ax, 4
+  4798 00001DA4 0F850900                 jne .rterm223
+  4799 00001DA8 68[4E1E]                 push rterm_2
+  4800 00001DAB E834E6                   call prs
+  4801 00001DAE 83C402                   add  sp, 2
+  4802                                  
+  4803                                  ;-620     prunsign1(lexval); return;}
+  4804                                  
+  4805                                  .rterm223:
+  4806 00001DB1 FF36[2C00]               push word [lexval]
+  4807 00001DB5 E88DE7                   call prunsign1
+  4808 00001DB8 83C402                   add  sp, 2
+  4809 00001DBB E98200                   jmp .retnrterm
   4810                                  
-  4811 00001E20 E99B00                   jmp .expr231
-  4812                                  .expr230:
-  4813 00001E23 6A7C                     push 124
-  4814 00001E25 E8CCE5                   call istoken
-  4815 00001E28 83C402                   add  sp, 2
-  4816 00001E2B 08C0                     or  al, al
-  4817 00001E2D 0F840C00                 je .expr232
-  4818 00001E31 68[961F]                 push expr_20
-  4819 00001E34 E8DA03                   call rterm
-  4820 00001E37 83C402                   add  sp, 2
-  4821                                  
-  4822                                  ;-604   else if (istoken(T_LESSLESS)) rterm("shl");
-  4823                                  
-  4824 00001E3A E98100                   jmp .expr233
-  4825                                  .expr232:
-  4826 00001E3D 68D804                   push 1240
-  4827 00001E40 E8B1E5                   call istoken
-  4828 00001E43 83C402                   add  sp, 2
-  4829 00001E46 08C0                     or  al, al
-  4830 00001E48 0F840C00                 je .expr234
-  4831 00001E4C 68[991F]                 push expr_21
-  4832 00001E4F E8BF03                   call rterm
-  4833 00001E52 83C402                   add  sp, 2
-  4834                                  
-  4835                                  ;-605   else if (istoken(T_GREATGREAT)) rterm("shr");
+  4811                                  ;-621   mode=typeName(); id1=searchname(); ixarr=0;
+  4812                                  
+  4813                                  .rterm220:
+  4814 00001DBE E872ED                   call typeName
+  4815 00001DC1 8946FE                   mov [bp-2], ax
+  4816 00001DC4 E89DEC                   call searchname
+  4817 00001DC7 8946F8                   mov [bp-8], ax
+  4818 00001DCA B80000                   mov ax, 0
+  4819 00001DCD 8946FA                   mov [bp-6], ax
+  4820                                  
+  4821                                  ;-622   if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');
+  4822                                  
+  4823 00001DD0 6A5B                     push 91
+  4824 00001DD2 E839EA                   call istoken
+  4825 00001DD5 83C402                   add  sp, 2
+  4826 00001DD8 08C0                     or  al, al
+  4827 00001DDA 0F843300                 je .rterm224
+  4828 00001DDE E883EC                   call searchname
+  4829 00001DE1 8946FA                   mov [bp-6], ax
+  4830 00001DE4 680001                   push 256
+  4831 00001DE7 E846EA                   call expect
+  4832 00001DEA 83C402                   add  sp, 2
+  4833 00001DED 6A5D                     push 93
+  4834 00001DEF E83EEA                   call expect
+  4835 00001DF2 83C402                   add  sp, 2
   4836                                  
-  4837 00001E55 E96600                   jmp .expr235
-  4838                                  .expr234:
-  4839 00001E58 68D904                   push 1241
-  4840 00001E5B E896E5                   call istoken
-  4841 00001E5E 83C402                   add  sp, 2
-  4842 00001E61 08C0                     or  al, al
-  4843 00001E63 0F840C00                 je .expr236
-  4844 00001E67 68[9D1F]                 push expr_22
-  4845 00001E6A E8A403                   call rterm
-  4846 00001E6D 83C402                   add  sp, 2
-  4847                                  
-  4848                                  ;-606   else if (istoken('*')) domul (ids);
-  4849                                  
-  4850 00001E70 E94B00                   jmp .expr237
-  4851                                  .expr236:
-  4852 00001E73 6A2A                     push 42
-  4853 00001E75 E87CE5                   call istoken
-  4854 00001E78 83C402                   add  sp, 2
-  4855 00001E7B 08C0                     or  al, al
-  4856 00001E7D 0F840C00                 je .expr238
-  4857 00001E81 FF76F6                   push word [bp-10]
-  4858 00001E84 E8DE09                   call domul
-  4859 00001E87 83C402                   add  sp, 2
-  4860                                  
-  4861                                  ;-607   else if (istoken('/')) doidiv(ids);
-  4862                                  
-  4863 00001E8A E93100                   jmp .expr239
-  4864                                  .expr238:
-  4865 00001E8D 6A2F                     push 47
-  4866 00001E8F E862E5                   call istoken
-  4867 00001E92 83C402                   add  sp, 2
-  4868 00001E95 08C0                     or  al, al
-  4869 00001E97 0F840C00                 je .expr240
-  4870 00001E9B FF76F6                   push word [bp-10]
-  4871 00001E9E E8650A                   call doidiv
-  4872 00001EA1 83C402                   add  sp, 2
-  4873                                  
-  4874                                  ;-608   else if (istoken('%')) domod (ids);
-  4875                                  
-  4876 00001EA4 E91700                   jmp .expr241
-  4877                                  .expr240:
-  4878 00001EA7 6A25                     push 37
-  4879 00001EA9 E848E5                   call istoken
-  4880 00001EAC 83C402                   add  sp, 2
-  4881 00001EAF 08C0                     or  al, al
-  4882 00001EB1 0F840900                 je .expr242
-  4883 00001EB5 FF76F6                   push word [bp-10]
-  4884 00001EB8 E8EE0B                   call domod
-  4885 00001EBB 83C402                   add  sp, 2
-  4886                                  
-  4887                                  ;-609   if (isrelational()) { rterm("cmp"); cmpneg(ids);}
-  4888                                  
-  4889                                  .expr242:
-  4890                                  .expr241:
-  4891                                  .expr239:
-  4892                                  .expr237:
-  4893                                  .expr235:
-  4894                                  .expr233:
-  4895                                  .expr231:
-  4896                                  .expr229:
-  4897                                  .expr227:
-  4898 00001EBE E8CC12                   call isrelational
-  4899 00001EC1 08C0                     or  al, al
-  4900 00001EC3 0F841200                 je .expr243
-  4901 00001EC7 68[A11F]                 push expr_23
-  4902 00001ECA E84403                   call rterm
-  4903 00001ECD 83C402                   add  sp, 2
-  4904 00001ED0 FF76F6                   push word [bp-10]
-  4905 00001ED3 E8F90F                   call cmpneg
-  4906 00001ED6 83C402                   add  sp, 2
-  4907                                  
-  4908                                  ;-610   return 0;
-  4909                                  
-  4910                                  .expr243:
-  4911 00001ED9 B80000                   mov ax, 0
-  4912 00001EDC E90000                   jmp .retnexpr
-  4913                                  
-  4914                                  ;-611 }
-  4915                                  
-  4916                                  
-  4917                                  ;-612 
-  4918                                  
-  4919                                  
-  4920                                  ;-613 int compoundass(char *op, int mode, int id1) {
-  4921                                  
-  4922 00001EDF C9                       .retnexpr: LEAVE
-  4923 00001EE0 C3                       ret
-  4924 00001EE1 5C6E206D6F76206178-     expr_0 db "\n mov ax, ",0
-  4925 00001EEA 2C2000             
-  4926 00001EED 417272617920696E64-     expr_1 db "Array index must be number or int",0
-  4927 00001EF6 6578206D7573742062-
-  4928 00001EFF 65206E756D62657220-
-  4929 00001F08 6F7220696E7400     
-  4930 00001F0F 4F6E6C792076617220-     expr_2 db "Only var allowed",0
-  4931 00001F18 616C6C6F77656400   
-  4932 00001F20 5C6E20696E63202000      expr_3 db "\n inc  ",0
-  4933 00001F29 776F726400              expr_4 db "word",0
-  4934 00001F2E 6279746500              expr_5 db "byte",0
-  4935 00001F33 4F6E6C792076617220-     expr_6 db "Only var allowed",0
-  4936 00001F3C 616C6C6F77656400   
-  4937 00001F44 5C6E20646563202000      expr_7 db "\n dec  ",0
-  4938 00001F4D 776F726400              expr_8 db "word",0
-  4939 00001F52 6279746500              expr_9 db "byte",0
-  4940 00001F57 61646400                expr_10 db "add",0
-  4941 00001F5B 73756200                expr_11 db "sub",0
-  4942 00001F5F 616E6400                expr_12 db "and",0
-  4943 00001F63 6F7200                  expr_13 db "or",0
-  4944 00001F66 6E6F7420696D706C65-     expr_14 db "not implemented",0
-  4945 00001F6F 6D656E74656400     
-  4946 00001F76 6E6F7420696D706C65-     expr_15 db "not implemented",0
-  4947 00001F7F 6D656E74656400     
-  4948 00001F86 6D6F7600                expr_16 db "mov",0
-  4949 00001F8A 61646400                expr_17 db "add",0
-  4950 00001F8E 73756200                expr_18 db "sub",0
-  4951 00001F92 616E6400                expr_19 db "and",0
-  4952 00001F96 6F7200                  expr_20 db "or",0
-  4953 00001F99 73686C00                expr_21 db "shl",0
-  4954 00001F9D 73687200                expr_22 db "shr",0
-  4955 00001FA1 636D7000                expr_23 db "cmp",0
-  4956                                  ENDP
-  4957                                  
-  4958                                  compoundass: PROC
-  4959                                  
-  4960                                  ;-614   if(mode) error1("only scalar Var allowed");
-  4961                                  ;
-  4962 00001FA5 C8000000                 ENTER  0,0
-  4963 00001FA9 8B4606                   mov ax, [bp+6]
-  4964 00001FAC 08C0                     or  al, al
-  4965 00001FAE 0F840900                 je .compoundass244
-  4966 00001FB2 68[1F20]                 push compoundass_0
-  4967 00001FB5 E8B31C                   call error1
-  4968 00001FB8 83C402                   add  sp, 2
-  4969                                  
-  4970                                  ;-615   prnl(); prs(op); prs("  ");
-  4971                                  
-  4972                                  .compoundass244:
-  4973 00001FBB E85AE5                   call prnl
-  4974 00001FBE FF7604                   push word [bp+4]
-  4975 00001FC1 E862E5                   call prs
-  4976 00001FC4 83C402                   add  sp, 2
-  4977 00001FC7 68[3720]                 push compoundass_1
-  4978 00001FCA E859E5                   call prs
-  4979 00001FCD 83C402                   add  sp, 2
-  4980                                  
-  4981                                  ;-616   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  4982                                  
-  4983 00001FD0 FF7608                   push word [bp+8]
-  4984 00001FD3 E86FEB                   call gettypes
-  4985 00001FD6 83C402                   add  sp, 2
-  4986 00001FD9 A1[3700]                 mov ax, [wi]
-  4987 00001FDC 83F802                   cmp ax, 2
-  4988 00001FDF 0F850C00                 jne .compoundass245
-  4989 00001FE3 68[3A20]                 push compoundass_2
-  4990 00001FE6 E83DE5                   call prs
-  4991 00001FE9 83C402                   add  sp, 2
-  4992 00001FEC E90900                   jmp .compoundass246
-  4993                                  .compoundass245:
-  4994 00001FEF 68[3F20]                 push compoundass_3
-  4995 00001FF2 E831E5                   call prs
-  4996 00001FF5 83C402                   add  sp, 2
-  4997                                  
-  4998                                  ;-617   v(id1); prs(", ");
-  4999                                  
-  5000                                  .compoundass246:
-  5001 00001FF8 FF7608                   push word [bp+8]
-  5002 00001FFB E859E3                   call v
-  5003 00001FFE 83C402                   add  sp, 2
-  5004 00002001 68[4420]                 push compoundass_4
-  5005 00002004 E81FE5                   call prs
-  5006 00002007 83C402                   add  sp, 2
-  5007                                  
-  5008                                  ;-618   expect(T_CONST); prunsign1(lexval);
-  5009                                  
-  5010 0000200A 680101                   push 257
-  5011 0000200D E806E4                   call expect
-  5012 00002010 83C402                   add  sp, 2
-  5013 00002013 FF36[2C00]               push word [lexval]
-  5014 00002017 E861E6                   call prunsign1
-  5015 0000201A 83C402                   add  sp, 2
-  5016                                  
-  5017                                  ;-619 }
-  5018                                  
-  5019                                  
-  5020                                  ;-620 int dovar1(int mode, int op, int ixarr, int id1) {
-  5021 0000201D C9                       LEAVE
-  5022 0000201E C3                       ret
-  5023 0000201F 6F6E6C79207363616C-     compoundass_0 db "only scalar Var allowed",0
-  5024 00002028 61722056617220616C-
-  5025 00002031 6C6F77656400       
-  5026 00002037 202000                  compoundass_1 db "  ",0
-  5027 0000203A 776F726400              compoundass_2 db "word",0
-  5028 0000203F 6279746500              compoundass_3 db "byte",0
-  5029 00002044 2C2000                  compoundass_4 db ", ",0
-  5030                                  ENDP
-  5031                                  
-  5032                                  dovar1: PROC
-  5033                                  
-  5034                                  ;-621   gettypes(id1);
-  5035                                  ;
-  5036 00002047 C8000000                 ENTER  0,0
-  5037 0000204B FF760A                   push word [bp+10]
-  5038 0000204E E8F4EA                   call gettypes
-  5039 00002051 83C402                   add  sp, 2
-  5040                                  
-  5041                                  ;-622   if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
-  5042                                  
-  5043 00002054 8B4604                   mov ax, [bp+4]
-  5044 00002057 83F801                   cmp ax, 1
-  5045 0000205A 0F854700                 jne .dovar1247
-  5046 0000205E 68[9C21]                 push dovar1_0
-  5047 00002061 E8C2E4                   call prs
-  5048 00002064 83C402                   add  sp, 2
-  5049 00002067 FF760A                   push word [bp+10]
-  5050 0000206A E8EAE2                   call v
-  5051 0000206D 83C402                   add  sp, 2
-  5052 00002070 E8A5E4                   call prnl
-  5053 00002073 FF7606                   push word [bp+6]
-  5054 00002076 E8ADE4                   call prs
-  5055 00002079 83C402                   add  sp, 2
-  5056                                  
-  5057                                  ;-623     if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
+  4837                                  ;-623     gettypes(ixarr);
+  4838                                  
+  4839 00001DF5 FF76FA                   push word [bp-6]
+  4840 00001DF8 E8B2EB                   call gettypes
+  4841 00001DFB 83C402                   add  sp, 2
+  4842                                  
+  4843                                  ;-624     if (widthi != 2) error1("Arrayindex muss int sein"); }
+  4844                                  
+  4845 00001DFE A1[3400]                 mov ax, [widthi]
+  4846 00001E01 83F802                   cmp ax, 2
+  4847 00001E04 0F840900                 je  .rterm225
+  4848 00001E08 68[551E]                 push rterm_3
+  4849 00001E0B E8D2E7                   call error1
+  4850 00001E0E 83C402                   add  sp, 2
+  4851                                  .rterm225:
+  4852                                  
+  4853                                  ;-625   if (eqstr(symbol,"_AX")) return;
+  4854                                  
+  4855                                  .rterm224:
+  4856 00001E11 68[6E1E]                 push rterm_4
+  4857 00001E14 8D06BB69                 lea  ax, [symbol]
+  4858 00001E18 50                       push ax
+  4859 00001E19 E846E4                   call eqstr
+  4860 00001E1C 83C404                   add  sp, 4
+  4861 00001E1F 08C0                     or  al, al
+  4862 00001E21 0F840300                 je .rterm226
+  4863 00001E25 E91800                   jmp .retnrterm
+  4864                                  
+  4865                                  ;-626   opint=op; dovar1(mode, opint, ixarr, id1);
+  4866                                  
+  4867                                  .rterm226:
+  4868 00001E28 8B4604                   mov ax, [bp+4]
+  4869 00001E2B 8946FC                   mov [bp-4], ax
+  4870 00001E2E FF76F8                   push word [bp-8]
+  4871 00001E31 FF76FA                   push word [bp-6]
+  4872 00001E34 FF76FC                   push word [bp-4]
+  4873 00001E37 FF76FE                   push word [bp-2]
+  4874 00001E3A E852FD                   call dovar1
+  4875 00001E3D 83C408                   add  sp, 8
+  4876                                  
+  4877                                  ;-627 }
+  4878                                  
+  4879                                  
+  4880                                  ;-628 int isreg() {
+  4881                                  
+  4882 00001E40 C9                       .retnrterm: LEAVE
+  4883 00001E41 C3                       ret
+  4884 00001E42 20616C2C2000            rterm_0 db " al, ",0
+  4885 00001E48 2061782C2000            rterm_1 db " ax, ",0
+  4886 00001E4E 206561782C2000          rterm_2 db " eax, ",0
+  4887 00001E55 4172726179696E6465-     rterm_3 db "Arrayindex muss int sein",0
+  4888 00001E5E 78206D75737320696E-
+  4889 00001E67 74207365696E00     
+  4890 00001E6E 5F415800                rterm_4 db "_AX",0
+  4891                                  ENDP
+  4892                                  
+  4893                                  isreg: PROC
+  4894                                  
+  4895                                  ;-629   if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
+  4896                                  
+  4897 00001E72 68[5F20]                 push isreg_0
+  4898 00001E75 8D06BB69                 lea  ax, [symbol]
+  4899 00001E79 50                       push ax
+  4900 00001E7A E8E5E3                   call eqstr
+  4901 00001E7D 83C404                   add  sp, 4
+  4902 00001E80 08C0                     or  al, al
+  4903 00001E82 0F840C00                 je .isreg227
+  4904 00001E86 68[6320]                 push isreg_1
+  4905 00001E89 E84202                   call doreg
+  4906 00001E8C 83C402                   add  sp, 2
+  4907 00001E8F E9C601                   jmp .r1
+  4908                                  
+  4909                                  ;-630   if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
+  4910                                  
+  4911                                  .isreg227:
+  4912 00001E92 68[6620]                 push isreg_2
+  4913 00001E95 8D06BB69                 lea  ax, [symbol]
+  4914 00001E99 50                       push ax
+  4915 00001E9A E8C5E3                   call eqstr
+  4916 00001E9D 83C404                   add  sp, 4
+  4917 00001EA0 08C0                     or  al, al
+  4918 00001EA2 0F840C00                 je .isreg228
+  4919 00001EA6 68[6A20]                 push isreg_3
+  4920 00001EA9 E82202                   call doreg
+  4921 00001EAC 83C402                   add  sp, 2
+  4922 00001EAF E9A601                   jmp .r1
+  4923                                  
+  4924                                  ;-631   if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
+  4925                                  
+  4926                                  .isreg228:
+  4927 00001EB2 68[6D20]                 push isreg_4
+  4928 00001EB5 8D06BB69                 lea  ax, [symbol]
+  4929 00001EB9 50                       push ax
+  4930 00001EBA E8A5E3                   call eqstr
+  4931 00001EBD 83C404                   add  sp, 4
+  4932 00001EC0 08C0                     or  al, al
+  4933 00001EC2 0F840C00                 je .isreg229
+  4934 00001EC6 68[7120]                 push isreg_5
+  4935 00001EC9 E80202                   call doreg
+  4936 00001ECC 83C402                   add  sp, 2
+  4937 00001ECF E98601                   jmp .r1
+  4938                                  
+  4939                                  ;-632   if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
+  4940                                  
+  4941                                  .isreg229:
+  4942 00001ED2 68[7420]                 push isreg_6
+  4943 00001ED5 8D06BB69                 lea  ax, [symbol]
+  4944 00001ED9 50                       push ax
+  4945 00001EDA E885E3                   call eqstr
+  4946 00001EDD 83C404                   add  sp, 4
+  4947 00001EE0 08C0                     or  al, al
+  4948 00001EE2 0F840C00                 je .isreg230
+  4949 00001EE6 68[7820]                 push isreg_7
+  4950 00001EE9 E8E201                   call doreg
+  4951 00001EEC 83C402                   add  sp, 2
+  4952 00001EEF E96601                   jmp .r1
+  4953                                  
+  4954                                  ;-633   if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
+  4955                                  
+  4956                                  .isreg230:
+  4957 00001EF2 68[7B20]                 push isreg_8
+  4958 00001EF5 8D06BB69                 lea  ax, [symbol]
+  4959 00001EF9 50                       push ax
+  4960 00001EFA E865E3                   call eqstr
+  4961 00001EFD 83C404                   add  sp, 4
+  4962 00001F00 08C0                     or  al, al
+  4963 00001F02 0F840C00                 je .isreg231
+  4964 00001F06 68[7F20]                 push isreg_9
+  4965 00001F09 E8C201                   call doreg
+  4966 00001F0C 83C402                   add  sp, 2
+  4967 00001F0F E94601                   jmp .r1
+  4968                                  
+  4969                                  ;-634   if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
+  4970                                  
+  4971                                  .isreg231:
+  4972 00001F12 68[8220]                 push isreg_10
+  4973 00001F15 8D06BB69                 lea  ax, [symbol]
+  4974 00001F19 50                       push ax
+  4975 00001F1A E845E3                   call eqstr
+  4976 00001F1D 83C404                   add  sp, 4
+  4977 00001F20 08C0                     or  al, al
+  4978 00001F22 0F840C00                 je .isreg232
+  4979 00001F26 68[8620]                 push isreg_11
+  4980 00001F29 E8A201                   call doreg
+  4981 00001F2C 83C402                   add  sp, 2
+  4982 00001F2F E92601                   jmp .r1
+  4983                                  
+  4984                                  ;-635   if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
+  4985                                  
+  4986                                  .isreg232:
+  4987 00001F32 68[8920]                 push isreg_12
+  4988 00001F35 8D06BB69                 lea  ax, [symbol]
+  4989 00001F39 50                       push ax
+  4990 00001F3A E825E3                   call eqstr
+  4991 00001F3D 83C404                   add  sp, 4
+  4992 00001F40 08C0                     or  al, al
+  4993 00001F42 0F840C00                 je .isreg233
+  4994 00001F46 68[8D20]                 push isreg_13
+  4995 00001F49 E88201                   call doreg
+  4996 00001F4C 83C402                   add  sp, 2
+  4997 00001F4F E90601                   jmp .r1
+  4998                                  
+  4999                                  ;-636   if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
+  5000                                  
+  5001                                  .isreg233:
+  5002 00001F52 68[9020]                 push isreg_14
+  5003 00001F55 8D06BB69                 lea  ax, [symbol]
+  5004 00001F59 50                       push ax
+  5005 00001F5A E805E3                   call eqstr
+  5006 00001F5D 83C404                   add  sp, 4
+  5007 00001F60 08C0                     or  al, al
+  5008 00001F62 0F840C00                 je .isreg234
+  5009 00001F66 68[9420]                 push isreg_15
+  5010 00001F69 E86201                   call doreg
+  5011 00001F6C 83C402                   add  sp, 2
+  5012 00001F6F E9E600                   jmp .r1
+  5013                                  
+  5014                                  ;-637   if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
+  5015                                  
+  5016                                  .isreg234:
+  5017 00001F72 68[9720]                 push isreg_16
+  5018 00001F75 8D06BB69                 lea  ax, [symbol]
+  5019 00001F79 50                       push ax
+  5020 00001F7A E8E5E2                   call eqstr
+  5021 00001F7D 83C404                   add  sp, 4
+  5022 00001F80 08C0                     or  al, al
+  5023 00001F82 0F840C00                 je .isreg235
+  5024 00001F86 68[9B20]                 push isreg_17
+  5025 00001F89 E84201                   call doreg
+  5026 00001F8C 83C402                   add  sp, 2
+  5027 00001F8F E9C600                   jmp .r1
+  5028                                  
+  5029                                  ;-638   if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
+  5030                                  
+  5031                                  .isreg235:
+  5032 00001F92 68[9E20]                 push isreg_18
+  5033 00001F95 8D06BB69                 lea  ax, [symbol]
+  5034 00001F99 50                       push ax
+  5035 00001F9A E8C5E2                   call eqstr
+  5036 00001F9D 83C404                   add  sp, 4
+  5037 00001FA0 08C0                     or  al, al
+  5038 00001FA2 0F840C00                 je .isreg236
+  5039 00001FA6 68[A220]                 push isreg_19
+  5040 00001FA9 E82201                   call doreg
+  5041 00001FAC 83C402                   add  sp, 2
+  5042 00001FAF E9A600                   jmp .r1
+  5043                                  
+  5044                                  ;-639   if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
+  5045                                  
+  5046                                  .isreg236:
+  5047 00001FB2 68[A520]                 push isreg_20
+  5048 00001FB5 8D06BB69                 lea  ax, [symbol]
+  5049 00001FB9 50                       push ax
+  5050 00001FBA E8A5E2                   call eqstr
+  5051 00001FBD 83C404                   add  sp, 4
+  5052 00001FC0 08C0                     or  al, al
+  5053 00001FC2 0F840C00                 je .isreg237
+  5054 00001FC6 68[A920]                 push isreg_21
+  5055 00001FC9 E80201                   call doreg
+  5056 00001FCC 83C402                   add  sp, 2
+  5057 00001FCF E98600                   jmp .r1
   5058                                  
-  5059 0000207C A1[3400]                 mov ax, [widthi]
-  5060 0000207F 83F801                   cmp ax, 1
-  5061 00002082 0F850900                 jne .dovar1248
-  5062 00002086 68[A821]                 push dovar1_1
-  5063 00002089 E89AE4                   call prs
-  5064 0000208C 83C402                   add  sp, 2
-  5065                                  
-  5066                                  ;-624     if(widthi == 2) prs(" ax, [bx]");
-  5067                                  
-  5068                                  .dovar1248:
-  5069 0000208F A1[3400]                 mov ax, [widthi]
-  5070 00002092 83F802                   cmp ax, 2
-  5071 00002095 0F850900                 jne .dovar1249
-  5072 00002099 68[BE21]                 push dovar1_2
-  5073 0000209C E887E4                   call prs
-  5074 0000209F 83C402                   add  sp, 2
+  5059                                  ;-640   if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
+  5060                                  
+  5061                                  .isreg237:
+  5062 00001FD2 68[AC20]                 push isreg_22
+  5063 00001FD5 8D06BB69                 lea  ax, [symbol]
+  5064 00001FD9 50                       push ax
+  5065 00001FDA E885E2                   call eqstr
+  5066 00001FDD 83C404                   add  sp, 4
+  5067 00001FE0 08C0                     or  al, al
+  5068 00001FE2 0F840C00                 je .isreg238
+  5069 00001FE6 68[B020]                 push isreg_23
+  5070 00001FE9 E8E200                   call doreg
+  5071 00001FEC 83C402                   add  sp, 2
+  5072 00001FEF E96600                   jmp .r1
+  5073                                  
+  5074                                  ;-641   if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
   5075                                  
-  5076                                  ;-625     return; }
-  5077                                  
-  5078                                  .dovar1249:
-  5079 000020A2 E9F500                   jmp .retndovar1
-  5080                                  
-  5081                                  ;-626   if (mode==2){prnl();prs(op);prs(" ax, "); a(id1); return; }
-  5082                                  
-  5083                                  .dovar1247:
-  5084 000020A5 8B4604                   mov ax, [bp+4]
-  5085 000020A8 83F802                   cmp ax, 2
-  5086 000020AB 0F852100                 jne .dovar1250
-  5087 000020AF E866E4                   call prnl
-  5088 000020B2 FF7606                   push word [bp+6]
-  5089 000020B5 E86EE4                   call prs
-  5090 000020B8 83C402                   add  sp, 2
-  5091 000020BB 68[C821]                 push dovar1_3
-  5092 000020BE E865E4                   call prs
-  5093 000020C1 83C402                   add  sp, 2
-  5094 000020C4 FF760A                   push word [bp+10]
-  5095 000020C7 E87EE2                   call a
-  5096 000020CA 83C402                   add  sp, 2
-  5097 000020CD E9CA00                   jmp .retndovar1
-  5098                                  
-  5099                                  ;-627   if (ixarr) {
-  5100                                  
-  5101                                  .dovar1250:
-  5102 000020D0 8B4608                   mov ax, [bp+8]
-  5103 000020D3 08C0                     or  al, al
-  5104 000020D5 0F847300                 je .dovar1251
+  5076                                  .isreg238:
+  5077 00001FF2 68[B320]                 push isreg_24
+  5078 00001FF5 8D06BB69                 lea  ax, [symbol]
+  5079 00001FF9 50                       push ax
+  5080 00001FFA E865E2                   call eqstr
+  5081 00001FFD 83C404                   add  sp, 4
+  5082 00002000 08C0                     or  al, al
+  5083 00002002 0F840C00                 je .isreg239
+  5084 00002006 68[B720]                 push isreg_25
+  5085 00002009 E8C200                   call doreg
+  5086 0000200C 83C402                   add  sp, 2
+  5087 0000200F E94600                   jmp .r1
+  5088                                  
+  5089                                  ;-642   if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
+  5090                                  
+  5091                                  .isreg239:
+  5092 00002012 68[BA20]                 push isreg_26
+  5093 00002015 8D06BB69                 lea  ax, [symbol]
+  5094 00002019 50                       push ax
+  5095 0000201A E845E2                   call eqstr
+  5096 0000201D 83C404                   add  sp, 4
+  5097 00002020 08C0                     or  al, al
+  5098 00002022 0F840C00                 je .isreg240
+  5099 00002026 68[BE20]                 push isreg_27
+  5100 00002029 E8A200                   call doreg
+  5101 0000202C 83C402                   add  sp, 2
+  5102 0000202F E92600                   jmp .r1
+  5103                                  
+  5104                                  ;-643   if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
   5105                                  
-  5106                                  ;-628     prs("\n mov bx, "); v(ixarr);
-  5107                                  
-  5108 000020D9 68[CE21]                 push dovar1_4
-  5109 000020DC E847E4                   call prs
-  5110 000020DF 83C402                   add  sp, 2
-  5111 000020E2 FF7608                   push word [bp+8]
-  5112 000020E5 E86FE2                   call v
-  5113 000020E8 83C402                   add  sp, 2
-  5114                                  
-  5115                                  ;-629     if (wi==2) prs("\n shl bx, 1");
-  5116                                  
-  5117 000020EB A1[3700]                 mov ax, [wi]
-  5118 000020EE 83F802                   cmp ax, 2
-  5119 000020F1 0F850900                 jne .dovar1252
-  5120 000020F5 68[DA21]                 push dovar1_5
-  5121 000020F8 E82BE4                   call prs
-  5122 000020FB 83C402                   add  sp, 2
-  5123                                  
-  5124                                  ;-630     prs("\n "); prs(op);
-  5125                                  
-  5126                                  .dovar1252:
-  5127 000020FE 68[E721]                 push dovar1_6
-  5128 00002101 E822E4                   call prs
-  5129 00002104 83C402                   add  sp, 2
-  5130 00002107 FF7606                   push word [bp+6]
-  5131 0000210A E819E4                   call prs
-  5132 0000210D 83C402                   add  sp, 2
-  5133                                  
-  5134                                  ;-631     if (wi==2) prs(" ax, "); else prs(" al, ");
-  5135                                  
-  5136 00002110 A1[3700]                 mov ax, [wi]
-  5137 00002113 83F802                   cmp ax, 2
-  5138 00002116 0F850C00                 jne .dovar1253
-  5139 0000211A 68[EB21]                 push dovar1_7
-  5140 0000211D E806E4                   call prs
-  5141 00002120 83C402                   add  sp, 2
-  5142 00002123 E90900                   jmp .dovar1254
-  5143                                  .dovar1253:
-  5144 00002126 68[F121]                 push dovar1_8
-  5145 00002129 E8FAE3                   call prs
-  5146 0000212C 83C402                   add  sp, 2
-  5147                                  
-  5148                                  ;-632 // v(id1); prs(" [bx]");
-  5149                                  
-  5150                                  
-  5151                                  ;-633     prc('['); printName(id1); prs(" + bx]");
-  5152                                  
-  5153                                  .dovar1254:
-  5154 0000212F 6A5B                     push 91
-  5155 00002131 E88BE3                   call prc
-  5156 00002134 83C402                   add  sp, 2
-  5157 00002137 FF760A                   push word [bp+10]
-  5158 0000213A E8E2EA                   call printName
-  5159 0000213D 83C402                   add  sp, 2
-  5160 00002140 68[F721]                 push dovar1_9
-  5161 00002143 E8E0E3                   call prs
-  5162 00002146 83C402                   add  sp, 2
-  5163                                  
-  5164                                  ;-634     return; }
-  5165                                  
-  5166 00002149 E94E00                   jmp .retndovar1
-  5167                                  
-  5168                                  ;-635   prnl();prs(op);
-  5169                                  
-  5170                                  .dovar1251:
-  5171 0000214C E8C9E3                   call prnl
-  5172 0000214F FF7606                   push word [bp+6]
-  5173 00002152 E8D1E3                   call prs
-  5174 00002155 83C402                   add  sp, 2
-  5175                                  
-  5176                                  ;-636   if(wi==1) prs(" al, ");
-  5177                                  
-  5178 00002158 A1[3700]                 mov ax, [wi]
-  5179 0000215B 83F801                   cmp ax, 1
-  5180 0000215E 0F850900                 jne .dovar1255
-  5181 00002162 68[FE21]                 push dovar1_10
-  5182 00002165 E8BEE3                   call prs
-  5183 00002168 83C402                   add  sp, 2
+  5106                                  .isreg240:
+  5107 00002032 68[C120]                 push isreg_28
+  5108 00002035 8D06BB69                 lea  ax, [symbol]
+  5109 00002039 50                       push ax
+  5110 0000203A E825E2                   call eqstr
+  5111 0000203D 83C404                   add  sp, 4
+  5112 00002040 08C0                     or  al, al
+  5113 00002042 0F840C00                 je .isreg241
+  5114 00002046 68[C820]                 push isreg_29
+  5115 00002049 E88200                   call doreg
+  5116 0000204C 83C402                   add  sp, 2
+  5117 0000204F E90600                   jmp .r1
+  5118                                  
+  5119                                  ;-644   return 0;   r1: return 1;
+  5120                                  
+  5121                                  .isreg241:
+  5122 00002052 B80000                   mov ax, 0
+  5123 00002055 E90600                   jmp .retnisreg
+  5124                                  .r1:
+  5125 00002058 B80100                   mov ax, 1
+  5126 0000205B E90000                   jmp .retnisreg
+  5127                                  
+  5128                                  ;-645 }
+  5129                                  
+  5130                                  
+  5131                                  ;-646 int doreg(char *dr) { int i; expect('=');
+  5132                                  
+  5133                                   .retnisreg:
+  5134 0000205E C3                       ret
+  5135 0000205F 5F414800                isreg_0 db "_AH",0
+  5136 00002063 616800                  isreg_1 db "ah",0
+  5137 00002066 5F414C00                isreg_2 db "_AL",0
+  5138 0000206A 616C00                  isreg_3 db "al",0
+  5139 0000206D 5F415800                isreg_4 db "_AX",0
+  5140 00002071 617800                  isreg_5 db "ax",0
+  5141 00002074 5F424800                isreg_6 db "_BH",0
+  5142 00002078 626800                  isreg_7 db "bh",0
+  5143 0000207B 5F424C00                isreg_8 db "_BL",0
+  5144 0000207F 626C00                  isreg_9 db "bl",0
+  5145 00002082 5F425800                isreg_10 db "_BX",0
+  5146 00002086 627800                  isreg_11 db "bx",0
+  5147 00002089 5F434800                isreg_12 db "_CH",0
+  5148 0000208D 636800                  isreg_13 db "ch",0
+  5149 00002090 5F434C00                isreg_14 db "_CL",0
+  5150 00002094 636C00                  isreg_15 db "cl",0
+  5151 00002097 5F435800                isreg_16 db "_CX",0
+  5152 0000209B 637800                  isreg_17 db "cx",0
+  5153 0000209E 5F444800                isreg_18 db "_DH",0
+  5154 000020A2 646800                  isreg_19 db "dh",0
+  5155 000020A5 5F444C00                isreg_20 db "_DL",0
+  5156 000020A9 646C00                  isreg_21 db "dl",0
+  5157 000020AC 5F445800                isreg_22 db "_DX",0
+  5158 000020B0 647800                  isreg_23 db "dx",0
+  5159 000020B3 5F534900                isreg_24 db "_SI",0
+  5160 000020B7 736900                  isreg_25 db "si",0
+  5161 000020BA 5F444900                isreg_26 db "_DI",0
+  5162 000020BE 646900                  isreg_27 db "di",0
+  5163 000020C1 5F464C41475300          isreg_28 db "_FLAGS",0
+  5164 000020C8 666C61677300            isreg_29 db "flags",0
+  5165                                  ENDP
+  5166                                  
+  5167                                  doreg: PROC;
+  5168 000020CE C8020000                 ENTER  2,0
+  5169 000020D2 6A3D                     push 61
+  5170 000020D4 E859E7                   call expect
+  5171 000020D7 83C402                   add  sp, 2
+  5172                                  
+  5173                                  ;-647   prs("\n mov  "); prs(dr); prs(", ");
+  5174                                  
+  5175 000020DA 68[3D21]                 push doreg_0
+  5176 000020DD E802E3                   call prs
+  5177 000020E0 83C402                   add  sp, 2
+  5178 000020E3 FF7604                   push word [bp+4]
+  5179 000020E6 E8F9E2                   call prs
+  5180 000020E9 83C402                   add  sp, 2
+  5181 000020EC 68[4621]                 push doreg_1
+  5182 000020EF E8F0E2                   call prs
+  5183 000020F2 83C402                   add  sp, 2
   5184                                  
-  5185                                  ;-637   if(wi==2) prs(" ax, ");
+  5185                                  ;-648        if (istoken(T_CONST)) prunsign1(lexval);
   5186                                  
-  5187                                  .dovar1255:
-  5188 0000216B A1[3700]                 mov ax, [wi]
-  5189 0000216E 83F802                   cmp ax, 2
-  5190 00002171 0F850900                 jne .dovar1256
-  5191 00002175 68[0422]                 push dovar1_11
-  5192 00002178 E8ABE3                   call prs
-  5193 0000217B 83C402                   add  sp, 2
-  5194                                  
-  5195                                  ;-638   if(wi==4) prs(" eax, ");
-  5196                                  
-  5197                                  .dovar1256:
-  5198 0000217E A1[3700]                 mov ax, [wi]
-  5199 00002181 83F804                   cmp ax, 4
-  5200 00002184 0F850900                 jne .dovar1257
-  5201 00002188 68[0A22]                 push dovar1_12
-  5202 0000218B E898E3                   call prs
-  5203 0000218E 83C402                   add  sp, 2
-  5204                                  
-  5205                                  ;-639   v(id1);
-  5206                                  
-  5207                                  .dovar1257:
-  5208 00002191 FF760A                   push word [bp+10]
-  5209 00002194 E8C0E1                   call v
-  5210 00002197 83C402                   add  sp, 2
-  5211                                  
-  5212                                  ;-640 }
-  5213                                  
-  5214                                  
-  5215                                  ;-641 int rterm(char *op) {int mode; int opint; int ixarr; int id1;
-  5216                                  
-  5217 0000219A C9                       .retndovar1: LEAVE
-  5218 0000219B C3                       ret
-  5219 0000219C 5C6E206D6F76206278-     dovar1_0 db "\n mov bx, ",0
-  5220 000021A5 2C2000             
-  5221 000021A8 20616C2C205B62785D-     dovar1_1 db " al, [bx]\n mov ah, 0",0
-  5222 000021B1 5C6E206D6F76206168-
-  5223 000021BA 2C203000           
-  5224 000021BE 2061782C205B62785D-     dovar1_2 db " ax, [bx]",0
-  5225 000021C7 00                 
-  5226 000021C8 2061782C2000            dovar1_3 db " ax, ",0
-  5227 000021CE 5C6E206D6F76206278-     dovar1_4 db "\n mov bx, ",0
-  5228 000021D7 2C2000             
-  5229 000021DA 5C6E2073686C206278-     dovar1_5 db "\n shl bx, 1",0
-  5230 000021E3 2C203100           
-  5231 000021E7 5C6E2000                dovar1_6 db "\n ",0
-  5232 000021EB 2061782C2000            dovar1_7 db " ax, ",0
-  5233 000021F1 20616C2C2000            dovar1_8 db " al, ",0
-  5234 000021F7 202B2062785D00          dovar1_9 db " + bx]",0
-  5235 000021FE 20616C2C2000            dovar1_10 db " al, ",0
-  5236 00002204 2061782C2000            dovar1_11 db " ax, ",0
-  5237 0000220A 206561782C2000          dovar1_12 db " eax, ",0
-  5238                                  ENDP
-  5239                                  
-  5240                                  rterm: PROC
-  5241                                  
-  5242                                  ;-642   if (istoken(T_CONST)) { prnl(); prs(op);
-  5243                                  ;
-  5244 00002211 C8080000                 ENTER  8,0
-  5245 00002215 680101                   push 257
-  5246 00002218 E8D9E1                   call istoken
-  5247 0000221B 83C402                   add  sp, 2
-  5248 0000221E 08C0                     or  al, al
-  5249 00002220 0F845200                 je .rterm258
-  5250 00002224 E8F1E2                   call prnl
-  5251 00002227 FF7604                   push word [bp+4]
-  5252 0000222A E8F9E2                   call prs
-  5253 0000222D 83C402                   add  sp, 2
+  5187 000020F5 680101                   push 257
+  5188 000020F8 E813E7                   call istoken
+  5189 000020FB 83C402                   add  sp, 2
+  5190 000020FE 08C0                     or  al, al
+  5191 00002100 0F840D00                 je .doreg242
+  5192 00002104 FF36[2C00]               push word [lexval]
+  5193 00002108 E83AE4                   call prunsign1
+  5194 0000210B 83C402                   add  sp, 2
+  5195                                  
+  5196                                  ;-649   else if (istoken(T_NAME )) { i=searchname(); v(i); }
+  5197                                  
+  5198 0000210E E92A00                   jmp .doreg243
+  5199                                  .doreg242:
+  5200 00002111 680001                   push 256
+  5201 00002114 E8F7E6                   call istoken
+  5202 00002117 83C402                   add  sp, 2
+  5203 0000211A 08C0                     or  al, al
+  5204 0000211C 0F841200                 je .doreg244
+  5205 00002120 E841E9                   call searchname
+  5206 00002123 8946FE                   mov [bp-2], ax
+  5207 00002126 FF76FE                   push word [bp-2]
+  5208 00002129 E8DFE7                   call v
+  5209 0000212C 83C402                   add  sp, 2
+  5210                                  
+  5211                                  ;-650   else error1("only number or var allowed"); }
+  5212                                  
+  5213 0000212F E90900                   jmp .doreg245
+  5214                                  .doreg244:
+  5215 00002132 68[4921]                 push doreg_2
+  5216 00002135 E8A8E4                   call error1
+  5217 00002138 83C402                   add  sp, 2
+  5218                                  .doreg245:
+  5219                                  .doreg243:
+  5220                                  
+  5221                                  ;-651 
+  5222                                  
+  5223                                  
+  5224                                  ;-652 int doassign(int mode, int i, int ixarr, int ixconst) {
+  5225 0000213B C9                       LEAVE
+  5226 0000213C C3                       ret
+  5227 0000213D 5C6E206D6F76202000      doreg_0 db "\n mov  ",0
+  5228 00002146 2C2000                  doreg_1 db ", ",0
+  5229 00002149 6F6E6C79206E756D62-     doreg_2 db "only number or var allowed",0
+  5230 00002152 6572206F7220766172-
+  5231 0000215B 20616C6C6F77656400 
+  5232                                  ENDP
+  5233                                  
+  5234                                  doassign: PROC
+  5235                                  
+  5236                                  ;-653   gettypes(i);
+  5237                                  ;
+  5238 00002164 C8000000                 ENTER  0,0
+  5239 00002168 FF7606                   push word [bp+6]
+  5240 0000216B E83FE8                   call gettypes
+  5241 0000216E 83C402                   add  sp, 2
+  5242                                  
+  5243                                  ;-654   if (mode==1) {prs("\n mov  bx, ");v(i);
+  5244                                  
+  5245 00002171 8B4604                   mov ax, [bp+4]
+  5246 00002174 83F801                   cmp ax, 1
+  5247 00002177 0F853400                 jne .doassign246
+  5248 0000217B 68[0123]                 push doassign_0
+  5249 0000217E E861E2                   call prs
+  5250 00002181 83C402                   add  sp, 2
+  5251 00002184 FF7606                   push word [bp+6]
+  5252 00002187 E881E7                   call v
+  5253 0000218A 83C402                   add  sp, 2
   5254                                  
-  5255                                  ;-643     if (wi==1) prs(" al, ");
+  5255                                  ;-655     if (widthi == 2) prs("\n mov  [bx], ax");
   5256                                  
-  5257 00002230 A1[3700]                 mov ax, [wi]
-  5258 00002233 83F801                   cmp ax, 1
-  5259 00002236 0F850900                 jne .rterm259
-  5260 0000223A 68[FA22]                 push rterm_0
-  5261 0000223D E8E6E2                   call prs
-  5262 00002240 83C402                   add  sp, 2
+  5257 0000218D A1[3400]                 mov ax, [widthi]
+  5258 00002190 83F802                   cmp ax, 2
+  5259 00002193 0F850C00                 jne .doassign247
+  5260 00002197 68[0E23]                 push doassign_1
+  5261 0000219A E845E2                   call prs
+  5262 0000219D 83C402                   add  sp, 2
   5263                                  
-  5264                                  ;-644     if (wi==2) prs(" ax, ");
+  5264                                  ;-656     else  prs("\n mov  [bx], al"); return;}
   5265                                  
-  5266                                  .rterm259:
-  5267 00002243 A1[3700]                 mov ax, [wi]
-  5268 00002246 83F802                   cmp ax, 2
-  5269 00002249 0F850900                 jne .rterm260
-  5270 0000224D 68[0023]                 push rterm_1
-  5271 00002250 E8D3E2                   call prs
-  5272 00002253 83C402                   add  sp, 2
+  5266 000021A0 E90900                   jmp .doassign248
+  5267                                  .doassign247:
+  5268 000021A3 68[1F23]                 push doassign_2
+  5269 000021A6 E839E2                   call prs
+  5270 000021A9 83C402                   add  sp, 2
+  5271                                  .doassign248:
+  5272 000021AC E95001                   jmp .retndoassign
   5273                                  
-  5274                                  ;-645     if (wi==4) prs(" eax, ");
+  5274                                  ;-657   if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
   5275                                  
-  5276                                  .rterm260:
-  5277 00002256 A1[3700]                 mov ax, [wi]
-  5278 00002259 83F804                   cmp ax, 4
-  5279 0000225C 0F850900                 jne .rterm261
-  5280 00002260 68[0623]                 push rterm_2
-  5281 00002263 E8C0E2                   call prs
-  5282 00002266 83C402                   add  sp, 2
-  5283                                  
-  5284                                  ;-646     prunsign1(lexval); return;}
-  5285                                  
-  5286                                  .rterm261:
-  5287 00002269 FF36[2C00]               push word [lexval]
-  5288 0000226D E80BE4                   call prunsign1
-  5289 00002270 83C402                   add  sp, 2
-  5290 00002273 E98200                   jmp .retnrterm
-  5291                                  
-  5292                                  ;-647   mode=typeName(); id1=searchname(); ixarr=0;
-  5293                                  
-  5294                                  .rterm258:
-  5295 00002276 E8D9EA                   call typeName
-  5296 00002279 8946FE                   mov [bp-2], ax
-  5297 0000227C E804EA                   call searchname
-  5298 0000227F 8946F8                   mov [bp-8], ax
-  5299 00002282 B80000                   mov ax, 0
-  5300 00002285 8946FA                   mov [bp-6], ax
-  5301                                  
-  5302                                  ;-648   if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');
-  5303                                  
-  5304 00002288 6A5B                     push 91
-  5305 0000228A E867E1                   call istoken
-  5306 0000228D 83C402                   add  sp, 2
-  5307 00002290 08C0                     or  al, al
-  5308 00002292 0F843300                 je .rterm262
-  5309 00002296 E8EAE9                   call searchname
-  5310 00002299 8946FA                   mov [bp-6], ax
-  5311 0000229C 680001                   push 256
-  5312 0000229F E874E1                   call expect
-  5313 000022A2 83C402                   add  sp, 2
-  5314 000022A5 6A5D                     push 93
-  5315 000022A7 E86CE1                   call expect
-  5316 000022AA 83C402                   add  sp, 2
-  5317                                  
-  5318                                  ;-649     gettypes(ixarr);
-  5319                                  
-  5320 000022AD FF76FA                   push word [bp-6]
-  5321 000022B0 E892E8                   call gettypes
-  5322 000022B3 83C402                   add  sp, 2
-  5323                                  
-  5324                                  ;-650     if (widthi != 2) error1("Arrayindex muss int sein"); }
-  5325                                  
-  5326 000022B6 A1[3400]                 mov ax, [widthi]
-  5327 000022B9 83F802                   cmp ax, 2
-  5328 000022BC 0F840900                 je  .rterm263
-  5329 000022C0 68[0D23]                 push rterm_3
-  5330 000022C3 E8A519                   call error1
-  5331 000022C6 83C402                   add  sp, 2
-  5332                                  .rterm263:
-  5333                                  
-  5334                                  ;-651   if (eqstr(symbol,"_AX")) return;
-  5335                                  
-  5336                                  .rterm262:
-  5337 000022C9 68[2623]                 push rterm_4
-  5338 000022CC 8D06BB69                 lea  ax, [symbol]
-  5339 000022D0 50                       push ax
-  5340 000022D1 E88EDF                   call eqstr
-  5341 000022D4 83C404                   add  sp, 4
-  5342 000022D7 08C0                     or  al, al
-  5343 000022D9 0F840300                 je .rterm264
-  5344 000022DD E91800                   jmp .retnrterm
-  5345                                  
-  5346                                  ;-652   opint=op; dovar1(mode, opint, ixarr, id1);
-  5347                                  
-  5348                                  .rterm264:
-  5349 000022E0 8B4604                   mov ax, [bp+4]
-  5350 000022E3 8946FC                   mov [bp-4], ax
-  5351 000022E6 FF76F8                   push word [bp-8]
-  5352 000022E9 FF76FA                   push word [bp-6]
-  5353 000022EC FF76FC                   push word [bp-4]
-  5354 000022EF FF76FE                   push word [bp-2]
-  5355 000022F2 E852FD                   call dovar1
-  5356 000022F5 83C408                   add  sp, 8
-  5357                                  
-  5358                                  ;-653 }
-  5359                                  
-  5360                                  
-  5361                                  ;-654 int isreg() {
-  5362                                  
-  5363 000022F8 C9                       .retnrterm: LEAVE
-  5364 000022F9 C3                       ret
-  5365 000022FA 20616C2C2000            rterm_0 db " al, ",0
-  5366 00002300 2061782C2000            rterm_1 db " ax, ",0
-  5367 00002306 206561782C2000          rterm_2 db " eax, ",0
-  5368 0000230D 4172726179696E6465-     rterm_3 db "Arrayindex muss int sein",0
-  5369 00002316 78206D75737320696E-
-  5370 0000231F 74207365696E00     
-  5371 00002326 5F415800                rterm_4 db "_AX",0
-  5372                                  ENDP
-  5373                                  
-  5374                                  isreg: PROC
-  5375                                  
-  5376                                  ;-655   if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
+  5276                                  .doassign246:
+  5277 000021AF 8B4604                   mov ax, [bp+4]
+  5278 000021B2 83F802                   cmp ax, 2
+  5279 000021B5 0F851E00                 jne .doassign249
+  5280 000021B9 68[3023]                 push doassign_3
+  5281 000021BC E823E2                   call prs
+  5282 000021BF 83C402                   add  sp, 2
+  5283 000021C2 FF7606                   push word [bp+6]
+  5284 000021C5 E834E7                   call a
+  5285 000021C8 83C402                   add  sp, 2
+  5286 000021CB 68[3923]                 push doassign_4
+  5287 000021CE E811E2                   call prs
+  5288 000021D1 83C402                   add  sp, 2
+  5289 000021D4 E92801                   jmp .retndoassign
+  5290                                  
+  5291                                  ;-658   if (ixarr) {  prs("\n mov bx, ");
+  5292                                  
+  5293                                  .doassign249:
+  5294 000021D7 8B4608                   mov ax, [bp+8]
+  5295 000021DA 08C0                     or  al, al
+  5296 000021DC 0F846E00                 je .doassign250
+  5297 000021E0 68[3E23]                 push doassign_5
+  5298 000021E3 E8FCE1                   call prs
+  5299 000021E6 83C402                   add  sp, 2
+  5300                                  
+  5301                                  ;-659     if(ixconst) prunsign1(ixarr); else v(ixarr);
+  5302                                  
+  5303 000021E9 8B460A                   mov ax, [bp+10]
+  5304 000021EC 08C0                     or  al, al
+  5305 000021EE 0F840C00                 je .doassign251
+  5306 000021F2 FF7608                   push word [bp+8]
+  5307 000021F5 E84DE3                   call prunsign1
+  5308 000021F8 83C402                   add  sp, 2
+  5309 000021FB E90900                   jmp .doassign252
+  5310                                  .doassign251:
+  5311 000021FE FF7608                   push word [bp+8]
+  5312 00002201 E807E7                   call v
+  5313 00002204 83C402                   add  sp, 2
+  5314                                  
+  5315                                  ;-660     if (wi==2) prs("\n shl bx, 1");
+  5316                                  
+  5317                                  .doassign252:
+  5318 00002207 A1[3700]                 mov ax, [wi]
+  5319 0000220A 83F802                   cmp ax, 2
+  5320 0000220D 0F850900                 jne .doassign253
+  5321 00002211 68[4A23]                 push doassign_6
+  5322 00002214 E8CBE1                   call prs
+  5323 00002217 83C402                   add  sp, 2
+  5324                                  
+  5325                                  ;-661     prs("\n mov ["); printName(i);
+  5326                                  
+  5327                                  .doassign253:
+  5328 0000221A 68[5723]                 push doassign_7
+  5329 0000221D E8C2E1                   call prs
+  5330 00002220 83C402                   add  sp, 2
+  5331 00002223 FF7606                   push word [bp+6]
+  5332 00002226 E86FE6                   call printName
+  5333 00002229 83C402                   add  sp, 2
+  5334                                  
+  5335                                  ;-662     if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
+  5336                                  
+  5337 0000222C A1[3700]                 mov ax, [wi]
+  5338 0000222F 83F802                   cmp ax, 2
+  5339 00002232 0F850C00                 jne .doassign254
+  5340 00002236 68[6023]                 push doassign_8
+  5341 00002239 E8A6E1                   call prs
+  5342 0000223C 83C402                   add  sp, 2
+  5343 0000223F E90900                   jmp .doassign255
+  5344                                  .doassign254:
+  5345 00002242 68[6923]                 push doassign_9
+  5346 00002245 E89AE1                   call prs
+  5347 00002248 83C402                   add  sp, 2
+  5348                                  .doassign255:
+  5349 0000224B E9B100                   jmp .retndoassign
+  5350                                  
+  5351                                  ;-663   if (wi==1){prs("\n mov ");if(i<LSTART) {prs("byte ");
+  5352                                  
+  5353                                  .doassign250:
+  5354 0000224E A1[3700]                 mov ax, [wi]
+  5355 00002251 83F801                   cmp ax, 1
+  5356 00002254 0F853100                 jne .doassign256
+  5357 00002258 68[7223]                 push doassign_10
+  5358 0000225B E884E1                   call prs
+  5359 0000225E 83C402                   add  sp, 2
+  5360 00002261 8B4606                   mov ax, [bp+6]
+  5361 00002264 3DC800                   cmp ax, 200
+  5362 00002267 0F8D0900                 jge .doassign257
+  5363 0000226B 68[7A23]                 push doassign_11
+  5364 0000226E E871E1                   call prs
+  5365 00002271 83C402                   add  sp, 2
+  5366                                  
+  5367                                  ;-664     } v(i); prs(", al"); return; }
+  5368                                  
+  5369                                  .doassign257:
+  5370 00002274 FF7606                   push word [bp+6]
+  5371 00002277 E891E6                   call v
+  5372 0000227A 83C402                   add  sp, 2
+  5373 0000227D 68[8023]                 push doassign_12
+  5374 00002280 E85FE1                   call prs
+  5375 00002283 83C402                   add  sp, 2
+  5376 00002286 E97600                   jmp .retndoassign
   5377                                  
-  5378 0000232A 68[1725]                 push isreg_0
-  5379 0000232D 8D06BB69                 lea  ax, [symbol]
-  5380 00002331 50                       push ax
-  5381 00002332 E82DDF                   call eqstr
-  5382 00002335 83C404                   add  sp, 4
-  5383 00002338 08C0                     or  al, al
-  5384 0000233A 0F840C00                 je .isreg265
-  5385 0000233E 68[1B25]                 push isreg_1
-  5386 00002341 E84202                   call doreg
-  5387 00002344 83C402                   add  sp, 2
-  5388 00002347 E9C601                   jmp .r1
-  5389                                  
-  5390                                  ;-656   if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
-  5391                                  
-  5392                                  .isreg265:
-  5393 0000234A 68[1E25]                 push isreg_2
-  5394 0000234D 8D06BB69                 lea  ax, [symbol]
-  5395 00002351 50                       push ax
-  5396 00002352 E80DDF                   call eqstr
-  5397 00002355 83C404                   add  sp, 4
-  5398 00002358 08C0                     or  al, al
-  5399 0000235A 0F840C00                 je .isreg266
-  5400 0000235E 68[2225]                 push isreg_3
-  5401 00002361 E82202                   call doreg
-  5402 00002364 83C402                   add  sp, 2
-  5403 00002367 E9A601                   jmp .r1
+  5378                                  ;-665   if (wi==2){prs("\n mov ");if(i<LSTART) {prs("word ");
+  5379                                  
+  5380                                  .doassign256:
+  5381 00002289 A1[3700]                 mov ax, [wi]
+  5382 0000228C 83F802                   cmp ax, 2
+  5383 0000228F 0F853100                 jne .doassign258
+  5384 00002293 68[8523]                 push doassign_13
+  5385 00002296 E849E1                   call prs
+  5386 00002299 83C402                   add  sp, 2
+  5387 0000229C 8B4606                   mov ax, [bp+6]
+  5388 0000229F 3DC800                   cmp ax, 200
+  5389 000022A2 0F8D0900                 jge .doassign259
+  5390 000022A6 68[8D23]                 push doassign_14
+  5391 000022A9 E836E1                   call prs
+  5392 000022AC 83C402                   add  sp, 2
+  5393                                  
+  5394                                  ;-666     } v(i); prs(", ax"); return; }
+  5395                                  
+  5396                                  .doassign259:
+  5397 000022AF FF7606                   push word [bp+6]
+  5398 000022B2 E856E6                   call v
+  5399 000022B5 83C402                   add  sp, 2
+  5400 000022B8 68[9323]                 push doassign_15
+  5401 000022BB E824E1                   call prs
+  5402 000022BE 83C402                   add  sp, 2
+  5403 000022C1 E93B00                   jmp .retndoassign
   5404                                  
-  5405                                  ;-657   if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
+  5405                                  ;-667   if (wi==4){prs("\n mov ");if(i<LSTART) {prs("dword ");
   5406                                  
-  5407                                  .isreg266:
-  5408 0000236A 68[2525]                 push isreg_4
-  5409 0000236D 8D06BB69                 lea  ax, [symbol]
-  5410 00002371 50                       push ax
-  5411 00002372 E8EDDE                   call eqstr
-  5412 00002375 83C404                   add  sp, 4
-  5413 00002378 08C0                     or  al, al
-  5414 0000237A 0F840C00                 je .isreg267
-  5415 0000237E 68[2925]                 push isreg_5
-  5416 00002381 E80202                   call doreg
-  5417 00002384 83C402                   add  sp, 2
-  5418 00002387 E98601                   jmp .r1
-  5419                                  
-  5420                                  ;-658   if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
-  5421                                  
-  5422                                  .isreg267:
-  5423 0000238A 68[2C25]                 push isreg_6
-  5424 0000238D 8D06BB69                 lea  ax, [symbol]
-  5425 00002391 50                       push ax
-  5426 00002392 E8CDDE                   call eqstr
-  5427 00002395 83C404                   add  sp, 4
-  5428 00002398 08C0                     or  al, al
-  5429 0000239A 0F840C00                 je .isreg268
-  5430 0000239E 68[3025]                 push isreg_7
-  5431 000023A1 E8E201                   call doreg
-  5432 000023A4 83C402                   add  sp, 2
-  5433 000023A7 E96601                   jmp .r1
-  5434                                  
-  5435                                  ;-659   if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
-  5436                                  
-  5437                                  .isreg268:
-  5438 000023AA 68[3325]                 push isreg_8
-  5439 000023AD 8D06BB69                 lea  ax, [symbol]
-  5440 000023B1 50                       push ax
-  5441 000023B2 E8ADDE                   call eqstr
-  5442 000023B5 83C404                   add  sp, 4
-  5443 000023B8 08C0                     or  al, al
-  5444 000023BA 0F840C00                 je .isreg269
-  5445 000023BE 68[3725]                 push isreg_9
-  5446 000023C1 E8C201                   call doreg
-  5447 000023C4 83C402                   add  sp, 2
-  5448 000023C7 E94601                   jmp .r1
-  5449                                  
-  5450                                  ;-660   if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
-  5451                                  
-  5452                                  .isreg269:
-  5453 000023CA 68[3A25]                 push isreg_10
-  5454 000023CD 8D06BB69                 lea  ax, [symbol]
-  5455 000023D1 50                       push ax
-  5456 000023D2 E88DDE                   call eqstr
-  5457 000023D5 83C404                   add  sp, 4
-  5458 000023D8 08C0                     or  al, al
-  5459 000023DA 0F840C00                 je .isreg270
-  5460 000023DE 68[3E25]                 push isreg_11
-  5461 000023E1 E8A201                   call doreg
-  5462 000023E4 83C402                   add  sp, 2
-  5463 000023E7 E92601                   jmp .r1
-  5464                                  
-  5465                                  ;-661   if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
-  5466                                  
-  5467                                  .isreg270:
-  5468 000023EA 68[4125]                 push isreg_12
-  5469 000023ED 8D06BB69                 lea  ax, [symbol]
-  5470 000023F1 50                       push ax
-  5471 000023F2 E86DDE                   call eqstr
-  5472 000023F5 83C404                   add  sp, 4
-  5473 000023F8 08C0                     or  al, al
-  5474 000023FA 0F840C00                 je .isreg271
-  5475 000023FE 68[4525]                 push isreg_13
-  5476 00002401 E88201                   call doreg
-  5477 00002404 83C402                   add  sp, 2
-  5478 00002407 E90601                   jmp .r1
+  5407                                  .doassign258:
+  5408 000022C4 A1[3700]                 mov ax, [wi]
+  5409 000022C7 83F804                   cmp ax, 4
+  5410 000022CA 0F853100                 jne .doassign260
+  5411 000022CE 68[9823]                 push doassign_16
+  5412 000022D1 E80EE1                   call prs
+  5413 000022D4 83C402                   add  sp, 2
+  5414 000022D7 8B4606                   mov ax, [bp+6]
+  5415 000022DA 3DC800                   cmp ax, 200
+  5416 000022DD 0F8D0900                 jge .doassign261
+  5417 000022E1 68[A023]                 push doassign_17
+  5418 000022E4 E8FBE0                   call prs
+  5419 000022E7 83C402                   add  sp, 2
+  5420                                  
+  5421                                  ;-668     } v(i); prs(", eax"); return; }
+  5422                                  
+  5423                                  .doassign261:
+  5424 000022EA FF7606                   push word [bp+6]
+  5425 000022ED E81BE6                   call v
+  5426 000022F0 83C402                   add  sp, 2
+  5427 000022F3 68[A723]                 push doassign_18
+  5428 000022F6 E8E9E0                   call prs
+  5429 000022F9 83C402                   add  sp, 2
+  5430 000022FC E90000                   jmp .retndoassign
+  5431                                  
+  5432                                  ;-669 }
+  5433                                  
+  5434                                  .doassign260:
+  5435                                  
+  5436                                  ;-670 int domul(int ids) {
+  5437                                  
+  5438 000022FF C9                       .retndoassign: LEAVE
+  5439 00002300 C3                       ret
+  5440 00002301 5C6E206D6F76202062-     doassign_0 db "\n mov  bx, ",0
+  5441 0000230A 782C2000           
+  5442 0000230E 5C6E206D6F7620205B-     doassign_1 db "\n mov  [bx], ax",0
+  5443 00002317 62785D2C20617800   
+  5444 0000231F 5C6E206D6F7620205B-     doassign_2 db "\n mov  [bx], al",0
+  5445 00002328 62785D2C20616C00   
+  5446 00002330 5C6E206D6F76202000      doassign_3 db "\n mov  ",0
+  5447 00002339 2C20617800              doassign_4 db ", ax",0
+  5448 0000233E 5C6E206D6F76206278-     doassign_5 db "\n mov bx, ",0
+  5449 00002347 2C2000             
+  5450 0000234A 5C6E2073686C206278-     doassign_6 db "\n shl bx, 1",0
+  5451 00002353 2C203100           
+  5452 00002357 5C6E206D6F76205B00      doassign_7 db "\n mov [",0
+  5453 00002360 2B62785D2C20617800      doassign_8 db "+bx], ax",0
+  5454 00002369 2B62785D2C20616C00      doassign_9 db "+bx], al",0
+  5455 00002372 5C6E206D6F762000        doassign_10 db "\n mov ",0
+  5456 0000237A 627974652000            doassign_11 db "byte ",0
+  5457 00002380 2C20616C00              doassign_12 db ", al",0
+  5458 00002385 5C6E206D6F762000        doassign_13 db "\n mov ",0
+  5459 0000238D 776F72642000            doassign_14 db "word ",0
+  5460 00002393 2C20617800              doassign_15 db ", ax",0
+  5461 00002398 5C6E206D6F762000        doassign_16 db "\n mov ",0
+  5462 000023A0 64776F72642000          doassign_17 db "dword ",0
+  5463 000023A7 2C2065617800            doassign_18 db ", eax",0
+  5464                                  ENDP
+  5465                                  
+  5466                                  domul: PROC
+  5467                                  
+  5468                                  ;-671   if (ids) rterm("imul"); else {
+  5469                                  ;
+  5470 000023AD C8000000                 ENTER  0,0
+  5471 000023B1 8B4604                   mov ax, [bp+4]
+  5472 000023B4 08C0                     or  al, al
+  5473 000023B6 0F840C00                 je .domul262
+  5474 000023BA 68[FF23]                 push domul_0
+  5475 000023BD E899F9                   call rterm
+  5476 000023C0 83C402                   add  sp, 2
+  5477 000023C3 E93700                   jmp .domul263
+  5478                                  .domul262:
   5479                                  
-  5480                                  ;-662   if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
+  5480                                  ;-672   if (istoken(T_CONST)) {
   5481                                  
-  5482                                  .isreg271:
-  5483 0000240A 68[4825]                 push isreg_14
-  5484 0000240D 8D06BB69                 lea  ax, [symbol]
-  5485 00002411 50                       push ax
-  5486 00002412 E84DDE                   call eqstr
-  5487 00002415 83C404                   add  sp, 4
-  5488 00002418 08C0                     or  al, al
-  5489 0000241A 0F840C00                 je .isreg272
-  5490 0000241E 68[4C25]                 push isreg_15
-  5491 00002421 E86201                   call doreg
-  5492 00002424 83C402                   add  sp, 2
-  5493 00002427 E9E600                   jmp .r1
-  5494                                  
-  5495                                  ;-663   if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
-  5496                                  
-  5497                                  .isreg272:
-  5498 0000242A 68[4F25]                 push isreg_16
-  5499 0000242D 8D06BB69                 lea  ax, [symbol]
-  5500 00002431 50                       push ax
-  5501 00002432 E82DDE                   call eqstr
-  5502 00002435 83C404                   add  sp, 4
-  5503 00002438 08C0                     or  al, al
-  5504 0000243A 0F840C00                 je .isreg273
-  5505 0000243E 68[5325]                 push isreg_17
-  5506 00002441 E84201                   call doreg
-  5507 00002444 83C402                   add  sp, 2
-  5508 00002447 E9C600                   jmp .r1
-  5509                                  
-  5510                                  ;-664   if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
-  5511                                  
-  5512                                  .isreg273:
-  5513 0000244A 68[5625]                 push isreg_18
-  5514 0000244D 8D06BB69                 lea  ax, [symbol]
-  5515 00002451 50                       push ax
-  5516 00002452 E80DDE                   call eqstr
-  5517 00002455 83C404                   add  sp, 4
-  5518 00002458 08C0                     or  al, al
-  5519 0000245A 0F840C00                 je .isreg274
-  5520 0000245E 68[5A25]                 push isreg_19
-  5521 00002461 E82201                   call doreg
-  5522 00002464 83C402                   add  sp, 2
-  5523 00002467 E9A600                   jmp .r1
-  5524                                  
-  5525                                  ;-665   if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
-  5526                                  
-  5527                                  .isreg274:
-  5528 0000246A 68[5D25]                 push isreg_20
-  5529 0000246D 8D06BB69                 lea  ax, [symbol]
-  5530 00002471 50                       push ax
-  5531 00002472 E8EDDD                   call eqstr
-  5532 00002475 83C404                   add  sp, 4
-  5533 00002478 08C0                     or  al, al
-  5534 0000247A 0F840C00                 je .isreg275
-  5535 0000247E 68[6125]                 push isreg_21
-  5536 00002481 E80201                   call doreg
-  5537 00002484 83C402                   add  sp, 2
-  5538 00002487 E98600                   jmp .r1
+  5482 000023C6 680101                   push 257
+  5483 000023C9 E842E4                   call istoken
+  5484 000023CC 83C402                   add  sp, 2
+  5485 000023CF 08C0                     or  al, al
+  5486 000023D1 0F841F00                 je .domul264
+  5487                                  
+  5488                                  ;-673     prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx");
+  5489                                  
+  5490 000023D5 68[0424]                 push domul_1
+  5491 000023D8 E807E0                   call prs
+  5492 000023DB 83C402                   add  sp, 2
+  5493 000023DE FF36[2C00]               push word [lexval]
+  5494 000023E2 E860E1                   call prunsign1
+  5495 000023E5 83C402                   add  sp, 2
+  5496 000023E8 68[1024]                 push domul_2
+  5497 000023EB E8F4DF                   call prs
+  5498 000023EE 83C402                   add  sp, 2
+  5499                                  
+  5500                                  ;-674     }
+  5501                                  
+  5502                                  
+  5503                                  ;-675   else error1("with MUL only const number as multiplicator allowed"); } }
+  5504                                  
+  5505 000023F1 E90900                   jmp .domul265
+  5506                                  .domul264:
+  5507 000023F4 68[1A24]                 push domul_3
+  5508 000023F7 E8E6E1                   call error1
+  5509 000023FA 83C402                   add  sp, 2
+  5510                                  .domul265:
+  5511                                  .domul263:
+  5512                                  
+  5513                                  ;-676 int doidiv(int ids) { int mode; int id1;
+  5514 000023FD C9                       LEAVE
+  5515 000023FE C3                       ret
+  5516 000023FF 696D756C00              domul_0 db "imul",0
+  5517 00002404 5C6E206D6F76206278-     domul_1 db "\n mov bx, ",0
+  5518 0000240D 2C2000             
+  5519 00002410 5C6E206D756C206278-     domul_2 db "\n mul bx",0
+  5520 00002419 00                 
+  5521 0000241A 77697468204D554C20-     domul_3 db "with MUL only const number as multiplicator allowed",0
+  5522 00002423 6F6E6C7920636F6E73-
+  5523 0000242C 74206E756D62657220-
+  5524 00002435 6173206D756C746970-
+  5525 0000243E 6C696361746F722061-
+  5526 00002447 6C6C6F77656400     
+  5527                                  ENDP
+  5528                                  
+  5529                                  doidiv: PROC
+  5530                                  
+  5531                                  ;-677   if (istoken(T_CONST)) {
+  5532                                  ;
+  5533 0000244E C8040000                 ENTER  4,0
+  5534 00002452 680101                   push 257
+  5535 00002455 E8B6E3                   call istoken
+  5536 00002458 83C402                   add  sp, 2
+  5537 0000245B 08C0                     or  al, al
+  5538 0000245D 0F843400                 je .doidiv266
   5539                                  
-  5540                                  ;-666   if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
+  5540                                  ;-678     prs("\n mov bx, "); prunsign1(lexval);
   5541                                  
-  5542                                  .isreg275:
-  5543 0000248A 68[6425]                 push isreg_22
-  5544 0000248D 8D06BB69                 lea  ax, [symbol]
-  5545 00002491 50                       push ax
-  5546 00002492 E8CDDD                   call eqstr
-  5547 00002495 83C404                   add  sp, 4
-  5548 00002498 08C0                     or  al, al
-  5549 0000249A 0F840C00                 je .isreg276
-  5550 0000249E 68[6825]                 push isreg_23
-  5551 000024A1 E8E200                   call doreg
-  5552 000024A4 83C402                   add  sp, 2
-  5553 000024A7 E96600                   jmp .r1
-  5554                                  
-  5555                                  ;-667   if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
-  5556                                  
-  5557                                  .isreg276:
-  5558 000024AA 68[6B25]                 push isreg_24
-  5559 000024AD 8D06BB69                 lea  ax, [symbol]
-  5560 000024B1 50                       push ax
-  5561 000024B2 E8ADDD                   call eqstr
-  5562 000024B5 83C404                   add  sp, 4
-  5563 000024B8 08C0                     or  al, al
-  5564 000024BA 0F840C00                 je .isreg277
-  5565 000024BE 68[6F25]                 push isreg_25
-  5566 000024C1 E8C200                   call doreg
-  5567 000024C4 83C402                   add  sp, 2
-  5568 000024C7 E94600                   jmp .r1
-  5569                                  
-  5570                                  ;-668   if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
-  5571                                  
-  5572                                  .isreg277:
-  5573 000024CA 68[7225]                 push isreg_26
-  5574 000024CD 8D06BB69                 lea  ax, [symbol]
-  5575 000024D1 50                       push ax
-  5576 000024D2 E88DDD                   call eqstr
-  5577 000024D5 83C404                   add  sp, 4
-  5578 000024D8 08C0                     or  al, al
-  5579 000024DA 0F840C00                 je .isreg278
-  5580 000024DE 68[7625]                 push isreg_27
-  5581 000024E1 E8A200                   call doreg
-  5582 000024E4 83C402                   add  sp, 2
-  5583 000024E7 E92600                   jmp .r1
+  5542 00002461 68[1325]                 push doidiv_0
+  5543 00002464 E87BDF                   call prs
+  5544 00002467 83C402                   add  sp, 2
+  5545 0000246A FF36[2C00]               push word [lexval]
+  5546 0000246E E8D4E0                   call prunsign1
+  5547 00002471 83C402                   add  sp, 2
+  5548                                  
+  5549                                  ;-679     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
+  5550                                  
+  5551 00002474 8B4604                   mov ax, [bp+4]
+  5552 00002477 08C0                     or  al, al
+  5553 00002479 0F840C00                 je .doidiv267
+  5554 0000247D 68[1F25]                 push doidiv_1
+  5555 00002480 E85FDF                   call prs
+  5556 00002483 83C402                   add  sp, 2
+  5557 00002486 E90900                   jmp .doidiv268
+  5558                                  .doidiv267:
+  5559 00002489 68[3025]                 push doidiv_2
+  5560 0000248C E853DF                   call prs
+  5561 0000248F 83C402                   add  sp, 2
+  5562                                  .doidiv268:
+  5563                                  
+  5564                                  ;-680   else {
+  5565                                  
+  5566 00002492 E97C00                   jmp .doidiv269
+  5567                                  .doidiv266:
+  5568                                  
+  5569                                  ;-681     mode=typeName(); id1=searchname();
+  5570                                  
+  5571 00002495 E89BE6                   call typeName
+  5572 00002498 8946FE                   mov [bp-2], ax
+  5573 0000249B E8C6E5                   call searchname
+  5574 0000249E 8946FC                   mov [bp-4], ax
+  5575                                  
+  5576                                  ;-682     if (mode) error1("only const number or int as divisor allowed");
+  5577                                  
+  5578 000024A1 8B46FE                   mov ax, [bp-2]
+  5579 000024A4 08C0                     or  al, al
+  5580 000024A6 0F840900                 je .doidiv270
+  5581 000024AA 68[4625]                 push doidiv_3
+  5582 000024AD E830E1                   call error1
+  5583 000024B0 83C402                   add  sp, 2
   5584                                  
-  5585                                  ;-669   if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
+  5585                                  ;-683     gettypes(id1);
   5586                                  
-  5587                                  .isreg278:
-  5588 000024EA 68[7925]                 push isreg_28
-  5589 000024ED 8D06BB69                 lea  ax, [symbol]
-  5590 000024F1 50                       push ax
-  5591 000024F2 E86DDD                   call eqstr
-  5592 000024F5 83C404                   add  sp, 4
-  5593 000024F8 08C0                     or  al, al
-  5594 000024FA 0F840C00                 je .isreg279
-  5595 000024FE 68[8025]                 push isreg_29
-  5596 00002501 E88200                   call doreg
-  5597 00002504 83C402                   add  sp, 2
-  5598 00002507 E90600                   jmp .r1
-  5599                                  
-  5600                                  ;-670   return 0;   r1: return 1;
-  5601                                  
-  5602                                  .isreg279:
-  5603 0000250A B80000                   mov ax, 0
-  5604 0000250D E90600                   jmp .retnisreg
-  5605                                  .r1:
-  5606 00002510 B80100                   mov ax, 1
-  5607 00002513 E90000                   jmp .retnisreg
-  5608                                  
-  5609                                  ;-671 }
+  5587                                  .doidiv270:
+  5588 000024B3 FF76FC                   push word [bp-4]
+  5589 000024B6 E8F4E4                   call gettypes
+  5590 000024B9 83C402                   add  sp, 2
+  5591                                  
+  5592                                  ;-684     if (typei) error1("only int as simple var divisor allowed");
+  5593                                  
+  5594 000024BC A1[2E00]                 mov ax, [typei]
+  5595 000024BF 08C0                     or  al, al
+  5596 000024C1 0F840900                 je .doidiv271
+  5597 000024C5 68[7225]                 push doidiv_4
+  5598 000024C8 E815E1                   call error1
+  5599 000024CB 83C402                   add  sp, 2
+  5600                                  
+  5601                                  ;-685     if (wi!=2) error1("only int, no byte as divisor allowed");
+  5602                                  
+  5603                                  .doidiv271:
+  5604 000024CE A1[3700]                 mov ax, [wi]
+  5605 000024D1 83F802                   cmp ax, 2
+  5606 000024D4 0F840900                 je  .doidiv272
+  5607 000024D8 68[9925]                 push doidiv_5
+  5608 000024DB E802E1                   call error1
+  5609 000024DE 83C402                   add  sp, 2
   5610                                  
-  5611                                  
-  5612                                  ;-672 int doreg(char *dr) { int i; expect('=');
-  5613                                  
-  5614                                   .retnisreg:
-  5615 00002516 C3                       ret
-  5616 00002517 5F414800                isreg_0 db "_AH",0
-  5617 0000251B 616800                  isreg_1 db "ah",0
-  5618 0000251E 5F414C00                isreg_2 db "_AL",0
-  5619 00002522 616C00                  isreg_3 db "al",0
-  5620 00002525 5F415800                isreg_4 db "_AX",0
-  5621 00002529 617800                  isreg_5 db "ax",0
-  5622 0000252C 5F424800                isreg_6 db "_BH",0
-  5623 00002530 626800                  isreg_7 db "bh",0
-  5624 00002533 5F424C00                isreg_8 db "_BL",0
-  5625 00002537 626C00                  isreg_9 db "bl",0
-  5626 0000253A 5F425800                isreg_10 db "_BX",0
-  5627 0000253E 627800                  isreg_11 db "bx",0
-  5628 00002541 5F434800                isreg_12 db "_CH",0
-  5629 00002545 636800                  isreg_13 db "ch",0
-  5630 00002548 5F434C00                isreg_14 db "_CL",0
-  5631 0000254C 636C00                  isreg_15 db "cl",0
-  5632 0000254F 5F435800                isreg_16 db "_CX",0
-  5633 00002553 637800                  isreg_17 db "cx",0
-  5634 00002556 5F444800                isreg_18 db "_DH",0
-  5635 0000255A 646800                  isreg_19 db "dh",0
-  5636 0000255D 5F444C00                isreg_20 db "_DL",0
-  5637 00002561 646C00                  isreg_21 db "dl",0
-  5638 00002564 5F445800                isreg_22 db "_DX",0
-  5639 00002568 647800                  isreg_23 db "dx",0
-  5640 0000256B 5F534900                isreg_24 db "_SI",0
-  5641 0000256F 736900                  isreg_25 db "si",0
-  5642 00002572 5F444900                isreg_26 db "_DI",0
-  5643 00002576 646900                  isreg_27 db "di",0
-  5644 00002579 5F464C41475300          isreg_28 db "_FLAGS",0
-  5645 00002580 666C61677300            isreg_29 db "flags",0
-  5646                                  ENDP
-  5647                                  
-  5648                                  doreg: PROC;
-  5649 00002586 C8020000                 ENTER  2,0
-  5650 0000258A 6A3D                     push 61
-  5651 0000258C E887DE                   call expect
-  5652 0000258F 83C402                   add  sp, 2
-  5653                                  
-  5654                                  ;-673   prs("\n mov  "); prs(dr); prs(", ");
-  5655                                  
-  5656 00002592 68[F525]                 push doreg_0
-  5657 00002595 E88EDF                   call prs
-  5658 00002598 83C402                   add  sp, 2
-  5659 0000259B FF7604                   push word [bp+4]
-  5660 0000259E E885DF                   call prs
-  5661 000025A1 83C402                   add  sp, 2
-  5662 000025A4 68[FE25]                 push doreg_1
-  5663 000025A7 E87CDF                   call prs
-  5664 000025AA 83C402                   add  sp, 2
-  5665                                  
-  5666                                  ;-674        if (istoken(T_CONST)) prunsign1(lexval);
-  5667                                  
-  5668 000025AD 680101                   push 257
-  5669 000025B0 E841DE                   call istoken
-  5670 000025B3 83C402                   add  sp, 2
-  5671 000025B6 08C0                     or  al, al
-  5672 000025B8 0F840D00                 je .doreg280
-  5673 000025BC FF36[2C00]               push word [lexval]
-  5674 000025C0 E8B8E0                   call prunsign1
-  5675 000025C3 83C402                   add  sp, 2
-  5676                                  
-  5677                                  ;-675   else if (istoken(T_NAME )) { i=searchname(); v(i); }
-  5678                                  
-  5679 000025C6 E92A00                   jmp .doreg281
-  5680                                  .doreg280:
-  5681 000025C9 680001                   push 256
-  5682 000025CC E825DE                   call istoken
-  5683 000025CF 83C402                   add  sp, 2
-  5684 000025D2 08C0                     or  al, al
-  5685 000025D4 0F841200                 je .doreg282
-  5686 000025D8 E8A8E6                   call searchname
-  5687 000025DB 8946FE                   mov [bp-2], ax
-  5688 000025DE FF76FE                   push word [bp-2]
-  5689 000025E1 E873DD                   call v
-  5690 000025E4 83C402                   add  sp, 2
-  5691                                  
-  5692                                  ;-676   else error1("only number or var allowed"); }
-  5693                                  
-  5694 000025E7 E90900                   jmp .doreg283
-  5695                                  .doreg282:
-  5696 000025EA 68[0126]                 push doreg_2
-  5697 000025ED E87B16                   call error1
-  5698 000025F0 83C402                   add  sp, 2
-  5699                                  .doreg283:
-  5700                                  .doreg281:
-  5701                                  
-  5702                                  ;-677 
-  5703                                  
-  5704                                  
-  5705                                  ;-678 int doassign(int mode, int i, int ixarr, int ixconst) {
-  5706 000025F3 C9                       LEAVE
-  5707 000025F4 C3                       ret
-  5708 000025F5 5C6E206D6F76202000      doreg_0 db "\n mov  ",0
-  5709 000025FE 2C2000                  doreg_1 db ", ",0
-  5710 00002601 6F6E6C79206E756D62-     doreg_2 db "only number or var allowed",0
-  5711 0000260A 6572206F7220766172-
-  5712 00002613 20616C6C6F77656400 
-  5713                                  ENDP
-  5714                                  
-  5715                                  doassign: PROC
-  5716                                  
-  5717                                  ;-679   gettypes(i);
-  5718                                  ;
-  5719 0000261C C8000000                 ENTER  0,0
-  5720 00002620 FF7606                   push word [bp+6]
-  5721 00002623 E81FE5                   call gettypes
-  5722 00002626 83C402                   add  sp, 2
-  5723                                  
-  5724                                  ;-680   if (mode==1) {prs("\n mov  bx, ");v(i);
-  5725                                  
-  5726 00002629 8B4604                   mov ax, [bp+4]
-  5727 0000262C 83F801                   cmp ax, 1
-  5728 0000262F 0F853400                 jne .doassign284
-  5729 00002633 68[B927]                 push doassign_0
-  5730 00002636 E8EDDE                   call prs
-  5731 00002639 83C402                   add  sp, 2
-  5732 0000263C FF7606                   push word [bp+6]
-  5733 0000263F E815DD                   call v
-  5734 00002642 83C402                   add  sp, 2
+  5611                                  ;-686     prs("\n mov bx, "); v(id1);
+  5612                                  
+  5613                                  .doidiv272:
+  5614 000024E1 68[BE25]                 push doidiv_6
+  5615 000024E4 E8FBDE                   call prs
+  5616 000024E7 83C402                   add  sp, 2
+  5617 000024EA FF76FC                   push word [bp-4]
+  5618 000024ED E81BE4                   call v
+  5619 000024F0 83C402                   add  sp, 2
+  5620                                  
+  5621                                  ;-687     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
+  5622                                  
+  5623 000024F3 8B4604                   mov ax, [bp+4]
+  5624 000024F6 08C0                     or  al, al
+  5625 000024F8 0F840C00                 je .doidiv273
+  5626 000024FC 68[CA25]                 push doidiv_7
+  5627 000024FF E8E0DE                   call prs
+  5628 00002502 83C402                   add  sp, 2
+  5629 00002505 E90900                   jmp .doidiv274
+  5630                                  .doidiv273:
+  5631 00002508 68[DB25]                 push doidiv_8
+  5632 0000250B E8D4DE                   call prs
+  5633 0000250E 83C402                   add  sp, 2
+  5634                                  .doidiv274:
+  5635                                  
+  5636                                  ;-688 }
+  5637                                  
+  5638                                  .doidiv269:
+  5639                                  
+  5640                                  ;-689 int domod(int ids) { doidiv(ids); prs("\n mov ax, dx"); }
+  5641 00002511 C9                       LEAVE
+  5642 00002512 C3                       ret
+  5643 00002513 5C6E206D6F76206278-     doidiv_0 db "\n mov bx, ",0
+  5644 0000251C 2C2000             
+  5645 0000251F 5C6E206377645C6E20-     doidiv_1 db "\n cwd\n idiv bx",0
+  5646 00002528 6964697620627800   
+  5647 00002530 5C6E206D6F76206478-     doidiv_2 db "\n mov dx, 0\n div bx",0
+  5648 00002539 2C20305C6E20646976-
+  5649 00002542 20627800           
+  5650 00002546 6F6E6C7920636F6E73-     doidiv_3 db "only const number or int as divisor allowed",0
+  5651 0000254F 74206E756D62657220-
+  5652 00002558 6F7220696E74206173-
+  5653 00002561 2064697669736F7220-
+  5654 0000256A 616C6C6F77656400   
+  5655 00002572 6F6E6C7920696E7420-     doidiv_4 db "only int as simple var divisor allowed",0
+  5656 0000257B 61732073696D706C65-
+  5657 00002584 207661722064697669-
+  5658 0000258D 736F7220616C6C6F77-
+  5659 00002596 656400             
+  5660 00002599 6F6E6C7920696E742C-     doidiv_5 db "only int, no byte as divisor allowed",0
+  5661 000025A2 206E6F206279746520-
+  5662 000025AB 61732064697669736F-
+  5663 000025B4 7220616C6C6F776564-
+  5664 000025BD 00                 
+  5665 000025BE 5C6E206D6F76206278-     doidiv_6 db "\n mov bx, ",0
+  5666 000025C7 2C2000             
+  5667 000025CA 5C6E206377645C6E20-     doidiv_7 db "\n cwd\n idiv bx",0
+  5668 000025D3 6964697620627800   
+  5669 000025DB 5C6E206D6F76206478-     doidiv_8 db "\n mov dx, 0\n div bx",0
+  5670 000025E4 2C20305C6E20646976-
+  5671 000025ED 20627800           
+  5672                                  ENDP
+  5673                                  
+  5674                                  domod: PROC;
+  5675 000025F1 C8000000                 ENTER  0,0
+  5676 000025F5 FF7604                   push word [bp+4]
+  5677 000025F8 E853FE                   call doidiv
+  5678 000025FB 83C402                   add  sp, 2
+  5679 000025FE 68[0926]                 push domod_0
+  5680 00002601 E8DEDD                   call prs
+  5681 00002604 83C402                   add  sp, 2
+  5682                                  
+  5683                                  ;-690 
+  5684                                  
+  5685                                  
+  5686                                  ;-691 int docalltype[10]; int docallvalue[10];
+  5687 00002607 C9                       LEAVE
+  5688 00002608 C3                       ret
+  5689 00002609 5C6E206D6F76206178-     domod_0 db "\n mov ax, dx",0
+  5690 00002612 2C20647800         
+  5691                                  ENDP
+  5692                                  section .bss
+  5693                                  absolute 55845
+  5694 0000DA25 <res 00000014>          docalltype resw 10
+  5695                                  section .text
+  5696                                  section .bss
+  5697                                  absolute 55865
+  5698 0000DA39 <res 00000014>          docallvalue resw 10
+  5699                                  section .text
+  5700                                  
+  5701                                  ;-692 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
+  5702                                  
+  5703                                  section .bss
+  5704                                  absolute 55885
+  5705 0000DA4D <res 00000011>          procname resb 17
+  5706                                  section .text
+  5707                                  
+  5708                                  ;-693 int docall1() {int i; int narg; int t0; int n0;  int sz32;
+  5709                                  
+  5710                                  
+  5711                                  docall1: PROC
+  5712                                  
+  5713                                  ;-694   narg=0;  sz32=0;
+  5714                                  ;
+  5715 00002617 C80A0000                 ENTER  10,0
+  5716 0000261B B80000                   mov ax, 0
+  5717 0000261E 8946FC                   mov [bp-4], ax
+  5718 00002621 B80000                   mov ax, 0
+  5719 00002624 8946F6                   mov [bp-10], ax
+  5720                                  
+  5721                                  ;-695   checknamelen();
+  5722                                  
+  5723 00002627 E814E3                   call checknamelen
+  5724                                  
+  5725                                  ;-696   strcpy(&procname, symbol);
+  5726                                  
+  5727 0000262A 8D06BB69                 lea  ax, [symbol]
+  5728 0000262E 50                       push ax
+  5729 0000262F 8D064DDA                 lea  ax, [procname]
+  5730 00002633 50                       push ax
+  5731 00002634 E8F5DB                   call strcpy
+  5732 00002637 83C404                   add  sp, 4
+  5733                                  
+  5734                                  ;-697   storeCall1();
   5735                                  
-  5736                                  ;-681     if (widthi == 2) prs("\n mov  [bx], ax");
+  5736 0000263A E8F7E5                   call storeCall1
   5737                                  
-  5738 00002645 A1[3400]                 mov ax, [widthi]
-  5739 00002648 83F802                   cmp ax, 2
-  5740 0000264B 0F850C00                 jne .doassign285
-  5741 0000264F 68[C627]                 push doassign_1
-  5742 00002652 E8D1DE                   call prs
-  5743 00002655 83C402                   add  sp, 2
-  5744                                  
-  5745                                  ;-682     else  prs("\n mov  [bx], al"); return;}
-  5746                                  
-  5747 00002658 E90900                   jmp .doassign286
-  5748                                  .doassign285:
-  5749 0000265B 68[D727]                 push doassign_2
-  5750 0000265E E8C5DE                   call prs
-  5751 00002661 83C402                   add  sp, 2
-  5752                                  .doassign286:
-  5753 00002664 E95001                   jmp .retndoassign
-  5754                                  
-  5755                                  ;-683   if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
+  5738                                  ;-698   expect('(');
+  5739                                  
+  5740 0000263D 6A28                     push 40
+  5741 0000263F E8EEE1                   call expect
+  5742 00002642 83C402                   add  sp, 2
+  5743                                  
+  5744                                  ;-699 	if (istoken(')') ==0 ) {
+  5745                                  
+  5746 00002645 6A29                     push 41
+  5747 00002647 E8C4E1                   call istoken
+  5748 0000264A 83C402                   add  sp, 2
+  5749 0000264D 83F800                   cmp ax, 0
+  5750 00002650 0F857802                 jne .docall1275
+  5751                                  
+  5752                                  ;-700 	  do { narg++;
+  5753                                  
+  5754                                  .docall1276:
+  5755 00002654 FF46FC                   inc  word[bp-4]
   5756                                  
-  5757                                  .doassign284:
-  5758 00002667 8B4604                   mov ax, [bp+4]
-  5759 0000266A 83F802                   cmp ax, 2
-  5760 0000266D 0F851E00                 jne .doassign287
-  5761 00002671 68[E827]                 push doassign_3
-  5762 00002674 E8AFDE                   call prs
-  5763 00002677 83C402                   add  sp, 2
-  5764 0000267A FF7606                   push word [bp+6]
-  5765 0000267D E8C8DC                   call a
-  5766 00002680 83C402                   add  sp, 2
-  5767 00002683 68[F127]                 push doassign_4
-  5768 00002686 E89DDE                   call prs
-  5769 00002689 83C402                   add  sp, 2
-  5770 0000268C E92801                   jmp .retndoassign
-  5771                                  
-  5772                                  ;-684   if (ixarr) {  prs("\n mov bx, ");
-  5773                                  
-  5774                                  .doassign287:
-  5775 0000268F 8B4608                   mov ax, [bp+8]
-  5776 00002692 08C0                     or  al, al
-  5777 00002694 0F846E00                 je .doassign288
-  5778 00002698 68[F627]                 push doassign_5
-  5779 0000269B E888DE                   call prs
-  5780 0000269E 83C402                   add  sp, 2
-  5781                                  
-  5782                                  ;-685     if(ixconst) prunsign1(ixarr); else v(ixarr);
-  5783                                  
-  5784 000026A1 8B460A                   mov ax, [bp+10]
-  5785 000026A4 08C0                     or  al, al
-  5786 000026A6 0F840C00                 je .doassign289
-  5787 000026AA FF7608                   push word [bp+8]
-  5788 000026AD E8CBDF                   call prunsign1
-  5789 000026B0 83C402                   add  sp, 2
-  5790 000026B3 E90900                   jmp .doassign290
-  5791                                  .doassign289:
-  5792 000026B6 FF7608                   push word [bp+8]
-  5793 000026B9 E89BDC                   call v
-  5794 000026BC 83C402                   add  sp, 2
+  5757                                  ;-701 	    if (narg >9 ) error1("Max. 9 parameters");  t0=0;
+  5758                                  
+  5759 00002657 8B46FC                   mov ax, [bp-4]
+  5760 0000265A 83F809                   cmp ax, 9
+  5761 0000265D 0F8E0900                 jle .docall1277
+  5762 00002661 68[1029]                 push docall1_0
+  5763 00002664 E879DF                   call error1
+  5764 00002667 83C402                   add  sp, 2
+  5765                                  .docall1277:
+  5766 0000266A B80000                   mov ax, 0
+  5767 0000266D 8946FA                   mov [bp-6], ax
+  5768                                  
+  5769                                  ;-702       if(istoken(T_CONST)) {t0=1; n0=lexval; }
+  5770                                  
+  5771 00002670 680101                   push 257
+  5772 00002673 E898E1                   call istoken
+  5773 00002676 83C402                   add  sp, 2
+  5774 00002679 08C0                     or  al, al
+  5775 0000267B 0F840C00                 je .docall1278
+  5776 0000267F B80100                   mov ax, 1
+  5777 00002682 8946FA                   mov [bp-6], ax
+  5778 00002685 A1[2C00]                 mov ax, [lexval]
+  5779 00002688 8946F8                   mov [bp-8], ax
+  5780                                  
+  5781                                  ;-703       if(istoken(T_STRING)){t0=2; n0=nconst;
+  5782                                  
+  5783                                  .docall1278:
+  5784 0000268B 680201                   push 258
+  5785 0000268E E87DE1                   call istoken
+  5786 00002691 83C402                   add  sp, 2
+  5787 00002694 08C0                     or  al, al
+  5788 00002696 0F846300                 je .docall1279
+  5789 0000269A B80200                   mov ax, 2
+  5790 0000269D 8946FA                   mov [bp-6], ax
+  5791 000026A0 A1[2600]                 mov ax, [nconst]
+  5792 000026A3 8946F8                   mov [bp-8], ax
+  5793                                  
+  5794                                  ;-704         eprs("\n"); eprs(fname); eprc(95);eprnum(nconst);eprs(" db ");
   5795                                  
-  5796                                  ;-686     if (wi==2) prs("\n shl bx, 1");
-  5797                                  
-  5798                                  .doassign290:
-  5799 000026BF A1[3700]                 mov ax, [wi]
-  5800 000026C2 83F802                   cmp ax, 2
-  5801 000026C5 0F850900                 jne .doassign291
-  5802 000026C9 68[0228]                 push doassign_6
-  5803 000026CC E857DE                   call prs
-  5804 000026CF 83C402                   add  sp, 2
-  5805                                  
-  5806                                  ;-687     prs("\n mov ["); printName(i);
-  5807                                  
-  5808                                  .doassign291:
-  5809 000026D2 68[0F28]                 push doassign_7
-  5810 000026D5 E84EDE                   call prs
-  5811 000026D8 83C402                   add  sp, 2
-  5812 000026DB FF7606                   push word [bp+6]
-  5813 000026DE E83EE5                   call printName
-  5814 000026E1 83C402                   add  sp, 2
-  5815                                  
-  5816                                  ;-688     if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
-  5817                                  
-  5818 000026E4 A1[3700]                 mov ax, [wi]
-  5819 000026E7 83F802                   cmp ax, 2
-  5820 000026EA 0F850C00                 jne .doassign292
-  5821 000026EE 68[1828]                 push doassign_8
-  5822 000026F1 E832DE                   call prs
-  5823 000026F4 83C402                   add  sp, 2
-  5824 000026F7 E90900                   jmp .doassign293
-  5825                                  .doassign292:
-  5826 000026FA 68[2128]                 push doassign_9
-  5827 000026FD E826DE                   call prs
-  5828 00002700 83C402                   add  sp, 2
-  5829                                  .doassign293:
-  5830 00002703 E9B100                   jmp .retndoassign
+  5796 000026A6 68[2229]                 push docall1_1
+  5797 000026A9 E8AFDC                   call eprs
+  5798 000026AC 83C402                   add  sp, 2
+  5799 000026AF 8D063B6A                 lea  ax, [fname]
+  5800 000026B3 50                       push ax
+  5801 000026B4 E8A4DC                   call eprs
+  5802 000026B7 83C402                   add  sp, 2
+  5803 000026BA 6A5F                     push 95
+  5804 000026BC E889DC                   call eprc
+  5805 000026BF 83C402                   add  sp, 2
+  5806 000026C2 FF36[2600]               push word [nconst]
+  5807 000026C6 E8BBDD                   call eprnum
+  5808 000026C9 83C402                   add  sp, 2
+  5809 000026CC 68[2529]                 push docall1_2
+  5810 000026CF E889DC                   call eprs
+  5811 000026D2 83C402                   add  sp, 2
+  5812                                  
+  5813                                  ;-705         eprc(34);eprs(symbol);eprc(34);eprs(",0"); nconst++; }
+  5814                                  
+  5815 000026D5 6A22                     push 34
+  5816 000026D7 E86EDC                   call eprc
+  5817 000026DA 83C402                   add  sp, 2
+  5818 000026DD 8D06BB69                 lea  ax, [symbol]
+  5819 000026E1 50                       push ax
+  5820 000026E2 E876DC                   call eprs
+  5821 000026E5 83C402                   add  sp, 2
+  5822 000026E8 6A22                     push 34
+  5823 000026EA E85BDC                   call eprc
+  5824 000026ED 83C402                   add  sp, 2
+  5825 000026F0 68[2A29]                 push docall1_3
+  5826 000026F3 E865DC                   call eprs
+  5827 000026F6 83C402                   add  sp, 2
+  5828 000026F9 FF06[2600]               inc  word[nconst]
+  5829                                  
+  5830                                  ;-706       if(istoken('&'))     {t0=3; name1(); n0=searchname();}
   5831                                  
-  5832                                  ;-689   if (wi==1){prs("\n mov ");if(i<LSTART) {prs("byte ");
-  5833                                  
-  5834                                  .doassign288:
-  5835 00002706 A1[3700]                 mov ax, [wi]
-  5836 00002709 83F801                   cmp ax, 1
-  5837 0000270C 0F853100                 jne .doassign294
-  5838 00002710 68[2A28]                 push doassign_10
-  5839 00002713 E810DE                   call prs
-  5840 00002716 83C402                   add  sp, 2
-  5841 00002719 8B4606                   mov ax, [bp+6]
-  5842 0000271C 3DC800                   cmp ax, 200
-  5843 0000271F 0F8D0900                 jge .doassign295
-  5844 00002723 68[3228]                 push doassign_11
-  5845 00002726 E8FDDD                   call prs
-  5846 00002729 83C402                   add  sp, 2
-  5847                                  
-  5848                                  ;-690     } v(i); prs(", al"); return; }
-  5849                                  
-  5850                                  .doassign295:
-  5851 0000272C FF7606                   push word [bp+6]
-  5852 0000272F E825DC                   call v
-  5853 00002732 83C402                   add  sp, 2
-  5854 00002735 68[3828]                 push doassign_12
-  5855 00002738 E8EBDD                   call prs
-  5856 0000273B 83C402                   add  sp, 2
-  5857 0000273E E97600                   jmp .retndoassign
-  5858                                  
-  5859                                  ;-691   if (wi==2){prs("\n mov ");if(i<LSTART) {prs("word ");
-  5860                                  
-  5861                                  .doassign294:
-  5862 00002741 A1[3700]                 mov ax, [wi]
-  5863 00002744 83F802                   cmp ax, 2
-  5864 00002747 0F853100                 jne .doassign296
-  5865 0000274B 68[3D28]                 push doassign_13
-  5866 0000274E E8D5DD                   call prs
-  5867 00002751 83C402                   add  sp, 2
-  5868 00002754 8B4606                   mov ax, [bp+6]
-  5869 00002757 3DC800                   cmp ax, 200
-  5870 0000275A 0F8D0900                 jge .doassign297
-  5871 0000275E 68[4528]                 push doassign_14
-  5872 00002761 E8C2DD                   call prs
-  5873 00002764 83C402                   add  sp, 2
-  5874                                  
-  5875                                  ;-692     } v(i); prs(", ax"); return; }
-  5876                                  
-  5877                                  .doassign297:
-  5878 00002767 FF7606                   push word [bp+6]
-  5879 0000276A E8EADB                   call v
-  5880 0000276D 83C402                   add  sp, 2
-  5881 00002770 68[4B28]                 push doassign_15
-  5882 00002773 E8B0DD                   call prs
-  5883 00002776 83C402                   add  sp, 2
-  5884 00002779 E93B00                   jmp .retndoassign
-  5885                                  
-  5886                                  ;-693   if (wi==4){prs("\n mov ");if(i<LSTART) {prs("dword ");
-  5887                                  
-  5888                                  .doassign296:
-  5889 0000277C A1[3700]                 mov ax, [wi]
-  5890 0000277F 83F804                   cmp ax, 4
-  5891 00002782 0F853100                 jne .doassign298
-  5892 00002786 68[5028]                 push doassign_16
-  5893 00002789 E89ADD                   call prs
-  5894 0000278C 83C402                   add  sp, 2
-  5895 0000278F 8B4606                   mov ax, [bp+6]
-  5896 00002792 3DC800                   cmp ax, 200
-  5897 00002795 0F8D0900                 jge .doassign299
-  5898 00002799 68[5828]                 push doassign_17
-  5899 0000279C E887DD                   call prs
-  5900 0000279F 83C402                   add  sp, 2
-  5901                                  
-  5902                                  ;-694     } v(i); prs(", eax"); return; }
-  5903                                  
-  5904                                  .doassign299:
-  5905 000027A2 FF7606                   push word [bp+6]
-  5906 000027A5 E8AFDB                   call v
-  5907 000027A8 83C402                   add  sp, 2
-  5908 000027AB 68[5F28]                 push doassign_18
-  5909 000027AE E875DD                   call prs
-  5910 000027B1 83C402                   add  sp, 2
-  5911 000027B4 E90000                   jmp .retndoassign
-  5912                                  
-  5913                                  ;-695 }
-  5914                                  
-  5915                                  .doassign298:
-  5916                                  
-  5917                                  ;-696 int domul(int ids) {
-  5918                                  
-  5919 000027B7 C9                       .retndoassign: LEAVE
-  5920 000027B8 C3                       ret
-  5921 000027B9 5C6E206D6F76202062-     doassign_0 db "\n mov  bx, ",0
-  5922 000027C2 782C2000           
-  5923 000027C6 5C6E206D6F7620205B-     doassign_1 db "\n mov  [bx], ax",0
-  5924 000027CF 62785D2C20617800   
-  5925 000027D7 5C6E206D6F7620205B-     doassign_2 db "\n mov  [bx], al",0
-  5926 000027E0 62785D2C20616C00   
-  5927 000027E8 5C6E206D6F76202000      doassign_3 db "\n mov  ",0
-  5928 000027F1 2C20617800              doassign_4 db ", ax",0
-  5929 000027F6 5C6E206D6F76206278-     doassign_5 db "\n mov bx, ",0
-  5930 000027FF 2C2000             
-  5931 00002802 5C6E2073686C206278-     doassign_6 db "\n shl bx, 1",0
-  5932 0000280B 2C203100           
-  5933 0000280F 5C6E206D6F76205B00      doassign_7 db "\n mov [",0
-  5934 00002818 2B62785D2C20617800      doassign_8 db "+bx], ax",0
-  5935 00002821 2B62785D2C20616C00      doassign_9 db "+bx], al",0
-  5936 0000282A 5C6E206D6F762000        doassign_10 db "\n mov ",0
-  5937 00002832 627974652000            doassign_11 db "byte ",0
-  5938 00002838 2C20616C00              doassign_12 db ", al",0
-  5939 0000283D 5C6E206D6F762000        doassign_13 db "\n mov ",0
-  5940 00002845 776F72642000            doassign_14 db "word ",0
-  5941 0000284B 2C20617800              doassign_15 db ", ax",0
-  5942 00002850 5C6E206D6F762000        doassign_16 db "\n mov ",0
-  5943 00002858 64776F72642000          doassign_17 db "dword ",0
-  5944 0000285F 2C2065617800            doassign_18 db ", eax",0
-  5945                                  ENDP
-  5946                                  
-  5947                                  domul: PROC
-  5948                                  
-  5949                                  ;-697   if (ids) rterm("imul"); else {
-  5950                                  ;
-  5951 00002865 C8000000                 ENTER  0,0
-  5952 00002869 8B4604                   mov ax, [bp+4]
-  5953 0000286C 08C0                     or  al, al
-  5954 0000286E 0F840C00                 je .domul300
-  5955 00002872 68[B728]                 push domul_0
-  5956 00002875 E899F9                   call rterm
-  5957 00002878 83C402                   add  sp, 2
-  5958 0000287B E93700                   jmp .domul301
-  5959                                  .domul300:
-  5960                                  
-  5961                                  ;-698   if (istoken(T_CONST)) {
-  5962                                  
-  5963 0000287E 680101                   push 257
-  5964 00002881 E870DB                   call istoken
-  5965 00002884 83C402                   add  sp, 2
-  5966 00002887 08C0                     or  al, al
-  5967 00002889 0F841F00                 je .domul302
-  5968                                  
-  5969                                  ;-699     prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx");
-  5970                                  
-  5971 0000288D 68[BC28]                 push domul_1
-  5972 00002890 E893DC                   call prs
-  5973 00002893 83C402                   add  sp, 2
-  5974 00002896 FF36[2C00]               push word [lexval]
-  5975 0000289A E8DEDD                   call prunsign1
-  5976 0000289D 83C402                   add  sp, 2
-  5977 000028A0 68[C828]                 push domul_2
-  5978 000028A3 E880DC                   call prs
-  5979 000028A6 83C402                   add  sp, 2
-  5980                                  
-  5981                                  ;-700     }
-  5982                                  
-  5983                                  
-  5984                                  ;-701   else error1("with MUL only const number as multiplicator allowed"); } }
-  5985                                  
-  5986 000028A9 E90900                   jmp .domul303
-  5987                                  .domul302:
-  5988 000028AC 68[D228]                 push domul_3
-  5989 000028AF E8B913                   call error1
-  5990 000028B2 83C402                   add  sp, 2
-  5991                                  .domul303:
-  5992                                  .domul301:
-  5993                                  
-  5994                                  ;-702 int doidiv(int ids) { int mode; int id1;
-  5995 000028B5 C9                       LEAVE
-  5996 000028B6 C3                       ret
-  5997 000028B7 696D756C00              domul_0 db "imul",0
-  5998 000028BC 5C6E206D6F76206278-     domul_1 db "\n mov bx, ",0
-  5999 000028C5 2C2000             
-  6000 000028C8 5C6E206D756C206278-     domul_2 db "\n mul bx",0
-  6001 000028D1 00                 
-  6002 000028D2 77697468204D554C20-     domul_3 db "with MUL only const number as multiplicator allowed",0
-  6003 000028DB 6F6E6C7920636F6E73-
-  6004 000028E4 74206E756D62657220-
-  6005 000028ED 6173206D756C746970-
-  6006 000028F6 6C696361746F722061-
-  6007 000028FF 6C6C6F77656400     
-  6008                                  ENDP
-  6009                                  
-  6010                                  doidiv: PROC
-  6011                                  
-  6012                                  ;-703   if (istoken(T_CONST)) {
-  6013                                  ;
-  6014 00002906 C8040000                 ENTER  4,0
-  6015 0000290A 680101                   push 257
-  6016 0000290D E8E4DA                   call istoken
-  6017 00002910 83C402                   add  sp, 2
-  6018 00002913 08C0                     or  al, al
-  6019 00002915 0F843400                 je .doidiv304
-  6020                                  
-  6021                                  ;-704     prs("\n mov bx, "); prunsign1(lexval);
-  6022                                  
-  6023 00002919 68[CB29]                 push doidiv_0
-  6024 0000291C E807DC                   call prs
-  6025 0000291F 83C402                   add  sp, 2
-  6026 00002922 FF36[2C00]               push word [lexval]
-  6027 00002926 E852DD                   call prunsign1
-  6028 00002929 83C402                   add  sp, 2
-  6029                                  
-  6030                                  ;-705     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
-  6031                                  
-  6032 0000292C 8B4604                   mov ax, [bp+4]
-  6033 0000292F 08C0                     or  al, al
-  6034 00002931 0F840C00                 je .doidiv305
-  6035 00002935 68[D729]                 push doidiv_1
-  6036 00002938 E8EBDB                   call prs
-  6037 0000293B 83C402                   add  sp, 2
-  6038 0000293E E90900                   jmp .doidiv306
-  6039                                  .doidiv305:
-  6040 00002941 68[E829]                 push doidiv_2
-  6041 00002944 E8DFDB                   call prs
-  6042 00002947 83C402                   add  sp, 2
-  6043                                  .doidiv306:
-  6044                                  
-  6045                                  ;-706   else {
+  5832                                  .docall1279:
+  5833 000026FD 6A26                     push 38
+  5834 000026FF E80CE1                   call istoken
+  5835 00002702 83C402                   add  sp, 2
+  5836 00002705 08C0                     or  al, al
+  5837 00002707 0F840F00                 je .docall1280
+  5838 0000270B B80300                   mov ax, 3
+  5839 0000270E 8946FA                   mov [bp-6], ax
+  5840 00002711 E8F8E4                   call name1
+  5841 00002714 E84DE3                   call searchname
+  5842 00002717 8946F8                   mov [bp-8], ax
+  5843                                  
+  5844                                  ;-707       if(istoken(T_NAME))  { n0=checkreg();
+  5845                                  
+  5846                                  .docall1280:
+  5847 0000271A 680001                   push 256
+  5848 0000271D E8EEE0                   call istoken
+  5849 00002720 83C402                   add  sp, 2
+  5850 00002723 08C0                     or  al, al
+  5851 00002725 0F844800                 je .docall1281
+  5852 00002729 E8DEEA                   call checkreg
+  5853 0000272C 8946F8                   mov [bp-8], ax
+  5854                                  
+  5855                                  ;-708         if (n0) t0=5;
+  5856                                  
+  5857 0000272F 8B46F8                   mov ax, [bp-8]
+  5858 00002732 08C0                     or  al, al
+  5859 00002734 0F840900                 je .docall1282
+  5860 00002738 B80500                   mov ax, 5
+  5861 0000273B 8946FA                   mov [bp-6], ax
+  5862                                  
+  5863                                  ;-709         else {t0=4; n0=searchname();
+  5864                                  
+  5865 0000273E E93000                   jmp .docall1283
+  5866                                  .docall1282:
+  5867 00002741 B80400                   mov ax, 4
+  5868 00002744 8946FA                   mov [bp-6], ax
+  5869 00002747 E81AE3                   call searchname
+  5870 0000274A 8946F8                   mov [bp-8], ax
+  5871                                  
+  5872                                  ;-710           p1=&GType; p1=p1+n0; if (*p1=='&') t0=3; }  }
+  5873                                  
+  5874 0000274D B8046B                   mov ax, GType
+  5875 00002750 A3[4D00]                 mov word [p1], ax
+  5876 00002753 A1[4D00]                 mov ax, [p1]
+  5877 00002756 0346F8                   add ax, [bp-8]
+  5878 00002759 A3[4D00]                 mov word [p1], ax
+  5879 0000275C 8B1E[4D00]               mov bx, [p1]
+  5880 00002760 8A07                     mov al, [bx]
+  5881 00002762 B400                     mov ah, 0
+  5882 00002764 83F826                   cmp ax, 38
+  5883 00002767 0F850600                 jne .docall1284
+  5884 0000276B B80300                   mov ax, 3
+  5885 0000276E 8946FA                   mov [bp-6], ax
+  5886                                  .docall1284:
+  5887                                  .docall1283:
+  5888                                  
+  5889                                  ;-711       if (t0==0) error1("parameter not recognized (no * allowed)");
+  5890                                  
+  5891                                  .docall1281:
+  5892 00002771 8B46FA                   mov ax, [bp-6]
+  5893 00002774 83F800                   cmp ax, 0
+  5894 00002777 0F850900                 jne .docall1285
+  5895 0000277B 68[2D29]                 push docall1_4
+  5896 0000277E E85FDE                   call error1
+  5897 00002781 83C402                   add  sp, 2
+  5898                                  
+  5899                                  ;-712       docalltype [narg] = t0;
+  5900                                  
+  5901                                  .docall1285:
+  5902 00002784 8B46FA                   mov ax, [bp-6]
+  5903 00002787 8B5EFC                   mov bx, [bp-4]
+  5904 0000278A D1E3                     shl bx, 1
+  5905 0000278C 898725DA                 mov [docalltype+bx], ax
+  5906                                  
+  5907                                  ;-713       docallvalue[narg] = n0;
+  5908                                  
+  5909 00002790 8B46F8                   mov ax, [bp-8]
+  5910 00002793 8B5EFC                   mov bx, [bp-4]
+  5911 00002796 D1E3                     shl bx, 1
+  5912 00002798 898739DA                 mov [docallvalue+bx], ax
+  5913                                  
+  5914                                  ;-714     } while (istoken(','));
+  5915                                  
+  5916 0000279C 6A2C                     push 44
+  5917 0000279E E86DE0                   call istoken
+  5918 000027A1 83C402                   add  sp, 2
+  5919 000027A4 08C0                     or  al, al
+  5920 000027A6 0F840300                 je .docall1286
+  5921 000027AA E9A7FE                   jmp .docall1276
+  5922                                  .docall1286:
+  5923                                  
+  5924                                  ;-715 
+  5925                                  
+  5926                                  
+  5927                                  ;-716   	expect(')');  i=narg;
+  5928                                  
+  5929 000027AD 6A29                     push 41
+  5930 000027AF E87EE0                   call expect
+  5931 000027B2 83C402                   add  sp, 2
+  5932 000027B5 8B46FC                   mov ax, [bp-4]
+  5933 000027B8 8946FE                   mov [bp-2], ax
+  5934                                  
+  5935                                  ;-717     do {
+  5936                                  
+  5937                                  .docall1287:
+  5938                                  
+  5939                                  ;-718       t0 = docalltype [i];
+  5940                                  
+  5941 000027BB 8B5EFE                   mov bx, [bp-2]
+  5942 000027BE D1E3                     shl bx, 1
+  5943 000027C0 8B8725DA                 mov ax, [docalltype + bx]
+  5944 000027C4 8946FA                   mov [bp-6], ax
+  5945                                  
+  5946                                  ;-719       n0 = docallvalue[i];
+  5947                                  
+  5948 000027C7 8B5EFE                   mov bx, [bp-2]
+  5949 000027CA D1E3                     shl bx, 1
+  5950 000027CC 8B8739DA                 mov ax, [docallvalue + bx]
+  5951 000027D0 8946F8                   mov [bp-8], ax
+  5952                                  
+  5953                                  ;-720       if(t0==1){ prs("\n push "); prunsign1(n0);}
+  5954                                  
+  5955 000027D3 8B46FA                   mov ax, [bp-6]
+  5956 000027D6 83F801                   cmp ax, 1
+  5957 000027D9 0F851200                 jne .docall1288
+  5958 000027DD 68[5529]                 push docall1_5
+  5959 000027E0 E8FFDB                   call prs
+  5960 000027E3 83C402                   add  sp, 2
+  5961 000027E6 FF76F8                   push word [bp-8]
+  5962 000027E9 E859DD                   call prunsign1
+  5963 000027EC 83C402                   add  sp, 2
+  5964                                  
+  5965                                  ;-721       if(t0==2){ prs("\n push ");
+  5966                                  
+  5967                                  .docall1288:
+  5968 000027EF 8B46FA                   mov ax, [bp-6]
+  5969 000027F2 83F802                   cmp ax, 2
+  5970 000027F5 0F852500                 jne .docall1289
+  5971 000027F9 68[5E29]                 push docall1_6
+  5972 000027FC E8E3DB                   call prs
+  5973 000027FF 83C402                   add  sp, 2
+  5974                                  
+  5975                                  ;-722         prs(fname);prc(95);prunsign1(n0);}
+  5976                                  
+  5977 00002802 8D063B6A                 lea  ax, [fname]
+  5978 00002806 50                       push ax
+  5979 00002807 E8D8DB                   call prs
+  5980 0000280A 83C402                   add  sp, 2
+  5981 0000280D 6A5F                     push 95
+  5982 0000280F E877DB                   call prc
+  5983 00002812 83C402                   add  sp, 2
+  5984 00002815 FF76F8                   push word [bp-8]
+  5985 00002818 E82ADD                   call prunsign1
+  5986 0000281B 83C402                   add  sp, 2
+  5987                                  
+  5988                                  ;-723       if(t0==3){ prs("\n lea  ax, ");   v(n0);
+  5989                                  
+  5990                                  .docall1289:
+  5991 0000281E 8B46FA                   mov ax, [bp-6]
+  5992 00002821 83F803                   cmp ax, 3
+  5993 00002824 0F851B00                 jne .docall1290
+  5994 00002828 68[6729]                 push docall1_7
+  5995 0000282B E8B4DB                   call prs
+  5996 0000282E 83C402                   add  sp, 2
+  5997 00002831 FF76F8                   push word [bp-8]
+  5998 00002834 E8D4E0                   call v
+  5999 00002837 83C402                   add  sp, 2
+  6000                                  
+  6001                                  ;-724         prs("\n push ax");}
+  6002                                  
+  6003 0000283A 68[7429]                 push docall1_8
+  6004 0000283D E8A2DB                   call prs
+  6005 00002840 83C402                   add  sp, 2
+  6006                                  
+  6007                                  ;-725       if(t0==4){ gettypes(n0);
+  6008                                  
+  6009                                  .docall1290:
+  6010 00002843 8B46FA                   mov ax, [bp-6]
+  6011 00002846 83F804                   cmp ax, 4
+  6012 00002849 0F854300                 jne .docall1291
+  6013 0000284D FF76F8                   push word [bp-8]
+  6014 00002850 E85AE1                   call gettypes
+  6015 00002853 83C402                   add  sp, 2
+  6016                                  
+  6017                                  ;-726         if(wi==2) { prs("\n push word "); v(n0);}
+  6018                                  
+  6019 00002856 A1[3700]                 mov ax, [wi]
+  6020 00002859 83F802                   cmp ax, 2
+  6021 0000285C 0F851500                 jne .docall1292
+  6022 00002860 68[7F29]                 push docall1_9
+  6023 00002863 E87CDB                   call prs
+  6024 00002866 83C402                   add  sp, 2
+  6025 00002869 FF76F8                   push word [bp-8]
+  6026 0000286C E89CE0                   call v
+  6027 0000286F 83C402                   add  sp, 2
+  6028                                  
+  6029                                  ;-727         else { prs("\n mov al, byte ");   v(n0);
+  6030                                  
+  6031 00002872 E91B00                   jmp .docall1293
+  6032                                  .docall1292:
+  6033 00002875 68[8D29]                 push docall1_10
+  6034 00002878 E867DB                   call prs
+  6035 0000287B 83C402                   add  sp, 2
+  6036 0000287E FF76F8                   push word [bp-8]
+  6037 00002881 E887E0                   call v
+  6038 00002884 83C402                   add  sp, 2
+  6039                                  
+  6040                                  ;-728         prs("\n mov ah, 0\n push ax"); } }
+  6041                                  
+  6042 00002887 68[9E29]                 push docall1_11
+  6043 0000288A E855DB                   call prs
+  6044 0000288D 83C402                   add  sp, 2
+  6045                                  .docall1293:
   6046                                  
-  6047 0000294A E97C00                   jmp .doidiv307
-  6048                                  .doidiv304:
-  6049                                  
-  6050                                  ;-707     mode=typeName(); id1=searchname();
-  6051                                  
-  6052 0000294D E802E4                   call typeName
-  6053 00002950 8946FE                   mov [bp-2], ax
-  6054 00002953 E82DE3                   call searchname
-  6055 00002956 8946FC                   mov [bp-4], ax
-  6056                                  
-  6057                                  ;-708     if (mode) error1("only const number or int as divisor allowed");
-  6058                                  
-  6059 00002959 8B46FE                   mov ax, [bp-2]
-  6060 0000295C 08C0                     or  al, al
-  6061 0000295E 0F840900                 je .doidiv308
-  6062 00002962 68[FE29]                 push doidiv_3
-  6063 00002965 E80313                   call error1
-  6064 00002968 83C402                   add  sp, 2
+  6047                                  ;-729       if(t0==5){ prs("\n push "); printreg(n0); if (n0 >= 47) sz32+2;  }
+  6048                                  
+  6049                                  .docall1291:
+  6050 00002890 8B46FA                   mov ax, [bp-6]
+  6051 00002893 83F805                   cmp ax, 5
+  6052 00002896 0F852200                 jne .docall1294
+  6053 0000289A 68[B529]                 push docall1_12
+  6054 0000289D E842DB                   call prs
+  6055 000028A0 83C402                   add  sp, 2
+  6056 000028A3 FF76F8                   push word [bp-8]
+  6057 000028A6 E86FED                   call printreg
+  6058 000028A9 83C402                   add  sp, 2
+  6059 000028AC 8B46F8                   mov ax, [bp-8]
+  6060 000028AF 83F82F                   cmp ax, 47 ;unsigned : 1
+  6061 000028B2 0F8C0600                 jl  .docall1295
+  6062 000028B6 8B46F6                   mov ax, [bp-10]
+  6063 000028B9 83C002                   add ax, 2
+  6064                                  .docall1295:
   6065                                  
-  6066                                  ;-709     gettypes(id1);
+  6066                                  ;-730    i--; } while (i > 0);  }
   6067                                  
-  6068                                  .doidiv308:
-  6069 0000296B FF76FC                   push word [bp-4]
-  6070 0000296E E8D4E1                   call gettypes
-  6071 00002971 83C402                   add  sp, 2
-  6072                                  
-  6073                                  ;-710     if (typei) error1("only int as simple var divisor allowed");
-  6074                                  
-  6075 00002974 A1[2E00]                 mov ax, [typei]
-  6076 00002977 08C0                     or  al, al
-  6077 00002979 0F840900                 je .doidiv309
-  6078 0000297D 68[2A2A]                 push doidiv_4
-  6079 00002980 E8E812                   call error1
-  6080 00002983 83C402                   add  sp, 2
-  6081                                  
-  6082                                  ;-711     if (wi!=2) error1("only int, no byte as divisor allowed");
-  6083                                  
-  6084                                  .doidiv309:
-  6085 00002986 A1[3700]                 mov ax, [wi]
-  6086 00002989 83F802                   cmp ax, 2
-  6087 0000298C 0F840900                 je  .doidiv310
-  6088 00002990 68[512A]                 push doidiv_5
-  6089 00002993 E8D512                   call error1
-  6090 00002996 83C402                   add  sp, 2
-  6091                                  
-  6092                                  ;-712     prs("\n mov bx, "); v(id1);
-  6093                                  
-  6094                                  .doidiv310:
-  6095 00002999 68[762A]                 push doidiv_6
-  6096 0000299C E887DB                   call prs
-  6097 0000299F 83C402                   add  sp, 2
-  6098 000029A2 FF76FC                   push word [bp-4]
-  6099 000029A5 E8AFD9                   call v
-  6100 000029A8 83C402                   add  sp, 2
-  6101                                  
-  6102                                  ;-713     if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
-  6103                                  
-  6104 000029AB 8B4604                   mov ax, [bp+4]
-  6105 000029AE 08C0                     or  al, al
-  6106 000029B0 0F840C00                 je .doidiv311
-  6107 000029B4 68[822A]                 push doidiv_7
-  6108 000029B7 E86CDB                   call prs
-  6109 000029BA 83C402                   add  sp, 2
-  6110 000029BD E90900                   jmp .doidiv312
-  6111                                  .doidiv311:
-  6112 000029C0 68[932A]                 push doidiv_8
-  6113 000029C3 E860DB                   call prs
-  6114 000029C6 83C402                   add  sp, 2
-  6115                                  .doidiv312:
-  6116                                  
-  6117                                  ;-714 }
-  6118                                  
-  6119                                  .doidiv307:
-  6120                                  
-  6121                                  ;-715 int domod(int ids) { doidiv(ids); prs("\n mov ax, dx"); }
-  6122 000029C9 C9                       LEAVE
-  6123 000029CA C3                       ret
-  6124 000029CB 5C6E206D6F76206278-     doidiv_0 db "\n mov bx, ",0
-  6125 000029D4 2C2000             
-  6126 000029D7 5C6E206377645C6E20-     doidiv_1 db "\n cwd\n idiv bx",0
-  6127 000029E0 6964697620627800   
-  6128 000029E8 5C6E206D6F76206478-     doidiv_2 db "\n mov dx, 0\n div bx",0
-  6129 000029F1 2C20305C6E20646976-
-  6130 000029FA 20627800           
-  6131 000029FE 6F6E6C7920636F6E73-     doidiv_3 db "only const number or int as divisor allowed",0
-  6132 00002A07 74206E756D62657220-
-  6133 00002A10 6F7220696E74206173-
-  6134 00002A19 2064697669736F7220-
-  6135 00002A22 616C6C6F77656400   
-  6136 00002A2A 6F6E6C7920696E7420-     doidiv_4 db "only int as simple var divisor allowed",0
-  6137 00002A33 61732073696D706C65-
-  6138 00002A3C 207661722064697669-
-  6139 00002A45 736F7220616C6C6F77-
-  6140 00002A4E 656400             
-  6141 00002A51 6F6E6C7920696E742C-     doidiv_5 db "only int, no byte as divisor allowed",0
-  6142 00002A5A 206E6F206279746520-
-  6143 00002A63 61732064697669736F-
-  6144 00002A6C 7220616C6C6F776564-
-  6145 00002A75 00                 
-  6146 00002A76 5C6E206D6F76206278-     doidiv_6 db "\n mov bx, ",0
-  6147 00002A7F 2C2000             
-  6148 00002A82 5C6E206377645C6E20-     doidiv_7 db "\n cwd\n idiv bx",0
-  6149 00002A8B 6964697620627800   
-  6150 00002A93 5C6E206D6F76206478-     doidiv_8 db "\n mov dx, 0\n div bx",0
-  6151 00002A9C 2C20305C6E20646976-
-  6152 00002AA5 20627800           
-  6153                                  ENDP
-  6154                                  
-  6155                                  domod: PROC;
-  6156 00002AA9 C8000000                 ENTER  0,0
-  6157 00002AAD FF7604                   push word [bp+4]
-  6158 00002AB0 E853FE                   call doidiv
-  6159 00002AB3 83C402                   add  sp, 2
-  6160 00002AB6 68[C12A]                 push domod_0
-  6161 00002AB9 E86ADA                   call prs
-  6162 00002ABC 83C402                   add  sp, 2
-  6163                                  
-  6164                                  ;-716 
-  6165                                  
-  6166                                  
-  6167                                  ;-717 int docalltype[10]; int docallvalue[10];
-  6168 00002ABF C9                       LEAVE
-  6169 00002AC0 C3                       ret
-  6170 00002AC1 5C6E206D6F76206178-     domod_0 db "\n mov ax, dx",0
-  6171 00002ACA 2C20647800         
-  6172                                  ENDP
-  6173                                  section .bss
-  6174                                  absolute 55860
-  6175 0000DA34 <res 00000014>          docalltype resw 10
-  6176                                  section .text
-  6177                                  section .bss
-  6178                                  absolute 55880
-  6179 0000DA48 <res 00000014>          docallvalue resw 10
-  6180                                  section .text
+  6068                                  .docall1294:
+  6069 000028BC FF4EFE                   dec  word[bp-2]
+  6070 000028BF 8B46FE                   mov ax, [bp-2]
+  6071 000028C2 83F800                   cmp ax, 0
+  6072 000028C5 0F8E0300                 jle .docall1296
+  6073 000028C9 E9EFFE                   jmp .docall1287
+  6074                                  .docall1296:
+  6075                                  
+  6076                                  ;-731 	 prs("\n call "); prs(&procname);
+  6077                                  
+  6078                                  .docall1275:
+  6079 000028CC 68[BE29]                 push docall1_13
+  6080 000028CF E810DB                   call prs
+  6081 000028D2 83C402                   add  sp, 2
+  6082 000028D5 8D064DDA                 lea  ax, [procname]
+  6083 000028D9 50                       push ax
+  6084 000028DA E805DB                   call prs
+  6085 000028DD 83C402                   add  sp, 2
+  6086                                  
+  6087                                  ;-732 	 if (narg>0) {prs("\n add  sp, ");
+  6088                                  
+  6089 000028E0 8B46FC                   mov ax, [bp-4]
+  6090 000028E3 83F800                   cmp ax, 0
+  6091 000028E6 0F8E2400                 jle .docall1297
+  6092 000028EA 68[C729]                 push docall1_14
+  6093 000028ED E8F2DA                   call prs
+  6094 000028F0 83C402                   add  sp, 2
+  6095                                  
+  6096                                  ;-733      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
+  6097                                  
+  6098 000028F3 8B46FC                   mov ax, [bp-4]
+  6099 000028F6 0346FC                   add ax, [bp-4]
+  6100 000028F9 8946FC                   mov [bp-4], ax
+  6101 000028FC 8B46FC                   mov ax, [bp-4]
+  6102 000028FF 0346F6                   add ax, [bp-10]
+  6103 00002902 8946FC                   mov [bp-4], ax
+  6104 00002905 FF76FC                   push word [bp-4]
+  6105 00002908 E83ADC                   call prunsign1
+  6106 0000290B 83C402                   add  sp, 2
+  6107                                  .docall1297:
+  6108                                  
+  6109                                  ;-734 /***************************************************************/
+  6110                                  
+  6111                                  
+  6112                                  ;-735 
+  6113                                  
+  6114                                  
+  6115                                  ;-736 int doemit() {prs("\n db ");
+  6116 0000290E C9                       LEAVE
+  6117 0000290F C3                       ret
+  6118 00002910 4D61782E2039207061-     docall1_0 db "Max. 9 parameters",0
+  6119 00002919 72616D657465727300 
+  6120 00002922 5C6E00                  docall1_1 db "\n",0
+  6121 00002925 2064622000              docall1_2 db " db ",0
+  6122 0000292A 2C3000                  docall1_3 db ",0",0
+  6123 0000292D 706172616D65746572-     docall1_4 db "parameter not recognized (no * allowed)",0
+  6124 00002936 206E6F74207265636F-
+  6125 0000293F 676E697A656420286E-
+  6126 00002948 6F202A20616C6C6F77-
+  6127 00002951 65642900           
+  6128 00002955 5C6E20707573682000      docall1_5 db "\n push ",0
+  6129 0000295E 5C6E20707573682000      docall1_6 db "\n push ",0
+  6130 00002967 5C6E206C6561202061-     docall1_7 db "\n lea  ax, ",0
+  6131 00002970 782C2000           
+  6132 00002974 5C6E20707573682061-     docall1_8 db "\n push ax",0
+  6133 0000297D 7800               
+  6134 0000297F 5C6E20707573682077-     docall1_9 db "\n push word ",0
+  6135 00002988 6F72642000         
+  6136 0000298D 5C6E206D6F7620616C-     docall1_10 db "\n mov al, byte ",0
+  6137 00002996 2C20627974652000   
+  6138 0000299E 5C6E206D6F76206168-     docall1_11 db "\n mov ah, 0\n push ax",0
+  6139 000029A7 2C20305C6E20707573-
+  6140 000029B0 6820617800         
+  6141 000029B5 5C6E20707573682000      docall1_12 db "\n push ",0
+  6142 000029BE 5C6E2063616C6C2000      docall1_13 db "\n call ",0
+  6143 000029C7 5C6E20616464202073-     docall1_14 db "\n add  sp, ",0
+  6144 000029D0 702C2000           
+  6145                                  ENDP
+  6146                                  
+  6147                                  doemit: PROC
+  6148 000029D4 68[102A]                 push doemit_0
+  6149 000029D7 E808DA                   call prs
+  6150 000029DA 83C402                   add  sp, 2
+  6151                                  
+  6152                                  ;-737   L1: token=getlex(); prunsign1(lexval); token=getlex();
+  6153                                  
+  6154                                  .L1:
+  6155 000029DD E85C03                   call getlex
+  6156 000029E0 A3[1E00]                 mov word [token], ax
+  6157 000029E3 FF36[2C00]               push word [lexval]
+  6158 000029E7 E85BDB                   call prunsign1
+  6159 000029EA 83C402                   add  sp, 2
+  6160 000029ED E84C03                   call getlex
+  6161 000029F0 A3[1E00]                 mov word [token], ax
+  6162                                  
+  6163                                  ;-738     if (token== ',') {prc(','); goto L1;} expect(')'); }
+  6164                                  
+  6165 000029F3 A1[1E00]                 mov ax, [token]
+  6166 000029F6 83F82C                   cmp ax, 44
+  6167 000029F9 0F850A00                 jne .doemit298
+  6168 000029FD 6A2C                     push 44
+  6169 000029FF E887D9                   call prc
+  6170 00002A02 83C402                   add  sp, 2
+  6171 00002A05 EBD6                     jmp .L1
+  6172                                  .doemit298:
+  6173 00002A07 6A29                     push 41
+  6174 00002A09 E824DE                   call expect
+  6175 00002A0C 83C402                   add  sp, 2
+  6176                                  
+  6177                                  ;-739 
+  6178                                  
+  6179                                  
+  6180                                  ;-740 int cmpneg(int ids) {
   6181                                  
-  6182                                  ;-718 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
-  6183                                  
-  6184                                  section .bss
-  6185                                  absolute 55900
-  6186 0000DA5C <res 00000011>          procname resb 17
-  6187                                  section .text
-  6188                                  
-  6189                                  ;-719 int docall1() {int i; int narg; int t0; int n0;  int sz32;
-  6190                                  
-  6191                                  
-  6192                                  docall1: PROC
-  6193                                  
-  6194                                  ;-720   narg=0;  sz32=0;
-  6195                                  ;
-  6196 00002ACF C80A0000                 ENTER  10,0
-  6197 00002AD3 B80000                   mov ax, 0
-  6198 00002AD6 8946FC                   mov [bp-4], ax
-  6199 00002AD9 B80000                   mov ax, 0
-  6200 00002ADC 8946F6                   mov [bp-10], ax
-  6201                                  
-  6202                                  ;-721   checknamelen();
-  6203                                  
-  6204 00002ADF E8A8D8                   call checknamelen
-  6205                                  
-  6206                                  ;-722   strcpy(&procname, symbol);
-  6207                                  
-  6208 00002AE2 8D06BB69                 lea  ax, [symbol]
-  6209 00002AE6 50                       push ax
-  6210 00002AE7 8D065CDA                 lea  ax, [procname]
-  6211 00002AEB 50                       push ax
-  6212 00002AEC E83DD7                   call strcpy
-  6213 00002AEF 83C404                   add  sp, 4
-  6214                                  
-  6215                                  ;-723   storeCall1();
-  6216                                  
-  6217 00002AF2 E85EE3                   call storeCall1
-  6218                                  
-  6219                                  ;-724   expect('(');
-  6220                                  
-  6221 00002AF5 6A28                     push 40
-  6222 00002AF7 E81CD9                   call expect
-  6223 00002AFA 83C402                   add  sp, 2
+  6182 00002A0F C3                       ret
+  6183 00002A10 5C6E2064622000          doemit_0 db "\n db ",0
+  6184                                  ENDP
+  6185                                  
+  6186                                  cmpneg: PROC
+  6187                                  
+  6188                                  ;-741        if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
+  6189                                  ;
+  6190 00002A17 C8000000                 ENTER  0,0
+  6191 00002A1B A1[2400]                 mov ax, [iscmp]
+  6192 00002A1E 3D2603                   cmp ax, 806
+  6193 00002A21 0F850C00                 jne .cmpneg299
+  6194 00002A25 68[F82A]                 push cmpneg_0
+  6195 00002A28 E8B7D9                   call prs
+  6196 00002A2B 83C402                   add  sp, 2
+  6197                                  
+  6198                                  ;-742   else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
+  6199                                  
+  6200 00002A2E E9C500                   jmp .cmpneg300
+  6201                                  .cmpneg299:
+  6202 00002A31 A1[2400]                 mov ax, [iscmp]
+  6203 00002A34 3D2703                   cmp ax, 807
+  6204 00002A37 0F850C00                 jne .cmpneg301
+  6205 00002A3B 68[012B]                 push cmpneg_1
+  6206 00002A3E E8A1D9                   call prs
+  6207 00002A41 83C402                   add  sp, 2
+  6208                                  
+  6209                                  ;-743   else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
+  6210                                  
+  6211 00002A44 E9AF00                   jmp .cmpneg302
+  6212                                  .cmpneg301:
+  6213 00002A47 A1[2400]                 mov ax, [iscmp]
+  6214 00002A4A 3D3803                   cmp ax, 824
+  6215 00002A4D 0F852100                 jne .cmpneg303
+  6216 00002A51 8B4604                   mov ax, [bp+4]
+  6217 00002A54 08C0                     or  al, al
+  6218 00002A56 0F840C00                 je .cmpneg304
+  6219 00002A5A 68[0A2B]                 push cmpneg_2
+  6220 00002A5D E882D9                   call prs
+  6221 00002A60 83C402                   add  sp, 2
+  6222                                  
+  6223                                  ;-744                            else prs("\n ja  .");//ZF=0 CF=0
   6224                                  
-  6225                                  ;-725 	if (istoken(')') ==0 ) {
-  6226                                  
-  6227 00002AFD 6A29                     push 41
-  6228 00002AFF E8F2D8                   call istoken
-  6229 00002B02 83C402                   add  sp, 2
-  6230 00002B05 83F800                   cmp ax, 0
-  6231 00002B08 0F857802                 jne .docall1313
+  6225 00002A63 E90900                   jmp .cmpneg305
+  6226                                  .cmpneg304:
+  6227 00002A66 68[132B]                 push cmpneg_3
+  6228 00002A69 E876D9                   call prs
+  6229 00002A6C 83C402                   add  sp, 2
+  6230                                  
+  6231                                  ;-745   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
   6232                                  
-  6233                                  ;-726 	  do { narg++;
-  6234                                  
-  6235                                  .docall1314:
-  6236 00002B0C FF46FC                   inc  word[bp-4]
-  6237                                  
-  6238                                  ;-727 	    if (narg >9 ) error1("Max. 9 parameters");  t0=0;
-  6239                                  
-  6240 00002B0F 8B46FC                   mov ax, [bp-4]
-  6241 00002B12 83F809                   cmp ax, 9
-  6242 00002B15 0F8E0900                 jle .docall1315
-  6243 00002B19 68[C82D]                 push docall1_0
-  6244 00002B1C E84C11                   call error1
-  6245 00002B1F 83C402                   add  sp, 2
-  6246                                  .docall1315:
-  6247 00002B22 B80000                   mov ax, 0
-  6248 00002B25 8946FA                   mov [bp-6], ax
-  6249                                  
-  6250                                  ;-728       if(istoken(T_CONST)) {t0=1; n0=lexval; }
-  6251                                  
-  6252 00002B28 680101                   push 257
-  6253 00002B2B E8C6D8                   call istoken
-  6254 00002B2E 83C402                   add  sp, 2
-  6255 00002B31 08C0                     or  al, al
-  6256 00002B33 0F840C00                 je .docall1316
-  6257 00002B37 B80100                   mov ax, 1
-  6258 00002B3A 8946FA                   mov [bp-6], ax
-  6259 00002B3D A1[2C00]                 mov ax, [lexval]
-  6260 00002B40 8946F8                   mov [bp-8], ax
-  6261                                  
-  6262                                  ;-729       if(istoken(T_STRING)){t0=2; n0=nconst;
-  6263                                  
-  6264                                  .docall1316:
-  6265 00002B43 680201                   push 258
-  6266 00002B46 E8ABD8                   call istoken
-  6267 00002B49 83C402                   add  sp, 2
-  6268 00002B4C 08C0                     or  al, al
-  6269 00002B4E 0F846300                 je .docall1317
-  6270 00002B52 B80200                   mov ax, 2
-  6271 00002B55 8946FA                   mov [bp-6], ax
-  6272 00002B58 A1[2600]                 mov ax, [nconst]
-  6273 00002B5B 8946F8                   mov [bp-8], ax
-  6274                                  
-  6275                                  ;-730         eprs("\n"); eprs(fname); eprc(95);eprnum(nconst);eprs(" db ");
-  6276                                  
-  6277 00002B5E 68[DA2D]                 push docall1_1
-  6278 00002B61 E82DD9                   call eprs
-  6279 00002B64 83C402                   add  sp, 2
-  6280 00002B67 8D063B6A                 lea  ax, [fname]
-  6281 00002B6B 50                       push ax
-  6282 00002B6C E822D9                   call eprs
-  6283 00002B6F 83C402                   add  sp, 2
-  6284 00002B72 6A5F                     push 95
-  6285 00002B74 E807D9                   call eprc
-  6286 00002B77 83C402                   add  sp, 2
-  6287 00002B7A FF36[2600]               push word [nconst]
-  6288 00002B7E E839DA                   call eprnum
-  6289 00002B81 83C402                   add  sp, 2
-  6290 00002B84 68[DD2D]                 push docall1_2
-  6291 00002B87 E807D9                   call eprs
-  6292 00002B8A 83C402                   add  sp, 2
-  6293                                  
-  6294                                  ;-731         eprc(34);eprs(symbol);eprc(34);eprs(",0"); nconst++; }
-  6295                                  
-  6296 00002B8D 6A22                     push 34
-  6297 00002B8F E8ECD8                   call eprc
-  6298 00002B92 83C402                   add  sp, 2
-  6299 00002B95 8D06BB69                 lea  ax, [symbol]
-  6300 00002B99 50                       push ax
-  6301 00002B9A E8F4D8                   call eprs
-  6302 00002B9D 83C402                   add  sp, 2
-  6303 00002BA0 6A22                     push 34
-  6304 00002BA2 E8D9D8                   call eprc
-  6305 00002BA5 83C402                   add  sp, 2
-  6306 00002BA8 68[E22D]                 push docall1_3
-  6307 00002BAB E8E3D8                   call eprs
-  6308 00002BAE 83C402                   add  sp, 2
-  6309 00002BB1 FF06[2600]               inc  word[nconst]
+  6233                                  .cmpneg305:
+  6234 00002A6F E98400                   jmp .cmpneg306
+  6235                                  .cmpneg303:
+  6236 00002A72 A1[2400]                 mov ax, [iscmp]
+  6237 00002A75 3D2B03                   cmp ax, 811
+  6238 00002A78 0F854500                 jne .cmpneg307
+  6239 00002A7C 8B4604                   mov ax, [bp+4]
+  6240 00002A7F 08C0                     or  al, al
+  6241 00002A81 0F841E00                 je .cmpneg308
+  6242 00002A85 68[1C2B]                 push cmpneg_4
+  6243 00002A88 E857D9                   call prs
+  6244 00002A8B 83C402                   add  sp, 2
+  6245 00002A8E FF7604                   push word [bp+4]
+  6246 00002A91 E8B1DA                   call prunsign1
+  6247 00002A94 83C402                   add  sp, 2
+  6248                                  
+  6249                                  ;-746                                prs("\n jl  .");}//          SF!=OF
+  6250                                  
+  6251 00002A97 68[2A2B]                 push cmpneg_5
+  6252 00002A9A E845D9                   call prs
+  6253 00002A9D 83C402                   add  sp, 2
+  6254                                  
+  6255                                  ;-747                            else{prs(" ;unsigned : "); prunsign1(ids);
+  6256                                  
+  6257 00002AA0 E91B00                   jmp .cmpneg309
+  6258                                  .cmpneg308:
+  6259 00002AA3 68[332B]                 push cmpneg_6
+  6260 00002AA6 E839D9                   call prs
+  6261 00002AA9 83C402                   add  sp, 2
+  6262 00002AAC FF7604                   push word [bp+4]
+  6263 00002AAF E893DA                   call prunsign1
+  6264 00002AB2 83C402                   add  sp, 2
+  6265                                  
+  6266                                  ;-748                                prs("\n jb  .");}//jb=jc=CF=1
+  6267                                  
+  6268 00002AB5 68[412B]                 push cmpneg_7
+  6269 00002AB8 E827D9                   call prs
+  6270 00002ABB 83C402                   add  sp, 2
+  6271                                  
+  6272                                  ;-749   else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
+  6273                                  
+  6274                                  .cmpneg309:
+  6275 00002ABE E93500                   jmp .cmpneg310
+  6276                                  .cmpneg307:
+  6277 00002AC1 A1[2400]                 mov ax, [iscmp]
+  6278 00002AC4 83F83C                   cmp ax, 60
+  6279 00002AC7 0F850C00                 jne .cmpneg311
+  6280 00002ACB 68[4A2B]                 push cmpneg_8
+  6281 00002ACE E811D9                   call prs
+  6282 00002AD1 83C402                   add  sp, 2
+  6283                                  
+  6284                                  ;-750   else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
+  6285                                  
+  6286 00002AD4 E91F00                   jmp .cmpneg312
+  6287                                  .cmpneg311:
+  6288 00002AD7 A1[2400]                 mov ax, [iscmp]
+  6289 00002ADA 83F83E                   cmp ax, 62
+  6290 00002ADD 0F850C00                 jne .cmpneg313
+  6291 00002AE1 68[532B]                 push cmpneg_9
+  6292 00002AE4 E8FBD8                   call prs
+  6293 00002AE7 83C402                   add  sp, 2
+  6294                                  
+  6295                                  ;-751   else error1("internal error compare unknown in CMPNEG()");  }
+  6296                                  
+  6297 00002AEA E90900                   jmp .cmpneg314
+  6298                                  .cmpneg313:
+  6299 00002AED 68[5C2B]                 push cmpneg_10
+  6300 00002AF0 E8EDDA                   call error1
+  6301 00002AF3 83C402                   add  sp, 2
+  6302                                  .cmpneg314:
+  6303                                  .cmpneg312:
+  6304                                  .cmpneg310:
+  6305                                  .cmpneg306:
+  6306                                  .cmpneg302:
+  6307                                  .cmpneg300:
+  6308                                  
+  6309                                  ;-752 
   6310                                  
-  6311                                  ;-732       if(istoken('&'))     {t0=3; name1(); n0=searchname();}
-  6312                                  
-  6313                                  .docall1317:
-  6314 00002BB5 6A26                     push 38
-  6315 00002BB7 E83AD8                   call istoken
-  6316 00002BBA 83C402                   add  sp, 2
-  6317 00002BBD 08C0                     or  al, al
-  6318 00002BBF 0F840F00                 je .docall1318
-  6319 00002BC3 B80300                   mov ax, 3
-  6320 00002BC6 8946FA                   mov [bp-6], ax
-  6321 00002BC9 E85FE2                   call name1
-  6322 00002BCC E8B4E0                   call searchname
-  6323 00002BCF 8946F8                   mov [bp-8], ax
-  6324                                  
-  6325                                  ;-733       if(istoken(T_NAME))  { n0=checkreg();
-  6326                                  
-  6327                                  .docall1318:
-  6328 00002BD2 680001                   push 256
-  6329 00002BD5 E81CD8                   call istoken
-  6330 00002BD8 83C402                   add  sp, 2
-  6331 00002BDB 08C0                     or  al, al
-  6332 00002BDD 0F844800                 je .docall1319
-  6333 00002BE1 E8DEEA                   call checkreg
-  6334 00002BE4 8946F8                   mov [bp-8], ax
-  6335                                  
-  6336                                  ;-734         if (n0) t0=5;
-  6337                                  
-  6338 00002BE7 8B46F8                   mov ax, [bp-8]
-  6339 00002BEA 08C0                     or  al, al
-  6340 00002BEC 0F840900                 je .docall1320
-  6341 00002BF0 B80500                   mov ax, 5
-  6342 00002BF3 8946FA                   mov [bp-6], ax
-  6343                                  
-  6344                                  ;-735         else {t0=4; n0=searchname();
-  6345                                  
-  6346 00002BF6 E93000                   jmp .docall1321
-  6347                                  .docall1320:
-  6348 00002BF9 B80400                   mov ax, 4
-  6349 00002BFC 8946FA                   mov [bp-6], ax
-  6350 00002BFF E881E0                   call searchname
-  6351 00002C02 8946F8                   mov [bp-8], ax
-  6352                                  
-  6353                                  ;-736           p1=&GType; p1=p1+n0; if (*p1=='&') t0=3; }  }
-  6354                                  
-  6355 00002C05 B8046B                   mov ax, GType
-  6356 00002C08 A3[4D00]                 mov word [p1], ax
-  6357 00002C0B A1[4D00]                 mov ax, [p1]
-  6358 00002C0E 0346F8                   add ax, [bp-8]
-  6359 00002C11 A3[4D00]                 mov word [p1], ax
-  6360 00002C14 8B1E[4D00]               mov bx, [p1]
-  6361 00002C18 8A07                     mov al, [bx]
-  6362 00002C1A B400                     mov ah, 0
-  6363 00002C1C 83F826                   cmp ax, 38
-  6364 00002C1F 0F850600                 jne .docall1322
-  6365 00002C23 B80300                   mov ax, 3
-  6366 00002C26 8946FA                   mov [bp-6], ax
-  6367                                  .docall1322:
-  6368                                  .docall1321:
-  6369                                  
-  6370                                  ;-737       if (t0==0) error1("parameter not recognized (no * allowed)");
-  6371                                  
-  6372                                  .docall1319:
-  6373 00002C29 8B46FA                   mov ax, [bp-6]
-  6374 00002C2C 83F800                   cmp ax, 0
-  6375 00002C2F 0F850900                 jne .docall1323
-  6376 00002C33 68[E52D]                 push docall1_4
-  6377 00002C36 E83210                   call error1
-  6378 00002C39 83C402                   add  sp, 2
-  6379                                  
-  6380                                  ;-738       docalltype [narg] = t0;
+  6311                                  
+  6312                                  ;-753 int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
+  6313 00002AF6 C9                       LEAVE
+  6314 00002AF7 C3                       ret
+  6315 00002AF8 5C6E206A6E65202E00      cmpneg_0 db "\n jne .",0
+  6316 00002B01 5C6E206A6520202E00      cmpneg_1 db "\n je  .",0
+  6317 00002B0A 5C6E206A6720202E00      cmpneg_2 db "\n jg  .",0
+  6318 00002B13 5C6E206A6120202E00      cmpneg_3 db "\n ja  .",0
+  6319 00002B1C 203B756E7369676E65-     cmpneg_4 db " ;unsigned : ",0
+  6320 00002B25 64203A2000         
+  6321 00002B2A 5C6E206A6C20202E00      cmpneg_5 db "\n jl  .",0
+  6322 00002B33 203B756E7369676E65-     cmpneg_6 db " ;unsigned : ",0
+  6323 00002B3C 64203A2000         
+  6324 00002B41 5C6E206A6220202E00      cmpneg_7 db "\n jb  .",0
+  6325 00002B4A 5C6E206A6765202E00      cmpneg_8 db "\n jge .",0
+  6326 00002B53 5C6E206A6C65202E00      cmpneg_9 db "\n jle .",0
+  6327 00002B5C 696E7465726E616C20-     cmpneg_10 db "internal error compare unknown in CMPNEG()",0
+  6328 00002B65 6572726F7220636F6D-
+  6329 00002B6E 7061726520756E6B6E-
+  6330 00002B77 6F776E20696E20434D-
+  6331 00002B80 504E4547282900     
+  6332                                  ENDP
+  6333                                  
+  6334                                  prlabel: PROC;
+  6335 00002B87 C8000000                 ENTER  0,0
+  6336 00002B8B 68[B22B]                 push prlabel_0
+  6337 00002B8E E851D8                   call prs
+  6338 00002B91 83C402                   add  sp, 2
+  6339 00002B94 8D063B6A                 lea  ax, [fname]
+  6340 00002B98 50                       push ax
+  6341 00002B99 E846D8                   call prs
+  6342 00002B9C 83C402                   add  sp, 2
+  6343 00002B9F FF7604                   push word [bp+4]
+  6344 00002BA2 E8A0D9                   call prunsign1
+  6345 00002BA5 83C402                   add  sp, 2
+  6346 00002BA8 6A3A                     push 58
+  6347 00002BAA E8DCD7                   call prc
+  6348 00002BAD 83C402                   add  sp, 2
+  6349                                  
+  6350                                  ;-754 int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
+  6351 00002BB0 C9                       LEAVE
+  6352 00002BB1 C3                       ret
+  6353 00002BB2 5C6E2E00                prlabel_0 db "\n.",0
+  6354                                  ENDP
+  6355                                  
+  6356                                  prjump: PROC;
+  6357 00002BB6 C8000000                 ENTER  0,0
+  6358 00002BBA 68[D92B]                 push prjump_0
+  6359 00002BBD E822D8                   call prs
+  6360 00002BC0 83C402                   add  sp, 2
+  6361 00002BC3 8D063B6A                 lea  ax, [fname]
+  6362 00002BC7 50                       push ax
+  6363 00002BC8 E817D8                   call prs
+  6364 00002BCB 83C402                   add  sp, 2
+  6365 00002BCE FF7604                   push word [bp+4]
+  6366 00002BD1 E871D9                   call prunsign1
+  6367 00002BD4 83C402                   add  sp, 2
+  6368                                  
+  6369                                  ;-755 int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
+  6370 00002BD7 C9                       LEAVE
+  6371 00002BD8 C3                       ret
+  6372 00002BD9 5C6E206A6D70202E00      prjump_0 db "\n jmp .",0
+  6373                                  ENDP
+  6374                                  
+  6375                                  doif: PROC;
+  6376 00002BE2 C8040000                 ENTER  4,0
+  6377 00002BE6 E8A4E2                   call pexpr
+  6378 00002BE9 FF06[2A00]               inc  word[nlabel]
+  6379 00002BED A1[2A00]                 mov ax, [nlabel]
+  6380 00002BF0 8946FE                   mov [bp-2], ax
   6381                                  
-  6382                                  .docall1323:
-  6383 00002C3C 8B46FA                   mov ax, [bp-6]
-  6384 00002C3F 8B5EFC                   mov bx, [bp-4]
-  6385 00002C42 D1E3                     shl bx, 1
-  6386 00002C44 898734DA                 mov [docalltype+bx], ax
-  6387                                  
-  6388                                  ;-739       docallvalue[narg] = n0;
-  6389                                  
-  6390 00002C48 8B46F8                   mov ax, [bp-8]
-  6391 00002C4B 8B5EFC                   mov bx, [bp-4]
-  6392 00002C4E D1E3                     shl bx, 1
-  6393 00002C50 898748DA                 mov [docallvalue+bx], ax
-  6394                                  
-  6395                                  ;-740     } while (istoken(','));
-  6396                                  
-  6397 00002C54 6A2C                     push 44
-  6398 00002C56 E89BD7                   call istoken
-  6399 00002C59 83C402                   add  sp, 2
-  6400 00002C5C 08C0                     or  al, al
-  6401 00002C5E 0F840300                 je .docall1324
-  6402 00002C62 E9A7FE                   jmp .docall1314
-  6403                                  .docall1324:
-  6404                                  
-  6405                                  ;-741 
-  6406                                  
-  6407                                  
-  6408                                  ;-742   	expect(')');  i=narg;
-  6409                                  
-  6410 00002C65 6A29                     push 41
-  6411 00002C67 E8ACD7                   call expect
-  6412 00002C6A 83C402                   add  sp, 2
-  6413 00002C6D 8B46FC                   mov ax, [bp-4]
-  6414 00002C70 8946FE                   mov [bp-2], ax
-  6415                                  
-  6416                                  ;-743     do {
-  6417                                  
-  6418                                  .docall1325:
-  6419                                  
-  6420                                  ;-744       t0 = docalltype [i];
+  6382                                  ;-756   pint1(jdest); stmt();
+  6383                                  
+  6384 00002BF3 FF76FE                   push word [bp-2]
+  6385 00002BF6 E8EED8                   call pint1
+  6386 00002BF9 83C402                   add  sp, 2
+  6387 00002BFC E8F307                   call stmt
+  6388                                  
+  6389                                  ;-757   if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
+  6390                                  
+  6391 00002BFF 680202                   push 514
+  6392 00002C02 E809DC                   call istoken
+  6393 00002C05 83C402                   add  sp, 2
+  6394 00002C08 08C0                     or  al, al
+  6395 00002C0A 0F842B00                 je .doif315
+  6396 00002C0E FF06[2A00]               inc  word[nlabel]
+  6397 00002C12 A1[2A00]                 mov ax, [nlabel]
+  6398 00002C15 8946FC                   mov [bp-4], ax
+  6399                                  
+  6400                                  ;-758     prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
+  6401                                  
+  6402 00002C18 FF76FC                   push word [bp-4]
+  6403 00002C1B E898FF                   call prjump
+  6404 00002C1E 83C402                   add  sp, 2
+  6405 00002C21 FF76FE                   push word [bp-2]
+  6406 00002C24 E860FF                   call prlabel
+  6407 00002C27 83C402                   add  sp, 2
+  6408 00002C2A E8C507                   call stmt
+  6409 00002C2D FF76FC                   push word [bp-4]
+  6410 00002C30 E854FF                   call prlabel
+  6411 00002C33 83C402                   add  sp, 2
+  6412                                  
+  6413                                  ;-759   else prlabel(jdest); }
+  6414                                  
+  6415 00002C36 E90900                   jmp .doif316
+  6416                                  .doif315:
+  6417 00002C39 FF76FE                   push word [bp-2]
+  6418 00002C3C E848FF                   call prlabel
+  6419 00002C3F 83C402                   add  sp, 2
+  6420                                  .doif316:
   6421                                  
-  6422 00002C73 8B5EFE                   mov bx, [bp-2]
-  6423 00002C76 D1E3                     shl bx, 1
-  6424 00002C78 8B8734DA                 mov ax, [docalltype + bx]
-  6425 00002C7C 8946FA                   mov [bp-6], ax
-  6426                                  
-  6427                                  ;-745       n0 = docallvalue[i];
-  6428                                  
-  6429 00002C7F 8B5EFE                   mov bx, [bp-2]
-  6430 00002C82 D1E3                     shl bx, 1
-  6431 00002C84 8B8748DA                 mov ax, [docallvalue + bx]
-  6432 00002C88 8946F8                   mov [bp-8], ax
-  6433                                  
-  6434                                  ;-746       if(t0==1){ prs("\n push "); prunsign1(n0);}
-  6435                                  
-  6436 00002C8B 8B46FA                   mov ax, [bp-6]
-  6437 00002C8E 83F801                   cmp ax, 1
-  6438 00002C91 0F851200                 jne .docall1326
-  6439 00002C95 68[0D2E]                 push docall1_5
-  6440 00002C98 E88BD8                   call prs
-  6441 00002C9B 83C402                   add  sp, 2
-  6442 00002C9E FF76F8                   push word [bp-8]
-  6443 00002CA1 E8D7D9                   call prunsign1
-  6444 00002CA4 83C402                   add  sp, 2
-  6445                                  
-  6446                                  ;-747       if(t0==2){ prs("\n push ");
-  6447                                  
-  6448                                  .docall1326:
-  6449 00002CA7 8B46FA                   mov ax, [bp-6]
-  6450 00002CAA 83F802                   cmp ax, 2
-  6451 00002CAD 0F852500                 jne .docall1327
-  6452 00002CB1 68[162E]                 push docall1_6
-  6453 00002CB4 E86FD8                   call prs
-  6454 00002CB7 83C402                   add  sp, 2
+  6422                                  ;-760 
+  6423                                  
+  6424                                  
+  6425                                  ;-761 int dodo() {int jdest; int jtemp;
+  6426 00002C42 C9                       LEAVE
+  6427 00002C43 C3                       ret
+  6428                                  ENDP
+  6429                                  
+  6430                                  dodo: PROC
+  6431                                  
+  6432                                  ;-762   nlabel++; jdest=nlabel; prlabel(jdest); stmt();
+  6433                                  ;
+  6434 00002C44 C8040000                 ENTER  4,0
+  6435 00002C48 FF06[2A00]               inc  word[nlabel]
+  6436 00002C4C A1[2A00]                 mov ax, [nlabel]
+  6437 00002C4F 8946FE                   mov [bp-2], ax
+  6438 00002C52 FF76FE                   push word [bp-2]
+  6439 00002C55 E82FFF                   call prlabel
+  6440 00002C58 83C402                   add  sp, 2
+  6441 00002C5B E89407                   call stmt
+  6442                                  
+  6443                                  ;-763   expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
+  6444                                  
+  6445 00002C5E 680302                   push 515
+  6446 00002C61 E8CCDB                   call expect
+  6447 00002C64 83C402                   add  sp, 2
+  6448 00002C67 E823E2                   call pexpr
+  6449 00002C6A FF06[2A00]               inc  word[nlabel]
+  6450 00002C6E A1[2A00]                 mov ax, [nlabel]
+  6451 00002C71 8946FC                   mov [bp-4], ax
+  6452 00002C74 FF76FC                   push word [bp-4]
+  6453 00002C77 E86DD8                   call pint1
+  6454 00002C7A 83C402                   add  sp, 2
   6455                                  
-  6456                                  ;-748         prs(fname);prc(95);prunsign1(n0);}
+  6456                                  ;-764   prjump(jdest); prlabel(jtemp); }
   6457                                  
-  6458 00002CBA 8D063B6A                 lea  ax, [fname]
-  6459 00002CBE 50                       push ax
-  6460 00002CBF E864D8                   call prs
-  6461 00002CC2 83C402                   add  sp, 2
-  6462 00002CC5 6A5F                     push 95
-  6463 00002CC7 E8F5D7                   call prc
-  6464 00002CCA 83C402                   add  sp, 2
-  6465 00002CCD FF76F8                   push word [bp-8]
-  6466 00002CD0 E8A8D9                   call prunsign1
-  6467 00002CD3 83C402                   add  sp, 2
-  6468                                  
-  6469                                  ;-749       if(t0==3){ prs("\n lea  ax, ");   v(n0);
-  6470                                  
-  6471                                  .docall1327:
-  6472 00002CD6 8B46FA                   mov ax, [bp-6]
-  6473 00002CD9 83F803                   cmp ax, 3
-  6474 00002CDC 0F851B00                 jne .docall1328
-  6475 00002CE0 68[1F2E]                 push docall1_7
-  6476 00002CE3 E840D8                   call prs
-  6477 00002CE6 83C402                   add  sp, 2
-  6478 00002CE9 FF76F8                   push word [bp-8]
-  6479 00002CEC E868D6                   call v
-  6480 00002CEF 83C402                   add  sp, 2
-  6481                                  
-  6482                                  ;-750         prs("\n push ax");}
-  6483                                  
-  6484 00002CF2 68[2C2E]                 push docall1_8
-  6485 00002CF5 E82ED8                   call prs
-  6486 00002CF8 83C402                   add  sp, 2
-  6487                                  
-  6488                                  ;-751       if(t0==4){ gettypes(n0);
-  6489                                  
-  6490                                  .docall1328:
-  6491 00002CFB 8B46FA                   mov ax, [bp-6]
-  6492 00002CFE 83F804                   cmp ax, 4
-  6493 00002D01 0F854300                 jne .docall1329
-  6494 00002D05 FF76F8                   push word [bp-8]
-  6495 00002D08 E83ADE                   call gettypes
-  6496 00002D0B 83C402                   add  sp, 2
-  6497                                  
-  6498                                  ;-752         if(wi==2) { prs("\n push word "); v(n0);}
-  6499                                  
-  6500 00002D0E A1[3700]                 mov ax, [wi]
-  6501 00002D11 83F802                   cmp ax, 2
-  6502 00002D14 0F851500                 jne .docall1330
-  6503 00002D18 68[372E]                 push docall1_9
-  6504 00002D1B E808D8                   call prs
-  6505 00002D1E 83C402                   add  sp, 2
-  6506 00002D21 FF76F8                   push word [bp-8]
-  6507 00002D24 E830D6                   call v
-  6508 00002D27 83C402                   add  sp, 2
-  6509                                  
-  6510                                  ;-753         else { prs("\n mov al, byte ");   v(n0);
-  6511                                  
-  6512 00002D2A E91B00                   jmp .docall1331
-  6513                                  .docall1330:
-  6514 00002D2D 68[452E]                 push docall1_10
-  6515 00002D30 E8F3D7                   call prs
-  6516 00002D33 83C402                   add  sp, 2
-  6517 00002D36 FF76F8                   push word [bp-8]
-  6518 00002D39 E81BD6                   call v
-  6519 00002D3C 83C402                   add  sp, 2
-  6520                                  
-  6521                                  ;-754         prs("\n mov ah, 0\n push ax"); } }
-  6522                                  
-  6523 00002D3F 68[562E]                 push docall1_11
-  6524 00002D42 E8E1D7                   call prs
-  6525 00002D45 83C402                   add  sp, 2
-  6526                                  .docall1331:
-  6527                                  
-  6528                                  ;-755       if(t0==5){ prs("\n push "); printreg(n0); if (n0 >= 47) sz32+2;  }
-  6529                                  
-  6530                                  .docall1329:
-  6531 00002D48 8B46FA                   mov ax, [bp-6]
-  6532 00002D4B 83F805                   cmp ax, 5
-  6533 00002D4E 0F852200                 jne .docall1332
-  6534 00002D52 68[6D2E]                 push docall1_12
-  6535 00002D55 E8CED7                   call prs
-  6536 00002D58 83C402                   add  sp, 2
-  6537 00002D5B FF76F8                   push word [bp-8]
-  6538 00002D5E E86FED                   call printreg
-  6539 00002D61 83C402                   add  sp, 2
-  6540 00002D64 8B46F8                   mov ax, [bp-8]
-  6541 00002D67 83F82F                   cmp ax, 47 ;unsigned : 1
-  6542 00002D6A 0F8C0600                 jl  .docall1333
-  6543 00002D6E 8B46F6                   mov ax, [bp-10]
-  6544 00002D71 83C002                   add ax, 2
-  6545                                  .docall1333:
-  6546                                  
-  6547                                  ;-756    i--; } while (i > 0);  }
-  6548                                  
-  6549                                  .docall1332:
-  6550 00002D74 FF4EFE                   dec  word[bp-2]
-  6551 00002D77 8B46FE                   mov ax, [bp-2]
-  6552 00002D7A 83F800                   cmp ax, 0
-  6553 00002D7D 0F8E0300                 jle .docall1334
-  6554 00002D81 E9EFFE                   jmp .docall1325
-  6555                                  .docall1334:
+  6458 00002C7D FF76FE                   push word [bp-2]
+  6459 00002C80 E833FF                   call prjump
+  6460 00002C83 83C402                   add  sp, 2
+  6461 00002C86 FF76FC                   push word [bp-4]
+  6462 00002C89 E8FBFE                   call prlabel
+  6463 00002C8C 83C402                   add  sp, 2
+  6464                                  
+  6465                                  ;-765 int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
+  6466 00002C8F C9                       LEAVE
+  6467 00002C90 C3                       ret
+  6468                                  ENDP
+  6469                                  
+  6470                                  dowhile: PROC;
+  6471 00002C91 C8040000                 ENTER  4,0
+  6472 00002C95 FF06[2A00]               inc  word[nlabel]
+  6473 00002C99 A1[2A00]                 mov ax, [nlabel]
+  6474 00002C9C 8946FE                   mov [bp-2], ax
+  6475                                  
+  6476                                  ;-766   prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
+  6477                                  
+  6478 00002C9F FF76FE                   push word [bp-2]
+  6479 00002CA2 E8E2FE                   call prlabel
+  6480 00002CA5 83C402                   add  sp, 2
+  6481 00002CA8 E8E2E1                   call pexpr
+  6482 00002CAB FF06[2A00]               inc  word[nlabel]
+  6483 00002CAF A1[2A00]                 mov ax, [nlabel]
+  6484 00002CB2 8946FC                   mov [bp-4], ax
+  6485 00002CB5 FF76FC                   push word [bp-4]
+  6486 00002CB8 E82CD8                   call pint1
+  6487 00002CBB 83C402                   add  sp, 2
+  6488                                  
+  6489                                  ;-767   stmt(); prjump(jdest); prlabel(tst); }
+  6490                                  
+  6491 00002CBE E83107                   call stmt
+  6492 00002CC1 FF76FE                   push word [bp-2]
+  6493 00002CC4 E8EFFE                   call prjump
+  6494 00002CC7 83C402                   add  sp, 2
+  6495 00002CCA FF76FC                   push word [bp-4]
+  6496 00002CCD E8B7FE                   call prlabel
+  6497 00002CD0 83C402                   add  sp, 2
+  6498                                  
+  6499                                  ;-768 int isrelational() {
+  6500 00002CD3 C9                       LEAVE
+  6501 00002CD4 C3                       ret
+  6502                                  ENDP
+  6503                                  
+  6504                                  isrelational: PROC
+  6505                                  
+  6506                                  ;-769   if (token==T_EQ) goto w; if (token==T_NE) goto w;
+  6507                                  
+  6508 00002CD5 A1[1E00]                 mov ax, [token]
+  6509 00002CD8 3D2603                   cmp ax, 806
+  6510 00002CDB 0F850300                 jne .isrelational317
+  6511 00002CDF E94700                   jmp .w
+  6512                                  .isrelational317:
+  6513 00002CE2 A1[1E00]                 mov ax, [token]
+  6514 00002CE5 3D2703                   cmp ax, 807
+  6515 00002CE8 0F850300                 jne .isrelational318
+  6516 00002CEC E93A00                   jmp .w
+  6517                                  
+  6518                                  ;-770   if (token==T_LE) goto w; if (token==T_GE) goto w;
+  6519                                  
+  6520                                  .isrelational318:
+  6521 00002CEF A1[1E00]                 mov ax, [token]
+  6522 00002CF2 3D3803                   cmp ax, 824
+  6523 00002CF5 0F850300                 jne .isrelational319
+  6524 00002CF9 E92D00                   jmp .w
+  6525                                  .isrelational319:
+  6526 00002CFC A1[1E00]                 mov ax, [token]
+  6527 00002CFF 3D2B03                   cmp ax, 811
+  6528 00002D02 0F850300                 jne .isrelational320
+  6529 00002D06 E92000                   jmp .w
+  6530                                  
+  6531                                  ;-771   if (token=='<' ) goto w; if (token=='>' ) goto w;
+  6532                                  
+  6533                                  .isrelational320:
+  6534 00002D09 A1[1E00]                 mov ax, [token]
+  6535 00002D0C 83F83C                   cmp ax, 60
+  6536 00002D0F 0F850300                 jne .isrelational321
+  6537 00002D13 E91300                   jmp .w
+  6538                                  .isrelational321:
+  6539 00002D16 A1[1E00]                 mov ax, [token]
+  6540 00002D19 83F83E                   cmp ax, 62
+  6541 00002D1C 0F850300                 jne .isrelational322
+  6542 00002D20 E90600                   jmp .w
+  6543                                  
+  6544                                  ;-772   return 0;  w: iscmp=token; token=getlex(); return 1;}
+  6545                                  
+  6546                                  .isrelational322:
+  6547 00002D23 B80000                   mov ax, 0
+  6548 00002D26 E91200                   jmp .retnisrelational
+  6549                                  .w:
+  6550 00002D29 A1[1E00]                 mov ax, [token]
+  6551 00002D2C A3[2400]                 mov word [iscmp], ax
+  6552 00002D2F E80A00                   call getlex
+  6553 00002D32 A3[1E00]                 mov word [token], ax
+  6554 00002D35 B80100                   mov ax, 1
+  6555 00002D38 E90000                   jmp .retnisrelational
   6556                                  
-  6557                                  ;-757 	 prs("\n call "); prs(&procname);
+  6557                                  ;-773 
   6558                                  
-  6559                                  .docall1313:
-  6560 00002D84 68[762E]                 push docall1_13
-  6561 00002D87 E89CD7                   call prs
-  6562 00002D8A 83C402                   add  sp, 2
-  6563 00002D8D 8D065CDA                 lea  ax, [procname]
-  6564 00002D91 50                       push ax
-  6565 00002D92 E891D7                   call prs
-  6566 00002D95 83C402                   add  sp, 2
-  6567                                  
-  6568                                  ;-758 	 if (narg>0) {prs("\n add  sp, ");
+  6559                                  
+  6560                                  ;-774 char symboltemp[80];
+  6561                                  
+  6562                                   .retnisrelational:
+  6563 00002D3B C3                       ret
+  6564                                  ENDP
+  6565                                  section .bss
+  6566                                  absolute 55902
+  6567 0000DA5E <res 00000050>          symboltemp resb 80
+  6568                                  section .text
   6569                                  
-  6570 00002D98 8B46FC                   mov ax, [bp-4]
-  6571 00002D9B 83F800                   cmp ax, 0
-  6572 00002D9E 0F8E2400                 jle .docall1335
-  6573 00002DA2 68[7F2E]                 push docall1_14
-  6574 00002DA5 E87ED7                   call prs
-  6575 00002DA8 83C402                   add  sp, 2
-  6576                                  
-  6577                                  ;-759      narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
-  6578                                  
-  6579 00002DAB 8B46FC                   mov ax, [bp-4]
-  6580 00002DAE 0346FC                   add ax, [bp-4]
-  6581 00002DB1 8946FC                   mov [bp-4], ax
-  6582 00002DB4 8B46FC                   mov ax, [bp-4]
-  6583 00002DB7 0346F6                   add ax, [bp-10]
-  6584 00002DBA 8946FC                   mov [bp-4], ax
-  6585 00002DBD FF76FC                   push word [bp-4]
-  6586 00002DC0 E8B8D8                   call prunsign1
-  6587 00002DC3 83C402                   add  sp, 2
-  6588                                  .docall1335:
-  6589                                  
-  6590                                  ;-760 /***************************************************************/
+  6570                                  ;-775 int getlex() { char c; char *p;
+  6571                                  
+  6572                                  
+  6573                                  getlex: PROC
+  6574                                  
+  6575                                  ;-776 g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
+  6576                                  ;
+  6577 00002D3C C8040000                 ENTER  4,0
+  6578                                  .g1:
+  6579 00002D40 E8ADDA                   call next
+  6580 00002D43 8846FE                   mov [bp-2], al
+  6581 00002D46 8A46FE                   mov al, [bp-2]
+  6582 00002D49 3C00                     cmp al, 0
+  6583 00002D4B 0F850600                 jne .getlex323
+  6584 00002D4F B80000                   mov ax, 0
+  6585 00002D52 E9DA04                   jmp .retngetlex
+  6586                                  .getlex323:
+  6587 00002D55 8A46FE                   mov al, [bp-2]
+  6588 00002D58 3C20                     cmp al, 32
+  6589 00002D5A 0F8F0200                 jg  .getlex324
+  6590 00002D5E EBE0                     jmp .g1
   6591                                  
-  6592                                  
-  6593                                  ;-761 
-  6594                                  
-  6595                                  
-  6596                                  ;-762 int doemit() {prs("\n db ");
-  6597 00002DC6 C9                       LEAVE
-  6598 00002DC7 C3                       ret
-  6599 00002DC8 4D61782E2039207061-     docall1_0 db "Max. 9 parameters",0
-  6600 00002DD1 72616D657465727300 
-  6601 00002DDA 5C6E00                  docall1_1 db "\n",0
-  6602 00002DDD 2064622000              docall1_2 db " db ",0
-  6603 00002DE2 2C3000                  docall1_3 db ",0",0
-  6604 00002DE5 706172616D65746572-     docall1_4 db "parameter not recognized (no * allowed)",0
-  6605 00002DEE 206E6F74207265636F-
-  6606 00002DF7 676E697A656420286E-
-  6607 00002E00 6F202A20616C6C6F77-
-  6608 00002E09 65642900           
-  6609 00002E0D 5C6E20707573682000      docall1_5 db "\n push ",0
-  6610 00002E16 5C6E20707573682000      docall1_6 db "\n push ",0
-  6611 00002E1F 5C6E206C6561202061-     docall1_7 db "\n lea  ax, ",0
-  6612 00002E28 782C2000           
-  6613 00002E2C 5C6E20707573682061-     docall1_8 db "\n push ax",0
-  6614 00002E35 7800               
-  6615 00002E37 5C6E20707573682077-     docall1_9 db "\n push word ",0
-  6616 00002E40 6F72642000         
-  6617 00002E45 5C6E206D6F7620616C-     docall1_10 db "\n mov al, byte ",0
-  6618 00002E4E 2C20627974652000   
-  6619 00002E56 5C6E206D6F76206168-     docall1_11 db "\n mov ah, 0\n push ax",0
-  6620 00002E5F 2C20305C6E20707573-
-  6621 00002E68 6820617800         
-  6622 00002E6D 5C6E20707573682000      docall1_12 db "\n push ",0
-  6623 00002E76 5C6E2063616C6C2000      docall1_13 db "\n call ",0
-  6624 00002E7F 5C6E20616464202073-     docall1_14 db "\n add  sp, ",0
-  6625 00002E88 702C2000           
-  6626                                  ENDP
-  6627                                  
-  6628                                  doemit: PROC
-  6629 00002E8C 68[C82E]                 push doemit_0
-  6630 00002E8F E894D6                   call prs
-  6631 00002E92 83C402                   add  sp, 2
-  6632                                  
-  6633                                  ;-763   L1: token=getlex(); prunsign1(lexval); token=getlex();
-  6634                                  
-  6635                                  .L1:
-  6636 00002E95 E85C03                   call getlex
-  6637 00002E98 A3[1E00]                 mov word [token], ax
-  6638 00002E9B FF36[2C00]               push word [lexval]
-  6639 00002E9F E8D9D7                   call prunsign1
-  6640 00002EA2 83C402                   add  sp, 2
-  6641 00002EA5 E84C03                   call getlex
-  6642 00002EA8 A3[1E00]                 mov word [token], ax
-  6643                                  
-  6644                                  ;-764     if (token== ',') {prc(','); goto L1;} expect(')'); }
-  6645                                  
-  6646 00002EAB A1[1E00]                 mov ax, [token]
-  6647 00002EAE 83F82C                   cmp ax, 44
-  6648 00002EB1 0F850A00                 jne .doemit336
-  6649 00002EB5 6A2C                     push 44
-  6650 00002EB7 E805D6                   call prc
-  6651 00002EBA 83C402                   add  sp, 2
-  6652 00002EBD EBD6                     jmp .L1
-  6653                                  .doemit336:
-  6654 00002EBF 6A29                     push 41
-  6655 00002EC1 E852D5                   call expect
-  6656 00002EC4 83C402                   add  sp, 2
-  6657                                  
-  6658                                  ;-765 
-  6659                                  
-  6660                                  
-  6661                                  ;-766 int cmpneg(int ids) {
-  6662                                  
-  6663 00002EC7 C3                       ret
-  6664 00002EC8 5C6E2064622000          doemit_0 db "\n db ",0
-  6665                                  ENDP
-  6666                                  
-  6667                                  cmpneg: PROC
-  6668                                  
-  6669                                  ;-767        if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
-  6670                                  ;
-  6671 00002ECF C8000000                 ENTER  0,0
-  6672 00002ED3 A1[2400]                 mov ax, [iscmp]
-  6673 00002ED6 3D2603                   cmp ax, 806
-  6674 00002ED9 0F850C00                 jne .cmpneg337
-  6675 00002EDD 68[B02F]                 push cmpneg_0
-  6676 00002EE0 E843D6                   call prs
-  6677 00002EE3 83C402                   add  sp, 2
-  6678                                  
-  6679                                  ;-768   else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
-  6680                                  
-  6681 00002EE6 E9C500                   jmp .cmpneg338
-  6682                                  .cmpneg337:
-  6683 00002EE9 A1[2400]                 mov ax, [iscmp]
-  6684 00002EEC 3D2703                   cmp ax, 807
-  6685 00002EEF 0F850C00                 jne .cmpneg339
-  6686 00002EF3 68[B92F]                 push cmpneg_1
-  6687 00002EF6 E82DD6                   call prs
-  6688 00002EF9 83C402                   add  sp, 2
+  6592                                  ;-777   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
+  6593                                  
+  6594                                  .getlex324:
+  6595 00002D60 8A46FE                   mov al, [bp-2]
+  6596 00002D63 3C3D                     cmp al, 61
+  6597 00002D65 0F851200                 jne .getlex325
+  6598 00002D69 A0[2300]                 mov al, [thechar]
+  6599 00002D6C 3C3D                     cmp al, 61
+  6600 00002D6E 0F850900                 jne .getlex326
+  6601 00002D72 E87BDA                   call next
+  6602 00002D75 B82603                   mov ax, 806
+  6603 00002D78 E9B404                   jmp .retngetlex
+  6604                                  .getlex326:
+  6605                                  
+  6606                                  ;-778   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
+  6607                                  
+  6608                                  .getlex325:
+  6609 00002D7B 8A46FE                   mov al, [bp-2]
+  6610 00002D7E 3C21                     cmp al, 33
+  6611 00002D80 0F851200                 jne .getlex327
+  6612 00002D84 A0[2300]                 mov al, [thechar]
+  6613 00002D87 3C3D                     cmp al, 61
+  6614 00002D89 0F850900                 jne .getlex328
+  6615 00002D8D E860DA                   call next
+  6616 00002D90 B82703                   mov ax, 807
+  6617 00002D93 E99904                   jmp .retngetlex
+  6618                                  .getlex328:
+  6619                                  
+  6620                                  ;-779   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
+  6621                                  
+  6622                                  .getlex327:
+  6623 00002D96 8A46FE                   mov al, [bp-2]
+  6624 00002D99 3C3C                     cmp al, 60
+  6625 00002D9B 0F851200                 jne .getlex329
+  6626 00002D9F A0[2300]                 mov al, [thechar]
+  6627 00002DA2 3C3D                     cmp al, 61
+  6628 00002DA4 0F850900                 jne .getlex330
+  6629 00002DA8 E845DA                   call next
+  6630 00002DAB B83803                   mov ax, 824
+  6631 00002DAE E97E04                   jmp .retngetlex
+  6632                                  .getlex330:
+  6633                                  
+  6634                                  ;-780   if (c=='>') {if(thechar=='=') {next(); return T_GE; }}
+  6635                                  
+  6636                                  .getlex329:
+  6637 00002DB1 8A46FE                   mov al, [bp-2]
+  6638 00002DB4 3C3E                     cmp al, 62
+  6639 00002DB6 0F851200                 jne .getlex331
+  6640 00002DBA A0[2300]                 mov al, [thechar]
+  6641 00002DBD 3C3D                     cmp al, 61
+  6642 00002DBF 0F850900                 jne .getlex332
+  6643 00002DC3 E82ADA                   call next
+  6644 00002DC6 B82B03                   mov ax, 811
+  6645 00002DC9 E96304                   jmp .retngetlex
+  6646                                  .getlex332:
+  6647                                  
+  6648                                  ;-781   if (c=='<') {if(thechar=='<') {next(); return T_LESSLESS;  }}
+  6649                                  
+  6650                                  .getlex331:
+  6651 00002DCC 8A46FE                   mov al, [bp-2]
+  6652 00002DCF 3C3C                     cmp al, 60
+  6653 00002DD1 0F851200                 jne .getlex333
+  6654 00002DD5 A0[2300]                 mov al, [thechar]
+  6655 00002DD8 3C3C                     cmp al, 60
+  6656 00002DDA 0F850900                 jne .getlex334
+  6657 00002DDE E80FDA                   call next
+  6658 00002DE1 B8D804                   mov ax, 1240
+  6659 00002DE4 E94804                   jmp .retngetlex
+  6660                                  .getlex334:
+  6661                                  
+  6662                                  ;-782   if (c=='>') {if(thechar=='>') {next(); return T_GREATGREAT;}}
+  6663                                  
+  6664                                  .getlex333:
+  6665 00002DE7 8A46FE                   mov al, [bp-2]
+  6666 00002DEA 3C3E                     cmp al, 62
+  6667 00002DEC 0F851200                 jne .getlex335
+  6668 00002DF0 A0[2300]                 mov al, [thechar]
+  6669 00002DF3 3C3E                     cmp al, 62
+  6670 00002DF5 0F850900                 jne .getlex336
+  6671 00002DF9 E8F4D9                   call next
+  6672 00002DFC B8D904                   mov ax, 1241
+  6673 00002DFF E92D04                   jmp .retngetlex
+  6674                                  .getlex336:
+  6675                                  
+  6676                                  ;-783   if (c=='+') {if(thechar=='+') {next(); return T_PLUSPLUS;  }}
+  6677                                  
+  6678                                  .getlex335:
+  6679 00002E02 8A46FE                   mov al, [bp-2]
+  6680 00002E05 3C2B                     cmp al, 43
+  6681 00002E07 0F851200                 jne .getlex337
+  6682 00002E0B A0[2300]                 mov al, [thechar]
+  6683 00002E0E 3C2B                     cmp al, 43
+  6684 00002E10 0F850900                 jne .getlex338
+  6685 00002E14 E8D9D9                   call next
+  6686 00002E17 B8C304                   mov ax, 1219
+  6687 00002E1A E91204                   jmp .retngetlex
+  6688                                  .getlex338:
   6689                                  
-  6690                                  ;-769   else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
+  6690                                  ;-784   if (c=='-') {if(thechar=='-') {next(); return T_MINUSMINUS;}}
   6691                                  
-  6692 00002EFC E9AF00                   jmp .cmpneg340
-  6693                                  .cmpneg339:
-  6694 00002EFF A1[2400]                 mov ax, [iscmp]
-  6695 00002F02 3D3803                   cmp ax, 824
-  6696 00002F05 0F852100                 jne .cmpneg341
-  6697 00002F09 8B4604                   mov ax, [bp+4]
-  6698 00002F0C 08C0                     or  al, al
-  6699 00002F0E 0F840C00                 je .cmpneg342
-  6700 00002F12 68[C22F]                 push cmpneg_2
-  6701 00002F15 E80ED6                   call prs
-  6702 00002F18 83C402                   add  sp, 2
+  6692                                  .getlex337:
+  6693 00002E1D 8A46FE                   mov al, [bp-2]
+  6694 00002E20 3C2D                     cmp al, 45
+  6695 00002E22 0F851200                 jne .getlex339
+  6696 00002E26 A0[2300]                 mov al, [thechar]
+  6697 00002E29 3C2D                     cmp al, 45
+  6698 00002E2B 0F850900                 jne .getlex340
+  6699 00002E2F E8BED9                   call next
+  6700 00002E32 B8C904                   mov ax, 1225
+  6701 00002E35 E9F703                   jmp .retngetlex
+  6702                                  .getlex340:
   6703                                  
-  6704                                  ;-770                            else prs("\n ja  .");//ZF=0 CF=0
+  6704                                  ;-785   if (c=='+') {if(thechar=='=') {next(); return T_PLUSASS;   }}
   6705                                  
-  6706 00002F1B E90900                   jmp .cmpneg343
-  6707                                  .cmpneg342:
-  6708 00002F1E 68[CB2F]                 push cmpneg_3
-  6709 00002F21 E802D6                   call prs
-  6710 00002F24 83C402                   add  sp, 2
-  6711                                  
-  6712                                  ;-771   else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
-  6713                                  
-  6714                                  .cmpneg343:
-  6715 00002F27 E98400                   jmp .cmpneg344
-  6716                                  .cmpneg341:
-  6717 00002F2A A1[2400]                 mov ax, [iscmp]
-  6718 00002F2D 3D2B03                   cmp ax, 811
-  6719 00002F30 0F854500                 jne .cmpneg345
-  6720 00002F34 8B4604                   mov ax, [bp+4]
-  6721 00002F37 08C0                     or  al, al
-  6722 00002F39 0F841E00                 je .cmpneg346
-  6723 00002F3D 68[D42F]                 push cmpneg_4
-  6724 00002F40 E8E3D5                   call prs
-  6725 00002F43 83C402                   add  sp, 2
-  6726 00002F46 FF7604                   push word [bp+4]
-  6727 00002F49 E82FD7                   call prunsign1
-  6728 00002F4C 83C402                   add  sp, 2
-  6729                                  
-  6730                                  ;-772                                prs("\n jl  .");}//          SF!=OF
+  6706                                  .getlex339:
+  6707 00002E38 8A46FE                   mov al, [bp-2]
+  6708 00002E3B 3C2B                     cmp al, 43
+  6709 00002E3D 0F851200                 jne .getlex341
+  6710 00002E41 A0[2300]                 mov al, [thechar]
+  6711 00002E44 3C3D                     cmp al, 61
+  6712 00002E46 0F850900                 jne .getlex342
+  6713 00002E4A E8A3D9                   call next
+  6714 00002E4D B8CE04                   mov ax, 1230
+  6715 00002E50 E9DC03                   jmp .retngetlex
+  6716                                  .getlex342:
+  6717                                  
+  6718                                  ;-786   if (c=='-') {if(thechar=='=') {next(); return T_MINUSASS;  }}
+  6719                                  
+  6720                                  .getlex341:
+  6721 00002E53 8A46FE                   mov al, [bp-2]
+  6722 00002E56 3C2D                     cmp al, 45
+  6723 00002E58 0F851200                 jne .getlex343
+  6724 00002E5C A0[2300]                 mov al, [thechar]
+  6725 00002E5F 3C3D                     cmp al, 61
+  6726 00002E61 0F850900                 jne .getlex344
+  6727 00002E65 E888D9                   call next
+  6728 00002E68 B8CF04                   mov ax, 1231
+  6729 00002E6B E9C103                   jmp .retngetlex
+  6730                                  .getlex344:
   6731                                  
-  6732 00002F4F 68[E22F]                 push cmpneg_5
-  6733 00002F52 E8D1D5                   call prs
-  6734 00002F55 83C402                   add  sp, 2
-  6735                                  
-  6736                                  ;-773                            else{prs(" ;unsigned : "); prunsign1(ids);
-  6737                                  
-  6738 00002F58 E91B00                   jmp .cmpneg347
-  6739                                  .cmpneg346:
-  6740 00002F5B 68[EB2F]                 push cmpneg_6
-  6741 00002F5E E8C5D5                   call prs
-  6742 00002F61 83C402                   add  sp, 2
-  6743 00002F64 FF7604                   push word [bp+4]
-  6744 00002F67 E811D7                   call prunsign1
-  6745 00002F6A 83C402                   add  sp, 2
-  6746                                  
-  6747                                  ;-774                                prs("\n jb  .");}//jb=jc=CF=1
-  6748                                  
-  6749 00002F6D 68[F92F]                 push cmpneg_7
-  6750 00002F70 E8B3D5                   call prs
-  6751 00002F73 83C402                   add  sp, 2
-  6752                                  
-  6753                                  ;-775   else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
-  6754                                  
-  6755                                  .cmpneg347:
-  6756 00002F76 E93500                   jmp .cmpneg348
-  6757                                  .cmpneg345:
-  6758 00002F79 A1[2400]                 mov ax, [iscmp]
-  6759 00002F7C 83F83C                   cmp ax, 60
-  6760 00002F7F 0F850C00                 jne .cmpneg349
-  6761 00002F83 68[0230]                 push cmpneg_8
-  6762 00002F86 E89DD5                   call prs
-  6763 00002F89 83C402                   add  sp, 2
-  6764                                  
-  6765                                  ;-776   else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
-  6766                                  
-  6767 00002F8C E91F00                   jmp .cmpneg350
-  6768                                  .cmpneg349:
-  6769 00002F8F A1[2400]                 mov ax, [iscmp]
-  6770 00002F92 83F83E                   cmp ax, 62
-  6771 00002F95 0F850C00                 jne .cmpneg351
-  6772 00002F99 68[0B30]                 push cmpneg_9
-  6773 00002F9C E887D5                   call prs
-  6774 00002F9F 83C402                   add  sp, 2
+  6732                                  ;-787   if (c=='&') {if(thechar=='=') {next(); return T_ANDASS;    }}
+  6733                                  
+  6734                                  .getlex343:
+  6735 00002E6E 8A46FE                   mov al, [bp-2]
+  6736 00002E71 3C26                     cmp al, 38
+  6737 00002E73 0F851200                 jne .getlex345
+  6738 00002E77 A0[2300]                 mov al, [thechar]
+  6739 00002E7A 3C3D                     cmp al, 61
+  6740 00002E7C 0F850900                 jne .getlex346
+  6741 00002E80 E86DD9                   call next
+  6742 00002E83 B8D204                   mov ax, 1234
+  6743 00002E86 E9A603                   jmp .retngetlex
+  6744                                  .getlex346:
+  6745                                  
+  6746                                  ;-788   if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}
+  6747                                  
+  6748                                  .getlex345:
+  6749 00002E89 8A46FE                   mov al, [bp-2]
+  6750 00002E8C 3C7C                     cmp al, 124
+  6751 00002E8E 0F851200                 jne .getlex347
+  6752 00002E92 A0[2300]                 mov al, [thechar]
+  6753 00002E95 3C3D                     cmp al, 61
+  6754 00002E97 0F850900                 jne .getlex348
+  6755 00002E9B E852D9                   call next
+  6756 00002E9E B8D304                   mov ax, 1235
+  6757 00002EA1 E98B03                   jmp .retngetlex
+  6758                                  .getlex348:
+  6759                                  
+  6760                                  ;-789   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
+  6761                                  
+  6762                                  .getlex347:
+  6763 00002EA4 8A46FE                   mov al, [bp-2]
+  6764 00002EA7 3C2A                     cmp al, 42
+  6765 00002EA9 0F851200                 jne .getlex349
+  6766 00002EAD A0[2300]                 mov al, [thechar]
+  6767 00002EB0 3C3D                     cmp al, 61
+  6768 00002EB2 0F850900                 jne .getlex350
+  6769 00002EB6 E837D9                   call next
+  6770 00002EB9 B8D004                   mov ax, 1232
+  6771 00002EBC E97003                   jmp .retngetlex
+  6772                                  .getlex350:
+  6773                                  
+  6774                                  ;-790   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
   6775                                  
-  6776                                  ;-777   else error1("internal error compare unknown in CMPNEG()");  }
-  6777                                  
-  6778 00002FA2 E90900                   jmp .cmpneg352
-  6779                                  .cmpneg351:
-  6780 00002FA5 68[1430]                 push cmpneg_10
-  6781 00002FA8 E8C00C                   call error1
-  6782 00002FAB 83C402                   add  sp, 2
-  6783                                  .cmpneg352:
-  6784                                  .cmpneg350:
-  6785                                  .cmpneg348:
-  6786                                  .cmpneg344:
-  6787                                  .cmpneg340:
-  6788                                  .cmpneg338:
+  6776                                  .getlex349:
+  6777 00002EBF 8A46FE                   mov al, [bp-2]
+  6778 00002EC2 3C2F                     cmp al, 47
+  6779 00002EC4 0F851200                 jne .getlex351
+  6780 00002EC8 A0[2300]                 mov al, [thechar]
+  6781 00002ECB 3C3D                     cmp al, 61
+  6782 00002ECD 0F850900                 jne .getlex352
+  6783 00002ED1 E81CD9                   call next
+  6784 00002ED4 B8D104                   mov ax, 1233
+  6785 00002ED7 E95503                   jmp .retngetlex
+  6786                                  .getlex352:
+  6787                                  
+  6788                                  ;-791   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
   6789                                  
-  6790                                  ;-778 
-  6791                                  
-  6792                                  
-  6793                                  ;-779 int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
-  6794 00002FAE C9                       LEAVE
-  6795 00002FAF C3                       ret
-  6796 00002FB0 5C6E206A6E65202E00      cmpneg_0 db "\n jne .",0
-  6797 00002FB9 5C6E206A6520202E00      cmpneg_1 db "\n je  .",0
-  6798 00002FC2 5C6E206A6720202E00      cmpneg_2 db "\n jg  .",0
-  6799 00002FCB 5C6E206A6120202E00      cmpneg_3 db "\n ja  .",0
-  6800 00002FD4 203B756E7369676E65-     cmpneg_4 db " ;unsigned : ",0
-  6801 00002FDD 64203A2000         
-  6802 00002FE2 5C6E206A6C20202E00      cmpneg_5 db "\n jl  .",0
-  6803 00002FEB 203B756E7369676E65-     cmpneg_6 db " ;unsigned : ",0
-  6804 00002FF4 64203A2000         
-  6805 00002FF9 5C6E206A6220202E00      cmpneg_7 db "\n jb  .",0
-  6806 00003002 5C6E206A6765202E00      cmpneg_8 db "\n jge .",0
-  6807 0000300B 5C6E206A6C65202E00      cmpneg_9 db "\n jle .",0
-  6808 00003014 696E7465726E616C20-     cmpneg_10 db "internal error compare unknown in CMPNEG()",0
-  6809 0000301D 6572726F7220636F6D-
-  6810 00003026 7061726520756E6B6E-
-  6811 0000302F 6F776E20696E20434D-
-  6812 00003038 504E4547282900     
-  6813                                  ENDP
-  6814                                  
-  6815                                  prlabel: PROC;
-  6816 0000303F C8000000                 ENTER  0,0
-  6817 00003043 68[6A30]                 push prlabel_0
-  6818 00003046 E8DDD4                   call prs
-  6819 00003049 83C402                   add  sp, 2
-  6820 0000304C 8D063B6A                 lea  ax, [fname]
-  6821 00003050 50                       push ax
-  6822 00003051 E8D2D4                   call prs
-  6823 00003054 83C402                   add  sp, 2
-  6824 00003057 FF7604                   push word [bp+4]
-  6825 0000305A E81ED6                   call prunsign1
-  6826 0000305D 83C402                   add  sp, 2
-  6827 00003060 6A3A                     push 58
-  6828 00003062 E85AD4                   call prc
-  6829 00003065 83C402                   add  sp, 2
-  6830                                  
-  6831                                  ;-780 int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
-  6832 00003068 C9                       LEAVE
-  6833 00003069 C3                       ret
-  6834 0000306A 5C6E2E00                prlabel_0 db "\n.",0
-  6835                                  ENDP
-  6836                                  
-  6837                                  prjump: PROC;
-  6838 0000306E C8000000                 ENTER  0,0
-  6839 00003072 68[9130]                 push prjump_0
-  6840 00003075 E8AED4                   call prs
-  6841 00003078 83C402                   add  sp, 2
-  6842 0000307B 8D063B6A                 lea  ax, [fname]
-  6843 0000307F 50                       push ax
-  6844 00003080 E8A3D4                   call prs
-  6845 00003083 83C402                   add  sp, 2
-  6846 00003086 FF7604                   push word [bp+4]
-  6847 00003089 E8EFD5                   call prunsign1
-  6848 0000308C 83C402                   add  sp, 2
-  6849                                  
-  6850                                  ;-781 int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
-  6851 0000308F C9                       LEAVE
-  6852 00003090 C3                       ret
-  6853 00003091 5C6E206A6D70202E00      prjump_0 db "\n jmp .",0
-  6854                                  ENDP
-  6855                                  
-  6856                                  doif: PROC;
-  6857 0000309A C8040000                 ENTER  4,0
-  6858 0000309E E8A4E2                   call pexpr
-  6859 000030A1 FF06[2A00]               inc  word[nlabel]
-  6860 000030A5 A1[2A00]                 mov ax, [nlabel]
-  6861 000030A8 8946FE                   mov [bp-2], ax
-  6862                                  
-  6863                                  ;-782   pint1(jdest); stmt();
-  6864                                  
-  6865 000030AB FF76FE                   push word [bp-2]
-  6866 000030AE E86CD5                   call pint1
-  6867 000030B1 83C402                   add  sp, 2
-  6868 000030B4 E8F307                   call stmt
+  6790                                  .getlex351:
+  6791 00002EDA 8A46FE                   mov al, byte [bp-2]
+  6792 00002EDD B400                     mov ah, 0
+  6793 00002EDF 50                       push ax
+  6794 00002EE0 68[3132]                 push getlex_0
+  6795 00002EE3 E830D4                   call instr1
+  6796 00002EE6 83C404                   add  sp, 4
+  6797 00002EE9 08C0                     or  al, al
+  6798 00002EEB 0F840600                 je .getlex353
+  6799 00002EEF 8A46FE                   mov al, [bp-2]
+  6800 00002EF2 E93A03                   jmp .retngetlex
+  6801                                  
+  6802                                  ;-792   if (c == '/') { if (thechar == '/') {
+  6803                                  
+  6804                                  .getlex353:
+  6805 00002EF5 8A46FE                   mov al, [bp-2]
+  6806 00002EF8 3C2F                     cmp al, 47
+  6807 00002EFA 0F852900                 jne .getlex354
+  6808 00002EFE A0[2300]                 mov al, [thechar]
+  6809 00002F01 3C2F                     cmp al, 47
+  6810 00002F03 0F852000                 jne .getlex355
+  6811                                  
+  6812                                  ;-793       do c=next(); while(ifEOL(c)==0) return getlex(); } }
+  6813                                  
+  6814                                  .getlex356:
+  6815 00002F07 E8E6D8                   call next
+  6816 00002F0A 8846FE                   mov [bp-2], al
+  6817 00002F0D 8A46FE                   mov al, byte [bp-2]
+  6818 00002F10 B400                     mov ah, 0
+  6819 00002F12 50                       push ax
+  6820 00002F13 E88CD7                   call ifEOL
+  6821 00002F16 83C402                   add  sp, 2
+  6822 00002F19 3C00                     cmp al, 0
+  6823 00002F1B 0F850200                 jne .getlex357
+  6824 00002F1F EBE6                     jmp .getlex356
+  6825                                  .getlex357:
+  6826 00002F21 E818FE                   call getlex
+  6827 00002F24 E90803                   jmp .retngetlex
+  6828                                  .getlex355:
+  6829                                  
+  6830                                  ;-794   if (c == '/') { if (thechar == '*') {
+  6831                                  
+  6832                                  .getlex354:
+  6833 00002F27 8A46FE                   mov al, [bp-2]
+  6834 00002F2A 3C2F                     cmp al, 47
+  6835 00002F2C 0F853A00                 jne .getlex358
+  6836 00002F30 A0[2300]                 mov al, [thechar]
+  6837 00002F33 3C2A                     cmp al, 42
+  6838 00002F35 0F852B00                 jne .getlex359
+  6839                                  
+  6840                                  ;-795       g2: c=next(); if (c != '*') goto g2; if (thechar != '/') goto g2;
+  6841                                  
+  6842                                  .g2:
+  6843 00002F39 E8B4D8                   call next
+  6844 00002F3C 8846FE                   mov [bp-2], al
+  6845 00002F3F 8A46FE                   mov al, [bp-2]
+  6846 00002F42 3C2A                     cmp al, 42
+  6847 00002F44 0F840200                 je  .getlex360
+  6848 00002F48 EBEF                     jmp .g2
+  6849                                  .getlex360:
+  6850 00002F4A A0[2300]                 mov al, [thechar]
+  6851 00002F4D 3C2F                     cmp al, 47
+  6852 00002F4F 0F840200                 je  .getlex361
+  6853 00002F53 EBE4                     jmp .g2
+  6854                                  
+  6855                                  ;-796       c=next(); return getlex(); } else  return '/'; }
+  6856                                  
+  6857                                  .getlex361:
+  6858 00002F55 E898D8                   call next
+  6859 00002F58 8846FE                   mov [bp-2], al
+  6860 00002F5B E8DEFD                   call getlex
+  6861 00002F5E E9CE02                   jmp .retngetlex
+  6862 00002F61 E90600                   jmp .getlex362
+  6863                                  .getlex359:
+  6864 00002F64 B82F00                   mov ax, 47
+  6865 00002F67 E9C502                   jmp .retngetlex
+  6866                                  .getlex362:
+  6867                                  
+  6868                                  ;-797   if (c == '"') {getstring(c); return T_STRING;}
   6869                                  
-  6870                                  ;-783   if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
-  6871                                  
-  6872 000030B7 680202                   push 514
-  6873 000030BA E837D3                   call istoken
-  6874 000030BD 83C402                   add  sp, 2
-  6875 000030C0 08C0                     or  al, al
-  6876 000030C2 0F842B00                 je .doif353
-  6877 000030C6 FF06[2A00]               inc  word[nlabel]
-  6878 000030CA A1[2A00]                 mov ax, [nlabel]
-  6879 000030CD 8946FC                   mov [bp-4], ax
-  6880                                  
-  6881                                  ;-784     prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
-  6882                                  
-  6883 000030D0 FF76FC                   push word [bp-4]
-  6884 000030D3 E898FF                   call prjump
-  6885 000030D6 83C402                   add  sp, 2
-  6886 000030D9 FF76FE                   push word [bp-2]
-  6887 000030DC E860FF                   call prlabel
-  6888 000030DF 83C402                   add  sp, 2
-  6889 000030E2 E8C507                   call stmt
-  6890 000030E5 FF76FC                   push word [bp-4]
-  6891 000030E8 E854FF                   call prlabel
-  6892 000030EB 83C402                   add  sp, 2
-  6893                                  
-  6894                                  ;-785   else prlabel(jdest); }
-  6895                                  
-  6896 000030EE E90900                   jmp .doif354
-  6897                                  .doif353:
-  6898 000030F1 FF76FE                   push word [bp-2]
-  6899 000030F4 E848FF                   call prlabel
-  6900 000030F7 83C402                   add  sp, 2
-  6901                                  .doif354:
-  6902                                  
-  6903                                  ;-786 
-  6904                                  
-  6905                                  
-  6906                                  ;-787 int dodo() {int jdest; int jtemp;
-  6907 000030FA C9                       LEAVE
-  6908 000030FB C3                       ret
-  6909                                  ENDP
+  6870                                  .getlex358:
+  6871 00002F6A 8A46FE                   mov al, [bp-2]
+  6872 00002F6D 3C22                     cmp al, 34
+  6873 00002F6F 0F851200                 jne .getlex363
+  6874 00002F73 8A46FE                   mov al, byte [bp-2]
+  6875 00002F76 B400                     mov ah, 0
+  6876 00002F78 50                       push ax
+  6877 00002F79 E88F06                   call getstring
+  6878 00002F7C 83C402                   add  sp, 2
+  6879 00002F7F B80201                   mov ax, 258
+  6880 00002F82 E9AA02                   jmp .retngetlex
+  6881                                  
+  6882                                  ;-798   if (digit(c)) { getdigit(c); return T_CONST; }
+  6883                                  
+  6884                                  .getlex363:
+  6885 00002F85 8A46FE                   mov al, byte [bp-2]
+  6886 00002F88 B400                     mov ah, 0
+  6887 00002F8A 50                       push ax
+  6888 00002F8B E810D2                   call digit
+  6889 00002F8E 83C402                   add  sp, 2
+  6890 00002F91 08C0                     or  al, al
+  6891 00002F93 0F841200                 je .getlex364
+  6892 00002F97 8A46FE                   mov al, byte [bp-2]
+  6893 00002F9A B400                     mov ah, 0
+  6894 00002F9C 50                       push ax
+  6895 00002F9D E87C03                   call getdigit
+  6896 00002FA0 83C402                   add  sp, 2
+  6897 00002FA3 B80101                   mov ax, 257
+  6898 00002FA6 E98602                   jmp .retngetlex
+  6899                                  
+  6900                                  ;-799   if (c==39) { lexval=next();
+  6901                                  
+  6902                                  .getlex364:
+  6903 00002FA9 8A46FE                   mov al, [bp-2]
+  6904 00002FAC 3C27                     cmp al, 39
+  6905 00002FAE 0F854F00                 jne .getlex365
+  6906 00002FB2 E83BD8                   call next
+  6907 00002FB5 A3[2C00]                 mov word [lexval], ax
+  6908                                  
+  6909                                  ;-800     if (lexval==92) {lexval=next();
   6910                                  
-  6911                                  dodo: PROC
-  6912                                  
-  6913                                  ;-788   nlabel++; jdest=nlabel; prlabel(jdest); stmt();
-  6914                                  ;
-  6915 000030FC C8040000                 ENTER  4,0
-  6916 00003100 FF06[2A00]               inc  word[nlabel]
-  6917 00003104 A1[2A00]                 mov ax, [nlabel]
-  6918 00003107 8946FE                   mov [bp-2], ax
-  6919 0000310A FF76FE                   push word [bp-2]
-  6920 0000310D E82FFF                   call prlabel
-  6921 00003110 83C402                   add  sp, 2
-  6922 00003113 E89407                   call stmt
-  6923                                  
-  6924                                  ;-789   expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
-  6925                                  
-  6926 00003116 680302                   push 515
-  6927 00003119 E8FAD2                   call expect
-  6928 0000311C 83C402                   add  sp, 2
-  6929 0000311F E823E2                   call pexpr
-  6930 00003122 FF06[2A00]               inc  word[nlabel]
-  6931 00003126 A1[2A00]                 mov ax, [nlabel]
-  6932 00003129 8946FC                   mov [bp-4], ax
-  6933 0000312C FF76FC                   push word [bp-4]
-  6934 0000312F E8EBD4                   call pint1
-  6935 00003132 83C402                   add  sp, 2
-  6936                                  
-  6937                                  ;-790   prjump(jdest); prlabel(jtemp); }
-  6938                                  
-  6939 00003135 FF76FE                   push word [bp-2]
-  6940 00003138 E833FF                   call prjump
-  6941 0000313B 83C402                   add  sp, 2
-  6942 0000313E FF76FC                   push word [bp-4]
-  6943 00003141 E8FBFE                   call prlabel
-  6944 00003144 83C402                   add  sp, 2
-  6945                                  
-  6946                                  ;-791 int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
-  6947 00003147 C9                       LEAVE
-  6948 00003148 C3                       ret
-  6949                                  ENDP
-  6950                                  
-  6951                                  dowhile: PROC;
-  6952 00003149 C8040000                 ENTER  4,0
-  6953 0000314D FF06[2A00]               inc  word[nlabel]
-  6954 00003151 A1[2A00]                 mov ax, [nlabel]
-  6955 00003154 8946FE                   mov [bp-2], ax
-  6956                                  
-  6957                                  ;-792   prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
-  6958                                  
-  6959 00003157 FF76FE                   push word [bp-2]
-  6960 0000315A E8E2FE                   call prlabel
-  6961 0000315D 83C402                   add  sp, 2
-  6962 00003160 E8E2E1                   call pexpr
-  6963 00003163 FF06[2A00]               inc  word[nlabel]
-  6964 00003167 A1[2A00]                 mov ax, [nlabel]
-  6965 0000316A 8946FC                   mov [bp-4], ax
-  6966 0000316D FF76FC                   push word [bp-4]
-  6967 00003170 E8AAD4                   call pint1
-  6968 00003173 83C402                   add  sp, 2
-  6969                                  
-  6970                                  ;-793   stmt(); prjump(jdest); prlabel(tst); }
-  6971                                  
-  6972 00003176 E83107                   call stmt
-  6973 00003179 FF76FE                   push word [bp-2]
-  6974 0000317C E8EFFE                   call prjump
-  6975 0000317F 83C402                   add  sp, 2
-  6976 00003182 FF76FC                   push word [bp-4]
-  6977 00003185 E8B7FE                   call prlabel
-  6978 00003188 83C402                   add  sp, 2
-  6979                                  
-  6980                                  ;-794 int isrelational() {
-  6981 0000318B C9                       LEAVE
-  6982 0000318C C3                       ret
-  6983                                  ENDP
-  6984                                  
-  6985                                  isrelational: PROC
-  6986                                  
-  6987                                  ;-795   if (token==T_EQ) goto w; if (token==T_NE) goto w;
-  6988                                  
-  6989 0000318D A1[1E00]                 mov ax, [token]
-  6990 00003190 3D2603                   cmp ax, 806
-  6991 00003193 0F850300                 jne .isrelational355
-  6992 00003197 E94700                   jmp .w
-  6993                                  .isrelational355:
-  6994 0000319A A1[1E00]                 mov ax, [token]
-  6995 0000319D 3D2703                   cmp ax, 807
-  6996 000031A0 0F850300                 jne .isrelational356
-  6997 000031A4 E93A00                   jmp .w
-  6998                                  
-  6999                                  ;-796   if (token==T_LE) goto w; if (token==T_GE) goto w;
-  7000                                  
-  7001                                  .isrelational356:
-  7002 000031A7 A1[1E00]                 mov ax, [token]
-  7003 000031AA 3D3803                   cmp ax, 824
-  7004 000031AD 0F850300                 jne .isrelational357
-  7005 000031B1 E92D00                   jmp .w
-  7006                                  .isrelational357:
-  7007 000031B4 A1[1E00]                 mov ax, [token]
-  7008 000031B7 3D2B03                   cmp ax, 811
-  7009 000031BA 0F850300                 jne .isrelational358
-  7010 000031BE E92000                   jmp .w
-  7011                                  
-  7012                                  ;-797   if (token=='<' ) goto w; if (token=='>' ) goto w;
-  7013                                  
-  7014                                  .isrelational358:
-  7015 000031C1 A1[1E00]                 mov ax, [token]
-  7016 000031C4 83F83C                   cmp ax, 60
-  7017 000031C7 0F850300                 jne .isrelational359
-  7018 000031CB E91300                   jmp .w
-  7019                                  .isrelational359:
-  7020 000031CE A1[1E00]                 mov ax, [token]
-  7021 000031D1 83F83E                   cmp ax, 62
-  7022 000031D4 0F850300                 jne .isrelational360
-  7023 000031D8 E90600                   jmp .w
-  7024                                  
-  7025                                  ;-798   return 0;  w: iscmp=token; token=getlex(); return 1;}
-  7026                                  
-  7027                                  .isrelational360:
-  7028 000031DB B80000                   mov ax, 0
-  7029 000031DE E91200                   jmp .retnisrelational
-  7030                                  .w:
-  7031 000031E1 A1[1E00]                 mov ax, [token]
-  7032 000031E4 A3[2400]                 mov word [iscmp], ax
-  7033 000031E7 E80A00                   call getlex
-  7034 000031EA A3[1E00]                 mov word [token], ax
-  7035 000031ED B80100                   mov ax, 1
-  7036 000031F0 E90000                   jmp .retnisrelational
-  7037                                  
-  7038                                  ;-799 
-  7039                                  
-  7040                                  
-  7041                                  ;-800 char symboltemp[80];
-  7042                                  
-  7043                                   .retnisrelational:
-  7044 000031F3 C3                       ret
-  7045                                  ENDP
-  7046                                  section .bss
-  7047                                  absolute 55917
-  7048 0000DA6D <res 00000050>          symboltemp resb 80
-  7049                                  section .text
-  7050                                  
-  7051                                  ;-801 int getlex() { char c; char *p;
-  7052                                  
-  7053                                  
-  7054                                  getlex: PROC
-  7055                                  
-  7056                                  ;-802 g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
-  7057                                  ;
-  7058 000031F4 C8040000                 ENTER  4,0
-  7059                                  .g1:
-  7060 000031F8 E8DBD1                   call next
-  7061 000031FB 8846FE                   mov [bp-2], al
-  7062 000031FE 8A46FE                   mov al, [bp-2]
-  7063 00003201 3C00                     cmp al, 0
-  7064 00003203 0F850600                 jne .getlex361
-  7065 00003207 B80000                   mov ax, 0
-  7066 0000320A E9DA04                   jmp .retngetlex
-  7067                                  .getlex361:
-  7068 0000320D 8A46FE                   mov al, [bp-2]
-  7069 00003210 3C20                     cmp al, 32
-  7070 00003212 0F8F0200                 jg  .getlex362
-  7071 00003216 EBE0                     jmp .g1
+  6911 00002FB8 A1[2C00]                 mov ax, [lexval]
+  6912 00002FBB 83F85C                   cmp ax, 92
+  6913 00002FBE 0F853600                 jne .getlex366
+  6914 00002FC2 E82BD8                   call next
+  6915 00002FC5 A3[2C00]                 mov word [lexval], ax
+  6916                                  
+  6917                                  ;-801       if (lexval=='n') lexval=10; if (lexval=='t') lexval= 9;
+  6918                                  
+  6919 00002FC8 A1[2C00]                 mov ax, [lexval]
+  6920 00002FCB 83F86E                   cmp ax, 110
+  6921 00002FCE 0F850600                 jne .getlex367
+  6922 00002FD2 B80A00                   mov ax, 10
+  6923 00002FD5 A3[2C00]                 mov word [lexval], ax
+  6924                                  .getlex367:
+  6925 00002FD8 A1[2C00]                 mov ax, [lexval]
+  6926 00002FDB 83F874                   cmp ax, 116
+  6927 00002FDE 0F850600                 jne .getlex368
+  6928 00002FE2 B80900                   mov ax, 9
+  6929 00002FE5 A3[2C00]                 mov word [lexval], ax
+  6930                                  
+  6931                                  ;-802       if (lexval=='0') lexval= 0; } next(); return T_CONST; }
+  6932                                  
+  6933                                  .getlex368:
+  6934 00002FE8 A1[2C00]                 mov ax, [lexval]
+  6935 00002FEB 83F830                   cmp ax, 48
+  6936 00002FEE 0F850600                 jne .getlex369
+  6937 00002FF2 B80000                   mov ax, 0
+  6938 00002FF5 A3[2C00]                 mov word [lexval], ax
+  6939                                  .getlex369:
+  6940                                  .getlex366:
+  6941 00002FF8 E8F5D7                   call next
+  6942 00002FFB B80101                   mov ax, 257
+  6943 00002FFE E92E02                   jmp .retngetlex
+  6944                                  
+  6945                                  ;-803   if (alnum(c)) {
+  6946                                  
+  6947                                  .getlex365:
+  6948 00003001 8A46FE                   mov al, byte [bp-2]
+  6949 00003004 B400                     mov ah, 0
+  6950 00003006 50                       push ax
+  6951 00003007 E8BED1                   call alnum
+  6952 0000300A 83C402                   add  sp, 2
+  6953 0000300D 08C0                     or  al, al
+  6954 0000300F 0F841302                 je .getlex370
+  6955                                  
+  6956                                  ;-804     strcpy(symboltemp, symbol); p=&symbol;  *p=c;  p++;
+  6957                                  
+  6958 00003013 8D06BB69                 lea  ax, [symbol]
+  6959 00003017 50                       push ax
+  6960 00003018 8D065EDA                 lea  ax, [symboltemp]
+  6961 0000301C 50                       push ax
+  6962 0000301D E80CD2                   call strcpy
+  6963 00003020 83C404                   add  sp, 4
+  6964 00003023 B8BB69                   mov ax, symbol
+  6965 00003026 8946FC                   mov [bp-4], ax
+  6966 00003029 8A46FE                   mov al, [bp-2]
+  6967 0000302C 8B5EFC                   mov  bx, [bp-4]
+  6968 0000302F 8807                     mov  [bx], al
+  6969 00003031 FF46FC                   inc  word[bp-4]
+  6970                                  
+  6971                                  ;-805     while(alnum(thechar)) {c=next(); *p=c;  p++; }
+  6972                                  
+  6973                                  .getlex371:
+  6974 00003034 A0[2300]                 mov al, byte [thechar]
+  6975 00003037 B400                     mov ah, 0
+  6976 00003039 50                       push ax
+  6977 0000303A E88BD1                   call alnum
+  6978 0000303D 83C402                   add  sp, 2
+  6979 00003040 08C0                     or  al, al
+  6980 00003042 0F841300                 je .getlex372
+  6981 00003046 E8A7D7                   call next
+  6982 00003049 8846FE                   mov [bp-2], al
+  6983 0000304C 8A46FE                   mov al, [bp-2]
+  6984 0000304F 8B5EFC                   mov  bx, [bp-4]
+  6985 00003052 8807                     mov  [bx], al
+  6986 00003054 FF46FC                   inc  word[bp-4]
+  6987                                  
+  6988                                  ;-806       *p=0;
+  6989                                  
+  6990 00003057 EBDB                     jmp .getlex371
+  6991                                  .getlex372:
+  6992 00003059 B80000                   mov ax, 0
+  6993 0000305C 8B5EFC                   mov  bx, [bp-4]
+  6994 0000305F 8807                     mov  [bx], al
+  6995                                  
+  6996                                  ;-807     if (eqstr(symbol,"signed"  )) return T_SIGNED;
+  6997                                  
+  6998 00003061 68[4732]                 push getlex_1
+  6999 00003064 8D06BB69                 lea  ax, [symbol]
+  7000 00003068 50                       push ax
+  7001 00003069 E8F6D1                   call eqstr
+  7002 0000306C 83C404                   add  sp, 4
+  7003 0000306F 08C0                     or  al, al
+  7004 00003071 0F840600                 je .getlex373
+  7005 00003075 B81302                   mov ax, 531
+  7006 00003078 E9B401                   jmp .retngetlex
+  7007                                  
+  7008                                  ;-808     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
+  7009                                  
+  7010                                  .getlex373:
+  7011 0000307B 68[4E32]                 push getlex_2
+  7012 0000307E 8D06BB69                 lea  ax, [symbol]
+  7013 00003082 50                       push ax
+  7014 00003083 E8DCD1                   call eqstr
+  7015 00003086 83C404                   add  sp, 4
+  7016 00003089 08C0                     or  al, al
+  7017 0000308B 0F840600                 je .getlex374
+  7018 0000308F B81402                   mov ax, 532
+  7019 00003092 E99A01                   jmp .retngetlex
+  7020                                  
+  7021                                  ;-809     if (eqstr(symbol,"void"    )) return T_VOID;
+  7022                                  
+  7023                                  .getlex374:
+  7024 00003095 68[5732]                 push getlex_3
+  7025 00003098 8D06BB69                 lea  ax, [symbol]
+  7026 0000309C 50                       push ax
+  7027 0000309D E8C2D1                   call eqstr
+  7028 000030A0 83C404                   add  sp, 4
+  7029 000030A3 08C0                     or  al, al
+  7030 000030A5 0F840600                 je .getlex375
+  7031 000030A9 B81102                   mov ax, 529
+  7032 000030AC E98001                   jmp .retngetlex
+  7033                                  
+  7034                                  ;-810     if (eqstr(symbol,"int"     )) return T_INT;
+  7035                                  
+  7036                                  .getlex375:
+  7037 000030AF 68[5C32]                 push getlex_4
+  7038 000030B2 8D06BB69                 lea  ax, [symbol]
+  7039 000030B6 50                       push ax
+  7040 000030B7 E8A8D1                   call eqstr
+  7041 000030BA 83C404                   add  sp, 4
+  7042 000030BD 08C0                     or  al, al
+  7043 000030BF 0F840600                 je .getlex376
+  7044 000030C3 B80502                   mov ax, 517
+  7045 000030C6 E96601                   jmp .retngetlex
+  7046                                  
+  7047                                  ;-811     if (eqstr(symbol,"long"    )) return T_LONG;
+  7048                                  
+  7049                                  .getlex376:
+  7050 000030C9 68[6032]                 push getlex_5
+  7051 000030CC 8D06BB69                 lea  ax, [symbol]
+  7052 000030D0 50                       push ax
+  7053 000030D1 E88ED1                   call eqstr
+  7054 000030D4 83C404                   add  sp, 4
+  7055 000030D7 08C0                     or  al, al
+  7056 000030D9 0F840600                 je .getlex377
+  7057 000030DD B81502                   mov ax, 533
+  7058 000030E0 E94C01                   jmp .retngetlex
+  7059                                  
+  7060                                  ;-812     if (eqstr(symbol,"char"    )) return T_CHAR;
+  7061                                  
+  7062                                  .getlex377:
+  7063 000030E3 68[6532]                 push getlex_6
+  7064 000030E6 8D06BB69                 lea  ax, [symbol]
+  7065 000030EA 50                       push ax
+  7066 000030EB E874D1                   call eqstr
+  7067 000030EE 83C404                   add  sp, 4
+  7068 000030F1 08C0                     or  al, al
+  7069 000030F3 0F840600                 je .getlex378
+  7070 000030F7 B81202                   mov ax, 530
+  7071 000030FA E93201                   jmp .retngetlex
   7072                                  
-  7073                                  ;-803   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
+  7073                                  ;-813     if (eqstr(symbol,"asm"     )) return T_ASM;
   7074                                  
-  7075                                  .getlex362:
-  7076 00003218 8A46FE                   mov al, [bp-2]
-  7077 0000321B 3C3D                     cmp al, 61
-  7078 0000321D 0F851200                 jne .getlex363
-  7079 00003221 A0[2300]                 mov al, [thechar]
-  7080 00003224 3C3D                     cmp al, 61
-  7081 00003226 0F850900                 jne .getlex364
-  7082 0000322A E8A9D1                   call next
-  7083 0000322D B82603                   mov ax, 806
-  7084 00003230 E9B404                   jmp .retngetlex
-  7085                                  .getlex364:
-  7086                                  
-  7087                                  ;-804   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
-  7088                                  
-  7089                                  .getlex363:
-  7090 00003233 8A46FE                   mov al, [bp-2]
-  7091 00003236 3C21                     cmp al, 33
-  7092 00003238 0F851200                 jne .getlex365
-  7093 0000323C A0[2300]                 mov al, [thechar]
-  7094 0000323F 3C3D                     cmp al, 61
-  7095 00003241 0F850900                 jne .getlex366
-  7096 00003245 E88ED1                   call next
-  7097 00003248 B82703                   mov ax, 807
-  7098 0000324B E99904                   jmp .retngetlex
-  7099                                  .getlex366:
+  7075                                  .getlex378:
+  7076 000030FD 68[6A32]                 push getlex_7
+  7077 00003100 8D06BB69                 lea  ax, [symbol]
+  7078 00003104 50                       push ax
+  7079 00003105 E85AD1                   call eqstr
+  7080 00003108 83C404                   add  sp, 4
+  7081 0000310B 08C0                     or  al, al
+  7082 0000310D 0F840600                 je .getlex379
+  7083 00003111 B80602                   mov ax, 518
+  7084 00003114 E91801                   jmp .retngetlex
+  7085                                  
+  7086                                  ;-814     if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
+  7087                                  
+  7088                                  .getlex379:
+  7089 00003117 68[6E32]                 push getlex_8
+  7090 0000311A 8D06BB69                 lea  ax, [symbol]
+  7091 0000311E 50                       push ax
+  7092 0000311F E840D1                   call eqstr
+  7093 00003122 83C404                   add  sp, 4
+  7094 00003125 08C0                     or  al, al
+  7095 00003127 0F840600                 je .getlex380
+  7096 0000312B B80702                   mov ax, 519
+  7097 0000312E E9FE00                   jmp .retngetlex
+  7098                                  
+  7099                                  ;-815     if (eqstr(symbol,"__emit__")) return T_EMIT;
   7100                                  
-  7101                                  ;-805   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
-  7102                                  
-  7103                                  .getlex365:
-  7104 0000324E 8A46FE                   mov al, [bp-2]
-  7105 00003251 3C3C                     cmp al, 60
-  7106 00003253 0F851200                 jne .getlex367
-  7107 00003257 A0[2300]                 mov al, [thechar]
-  7108 0000325A 3C3D                     cmp al, 61
-  7109 0000325C 0F850900                 jne .getlex368
-  7110 00003260 E873D1                   call next
-  7111 00003263 B83803                   mov ax, 824
-  7112 00003266 E97E04                   jmp .retngetlex
-  7113                                  .getlex368:
-  7114                                  
-  7115                                  ;-806   if (c=='>') {if(thechar=='=') {next(); return T_GE; }}
-  7116                                  
-  7117                                  .getlex367:
-  7118 00003269 8A46FE                   mov al, [bp-2]
-  7119 0000326C 3C3E                     cmp al, 62
-  7120 0000326E 0F851200                 jne .getlex369
-  7121 00003272 A0[2300]                 mov al, [thechar]
-  7122 00003275 3C3D                     cmp al, 61
-  7123 00003277 0F850900                 jne .getlex370
-  7124 0000327B E858D1                   call next
-  7125 0000327E B82B03                   mov ax, 811
-  7126 00003281 E96304                   jmp .retngetlex
-  7127                                  .getlex370:
-  7128                                  
-  7129                                  ;-807   if (c=='<') {if(thechar=='<') {next(); return T_LESSLESS;  }}
-  7130                                  
-  7131                                  .getlex369:
-  7132 00003284 8A46FE                   mov al, [bp-2]
-  7133 00003287 3C3C                     cmp al, 60
-  7134 00003289 0F851200                 jne .getlex371
-  7135 0000328D A0[2300]                 mov al, [thechar]
-  7136 00003290 3C3C                     cmp al, 60
-  7137 00003292 0F850900                 jne .getlex372
-  7138 00003296 E83DD1                   call next
-  7139 00003299 B8D804                   mov ax, 1240
-  7140 0000329C E94804                   jmp .retngetlex
-  7141                                  .getlex372:
-  7142                                  
-  7143                                  ;-808   if (c=='>') {if(thechar=='>') {next(); return T_GREATGREAT;}}
-  7144                                  
-  7145                                  .getlex371:
-  7146 0000329F 8A46FE                   mov al, [bp-2]
-  7147 000032A2 3C3E                     cmp al, 62
-  7148 000032A4 0F851200                 jne .getlex373
-  7149 000032A8 A0[2300]                 mov al, [thechar]
-  7150 000032AB 3C3E                     cmp al, 62
-  7151 000032AD 0F850900                 jne .getlex374
-  7152 000032B1 E822D1                   call next
-  7153 000032B4 B8D904                   mov ax, 1241
-  7154 000032B7 E92D04                   jmp .retngetlex
-  7155                                  .getlex374:
-  7156                                  
-  7157                                  ;-809   if (c=='+') {if(thechar=='+') {next(); return T_PLUSPLUS;  }}
-  7158                                  
-  7159                                  .getlex373:
-  7160 000032BA 8A46FE                   mov al, [bp-2]
-  7161 000032BD 3C2B                     cmp al, 43
-  7162 000032BF 0F851200                 jne .getlex375
-  7163 000032C3 A0[2300]                 mov al, [thechar]
-  7164 000032C6 3C2B                     cmp al, 43
-  7165 000032C8 0F850900                 jne .getlex376
-  7166 000032CC E807D1                   call next
-  7167 000032CF B8C304                   mov ax, 1219
-  7168 000032D2 E91204                   jmp .retngetlex
-  7169                                  .getlex376:
-  7170                                  
-  7171                                  ;-810   if (c=='-') {if(thechar=='-') {next(); return T_MINUSMINUS;}}
-  7172                                  
-  7173                                  .getlex375:
-  7174 000032D5 8A46FE                   mov al, [bp-2]
-  7175 000032D8 3C2D                     cmp al, 45
-  7176 000032DA 0F851200                 jne .getlex377
-  7177 000032DE A0[2300]                 mov al, [thechar]
-  7178 000032E1 3C2D                     cmp al, 45
-  7179 000032E3 0F850900                 jne .getlex378
-  7180 000032E7 E8ECD0                   call next
-  7181 000032EA B8C904                   mov ax, 1225
-  7182 000032ED E9F703                   jmp .retngetlex
-  7183                                  .getlex378:
-  7184                                  
-  7185                                  ;-811   if (c=='+') {if(thechar=='=') {next(); return T_PLUSASS;   }}
-  7186                                  
-  7187                                  .getlex377:
-  7188 000032F0 8A46FE                   mov al, [bp-2]
-  7189 000032F3 3C2B                     cmp al, 43
-  7190 000032F5 0F851200                 jne .getlex379
-  7191 000032F9 A0[2300]                 mov al, [thechar]
-  7192 000032FC 3C3D                     cmp al, 61
-  7193 000032FE 0F850900                 jne .getlex380
-  7194 00003302 E8D1D0                   call next
-  7195 00003305 B8CE04                   mov ax, 1230
-  7196 00003308 E9DC03                   jmp .retngetlex
-  7197                                  .getlex380:
-  7198                                  
-  7199                                  ;-812   if (c=='-') {if(thechar=='=') {next(); return T_MINUSASS;  }}
-  7200                                  
-  7201                                  .getlex379:
-  7202 0000330B 8A46FE                   mov al, [bp-2]
-  7203 0000330E 3C2D                     cmp al, 45
-  7204 00003310 0F851200                 jne .getlex381
-  7205 00003314 A0[2300]                 mov al, [thechar]
-  7206 00003317 3C3D                     cmp al, 61
-  7207 00003319 0F850900                 jne .getlex382
-  7208 0000331D E8B6D0                   call next
-  7209 00003320 B8CF04                   mov ax, 1231
-  7210 00003323 E9C103                   jmp .retngetlex
-  7211                                  .getlex382:
-  7212                                  
-  7213                                  ;-813   if (c=='&') {if(thechar=='=') {next(); return T_ANDASS;    }}
-  7214                                  
-  7215                                  .getlex381:
-  7216 00003326 8A46FE                   mov al, [bp-2]
-  7217 00003329 3C26                     cmp al, 38
-  7218 0000332B 0F851200                 jne .getlex383
-  7219 0000332F A0[2300]                 mov al, [thechar]
-  7220 00003332 3C3D                     cmp al, 61
-  7221 00003334 0F850900                 jne .getlex384
-  7222 00003338 E89BD0                   call next
-  7223 0000333B B8D204                   mov ax, 1234
-  7224 0000333E E9A603                   jmp .retngetlex
-  7225                                  .getlex384:
-  7226                                  
-  7227                                  ;-814   if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}
-  7228                                  
-  7229                                  .getlex383:
-  7230 00003341 8A46FE                   mov al, [bp-2]
-  7231 00003344 3C7C                     cmp al, 124
-  7232 00003346 0F851200                 jne .getlex385
-  7233 0000334A A0[2300]                 mov al, [thechar]
-  7234 0000334D 3C3D                     cmp al, 61
-  7235 0000334F 0F850900                 jne .getlex386
-  7236 00003353 E880D0                   call next
-  7237 00003356 B8D304                   mov ax, 1235
-  7238 00003359 E98B03                   jmp .retngetlex
-  7239                                  .getlex386:
-  7240                                  
-  7241                                  ;-815   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
-  7242                                  
-  7243                                  .getlex385:
-  7244 0000335C 8A46FE                   mov al, [bp-2]
-  7245 0000335F 3C2A                     cmp al, 42
-  7246 00003361 0F851200                 jne .getlex387
-  7247 00003365 A0[2300]                 mov al, [thechar]
-  7248 00003368 3C3D                     cmp al, 61
-  7249 0000336A 0F850900                 jne .getlex388
-  7250 0000336E E865D0                   call next
-  7251 00003371 B8D004                   mov ax, 1232
-  7252 00003374 E97003                   jmp .retngetlex
-  7253                                  .getlex388:
-  7254                                  
-  7255                                  ;-816   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
-  7256                                  
-  7257                                  .getlex387:
-  7258 00003377 8A46FE                   mov al, [bp-2]
-  7259 0000337A 3C2F                     cmp al, 47
-  7260 0000337C 0F851200                 jne .getlex389
-  7261 00003380 A0[2300]                 mov al, [thechar]
-  7262 00003383 3C3D                     cmp al, 61
-  7263 00003385 0F850900                 jne .getlex390
-  7264 00003389 E84AD0                   call next
-  7265 0000338C B8D104                   mov ax, 1233
-  7266 0000338F E95503                   jmp .retngetlex
-  7267                                  .getlex390:
-  7268                                  
-  7269                                  ;-817   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
+  7101                                  .getlex380:
+  7102 00003131 68[7432]                 push getlex_9
+  7103 00003134 8D06BB69                 lea  ax, [symbol]
+  7104 00003138 50                       push ax
+  7105 00003139 E826D1                   call eqstr
+  7106 0000313C 83C404                   add  sp, 4
+  7107 0000313F 08C0                     or  al, al
+  7108 00003141 0F840600                 je .getlex381
+  7109 00003145 B80802                   mov ax, 520
+  7110 00003148 E9E400                   jmp .retngetlex
+  7111                                  
+  7112                                  ;-816     if (eqstr(symbol,"return"  )) return T_RETURN;
+  7113                                  
+  7114                                  .getlex381:
+  7115 0000314B 68[7D32]                 push getlex_10
+  7116 0000314E 8D06BB69                 lea  ax, [symbol]
+  7117 00003152 50                       push ax
+  7118 00003153 E80CD1                   call eqstr
+  7119 00003156 83C404                   add  sp, 4
+  7120 00003159 08C0                     or  al, al
+  7121 0000315B 0F840600                 je .getlex382
+  7122 0000315F B80002                   mov ax, 512
+  7123 00003162 E9CA00                   jmp .retngetlex
+  7124                                  
+  7125                                  ;-817     if (eqstr(symbol,"if"      )) return T_IF;
+  7126                                  
+  7127                                  .getlex382:
+  7128 00003165 68[8432]                 push getlex_11
+  7129 00003168 8D06BB69                 lea  ax, [symbol]
+  7130 0000316C 50                       push ax
+  7131 0000316D E8F2D0                   call eqstr
+  7132 00003170 83C404                   add  sp, 4
+  7133 00003173 08C0                     or  al, al
+  7134 00003175 0F840600                 je .getlex383
+  7135 00003179 B80102                   mov ax, 513
+  7136 0000317C E9B000                   jmp .retngetlex
+  7137                                  
+  7138                                  ;-818     if (eqstr(symbol,"else"    )) return T_ELSE;
+  7139                                  
+  7140                                  .getlex383:
+  7141 0000317F 68[8732]                 push getlex_12
+  7142 00003182 8D06BB69                 lea  ax, [symbol]
+  7143 00003186 50                       push ax
+  7144 00003187 E8D8D0                   call eqstr
+  7145 0000318A 83C404                   add  sp, 4
+  7146 0000318D 08C0                     or  al, al
+  7147 0000318F 0F840600                 je .getlex384
+  7148 00003193 B80202                   mov ax, 514
+  7149 00003196 E99600                   jmp .retngetlex
+  7150                                  
+  7151                                  ;-819     if (eqstr(symbol,"while"   )) return T_WHILE;
+  7152                                  
+  7153                                  .getlex384:
+  7154 00003199 68[8C32]                 push getlex_13
+  7155 0000319C 8D06BB69                 lea  ax, [symbol]
+  7156 000031A0 50                       push ax
+  7157 000031A1 E8BED0                   call eqstr
+  7158 000031A4 83C404                   add  sp, 4
+  7159 000031A7 08C0                     or  al, al
+  7160 000031A9 0F840600                 je .getlex385
+  7161 000031AD B80302                   mov ax, 515
+  7162 000031B0 E97C00                   jmp .retngetlex
+  7163                                  
+  7164                                  ;-820     if (eqstr(symbol,"do"      )) return T_DO;
+  7165                                  
+  7166                                  .getlex385:
+  7167 000031B3 68[9232]                 push getlex_14
+  7168 000031B6 8D06BB69                 lea  ax, [symbol]
+  7169 000031BA 50                       push ax
+  7170 000031BB E8A4D0                   call eqstr
+  7171 000031BE 83C404                   add  sp, 4
+  7172 000031C1 08C0                     or  al, al
+  7173 000031C3 0F840600                 je .getlex386
+  7174 000031C7 B80402                   mov ax, 516
+  7175 000031CA E96200                   jmp .retngetlex
+  7176                                  
+  7177                                  ;-821     if (eqstr(symbol,"goto"    )) return T_GOTO;
+  7178                                  
+  7179                                  .getlex386:
+  7180 000031CD 68[9532]                 push getlex_15
+  7181 000031D0 8D06BB69                 lea  ax, [symbol]
+  7182 000031D4 50                       push ax
+  7183 000031D5 E88AD0                   call eqstr
+  7184 000031D8 83C404                   add  sp, 4
+  7185 000031DB 08C0                     or  al, al
+  7186 000031DD 0F840600                 je .getlex387
+  7187 000031E1 B80902                   mov ax, 521
+  7188 000031E4 E94800                   jmp .retngetlex
+  7189                                  
+  7190                                  ;-822     if (eqstr(symbol,"define"  )) return T_DEFINE;
+  7191                                  
+  7192                                  .getlex387:
+  7193 000031E7 68[9A32]                 push getlex_16
+  7194 000031EA 8D06BB69                 lea  ax, [symbol]
+  7195 000031EE 50                       push ax
+  7196 000031EF E870D0                   call eqstr
+  7197 000031F2 83C404                   add  sp, 4
+  7198 000031F5 08C0                     or  al, al
+  7199 000031F7 0F840600                 je .getlex388
+  7200 000031FB B8FF01                   mov ax, 511
+  7201 000031FE E92E00                   jmp .retngetlex
+  7202                                  
+  7203                                  ;-823     if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
+  7204                                  
+  7205                                  .getlex388:
+  7206 00003201 E8B700                   call convertdefine
+  7207 00003204 08C0                     or  al, al
+  7208 00003206 0F841600                 je .getlex389
+  7209 0000320A 8D065EDA                 lea  ax, [symboltemp]
+  7210 0000320E 50                       push ax
+  7211 0000320F 8D06BB69                 lea  ax, [symbol]
+  7212 00003213 50                       push ax
+  7213 00003214 E815D0                   call strcpy
+  7214 00003217 83C404                   add  sp, 4
+  7215 0000321A B80101                   mov ax, 257
+  7216 0000321D E90F00                   jmp .retngetlex
+  7217                                  
+  7218                                  ;-824     return T_NAME; } error1("Input item not recognized"); }
+  7219                                  
+  7220                                  .getlex389:
+  7221 00003220 B80001                   mov ax, 256
+  7222 00003223 E90900                   jmp .retngetlex
+  7223                                  .getlex370:
+  7224 00003226 68[A132]                 push getlex_17
+  7225 00003229 E8B4D3                   call error1
+  7226 0000322C 83C402                   add  sp, 2
+  7227                                  
+  7228                                  ;-825 
+  7229                                  
+  7230                                  
+  7231                                  ;-826 int convertdefine() { int i; int j;   i=0;
+  7232                                  
+  7233 0000322F C9                       .retngetlex: LEAVE
+  7234 00003230 C3                       ret
+  7235 00003231 28295B5D7B7D2C3B2A-     getlex_0 db "()[]{},;*:%-><=+!&|#?",0
+  7236 0000323A 3A252D3E3C3D2B2126-
+  7237 00003243 7C233F00           
+  7238 00003247 7369676E656400          getlex_1 db "signed",0
+  7239 0000324E 756E7369676E656400      getlex_2 db "unsigned",0
+  7240 00003257 766F696400              getlex_3 db "void",0
+  7241 0000325C 696E7400                getlex_4 db "int",0
+  7242 00003260 6C6F6E6700              getlex_5 db "long",0
+  7243 00003265 6368617200              getlex_6 db "char",0
+  7244 0000326A 61736D00                getlex_7 db "asm",0
+  7245 0000326E 5F5F61736D00            getlex_8 db "__asm",0
+  7246 00003274 5F5F656D69745F5F00      getlex_9 db "__emit__",0
+  7247 0000327D 72657475726E00          getlex_10 db "return",0
+  7248 00003284 696600                  getlex_11 db "if",0
+  7249 00003287 656C736500              getlex_12 db "else",0
+  7250 0000328C 7768696C6500            getlex_13 db "while",0
+  7251 00003292 646F00                  getlex_14 db "do",0
+  7252 00003295 676F746F00              getlex_15 db "goto",0
+  7253 0000329A 646566696E6500          getlex_16 db "define",0
+  7254 000032A1 496E70757420697465-     getlex_17 db "Input item not recognized",0
+  7255 000032AA 6D206E6F7420726563-
+  7256 000032B3 6F676E697A656400   
+  7257                                  ENDP
+  7258                                  
+  7259                                  convertdefine: PROC;
+  7260 000032BB C8040000                 ENTER  4,0
+  7261 000032BF B80000                   mov ax, 0
+  7262 000032C2 8946FE                   mov [bp-2], ax
+  7263                                  
+  7264                                  ;-827   while (i < GTop) {
+  7265                                  
+  7266                                  .convertdefine390:
+  7267 000032C5 8B46FE                   mov ax, [bp-2]
+  7268 000032C8 3B06[3900]               cmp ax, [GTop]
+  7269 000032CC 0F8D4400                 jge .convertdefine391
   7270                                  
-  7271                                  .getlex389:
-  7272 00003392 8A46FE                   mov al, byte [bp-2]
-  7273 00003395 B400                     mov ah, 0
-  7274 00003397 50                       push ax
-  7275 00003398 68[E936]                 push getlex_0
-  7276 0000339B E878CF                   call instr1
-  7277 0000339E 83C404                   add  sp, 4
-  7278 000033A1 08C0                     or  al, al
-  7279 000033A3 0F840600                 je .getlex391
-  7280 000033A7 8A46FE                   mov al, [bp-2]
-  7281 000033AA E93A03                   jmp .retngetlex
-  7282                                  
-  7283                                  ;-818   if (c == '/') { if (thechar == '/') {
-  7284                                  
-  7285                                  .getlex391:
-  7286 000033AD 8A46FE                   mov al, [bp-2]
-  7287 000033B0 3C2F                     cmp al, 47
-  7288 000033B2 0F852900                 jne .getlex392
-  7289 000033B6 A0[2300]                 mov al, [thechar]
-  7290 000033B9 3C2F                     cmp al, 47
-  7291 000033BB 0F852000                 jne .getlex393
-  7292                                  
-  7293                                  ;-819       do c=next(); while(ifEOL(c)==0) return getlex(); } }
-  7294                                  
-  7295                                  .getlex394:
-  7296 000033BF E814D0                   call next
-  7297 000033C2 8846FE                   mov [bp-2], al
-  7298 000033C5 8A46FE                   mov al, byte [bp-2]
-  7299 000033C8 B400                     mov ah, 0
-  7300 000033CA 50                       push ax
-  7301 000033CB E84108                   call ifEOL
-  7302 000033CE 83C402                   add  sp, 2
-  7303 000033D1 3C00                     cmp al, 0
-  7304 000033D3 0F850200                 jne .getlex395
-  7305 000033D7 EBE6                     jmp .getlex394
-  7306                                  .getlex395:
-  7307 000033D9 E818FE                   call getlex
-  7308 000033DC E90803                   jmp .retngetlex
-  7309                                  .getlex393:
-  7310                                  
-  7311                                  ;-820   if (c == '/') { if (thechar == '*') {
-  7312                                  
-  7313                                  .getlex392:
-  7314 000033DF 8A46FE                   mov al, [bp-2]
-  7315 000033E2 3C2F                     cmp al, 47
-  7316 000033E4 0F853A00                 jne .getlex396
-  7317 000033E8 A0[2300]                 mov al, [thechar]
-  7318 000033EB 3C2A                     cmp al, 42
-  7319 000033ED 0F852B00                 jne .getlex397
-  7320                                  
-  7321                                  ;-821       g2: c=next(); if (c != '*') goto g2; if (thechar != '/') goto g2;
+  7271                                  ;-828    j=adrofname(i);
+  7272                                  
+  7273 000032D0 FF76FE                   push word [bp-2]
+  7274 000032D3 E8C3D6                   call adrofname
+  7275 000032D6 83C402                   add  sp, 2
+  7276 000032D9 8946FC                   mov [bp-4], ax
+  7277                                  
+  7278                                  ;-829    if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
+  7279                                  
+  7280 000032DC FF76FC                   push word [bp-4]
+  7281 000032DF 8D06BB69                 lea  ax, [symbol]
+  7282 000032E3 50                       push ax
+  7283 000032E4 E87BCF                   call eqstr
+  7284 000032E7 83C404                   add  sp, 4
+  7285 000032EA 08C0                     or  al, al
+  7286 000032EC 0F841F00                 je .convertdefine392
+  7287 000032F0 8B5EFE                   mov bx, [bp-2]
+  7288 000032F3 8A87046B                 mov al, [GType + bx]
+  7289 000032F7 3C23                     cmp al, 35
+  7290 000032F9 0F851200                 jne .convertdefine393
+  7291 000032FD 8B5EFE                   mov bx, [bp-2]
+  7292 00003300 D1E3                     shl bx, 1
+  7293 00003302 8B873873                 mov ax, [GData + bx]
+  7294 00003306 A3[2C00]                 mov word [lexval], ax
+  7295                                  
+  7296                                  ;-830    return T_CONST; } }
+  7297                                  
+  7298 00003309 B80101                   mov ax, 257
+  7299 0000330C E90B00                   jmp .retnconvertdefine
+  7300                                  .convertdefine393:
+  7301                                  
+  7302                                  ;-831    i++; }
+  7303                                  
+  7304                                  .convertdefine392:
+  7305 0000330F FF46FE                   inc  word[bp-2]
+  7306                                  
+  7307                                  ;-832    return 0; }
+  7308                                  
+  7309 00003312 EBB1                     jmp .convertdefine390
+  7310                                  .convertdefine391:
+  7311 00003314 B80000                   mov ax, 0
+  7312 00003317 E90000                   jmp .retnconvertdefine
+  7313                                  
+  7314                                  ;-833 
+  7315                                  
+  7316                                  
+  7317                                  ;-834 int getdigit(char c) { int i;
+  7318                                  
+  7319 0000331A C9                       .retnconvertdefine: LEAVE
+  7320 0000331B C3                       ret
+  7321                                  ENDP
   7322                                  
-  7323                                  .g2:
-  7324 000033F1 E8E2CF                   call next
-  7325 000033F4 8846FE                   mov [bp-2], al
-  7326 000033F7 8A46FE                   mov al, [bp-2]
-  7327 000033FA 3C2A                     cmp al, 42
-  7328 000033FC 0F840200                 je  .getlex398
-  7329 00003400 EBEF                     jmp .g2
-  7330                                  .getlex398:
-  7331 00003402 A0[2300]                 mov al, [thechar]
-  7332 00003405 3C2F                     cmp al, 47
-  7333 00003407 0F840200                 je  .getlex399
-  7334 0000340B EBE4                     jmp .g2
+  7323                                  getdigit: PROC
+  7324                                  
+  7325                                  ;-835     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
+  7326                                  ;
+  7327 0000331C C8020000                 ENTER  2,0
+  7328 00003320 B80000                   mov ax, 0
+  7329 00003323 A3[2C00]                 mov word [lexval], ax
+  7330 00003326 8A4604                   mov al, [bp+4]
+  7331 00003329 2C30                     sub al, 48
+  7332 0000332B A3[2C00]                 mov word [lexval], ax
+  7333                                  
+  7334                                  ;-836     if (thechar=='x') thechar='X'; if (thechar=='X') { next();
   7335                                  
-  7336                                  ;-822       c=next(); return getlex(); } else  return '/'; }
-  7337                                  
-  7338                                  .getlex399:
-  7339 0000340D E8C6CF                   call next
-  7340 00003410 8846FE                   mov [bp-2], al
-  7341 00003413 E8DEFD                   call getlex
-  7342 00003416 E9CE02                   jmp .retngetlex
-  7343 00003419 E90600                   jmp .getlex400
-  7344                                  .getlex397:
-  7345 0000341C B82F00                   mov ax, 47
-  7346 0000341F E9C502                   jmp .retngetlex
-  7347                                  .getlex400:
+  7336 0000332E A0[2300]                 mov al, [thechar]
+  7337 00003331 3C78                     cmp al, 120
+  7338 00003333 0F850600                 jne .getdigit394
+  7339 00003337 B85800                   mov ax, 88
+  7340 0000333A A2[2300]                 mov byte [thechar], al
+  7341                                  .getdigit394:
+  7342 0000333D A0[2300]                 mov al, [thechar]
+  7343 00003340 3C58                     cmp al, 88
+  7344 00003342 0F856800                 jne .getdigit395
+  7345 00003346 E8A7D4                   call next
+  7346                                  
+  7347                                  ;-837       while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
   7348                                  
-  7349                                  ;-823   if (c == '"') {getstring(c); return T_STRING;}
-  7350                                  
-  7351                                  .getlex396:
-  7352 00003422 8A46FE                   mov al, [bp-2]
-  7353 00003425 3C22                     cmp al, 34
-  7354 00003427 0F851200                 jne .getlex401
-  7355 0000342B 8A46FE                   mov al, byte [bp-2]
-  7356 0000342E B400                     mov ah, 0
-  7357 00003430 50                       push ax
-  7358 00003431 E88F06                   call getstring
-  7359 00003434 83C402                   add  sp, 2
-  7360 00003437 B80201                   mov ax, 258
-  7361 0000343A E9AA02                   jmp .retngetlex
-  7362                                  
-  7363                                  ;-824   if (digit(c)) { getdigit(c); return T_CONST; }
-  7364                                  
-  7365                                  .getlex401:
-  7366 0000343D 8A46FE                   mov al, byte [bp-2]
-  7367 00003440 B400                     mov ah, 0
-  7368 00003442 50                       push ax
-  7369 00003443 E858CD                   call digit
-  7370 00003446 83C402                   add  sp, 2
-  7371 00003449 08C0                     or  al, al
-  7372 0000344B 0F841200                 je .getlex402
-  7373 0000344F 8A46FE                   mov al, byte [bp-2]
-  7374 00003452 B400                     mov ah, 0
-  7375 00003454 50                       push ax
-  7376 00003455 E87C03                   call getdigit
-  7377 00003458 83C402                   add  sp, 2
-  7378 0000345B B80101                   mov ax, 257
-  7379 0000345E E98602                   jmp .retngetlex
-  7380                                  
-  7381                                  ;-825   if (c==39) { lexval=next();
+  7349                                  .getdigit396:
+  7350 00003349 A0[2300]                 mov al, byte [thechar]
+  7351 0000334C B400                     mov ah, 0
+  7352 0000334E 50                       push ax
+  7353 0000334F E876CE                   call alnum
+  7354 00003352 83C402                   add  sp, 2
+  7355 00003355 08C0                     or  al, al
+  7356 00003357 0F845000                 je .getdigit397
+  7357 0000335B E892D4                   call next
+  7358 0000335E 884604                   mov [bp+4], al
+  7359 00003361 8A4604                   mov al, [bp+4]
+  7360 00003364 3C60                     cmp al, 96
+  7361 00003366 0F8E0800                 jle .getdigit398
+  7362 0000336A 8A4604                   mov al, [bp+4]
+  7363 0000336D 2C27                     sub al, 39
+  7364 0000336F 884604                   mov [bp+4], al
+  7365                                  
+  7366                                  ;-838 	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
+  7367                                  
+  7368                                  .getdigit398:
+  7369 00003372 8A4604                   mov al, [bp+4]
+  7370 00003375 3C40                     cmp al, 64
+  7371 00003377 0F8E0800                 jle .getdigit399
+  7372 0000337B 8A4604                   mov al, [bp+4]
+  7373 0000337E 2C07                     sub al, 7
+  7374 00003380 884604                   mov [bp+4], al
+  7375                                  .getdigit399:
+  7376 00003383 8A4604                   mov al, [bp+4]
+  7377 00003386 2C30                     sub al, 48
+  7378 00003388 884604                   mov [bp+4], al
+  7379 0000338B A1[2C00]                 mov ax, [lexval]
+  7380 0000338E C1E004                   shl ax, 4
+  7381 00003391 A3[2C00]                 mov word [lexval], ax
   7382                                  
-  7383                                  .getlex402:
-  7384 00003461 8A46FE                   mov al, [bp-2]
-  7385 00003464 3C27                     cmp al, 39
-  7386 00003466 0F854F00                 jne .getlex403
-  7387 0000346A E869CF                   call next
-  7388 0000346D A3[2C00]                 mov word [lexval], ax
-  7389                                  
-  7390                                  ;-826     if (lexval==92) {lexval=next();
-  7391                                  
-  7392 00003470 A1[2C00]                 mov ax, [lexval]
-  7393 00003473 83F85C                   cmp ax, 92
-  7394 00003476 0F853600                 jne .getlex404
-  7395 0000347A E859CF                   call next
-  7396 0000347D A3[2C00]                 mov word [lexval], ax
-  7397                                  
-  7398                                  ;-827       if (lexval=='n') lexval=10; if (lexval=='t') lexval= 9;
-  7399                                  
-  7400 00003480 A1[2C00]                 mov ax, [lexval]
-  7401 00003483 83F86E                   cmp ax, 110
-  7402 00003486 0F850600                 jne .getlex405
-  7403 0000348A B80A00                   mov ax, 10
-  7404 0000348D A3[2C00]                 mov word [lexval], ax
-  7405                                  .getlex405:
-  7406 00003490 A1[2C00]                 mov ax, [lexval]
-  7407 00003493 83F874                   cmp ax, 116
-  7408 00003496 0F850600                 jne .getlex406
-  7409 0000349A B80900                   mov ax, 9
-  7410 0000349D A3[2C00]                 mov word [lexval], ax
-  7411                                  
-  7412                                  ;-828       if (lexval=='0') lexval= 0; } next(); return T_CONST; }
-  7413                                  
-  7414                                  .getlex406:
-  7415 000034A0 A1[2C00]                 mov ax, [lexval]
-  7416 000034A3 83F830                   cmp ax, 48
-  7417 000034A6 0F850600                 jne .getlex407
-  7418 000034AA B80000                   mov ax, 0
-  7419 000034AD A3[2C00]                 mov word [lexval], ax
-  7420                                  .getlex407:
-  7421                                  .getlex404:
-  7422 000034B0 E823CF                   call next
-  7423 000034B3 B80101                   mov ax, 257
-  7424 000034B6 E92E02                   jmp .retngetlex
-  7425                                  
-  7426                                  ;-829   if (alnum(c)) {
-  7427                                  
-  7428                                  .getlex403:
-  7429 000034B9 8A46FE                   mov al, byte [bp-2]
-  7430 000034BC B400                     mov ah, 0
-  7431 000034BE 50                       push ax
-  7432 000034BF E806CD                   call alnum
-  7433 000034C2 83C402                   add  sp, 2
-  7434 000034C5 08C0                     or  al, al
-  7435 000034C7 0F841302                 je .getlex408
-  7436                                  
-  7437                                  ;-830     strcpy(symboltemp, symbol); p=&symbol;  *p=c;  p++;
-  7438                                  
-  7439 000034CB 8D06BB69                 lea  ax, [symbol]
-  7440 000034CF 50                       push ax
-  7441 000034D0 8D066DDA                 lea  ax, [symboltemp]
-  7442 000034D4 50                       push ax
-  7443 000034D5 E854CD                   call strcpy
-  7444 000034D8 83C404                   add  sp, 4
-  7445 000034DB B8BB69                   mov ax, symbol
-  7446 000034DE 8946FC                   mov [bp-4], ax
-  7447 000034E1 8A46FE                   mov al, [bp-2]
-  7448 000034E4 8B5EFC                   mov  bx, [bp-4]
-  7449 000034E7 8807                     mov  [bx], al
-  7450 000034E9 FF46FC                   inc  word[bp-4]
-  7451                                  
-  7452                                  ;-831     while(alnum(thechar)) {c=next(); *p=c;  p++; }
-  7453                                  
-  7454                                  .getlex409:
-  7455 000034EC A0[2300]                 mov al, byte [thechar]
-  7456 000034EF B400                     mov ah, 0
-  7457 000034F1 50                       push ax
-  7458 000034F2 E8D3CC                   call alnum
-  7459 000034F5 83C402                   add  sp, 2
-  7460 000034F8 08C0                     or  al, al
-  7461 000034FA 0F841300                 je .getlex410
-  7462 000034FE E8D5CE                   call next
-  7463 00003501 8846FE                   mov [bp-2], al
-  7464 00003504 8A46FE                   mov al, [bp-2]
-  7465 00003507 8B5EFC                   mov  bx, [bp-4]
-  7466 0000350A 8807                     mov  [bx], al
-  7467 0000350C FF46FC                   inc  word[bp-4]
-  7468                                  
-  7469                                  ;-832       *p=0;
-  7470                                  
-  7471 0000350F EBDB                     jmp .getlex409
-  7472                                  .getlex410:
-  7473 00003511 B80000                   mov ax, 0
-  7474 00003514 8B5EFC                   mov  bx, [bp-4]
-  7475 00003517 8807                     mov  [bx], al
-  7476                                  
-  7477                                  ;-833     if (eqstr(symbol,"signed"  )) return T_SIGNED;
-  7478                                  
-  7479 00003519 68[FF36]                 push getlex_1
-  7480 0000351C 8D06BB69                 lea  ax, [symbol]
-  7481 00003520 50                       push ax
-  7482 00003521 E83ECD                   call eqstr
-  7483 00003524 83C404                   add  sp, 4
-  7484 00003527 08C0                     or  al, al
-  7485 00003529 0F840600                 je .getlex411
-  7486 0000352D B81302                   mov ax, 531
-  7487 00003530 E9B401                   jmp .retngetlex
-  7488                                  
-  7489                                  ;-834     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
-  7490                                  
-  7491                                  .getlex411:
-  7492 00003533 68[0637]                 push getlex_2
-  7493 00003536 8D06BB69                 lea  ax, [symbol]
-  7494 0000353A 50                       push ax
-  7495 0000353B E824CD                   call eqstr
-  7496 0000353E 83C404                   add  sp, 4
-  7497 00003541 08C0                     or  al, al
-  7498 00003543 0F840600                 je .getlex412
-  7499 00003547 B81402                   mov ax, 532
-  7500 0000354A E99A01                   jmp .retngetlex
-  7501                                  
-  7502                                  ;-835     if (eqstr(symbol,"void"    )) return T_VOID;
+  7383                                  ;-839      i=0; i=c; lexval=lexval+i;}
+  7384                                  
+  7385 00003394 B80000                   mov ax, 0
+  7386 00003397 8946FE                   mov [bp-2], ax
+  7387 0000339A 8A4604                   mov al, [bp+4]
+  7388 0000339D 8946FE                   mov [bp-2], ax
+  7389 000033A0 A1[2C00]                 mov ax, [lexval]
+  7390 000033A3 0346FE                   add ax, [bp-2]
+  7391 000033A6 A3[2C00]                 mov word [lexval], ax
+  7392                                  
+  7393                                  ;-840     }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
+  7394                                  
+  7395 000033A9 EB9E                     jmp .getdigit396
+  7396                                  .getdigit397:
+  7397 000033AB E94200                   jmp .getdigit400
+  7398                                  .getdigit395:
+  7399                                  .getdigit401:
+  7400 000033AE A0[2300]                 mov al, byte [thechar]
+  7401 000033B1 B400                     mov ah, 0
+  7402 000033B3 50                       push ax
+  7403 000033B4 E8E7CD                   call digit
+  7404 000033B7 83C402                   add  sp, 2
+  7405 000033BA 08C0                     or  al, al
+  7406 000033BC 0F843000                 je .getdigit402
+  7407 000033C0 E82DD4                   call next
+  7408 000033C3 884604                   mov [bp+4], al
+  7409 000033C6 8A4604                   mov al, [bp+4]
+  7410 000033C9 2C30                     sub al, 48
+  7411 000033CB 884604                   mov [bp+4], al
+  7412 000033CE A1[2C00]                 mov ax, [lexval]
+  7413 000033D1 BB0A00                   mov bx, 10
+  7414 000033D4 F7E3                     mul bx
+  7415 000033D6 A3[2C00]                 mov word [lexval], ax
+  7416                                  
+  7417                                  ;-841      i=0; i=c; lexval=lexval+i; } }
+  7418                                  
+  7419 000033D9 B80000                   mov ax, 0
+  7420 000033DC 8946FE                   mov [bp-2], ax
+  7421 000033DF 8A4604                   mov al, [bp+4]
+  7422 000033E2 8946FE                   mov [bp-2], ax
+  7423 000033E5 A1[2C00]                 mov ax, [lexval]
+  7424 000033E8 0346FE                   add ax, [bp-2]
+  7425 000033EB A3[2C00]                 mov word [lexval], ax
+  7426 000033EE EBBE                     jmp .getdigit401
+  7427                                  .getdigit402:
+  7428                                  
+  7429                                  ;-842 }
+  7430                                  
+  7431                                  .getdigit400:
+  7432                                  
+  7433                                  ;-843 
+  7434                                  
+  7435                                  
+  7436                                  ;-844 int stmt() { int c; char cha;
+  7437 000033F0 C9                       LEAVE
+  7438 000033F1 C3                       ret
+  7439                                  ENDP
+  7440                                  
+  7441                                  stmt: PROC
+  7442                                  
+  7443                                  ;-845        if(istoken('{'))     {while(istoken('}')==0) stmt();}
+  7444                                  ;
+  7445 000033F2 C8040000                 ENTER  4,0
+  7446 000033F6 6A7B                     push 123
+  7447 000033F8 E813D4                   call istoken
+  7448 000033FB 83C402                   add  sp, 2
+  7449 000033FE 08C0                     or  al, al
+  7450 00003400 0F841700                 je .stmt403
+  7451                                  .stmt404:
+  7452 00003404 6A7D                     push 125
+  7453 00003406 E805D4                   call istoken
+  7454 00003409 83C402                   add  sp, 2
+  7455 0000340C 83F800                   cmp ax, 0
+  7456 0000340F 0F850500                 jne .stmt405
+  7457 00003413 E8DCFF                   call stmt
+  7458 00003416 EBEC                     jmp .stmt404
+  7459                                  .stmt405:
+  7460                                  
+  7461                                  ;-846   else if(istoken(T_IF))    doif();
+  7462                                  
+  7463 00003418 E9BA01                   jmp .stmt406
+  7464                                  .stmt403:
+  7465 0000341B 680102                   push 513
+  7466 0000341E E8EDD3                   call istoken
+  7467 00003421 83C402                   add  sp, 2
+  7468 00003424 08C0                     or  al, al
+  7469 00003426 0F840600                 je .stmt407
+  7470 0000342A E8B5F7                   call doif
+  7471                                  
+  7472                                  ;-847   else if(istoken(T_DO))    dodo();
+  7473                                  
+  7474 0000342D E9A501                   jmp .stmt408
+  7475                                  .stmt407:
+  7476 00003430 680402                   push 516
+  7477 00003433 E8D8D3                   call istoken
+  7478 00003436 83C402                   add  sp, 2
+  7479 00003439 08C0                     or  al, al
+  7480 0000343B 0F840600                 je .stmt409
+  7481 0000343F E802F8                   call dodo
+  7482                                  
+  7483                                  ;-848   else if(istoken(T_WHILE)) dowhile();
+  7484                                  
+  7485 00003442 E99001                   jmp .stmt410
+  7486                                  .stmt409:
+  7487 00003445 680302                   push 515
+  7488 00003448 E8C3D3                   call istoken
+  7489 0000344B 83C402                   add  sp, 2
+  7490 0000344E 08C0                     or  al, al
+  7491 00003450 0F840600                 je .stmt411
+  7492 00003454 E83AF8                   call dowhile
+  7493                                  
+  7494                                  ;-849   else if(istoken(T_GOTO))  {
+  7495                                  
+  7496 00003457 E97B01                   jmp .stmt412
+  7497                                  .stmt411:
+  7498 0000345A 680902                   push 521
+  7499 0000345D E8AED3                   call istoken
+  7500 00003460 83C402                   add  sp, 2
+  7501 00003463 08C0                     or  al, al
+  7502 00003465 0F842200                 je .stmt413
   7503                                  
-  7504                                  .getlex412:
-  7505 0000354D 68[0F37]                 push getlex_3
-  7506 00003550 8D06BB69                 lea  ax, [symbol]
-  7507 00003554 50                       push ax
-  7508 00003555 E80ACD                   call eqstr
-  7509 00003558 83C404                   add  sp, 4
-  7510 0000355B 08C0                     or  al, al
-  7511 0000355D 0F840600                 je .getlex413
-  7512 00003561 B81102                   mov ax, 529
-  7513 00003564 E98001                   jmp .retngetlex
-  7514                                  
-  7515                                  ;-836     if (eqstr(symbol,"int"     )) return T_INT;
-  7516                                  
-  7517                                  .getlex413:
-  7518 00003567 68[1437]                 push getlex_4
-  7519 0000356A 8D06BB69                 lea  ax, [symbol]
-  7520 0000356E 50                       push ax
-  7521 0000356F E8F0CC                   call eqstr
-  7522 00003572 83C404                   add  sp, 4
-  7523 00003575 08C0                     or  al, al
-  7524 00003577 0F840600                 je .getlex414
-  7525 0000357B B80502                   mov ax, 517
-  7526 0000357E E96601                   jmp .retngetlex
-  7527                                  
-  7528                                  ;-837     if (eqstr(symbol,"long"    )) return T_LONG;
-  7529                                  
-  7530                                  .getlex414:
-  7531 00003581 68[1837]                 push getlex_5
-  7532 00003584 8D06BB69                 lea  ax, [symbol]
-  7533 00003588 50                       push ax
-  7534 00003589 E8D6CC                   call eqstr
-  7535 0000358C 83C404                   add  sp, 4
-  7536 0000358F 08C0                     or  al, al
-  7537 00003591 0F840600                 je .getlex415
-  7538 00003595 B81502                   mov ax, 533
-  7539 00003598 E94C01                   jmp .retngetlex
-  7540                                  
-  7541                                  ;-838     if (eqstr(symbol,"char"    )) return T_CHAR;
-  7542                                  
-  7543                                  .getlex415:
-  7544 0000359B 68[1D37]                 push getlex_6
-  7545 0000359E 8D06BB69                 lea  ax, [symbol]
-  7546 000035A2 50                       push ax
-  7547 000035A3 E8BCCC                   call eqstr
-  7548 000035A6 83C404                   add  sp, 4
-  7549 000035A9 08C0                     or  al, al
-  7550 000035AB 0F840600                 je .getlex416
-  7551 000035AF B81202                   mov ax, 530
-  7552 000035B2 E93201                   jmp .retngetlex
-  7553                                  
-  7554                                  ;-839     if (eqstr(symbol,"asm"     )) return T_ASM;
-  7555                                  
-  7556                                  .getlex416:
-  7557 000035B5 68[2237]                 push getlex_7
-  7558 000035B8 8D06BB69                 lea  ax, [symbol]
-  7559 000035BC 50                       push ax
-  7560 000035BD E8A2CC                   call eqstr
-  7561 000035C0 83C404                   add  sp, 4
-  7562 000035C3 08C0                     or  al, al
-  7563 000035C5 0F840600                 je .getlex417
-  7564 000035C9 B80602                   mov ax, 518
-  7565 000035CC E91801                   jmp .retngetlex
+  7504                                  ;-850     prs("\n jmp .");name1();prs(symbol);expect(';');}
+  7505                                  
+  7506 00003469 68[D735]                 push stmt_0
+  7507 0000346C E873CF                   call prs
+  7508 0000346F 83C402                   add  sp, 2
+  7509 00003472 E897D7                   call name1
+  7510 00003475 8D06BB69                 lea  ax, [symbol]
+  7511 00003479 50                       push ax
+  7512 0000347A E865CF                   call prs
+  7513 0000347D 83C402                   add  sp, 2
+  7514 00003480 6A3B                     push 59
+  7515 00003482 E8ABD3                   call expect
+  7516 00003485 83C402                   add  sp, 2
+  7517                                  
+  7518                                  ;-851   else if(token==T_ASM)     {prs("\n"); c=next();
+  7519                                  
+  7520 00003488 E94A01                   jmp .stmt414
+  7521                                  .stmt413:
+  7522 0000348B A1[1E00]                 mov ax, [token]
+  7523 0000348E 3D0602                   cmp ax, 518
+  7524 00003491 0F853300                 jne .stmt415
+  7525 00003495 68[E035]                 push stmt_1
+  7526 00003498 E847CF                   call prs
+  7527 0000349B 83C402                   add  sp, 2
+  7528 0000349E E84FD3                   call next
+  7529 000034A1 8946FE                   mov [bp-2], ax
+  7530                                  
+  7531                                  ;-852         while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
+  7532                                  
+  7533                                  .stmt416:
+  7534 000034A4 8B46FE                   mov ax, [bp-2]
+  7535 000034A7 83F80A                   cmp ax, 10
+  7536 000034AA 0F841100                 je  .stmt417
+  7537 000034AE FF76FE                   push word [bp-2]
+  7538 000034B1 E8D5CE                   call prc
+  7539 000034B4 83C402                   add  sp, 2
+  7540 000034B7 E836D3                   call next
+  7541 000034BA 8946FE                   mov [bp-2], ax
+  7542 000034BD EBE5                     jmp .stmt416
+  7543                                  .stmt417:
+  7544 000034BF E87AF8                   call getlex
+  7545 000034C2 A3[1E00]                 mov word [token], ax
+  7546                                  
+  7547                                  ;-853   else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
+  7548                                  
+  7549 000034C5 E90D01                   jmp .stmt418
+  7550                                  .stmt415:
+  7551 000034C8 680702                   push 519
+  7552 000034CB E840D3                   call istoken
+  7553 000034CE 83C402                   add  sp, 2
+  7554 000034D1 08C0                     or  al, al
+  7555 000034D3 0F844B00                 je .stmt419
+  7556 000034D7 A1[1E00]                 mov ax, [token]
+  7557 000034DA 83F87B                   cmp ax, 123
+  7558 000034DD 0F853500                 jne .stmt420
+  7559 000034E1 68[E335]                 push stmt_2
+  7560 000034E4 E8FBCE                   call prs
+  7561 000034E7 83C402                   add  sp, 2
+  7562 000034EA E803D3                   call next
+  7563 000034ED 8846FC                   mov [bp-4], al
+  7564                                  
+  7565                                  ;-854         while(cha!= '}') { prc(cha); cha=next(); }
   7566                                  
-  7567                                  ;-840     if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
-  7568                                  
-  7569                                  .getlex417:
-  7570 000035CF 68[2637]                 push getlex_8
-  7571 000035D2 8D06BB69                 lea  ax, [symbol]
-  7572 000035D6 50                       push ax
-  7573 000035D7 E888CC                   call eqstr
-  7574 000035DA 83C404                   add  sp, 4
-  7575 000035DD 08C0                     or  al, al
-  7576 000035DF 0F840600                 je .getlex418
-  7577 000035E3 B80702                   mov ax, 519
-  7578 000035E6 E9FE00                   jmp .retngetlex
-  7579                                  
-  7580                                  ;-841     if (eqstr(symbol,"__emit__")) return T_EMIT;
-  7581                                  
-  7582                                  .getlex418:
-  7583 000035E9 68[2C37]                 push getlex_9
-  7584 000035EC 8D06BB69                 lea  ax, [symbol]
-  7585 000035F0 50                       push ax
-  7586 000035F1 E86ECC                   call eqstr
-  7587 000035F4 83C404                   add  sp, 4
-  7588 000035F7 08C0                     or  al, al
-  7589 000035F9 0F840600                 je .getlex419
-  7590 000035FD B80802                   mov ax, 520
-  7591 00003600 E9E400                   jmp .retngetlex
-  7592                                  
-  7593                                  ;-842     if (eqstr(symbol,"return"  )) return T_RETURN;
-  7594                                  
-  7595                                  .getlex419:
-  7596 00003603 68[3537]                 push getlex_10
-  7597 00003606 8D06BB69                 lea  ax, [symbol]
-  7598 0000360A 50                       push ax
-  7599 0000360B E854CC                   call eqstr
-  7600 0000360E 83C404                   add  sp, 4
-  7601 00003611 08C0                     or  al, al
-  7602 00003613 0F840600                 je .getlex420
-  7603 00003617 B80002                   mov ax, 512
-  7604 0000361A E9CA00                   jmp .retngetlex
-  7605                                  
-  7606                                  ;-843     if (eqstr(symbol,"if"      )) return T_IF;
-  7607                                  
-  7608                                  .getlex420:
-  7609 0000361D 68[3C37]                 push getlex_11
-  7610 00003620 8D06BB69                 lea  ax, [symbol]
-  7611 00003624 50                       push ax
-  7612 00003625 E83ACC                   call eqstr
-  7613 00003628 83C404                   add  sp, 4
-  7614 0000362B 08C0                     or  al, al
-  7615 0000362D 0F840600                 je .getlex421
-  7616 00003631 B80102                   mov ax, 513
-  7617 00003634 E9B000                   jmp .retngetlex
+  7567                                  .stmt421:
+  7568 000034F0 8A46FC                   mov al, [bp-4]
+  7569 000034F3 3C7D                     cmp al, 125
+  7570 000034F5 0F841400                 je  .stmt422
+  7571 000034F9 8A46FC                   mov al, byte [bp-4]
+  7572 000034FC B400                     mov ah, 0
+  7573 000034FE 50                       push ax
+  7574 000034FF E887CE                   call prc
+  7575 00003502 83C402                   add  sp, 2
+  7576 00003505 E8E8D2                   call next
+  7577 00003508 8846FC                   mov [bp-4], al
+  7578                                  
+  7579                                  ;-855         token=getlex(); }
+  7580                                  
+  7581 0000350B EBE3                     jmp .stmt421
+  7582                                  .stmt422:
+  7583 0000350D E82CF8                   call getlex
+  7584 00003510 A3[1E00]                 mov word [token], ax
+  7585                                  
+  7586                                  ;-856         else error1("Curly open expected");
+  7587                                  
+  7588 00003513 E90900                   jmp .stmt423
+  7589                                  .stmt420:
+  7590 00003516 68[E635]                 push stmt_3
+  7591 00003519 E8C4D0                   call error1
+  7592 0000351C 83C402                   add  sp, 2
+  7593                                  
+  7594                                  ;-857         }
+  7595                                  
+  7596                                  .stmt423:
+  7597                                  
+  7598                                  ;-858   else if(istoken(T_EMIT))   doemit();
+  7599                                  
+  7600 0000351F E9B300                   jmp .stmt424
+  7601                                  .stmt419:
+  7602 00003522 680802                   push 520
+  7603 00003525 E8E6D2                   call istoken
+  7604 00003528 83C402                   add  sp, 2
+  7605 0000352B 08C0                     or  al, al
+  7606 0000352D 0F840600                 je .stmt425
+  7607 00003531 E8A0F4                   call doemit
+  7608                                  
+  7609                                  ;-859   else if(istoken(';'))      { }
+  7610                                  
+  7611 00003534 E99E00                   jmp .stmt426
+  7612                                  .stmt425:
+  7613 00003537 6A3B                     push 59
+  7614 00003539 E8D2D2                   call istoken
+  7615 0000353C 83C402                   add  sp, 2
+  7616 0000353F 08C0                     or  al, al
+  7617 00003541 0F840300                 je .stmt427
   7618                                  
-  7619                                  ;-844     if (eqstr(symbol,"else"    )) return T_ELSE;
+  7619                                  ;-860   else if(istoken(T_RETURN)) {
   7620                                  
-  7621                                  .getlex421:
-  7622 00003637 68[3F37]                 push getlex_12
-  7623 0000363A 8D06BB69                 lea  ax, [symbol]
-  7624 0000363E 50                       push ax
-  7625 0000363F E820CC                   call eqstr
-  7626 00003642 83C404                   add  sp, 4
-  7627 00003645 08C0                     or  al, al
-  7628 00003647 0F840600                 je .getlex422
-  7629 0000364B B80202                   mov ax, 514
-  7630 0000364E E99600                   jmp .retngetlex
-  7631                                  
-  7632                                  ;-845     if (eqstr(symbol,"while"   )) return T_WHILE;
-  7633                                  
-  7634                                  .getlex422:
-  7635 00003651 68[4437]                 push getlex_13
-  7636 00003654 8D06BB69                 lea  ax, [symbol]
-  7637 00003658 50                       push ax
-  7638 00003659 E806CC                   call eqstr
-  7639 0000365C 83C404                   add  sp, 4
-  7640 0000365F 08C0                     or  al, al
-  7641 00003661 0F840600                 je .getlex423
-  7642 00003665 B80302                   mov ax, 515
-  7643 00003668 E97C00                   jmp .retngetlex
+  7621 00003545 E98D00                   jmp .stmt428
+  7622                                  .stmt427:
+  7623 00003548 680002                   push 512
+  7624 0000354B E8C0D2                   call istoken
+  7625 0000354E 83C402                   add  sp, 2
+  7626 00003551 08C0                     or  al, al
+  7627 00003553 0F843500                 je .stmt429
+  7628                                  
+  7629                                  ;-861         if (token!=';') expr(0);
+  7630                                  
+  7631 00003557 A1[1E00]                 mov ax, [token]
+  7632 0000355A 83F83B                   cmp ax, 59
+  7633 0000355D 0F840800                 je  .stmt430
+  7634 00003561 6A00                     push 0
+  7635 00003563 E823E1                   call expr
+  7636 00003566 83C402                   add  sp, 2
+  7637                                  
+  7638                                  ;-862         prs("\n jmp .retn");
+  7639                                  
+  7640                                  .stmt430:
+  7641 00003569 68[FA35]                 push stmt_4
+  7642 0000356C E873CE                   call prs
+  7643 0000356F 83C402                   add  sp, 2
   7644                                  
-  7645                                  ;-846     if (eqstr(symbol,"do"      )) return T_DO;
+  7645                                  ;-863         prs(fname);
   7646                                  
-  7647                                  .getlex423:
-  7648 0000366B 68[4A37]                 push getlex_14
-  7649 0000366E 8D06BB69                 lea  ax, [symbol]
-  7650 00003672 50                       push ax
-  7651 00003673 E8ECCB                   call eqstr
-  7652 00003676 83C404                   add  sp, 4
-  7653 00003679 08C0                     or  al, al
-  7654 0000367B 0F840600                 je .getlex424
-  7655 0000367F B80402                   mov ax, 516
-  7656 00003682 E96200                   jmp .retngetlex
+  7647 00003572 8D063B6A                 lea  ax, [fname]
+  7648 00003576 50                       push ax
+  7649 00003577 E868CE                   call prs
+  7650 0000357A 83C402                   add  sp, 2
+  7651                                  
+  7652                                  ;-864         nreturn++;
+  7653                                  
+  7654 0000357D FF06[2800]               inc  word[nreturn]
+  7655                                  
+  7656                                  ;-865         expect(';');
   7657                                  
-  7658                                  ;-847     if (eqstr(symbol,"goto"    )) return T_GOTO;
-  7659                                  
-  7660                                  .getlex424:
-  7661 00003685 68[4D37]                 push getlex_15
-  7662 00003688 8D06BB69                 lea  ax, [symbol]
-  7663 0000368C 50                       push ax
-  7664 0000368D E8D2CB                   call eqstr
-  7665 00003690 83C404                   add  sp, 4
-  7666 00003693 08C0                     or  al, al
-  7667 00003695 0F840600                 je .getlex425
-  7668 00003699 B80902                   mov ax, 521
-  7669 0000369C E94800                   jmp .retngetlex
-  7670                                  
-  7671                                  ;-848     if (eqstr(symbol,"define"  )) return T_DEFINE;
+  7658 00003581 6A3B                     push 59
+  7659 00003583 E8AAD2                   call expect
+  7660 00003586 83C402                   add  sp, 2
+  7661                                  
+  7662                                  ;-866         }
+  7663                                  
+  7664                                  
+  7665                                  ;-867   else if(thechar==':')      {
+  7666                                  
+  7667 00003589 E94900                   jmp .stmt431
+  7668                                  .stmt429:
+  7669 0000358C A0[2300]                 mov al, [thechar]
+  7670 0000358F 3C3A                     cmp al, 58
+  7671 00003591 0F853000                 jne .stmt432
   7672                                  
-  7673                                  .getlex425:
-  7674 0000369F 68[5237]                 push getlex_16
-  7675 000036A2 8D06BB69                 lea  ax, [symbol]
-  7676 000036A6 50                       push ax
-  7677 000036A7 E8B8CB                   call eqstr
-  7678 000036AA 83C404                   add  sp, 4
-  7679 000036AD 08C0                     or  al, al
-  7680 000036AF 0F840600                 je .getlex426
-  7681 000036B3 B8FF01                   mov ax, 511
-  7682 000036B6 E92E00                   jmp .retngetlex
-  7683                                  
-  7684                                  ;-849     if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
-  7685                                  
-  7686                                  .getlex426:
-  7687 000036B9 E8B700                   call convertdefine
-  7688 000036BC 08C0                     or  al, al
-  7689 000036BE 0F841600                 je .getlex427
-  7690 000036C2 8D066DDA                 lea  ax, [symboltemp]
-  7691 000036C6 50                       push ax
-  7692 000036C7 8D06BB69                 lea  ax, [symbol]
-  7693 000036CB 50                       push ax
-  7694 000036CC E85DCB                   call strcpy
-  7695 000036CF 83C404                   add  sp, 4
-  7696 000036D2 B80101                   mov ax, 257
-  7697 000036D5 E90F00                   jmp .retngetlex
-  7698                                  
-  7699                                  ;-850     return T_NAME; } error1("Input item not recognized"); }
+  7673                                  ;-868         prs("\n."); // Label
+  7674                                  
+  7675 00003595 68[0736]                 push stmt_5
+  7676 00003598 E847CE                   call prs
+  7677 0000359B 83C402                   add  sp, 2
+  7678                                  
+  7679                                  ;-869         prs(symbol); prc(':');
+  7680                                  
+  7681 0000359E 8D06BB69                 lea  ax, [symbol]
+  7682 000035A2 50                       push ax
+  7683 000035A3 E83CCE                   call prs
+  7684 000035A6 83C402                   add  sp, 2
+  7685 000035A9 6A3A                     push 58
+  7686 000035AB E8DBCD                   call prc
+  7687 000035AE 83C402                   add  sp, 2
+  7688                                  
+  7689                                  ;-870         expect(T_NAME);
+  7690                                  
+  7691 000035B1 680001                   push 256
+  7692 000035B4 E879D2                   call expect
+  7693 000035B7 83C402                   add  sp, 2
+  7694                                  
+  7695                                  ;-871         expect(':');
+  7696                                  
+  7697 000035BA 6A3A                     push 58
+  7698 000035BC E871D2                   call expect
+  7699 000035BF 83C402                   add  sp, 2
   7700                                  
-  7701                                  .getlex427:
-  7702 000036D8 B80001                   mov ax, 256
-  7703 000036DB E90900                   jmp .retngetlex
-  7704                                  .getlex408:
-  7705 000036DE 68[5937]                 push getlex_17
-  7706 000036E1 E88705                   call error1
-  7707 000036E4 83C402                   add  sp, 2
-  7708                                  
-  7709                                  ;-851 
-  7710                                  
-  7711                                  
-  7712                                  ;-852 int convertdefine() { int i; int j;   i=0;
-  7713                                  
-  7714 000036E7 C9                       .retngetlex: LEAVE
-  7715 000036E8 C3                       ret
-  7716 000036E9 28295B5D7B7D2C3B2A-     getlex_0 db "()[]{},;*:%-><=+!&|#?",0
-  7717 000036F2 3A252D3E3C3D2B2126-
-  7718 000036FB 7C233F00           
-  7719 000036FF 7369676E656400          getlex_1 db "signed",0
-  7720 00003706 756E7369676E656400      getlex_2 db "unsigned",0
-  7721 0000370F 766F696400              getlex_3 db "void",0
-  7722 00003714 696E7400                getlex_4 db "int",0
-  7723 00003718 6C6F6E6700              getlex_5 db "long",0
-  7724 0000371D 6368617200              getlex_6 db "char",0
-  7725 00003722 61736D00                getlex_7 db "asm",0
-  7726 00003726 5F5F61736D00            getlex_8 db "__asm",0
-  7727 0000372C 5F5F656D69745F5F00      getlex_9 db "__emit__",0
-  7728 00003735 72657475726E00          getlex_10 db "return",0
-  7729 0000373C 696600                  getlex_11 db "if",0
-  7730 0000373F 656C736500              getlex_12 db "else",0
-  7731 00003744 7768696C6500            getlex_13 db "while",0
-  7732 0000374A 646F00                  getlex_14 db "do",0
-  7733 0000374D 676F746F00              getlex_15 db "goto",0
-  7734 00003752 646566696E6500          getlex_16 db "define",0
-  7735 00003759 496E70757420697465-     getlex_17 db "Input item not recognized",0
-  7736 00003762 6D206E6F7420726563-
-  7737 0000376B 6F676E697A656400   
-  7738                                  ENDP
-  7739                                  
-  7740                                  convertdefine: PROC;
-  7741 00003773 C8040000                 ENTER  4,0
-  7742 00003777 B80000                   mov ax, 0
-  7743 0000377A 8946FE                   mov [bp-2], ax
-  7744                                  
-  7745                                  ;-853   while (i < GTop) {
-  7746                                  
-  7747                                  .convertdefine428:
-  7748 0000377D 8B46FE                   mov ax, [bp-2]
-  7749 00003780 3B06[3900]               cmp ax, [GTop]
-  7750 00003784 0F8D4400                 jge .convertdefine429
-  7751                                  
-  7752                                  ;-854    j=adrofname(i);
-  7753                                  
-  7754 00003788 FF76FE                   push word [bp-2]
-  7755 0000378B E86ED4                   call adrofname
-  7756 0000378E 83C402                   add  sp, 2
-  7757 00003791 8946FC                   mov [bp-4], ax
+  7701                                  ;-872         }
+  7702                                  
+  7703                                  
+  7704                                  ;-873   else  {expr(0);; expect(';'); }
+  7705                                  
+  7706 000035C2 E91000                   jmp .stmt433
+  7707                                  .stmt432:
+  7708 000035C5 6A00                     push 0
+  7709 000035C7 E8BFE0                   call expr
+  7710 000035CA 83C402                   add  sp, 2
+  7711 000035CD 6A3B                     push 59
+  7712 000035CF E85ED2                   call expect
+  7713 000035D2 83C402                   add  sp, 2
+  7714                                  
+  7715                                  ;-874 }
+  7716                                  
+  7717                                  .stmt433:
+  7718                                  .stmt431:
+  7719                                  .stmt428:
+  7720                                  .stmt426:
+  7721                                  .stmt424:
+  7722                                  .stmt418:
+  7723                                  .stmt414:
+  7724                                  .stmt412:
+  7725                                  .stmt410:
+  7726                                  .stmt408:
+  7727                                  .stmt406:
+  7728                                  
+  7729                                  ;-875 
+  7730                                  
+  7731                                  
+  7732                                  ;-876 int getstring(int delim) {
+  7733 000035D5 C9                       LEAVE
+  7734 000035D6 C3                       ret
+  7735 000035D7 5C6E206A6D70202E00      stmt_0 db "\n jmp .",0
+  7736 000035E0 5C6E00                  stmt_1 db "\n",0
+  7737 000035E3 5C6E00                  stmt_2 db "\n",0
+  7738 000035E6 4375726C79206F7065-     stmt_3 db "Curly open expected",0
+  7739 000035EF 6E2065787065637465-
+  7740 000035F8 6400               
+  7741 000035FA 5C6E206A6D70202E72-     stmt_4 db "\n jmp .retn",0
+  7742 00003603 65746E00           
+  7743 00003607 5C6E2E00                stmt_5 db "\n.",0
+  7744                                  ENDP
+  7745                                  
+  7746                                  getstring: PROC
+  7747                                  
+  7748                                  ;-877     int c; char *p;
+  7749                                  
+  7750                                  
+  7751                                  ;-878     p=&symbol;
+  7752                                  ;
+  7753 0000360B C8040000                 ENTER  4,0
+  7754 0000360F B8BB69                   mov ax, symbol
+  7755 00003612 8946FC                   mov [bp-4], ax
+  7756                                  
+  7757                                  ;-879     c=next();
   7758                                  
-  7759                                  ;-855    if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
-  7760                                  
-  7761 00003794 FF76FC                   push word [bp-4]
-  7762 00003797 8D06BB69                 lea  ax, [symbol]
-  7763 0000379B 50                       push ax
-  7764 0000379C E8C3CA                   call eqstr
-  7765 0000379F 83C404                   add  sp, 4
-  7766 000037A2 08C0                     or  al, al
-  7767 000037A4 0F841F00                 je .convertdefine430
-  7768 000037A8 8B5EFE                   mov bx, [bp-2]
-  7769 000037AB 8A87046B                 mov al, [GType + bx]
-  7770 000037AF 3C23                     cmp al, 35
-  7771 000037B1 0F851200                 jne .convertdefine431
-  7772 000037B5 8B5EFE                   mov bx, [bp-2]
-  7773 000037B8 D1E3                     shl bx, 1
-  7774 000037BA 8B873873                 mov ax, [GData + bx]
-  7775 000037BE A3[2C00]                 mov word [lexval], ax
+  7759 00003615 E8D8D1                   call next
+  7760 00003618 8946FE                   mov [bp-2], ax
+  7761                                  
+  7762                                  ;-880     while (c != delim) {
+  7763                                  
+  7764                                  .getstring434:
+  7765 0000361B 8B46FE                   mov ax, [bp-2]
+  7766 0000361E 3B4604                   cmp ax, [bp+4]
+  7767 00003621 0F841300                 je  .getstring435
+  7768                                  
+  7769                                  ;-881         *p=c;
+  7770                                  
+  7771 00003625 8B46FE                   mov ax, [bp-2]
+  7772 00003628 8B5EFC                   mov  bx, [bp-4]
+  7773 0000362B 8807                     mov  [bx], al
+  7774                                  
+  7775                                  ;-882         p++;
   7776                                  
-  7777                                  ;-856    return T_CONST; } }
+  7777 0000362D FF46FC                   inc  word[bp-4]
   7778                                  
-  7779 000037C1 B80101                   mov ax, 257
-  7780 000037C4 E90B00                   jmp .retnconvertdefine
-  7781                                  .convertdefine431:
-  7782                                  
-  7783                                  ;-857    i++; }
-  7784                                  
-  7785                                  .convertdefine430:
-  7786 000037C7 FF46FE                   inc  word[bp-2]
-  7787                                  
-  7788                                  ;-858    return 0; }
-  7789                                  
-  7790 000037CA EBB1                     jmp .convertdefine428
-  7791                                  .convertdefine429:
-  7792 000037CC B80000                   mov ax, 0
-  7793 000037CF E90000                   jmp .retnconvertdefine
+  7779                                  ;-883         c=next();
+  7780                                  
+  7781 00003630 E8BDD1                   call next
+  7782 00003633 8946FE                   mov [bp-2], ax
+  7783                                  
+  7784                                  ;-884     }
+  7785                                  
+  7786                                  
+  7787                                  ;-885     *p=0;
+  7788                                  
+  7789 00003636 EBE3                     jmp .getstring434
+  7790                                  .getstring435:
+  7791 00003638 B80000                   mov ax, 0
+  7792 0000363B 8B5EFC                   mov  bx, [bp-4]
+  7793 0000363E 8807                     mov  [bx], al
   7794                                  
-  7795                                  ;-859 
+  7795                                  ;-886 }
   7796                                  
   7797                                  
-  7798                                  ;-860 int getdigit(char c) { int i;
+  7798                                  ;-887 
   7799                                  
-  7800 000037D2 C9                       .retnconvertdefine: LEAVE
-  7801 000037D3 C3                       ret
-  7802                                  ENDP
+  7800                                  
+  7801                                  ;-888 
+  7802                                  
   7803                                  
-  7804                                  getdigit: PROC
-  7805                                  
-  7806                                  ;-861     lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
-  7807                                  ;
-  7808 000037D4 C8020000                 ENTER  2,0
-  7809 000037D8 B80000                   mov ax, 0
-  7810 000037DB A3[2C00]                 mov word [lexval], ax
-  7811 000037DE 8A4604                   mov al, [bp+4]
-  7812 000037E1 2C30                     sub al, 48
-  7813 000037E3 A3[2C00]                 mov word [lexval], ax
-  7814                                  
-  7815                                  ;-862     if (thechar=='x') thechar='X'; if (thechar=='X') { next();
+  7804                                  ;-889 int dofunc() { int nloc; int i; int narg;
+  7805 00003640 C9                       LEAVE
+  7806 00003641 C3                       ret
+  7807                                  ENDP
+  7808                                  
+  7809                                  dofunc: PROC
+  7810                                  
+  7811                                  ;-890   cloc=&co;
+  7812                                  ;
+  7813 00003642 C8060000                 ENTER  6,0
+  7814 00003646 B8A861                   mov ax, co
+  7815 00003649 A3[1800]                 mov word [cloc], ax
   7816                                  
-  7817 000037E6 A0[2300]                 mov al, [thechar]
-  7818 000037E9 3C78                     cmp al, 120
-  7819 000037EB 0F850600                 jne .getdigit432
-  7820 000037EF B85800                   mov ax, 88
-  7821 000037F2 A2[2300]                 mov byte [thechar], al
-  7822                                  .getdigit432:
-  7823 000037F5 A0[2300]                 mov al, [thechar]
-  7824 000037F8 3C58                     cmp al, 88
-  7825 000037FA 0F856800                 jne .getdigit433
-  7826 000037FE E8D5CB                   call next
-  7827                                  
-  7828                                  ;-863       while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
+  7817                                  ;-891   checknamelen();
+  7818                                  
+  7819 0000364C E8EFD2                   call checknamelen
+  7820                                  
+  7821                                  ;-892   strcpy(fname, symbol);
+  7822                                  
+  7823 0000364F 8D06BB69                 lea  ax, [symbol]
+  7824 00003653 50                       push ax
+  7825 00003654 8D063B6A                 lea  ax, [fname]
+  7826 00003658 50                       push ax
+  7827 00003659 E8D0CB                   call strcpy
+  7828 0000365C 83C404                   add  sp, 4
   7829                                  
-  7830                                  .getdigit434:
-  7831 00003801 A0[2300]                 mov al, byte [thechar]
-  7832 00003804 B400                     mov ah, 0
-  7833 00003806 50                       push ax
-  7834 00003807 E8BEC9                   call alnum
-  7835 0000380A 83C402                   add  sp, 2
-  7836 0000380D 08C0                     or  al, al
-  7837 0000380F 0F845000                 je .getdigit435
-  7838 00003813 E8C0CB                   call next
-  7839 00003816 884604                   mov [bp+4], al
-  7840 00003819 8A4604                   mov al, [bp+4]
-  7841 0000381C 3C60                     cmp al, 96
-  7842 0000381E 0F8E0800                 jle .getdigit436
-  7843 00003822 8A4604                   mov al, [bp+4]
-  7844 00003825 2C27                     sub al, 39
-  7845 00003827 884604                   mov [bp+4], al
-  7846                                  
-  7847                                  ;-864 	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
-  7848                                  
-  7849                                  .getdigit436:
-  7850 0000382A 8A4604                   mov al, [bp+4]
-  7851 0000382D 3C40                     cmp al, 64
-  7852 0000382F 0F8E0800                 jle .getdigit437
-  7853 00003833 8A4604                   mov al, [bp+4]
-  7854 00003836 2C07                     sub al, 7
-  7855 00003838 884604                   mov [bp+4], al
-  7856                                  .getdigit437:
-  7857 0000383B 8A4604                   mov al, [bp+4]
-  7858 0000383E 2C30                     sub al, 48
-  7859 00003840 884604                   mov [bp+4], al
-  7860 00003843 A1[2C00]                 mov ax, [lexval]
-  7861 00003846 C1E004                   shl ax, 4
-  7862 00003849 A3[2C00]                 mov word [lexval], ax
-  7863                                  
-  7864                                  ;-865      i=0; i=c; lexval=lexval+i;}
-  7865                                  
-  7866 0000384C B80000                   mov ax, 0
-  7867 0000384F 8946FE                   mov [bp-2], ax
-  7868 00003852 8A4604                   mov al, [bp+4]
-  7869 00003855 8946FE                   mov [bp-2], ax
-  7870 00003858 A1[2C00]                 mov ax, [lexval]
-  7871 0000385B 0346FE                   add ax, [bp-2]
-  7872 0000385E A3[2C00]                 mov word [lexval], ax
-  7873                                  
-  7874                                  ;-866     }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
-  7875                                  
-  7876 00003861 EB9E                     jmp .getdigit434
-  7877                                  .getdigit435:
-  7878 00003863 E94200                   jmp .getdigit438
-  7879                                  .getdigit433:
-  7880                                  .getdigit439:
-  7881 00003866 A0[2300]                 mov al, byte [thechar]
-  7882 00003869 B400                     mov ah, 0
-  7883 0000386B 50                       push ax
-  7884 0000386C E82FC9                   call digit
-  7885 0000386F 83C402                   add  sp, 2
-  7886 00003872 08C0                     or  al, al
-  7887 00003874 0F843000                 je .getdigit440
-  7888 00003878 E85BCB                   call next
-  7889 0000387B 884604                   mov [bp+4], al
-  7890 0000387E 8A4604                   mov al, [bp+4]
-  7891 00003881 2C30                     sub al, 48
-  7892 00003883 884604                   mov [bp+4], al
-  7893 00003886 A1[2C00]                 mov ax, [lexval]
-  7894 00003889 BB0A00                   mov bx, 10
-  7895 0000388C F7E3                     mul bx
-  7896 0000388E A3[2C00]                 mov word [lexval], ax
-  7897                                  
-  7898                                  ;-867      i=0; i=c; lexval=lexval+i; } }
-  7899                                  
-  7900 00003891 B80000                   mov ax, 0
-  7901 00003894 8946FE                   mov [bp-2], ax
-  7902 00003897 8A4604                   mov al, [bp+4]
-  7903 0000389A 8946FE                   mov [bp-2], ax
-  7904 0000389D A1[2C00]                 mov ax, [lexval]
-  7905 000038A0 0346FE                   add ax, [bp-2]
-  7906 000038A3 A3[2C00]                 mov word [lexval], ax
-  7907 000038A6 EBBE                     jmp .getdigit439
-  7908                                  .getdigit440:
+  7830                                  ;-893   if (checkFunction() ) error1("Function already defined");
+  7831                                  
+  7832 0000365F E88AD7                   call checkFunction
+  7833 00003662 08C0                     or  al, al
+  7834 00003664 0F840900                 je .dofunc436
+  7835 00003668 68[8938]                 push dofunc_0
+  7836 0000366B E872CF                   call error1
+  7837 0000366E 83C402                   add  sp, 2
+  7838                                  
+  7839                                  ;-894   storefunc();
+  7840                                  
+  7841                                  .dofunc436:
+  7842 00003671 E84AD6                   call storefunc
+  7843                                  
+  7844                                  ;-895   prs("\n\n"); prs(symbol); prs(": PROC");
+  7845                                  
+  7846 00003674 68[A238]                 push dofunc_1
+  7847 00003677 E868CD                   call prs
+  7848 0000367A 83C402                   add  sp, 2
+  7849 0000367D 8D06BB69                 lea  ax, [symbol]
+  7850 00003681 50                       push ax
+  7851 00003682 E85DCD                   call prs
+  7852 00003685 83C402                   add  sp, 2
+  7853 00003688 68[A738]                 push dofunc_2
+  7854 0000368B E854CD                   call prs
+  7855 0000368E 83C402                   add  sp, 2
+  7856                                  
+  7857                                  ;-896   expect('('); LTop=LSTART;  i=0;
+  7858                                  
+  7859 00003691 6A28                     push 40
+  7860 00003693 E89AD1                   call expect
+  7861 00003696 83C402                   add  sp, 2
+  7862 00003699 B8C800                   mov ax, 200
+  7863 0000369C A3[3B00]                 mov word [LTop], ax
+  7864 0000369F B80000                   mov ax, 0
+  7865 000036A2 8946FC                   mov [bp-4], ax
+  7866                                  
+  7867                                  ;-897   if (istoken(')')==0) { narg=2;
+  7868                                  
+  7869 000036A5 6A29                     push 41
+  7870 000036A7 E864D1                   call istoken
+  7871 000036AA 83C402                   add  sp, 2
+  7872 000036AD 83F800                   cmp ax, 0
+  7873 000036B0 0F854600                 jne .dofunc437
+  7874 000036B4 B80200                   mov ax, 2
+  7875 000036B7 8946FA                   mov [bp-6], ax
+  7876                                  
+  7877                                  ;-898     do { typeName();  addlocal(); narg+=2;
+  7878                                  
+  7879                                  .dofunc438:
+  7880 000036BA E876D4                   call typeName
+  7881 000036BD E873D6                   call addlocal
+  7882 000036C0 8346FA02                 add  word[bp-6], 2
+  7883                                  
+  7884                                  ;-899          GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
+  7885                                  
+  7886 000036C4 8B46FA                   mov ax, [bp-6]
+  7887 000036C7 8B1E[3B00]               mov bx, [LTop]
+  7888 000036CB D1E3                     shl bx, 1
+  7889 000036CD 89873873                 mov [GData+bx], ax
+  7890 000036D1 A0[3600]                 mov al, [iswidth]
+  7891 000036D4 3C04                     cmp al, 4
+  7892 000036D6 0F850400                 jne .dofunc439
+  7893 000036DA 8346FA02                 add  word[bp-6], 2
+  7894                                  .dofunc439:
+  7895 000036DE FF06[3B00]               inc  word[LTop]
+  7896                                  
+  7897                                  ;-900     while (istoken(','));  expect(')'); }
+  7898                                  
+  7899 000036E2 6A2C                     push 44
+  7900 000036E4 E827D1                   call istoken
+  7901 000036E7 83C402                   add  sp, 2
+  7902 000036EA 08C0                     or  al, al
+  7903 000036EC 0F840200                 je .dofunc440
+  7904 000036F0 EBC8                     jmp .dofunc438
+  7905                                  .dofunc440:
+  7906 000036F2 6A29                     push 41
+  7907 000036F4 E839D1                   call expect
+  7908 000036F7 83C402                   add  sp, 2
   7909                                  
-  7910                                  ;-868 }
+  7910                                  ;-901 
   7911                                  
-  7912                                  .getdigit438:
-  7913                                  
-  7914                                  ;-869 
-  7915                                  
-  7916                                  
-  7917                                  ;-870 int stmt() { int c; char cha;
-  7918 000038A8 C9                       LEAVE
-  7919 000038A9 C3                       ret
-  7920                                  ENDP
+  7912                                  
+  7913                                  ;-902   expect('{'); /*body*/
+  7914                                  
+  7915                                  .dofunc437:
+  7916 000036FA 6A7B                     push 123
+  7917 000036FC E831D1                   call expect
+  7918 000036FF 83C402                   add  sp, 2
+  7919                                  
+  7920                                  ;-903   nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
   7921                                  
-  7922                                  stmt: PROC
-  7923                                  
-  7924                                  ;-871        if(istoken('{'))     {while(istoken('}')==0) stmt();}
-  7925                                  ;
-  7926 000038AA C8040000                 ENTER  4,0
-  7927 000038AE 6A7B                     push 123
-  7928 000038B0 E841CB                   call istoken
-  7929 000038B3 83C402                   add  sp, 2
-  7930 000038B6 08C0                     or  al, al
-  7931 000038B8 0F841700                 je .stmt441
-  7932                                  .stmt442:
-  7933 000038BC 6A7D                     push 125
-  7934 000038BE E833CB                   call istoken
-  7935 000038C1 83C402                   add  sp, 2
-  7936 000038C4 83F800                   cmp ax, 0
-  7937 000038C7 0F850500                 jne .stmt443
-  7938 000038CB E8DCFF                   call stmt
-  7939 000038CE EBEC                     jmp .stmt442
-  7940                                  .stmt443:
-  7941                                  
-  7942                                  ;-872   else if(istoken(T_IF))    doif();
-  7943                                  
-  7944 000038D0 E9BA01                   jmp .stmt444
-  7945                                  .stmt441:
-  7946 000038D3 680102                   push 513
-  7947 000038D6 E81BCB                   call istoken
-  7948 000038D9 83C402                   add  sp, 2
-  7949 000038DC 08C0                     or  al, al
-  7950 000038DE 0F840600                 je .stmt445
-  7951 000038E2 E8B5F7                   call doif
-  7952                                  
-  7953                                  ;-873   else if(istoken(T_DO))    dodo();
-  7954                                  
-  7955 000038E5 E9A501                   jmp .stmt446
-  7956                                  .stmt445:
-  7957 000038E8 680402                   push 516
-  7958 000038EB E806CB                   call istoken
-  7959 000038EE 83C402                   add  sp, 2
-  7960 000038F1 08C0                     or  al, al
-  7961 000038F3 0F840600                 je .stmt447
-  7962 000038F7 E802F8                   call dodo
-  7963                                  
-  7964                                  ;-874   else if(istoken(T_WHILE)) dowhile();
-  7965                                  
-  7966 000038FA E99001                   jmp .stmt448
-  7967                                  .stmt447:
-  7968 000038FD 680302                   push 515
-  7969 00003900 E8F1CA                   call istoken
-  7970 00003903 83C402                   add  sp, 2
-  7971 00003906 08C0                     or  al, al
-  7972 00003908 0F840600                 je .stmt449
-  7973 0000390C E83AF8                   call dowhile
+  7922 00003702 B80000                   mov ax, 0
+  7923 00003705 8946FE                   mov [bp-2], ax
+  7924 00003708 B80000                   mov ax, 0
+  7925 0000370B A3[2800]                 mov word [nreturn], ax
+  7926 0000370E B80000                   mov ax, 0
+  7927 00003711 A3[2600]                 mov word [nconst], ax
+  7928 00003714 B80000                   mov ax, 0
+  7929 00003717 8946FC                   mov [bp-4], ax
+  7930                                  
+  7931                                  ;-904   while(isvariable()) {
+  7932                                  
+  7933                                  .dofunc441:
+  7934 0000371A E81CD7                   call isvariable
+  7935 0000371D 08C0                     or  al, al
+  7936 0000371F 0F849200                 je .dofunc442
+  7937                                  
+  7938                                  ;-905     do {typeName();
+  7939                                  
+  7940                                  .dofunc443:
+  7941 00003723 E80DD4                   call typeName
+  7942                                  
+  7943                                  ;-906         checknamelen();
+  7944                                  
+  7945 00003726 E815D2                   call checknamelen
+  7946                                  
+  7947                                  ;-907         addlocal(); nloc-=2;
+  7948                                  
+  7949 00003729 E807D6                   call addlocal
+  7950 0000372C 836EFE02                 sub  word[bp-2], 2
+  7951                                  
+  7952                                  ;-908         if (iswidth == 4) nloc-=2;
+  7953                                  
+  7954 00003730 A0[3600]                 mov al, [iswidth]
+  7955 00003733 3C04                     cmp al, 4
+  7956 00003735 0F850400                 jne .dofunc444
+  7957 00003739 836EFE02                 sub  word[bp-2], 2
+  7958                                  
+  7959                                  ;-909         GData[LTop]=nloc;
+  7960                                  
+  7961                                  .dofunc444:
+  7962 0000373D 8B46FE                   mov ax, [bp-2]
+  7963 00003740 8B1E[3B00]               mov bx, [LTop]
+  7964 00003744 D1E3                     shl bx, 1
+  7965 00003746 89873873                 mov [GData+bx], ax
+  7966                                  
+  7967                                  ;-910         if (istoken('[')){
+  7968                                  
+  7969 0000374A 6A5B                     push 91
+  7970 0000374C E8BFD0                   call istoken
+  7971 0000374F 83C402                   add  sp, 2
+  7972 00003752 08C0                     or  al, al
+  7973 00003754 0F843D00                 je .dofunc445
   7974                                  
-  7975                                  ;-875   else if(istoken(T_GOTO))  {
+  7975                                  ;-911             istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
   7976                                  
-  7977 0000390F E97B01                   jmp .stmt450
-  7978                                  .stmt449:
-  7979 00003912 680902                   push 521
-  7980 00003915 E8DCCA                   call istoken
-  7981 00003918 83C402                   add  sp, 2
-  7982 0000391B 08C0                     or  al, al
-  7983 0000391D 0F842200                 je .stmt451
-  7984                                  
-  7985                                  ;-876     prs("\n jmp .");name1();prs(symbol);expect(';');}
-  7986                                  
-  7987 00003921 68[8F3A]                 push stmt_0
-  7988 00003924 E8FFCB                   call prs
-  7989 00003927 83C402                   add  sp, 2
-  7990 0000392A E8FED4                   call name1
-  7991 0000392D 8D06BB69                 lea  ax, [symbol]
-  7992 00003931 50                       push ax
-  7993 00003932 E8F1CB                   call prs
-  7994 00003935 83C402                   add  sp, 2
-  7995 00003938 6A3B                     push 59
-  7996 0000393A E8D9CA                   call expect
-  7997 0000393D 83C402                   add  sp, 2
-  7998                                  
-  7999                                  ;-877   else if(token==T_ASM)     {prs("\n"); c=next();
-  8000                                  
-  8001 00003940 E94A01                   jmp .stmt452
-  8002                                  .stmt451:
-  8003 00003943 A1[1E00]                 mov ax, [token]
-  8004 00003946 3D0602                   cmp ax, 518
-  8005 00003949 0F853300                 jne .stmt453
-  8006 0000394D 68[983A]                 push stmt_1
-  8007 00003950 E8D3CB                   call prs
-  8008 00003953 83C402                   add  sp, 2
-  8009 00003956 E87DCA                   call next
-  8010 00003959 8946FE                   mov [bp-2], ax
-  8011                                  
-  8012                                  ;-878         while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
-  8013                                  
-  8014                                  .stmt454:
-  8015 0000395C 8B46FE                   mov ax, [bp-2]
-  8016 0000395F 83F80A                   cmp ax, 10
-  8017 00003962 0F841100                 je  .stmt455
-  8018 00003966 FF76FE                   push word [bp-2]
-  8019 00003969 E853CB                   call prc
-  8020 0000396C 83C402                   add  sp, 2
-  8021 0000396F E864CA                   call next
-  8022 00003972 8946FE                   mov [bp-2], ax
-  8023 00003975 EBE5                     jmp .stmt454
-  8024                                  .stmt455:
-  8025 00003977 E87AF8                   call getlex
-  8026 0000397A A3[1E00]                 mov word [token], ax
-  8027                                  
-  8028                                  ;-879   else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
-  8029                                  
-  8030 0000397D E90D01                   jmp .stmt456
-  8031                                  .stmt453:
-  8032 00003980 680702                   push 519
-  8033 00003983 E86ECA                   call istoken
-  8034 00003986 83C402                   add  sp, 2
-  8035 00003989 08C0                     or  al, al
-  8036 0000398B 0F844B00                 je .stmt457
-  8037 0000398F A1[1E00]                 mov ax, [token]
-  8038 00003992 83F87B                   cmp ax, 123
-  8039 00003995 0F853500                 jne .stmt458
-  8040 00003999 68[9B3A]                 push stmt_2
-  8041 0000399C E887CB                   call prs
-  8042 0000399F 83C402                   add  sp, 2
-  8043 000039A2 E831CA                   call next
-  8044 000039A5 8846FC                   mov [bp-4], al
-  8045                                  
-  8046                                  ;-880         while(cha!= '}') { prc(cha); cha=next(); }
-  8047                                  
-  8048                                  .stmt459:
-  8049 000039A8 8A46FC                   mov al, [bp-4]
-  8050 000039AB 3C7D                     cmp al, 125
-  8051 000039AD 0F841400                 je  .stmt460
-  8052 000039B1 8A46FC                   mov al, byte [bp-4]
-  8053 000039B4 B400                     mov ah, 0
-  8054 000039B6 50                       push ax
-  8055 000039B7 E805CB                   call prc
-  8056 000039BA 83C402                   add  sp, 2
-  8057 000039BD E816CA                   call next
-  8058 000039C0 8846FC                   mov [bp-4], al
-  8059                                  
-  8060                                  ;-881         token=getlex(); }
-  8061                                  
-  8062 000039C3 EBE3                     jmp .stmt459
-  8063                                  .stmt460:
-  8064 000039C5 E82CF8                   call getlex
-  8065 000039C8 A3[1E00]                 mov word [token], ax
-  8066                                  
-  8067                                  ;-882         else error1("Curly open expected");
-  8068                                  
-  8069 000039CB E90900                   jmp .stmt461
-  8070                                  .stmt458:
-  8071 000039CE 68[9E3A]                 push stmt_3
-  8072 000039D1 E89702                   call error1
-  8073 000039D4 83C402                   add  sp, 2
-  8074                                  
-  8075                                  ;-883         }
+  7977 00003758 B82600                   mov ax, 38
+  7978 0000375B A2[3000]                 mov byte [istype], al
+  7979 0000375E B82600                   mov ax, 38
+  7980 00003761 8B1E[3B00]               mov bx, [LTop]
+  7981 00003765 8887046B                 mov [GType+bx], al
+  7982 00003769 680101                   push 257
+  7983 0000376C E8C1D0                   call expect
+  7984 0000376F 83C402                   add  sp, 2
+  7985 00003772 6A5D                     push 93
+  7986 00003774 E8B9D0                   call expect
+  7987 00003777 83C402                   add  sp, 2
+  7988                                  
+  7989                                  ;-912             nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc;
+  7990                                  
+  7991 0000377A 8B46FE                   mov ax, [bp-2]
+  7992 0000377D 2B06[2C00]               sub ax, [lexval]
+  7993 00003781 8946FE                   mov [bp-2], ax
+  7994 00003784 8346FE02                 add  word[bp-2], 2
+  7995 00003788 8B46FE                   mov ax, [bp-2]
+  7996 0000378B 8B1E[3B00]               mov bx, [LTop]
+  7997 0000378F D1E3                     shl bx, 1
+  7998 00003791 89873873                 mov [GData+bx], ax
+  7999                                  
+  8000                                  ;-913             }
+  8001                                  
+  8002                                  
+  8003                                  ;-914         LTop++;
+  8004                                  
+  8005                                  .dofunc445:
+  8006 00003795 FF06[3B00]               inc  word[LTop]
+  8007                                  
+  8008                                  ;-915       } while (istoken(',')); expect(';'); }
+  8009                                  
+  8010 00003799 6A2C                     push 44
+  8011 0000379B E870D0                   call istoken
+  8012 0000379E 83C402                   add  sp, 2
+  8013 000037A1 08C0                     or  al, al
+  8014 000037A3 0F840300                 je .dofunc446
+  8015 000037A7 E979FF                   jmp .dofunc443
+  8016                                  .dofunc446:
+  8017 000037AA 6A3B                     push 59
+  8018 000037AC E881D0                   call expect
+  8019 000037AF 83C402                   add  sp, 2
+  8020                                  
+  8021                                  ;-916   if (LTop>LSTART){prs(";\n ENTER  ");
+  8022                                  
+  8023 000037B2 E965FF                   jmp .dofunc441
+  8024                                  .dofunc442:
+  8025 000037B5 A1[3B00]                 mov ax, [LTop]
+  8026 000037B8 3DC800                   cmp ax, 200
+  8027 000037BB 0F8E2700                 jle .dofunc447
+  8028 000037BF 68[AE38]                 push dofunc_3
+  8029 000037C2 E81DCC                   call prs
+  8030 000037C5 83C402                   add  sp, 2
+  8031                                  
+  8032                                  ;-917     nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
+  8033                                  
+  8034 000037C8 FF76FE                   push word [bp-2]
+  8035 000037CB E8D6C8                   call mkneg
+  8036 000037CE 83C402                   add  sp, 2
+  8037 000037D1 8946FE                   mov [bp-2], ax
+  8038 000037D4 FF76FE                   push word [bp-2]
+  8039 000037D7 E86BCD                   call prunsign1
+  8040 000037DA 83C402                   add  sp, 2
+  8041 000037DD 68[BA38]                 push dofunc_4
+  8042 000037E0 E8FFCB                   call prs
+  8043 000037E3 83C402                   add  sp, 2
+  8044                                  
+  8045                                  ;-918   while(istoken('}')==0)   stmt();
+  8046                                  
+  8047                                  .dofunc447:
+  8048                                  .dofunc448:
+  8049 000037E6 6A7D                     push 125
+  8050 000037E8 E823D0                   call istoken
+  8051 000037EB 83C402                   add  sp, 2
+  8052 000037EE 83F800                   cmp ax, 0
+  8053 000037F1 0F850500                 jne .dofunc449
+  8054 000037F5 E8FAFB                   call stmt
+  8055                                  
+  8056                                  ;-919   if (nreturn) {
+  8057                                  
+  8058 000037F8 EBEC                     jmp .dofunc448
+  8059                                  .dofunc449:
+  8060 000037FA A1[2800]                 mov ax, [nreturn]
+  8061 000037FD 08C0                     or  al, al
+  8062 000037FF 0F841C00                 je .dofunc450
+  8063                                  
+  8064                                  ;-920         prs("\n .retn");
+  8065                                  
+  8066 00003803 68[BD38]                 push dofunc_5
+  8067 00003806 E8D9CB                   call prs
+  8068 00003809 83C402                   add  sp, 2
+  8069                                  
+  8070                                  ;-921         prs(fname);
+  8071                                  
+  8072 0000380C 8D063B6A                 lea  ax, [fname]
+  8073 00003810 50                       push ax
+  8074 00003811 E8CECB                   call prs
+  8075 00003814 83C402                   add  sp, 2
   8076                                  
-  8077                                  .stmt461:
+  8077                                  ;-922         prc(':');
   8078                                  
-  8079                                  ;-884   else if(istoken(T_EMIT))   doemit();
-  8080                                  
-  8081 000039D7 E9B300                   jmp .stmt462
-  8082                                  .stmt457:
-  8083 000039DA 680802                   push 520
-  8084 000039DD E814CA                   call istoken
-  8085 000039E0 83C402                   add  sp, 2
-  8086 000039E3 08C0                     or  al, al
-  8087 000039E5 0F840600                 je .stmt463
-  8088 000039E9 E8A0F4                   call doemit
-  8089                                  
-  8090                                  ;-885   else if(istoken(';'))      { }
-  8091                                  
-  8092 000039EC E99E00                   jmp .stmt464
-  8093                                  .stmt463:
-  8094 000039EF 6A3B                     push 59
-  8095 000039F1 E800CA                   call istoken
-  8096 000039F4 83C402                   add  sp, 2
-  8097 000039F7 08C0                     or  al, al
-  8098 000039F9 0F840300                 je .stmt465
-  8099                                  
-  8100                                  ;-886   else if(istoken(T_RETURN)) {
-  8101                                  
-  8102 000039FD E98D00                   jmp .stmt466
-  8103                                  .stmt465:
-  8104 00003A00 680002                   push 512
-  8105 00003A03 E8EEC9                   call istoken
-  8106 00003A06 83C402                   add  sp, 2
-  8107 00003A09 08C0                     or  al, al
-  8108 00003A0B 0F843500                 je .stmt467
-  8109                                  
-  8110                                  ;-887         if (token!=';') expr(0);
-  8111                                  
-  8112 00003A0F A1[1E00]                 mov ax, [token]
-  8113 00003A12 83F83B                   cmp ax, 59
-  8114 00003A15 0F840800                 je  .stmt468
-  8115 00003A19 6A00                     push 0
-  8116 00003A1B E823E1                   call expr
-  8117 00003A1E 83C402                   add  sp, 2
-  8118                                  
-  8119                                  ;-888         prs("\n jmp .retn");
+  8079 00003817 6A3A                     push 58
+  8080 00003819 E86DCB                   call prc
+  8081 0000381C 83C402                   add  sp, 2
+  8082                                  
+  8083                                  ;-923         }
+  8084                                  
+  8085                                  
+  8086                                  ;-924   if (LTop > LSTART) prs(" LEAVE");
+  8087                                  
+  8088                                  .dofunc450:
+  8089 0000381F A1[3B00]                 mov ax, [LTop]
+  8090 00003822 3DC800                   cmp ax, 200
+  8091 00003825 0F8E0900                 jle .dofunc451
+  8092 00003829 68[C638]                 push dofunc_6
+  8093 0000382C E8B3CB                   call prs
+  8094 0000382F 83C402                   add  sp, 2
+  8095                                  
+  8096                                  ;-925   prs("\n ret");
+  8097                                  
+  8098                                  .dofunc451:
+  8099 00003832 68[CD38]                 push dofunc_7
+  8100 00003835 E8AACB                   call prs
+  8101 00003838 83C402                   add  sp, 2
+  8102                                  
+  8103                                  ;-926   *cloc=0; prs(co);
+  8104                                  
+  8105 0000383B B80000                   mov ax, 0
+  8106 0000383E 8B1E[1800]               mov  bx, [cloc]
+  8107 00003842 8807                     mov  [bx], al
+  8108 00003844 8D06A861                 lea  ax, [co]
+  8109 00003848 50                       push ax
+  8110 00003849 E896CB                   call prs
+  8111 0000384C 83C402                   add  sp, 2
+  8112                                  
+  8113                                  ;-927   maxco1=strlen(co);
+  8114                                  
+  8115 0000384F 8D06A861                 lea  ax, [co]
+  8116 00003853 50                       push ax
+  8117 00003854 E8ADC9                   call strlen
+  8118 00003857 83C402                   add  sp, 2
+  8119 0000385A A3[1600]                 mov word [maxco1], ax
   8120                                  
-  8121                                  .stmt468:
-  8122 00003A21 68[B23A]                 push stmt_4
-  8123 00003A24 E8FFCA                   call prs
-  8124 00003A27 83C402                   add  sp, 2
-  8125                                  
-  8126                                  ;-889         prs(fname);
-  8127                                  
-  8128 00003A2A 8D063B6A                 lea  ax, [fname]
-  8129 00003A2E 50                       push ax
-  8130 00003A2F E8F4CA                   call prs
-  8131 00003A32 83C402                   add  sp, 2
-  8132                                  
-  8133                                  ;-890         nreturn++;
+  8121                                  ;-928   if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
+  8122                                  
+  8123 0000385D A1[1600]                 mov ax, [maxco1]
+  8124 00003860 3B06[1400]               cmp ax, [maxco]
+  8125 00003864 0F8E1600                 jle .dofunc452
+  8126 00003868 A1[1600]                 mov ax, [maxco1]
+  8127 0000386B A3[1400]                 mov word [maxco], ax
+  8128 0000386E 8D063B6A                 lea  ax, [fname]
+  8129 00003872 50                       push ax
+  8130 00003873 8D067869                 lea  ax, [coname]
+  8131 00003877 50                       push ax
+  8132 00003878 E8B1C9                   call strcpy
+  8133 0000387B 83C404                   add  sp, 4
   8134                                  
-  8135 00003A35 FF06[2800]               inc  word[nreturn]
+  8135                                  ;-929   prs("\nENDP");
   8136                                  
-  8137                                  ;-891         expect(';');
-  8138                                  
-  8139 00003A39 6A3B                     push 59
-  8140 00003A3B E8D8C9                   call expect
-  8141 00003A3E 83C402                   add  sp, 2
-  8142                                  
-  8143                                  ;-892         }
+  8137                                  .dofunc452:
+  8138 0000387E 68[D438]                 push dofunc_8
+  8139 00003881 E85ECB                   call prs
+  8140 00003884 83C402                   add  sp, 2
+  8141                                  
+  8142                                  ;-930 }
+  8143                                  
   8144                                  
-  8145                                  
-  8146                                  ;-893   else if(thechar==':')      {
+  8145                                  ;-931 
+  8146                                  
   8147                                  
-  8148 00003A41 E94900                   jmp .stmt469
-  8149                                  .stmt467:
-  8150 00003A44 A0[2300]                 mov al, [thechar]
-  8151 00003A47 3C3A                     cmp al, 58
-  8152 00003A49 0F853000                 jne .stmt470
-  8153                                  
-  8154                                  ;-894         prs("\n."); // Label
-  8155                                  
-  8156 00003A4D 68[BF3A]                 push stmt_5
-  8157 00003A50 E8D3CA                   call prs
-  8158 00003A53 83C402                   add  sp, 2
-  8159                                  
-  8160                                  ;-895         prs(symbol); prc(':');
-  8161                                  
-  8162 00003A56 8D06BB69                 lea  ax, [symbol]
-  8163 00003A5A 50                       push ax
-  8164 00003A5B E8C8CA                   call prs
-  8165 00003A5E 83C402                   add  sp, 2
-  8166 00003A61 6A3A                     push 58
-  8167 00003A63 E859CA                   call prc
-  8168 00003A66 83C402                   add  sp, 2
-  8169                                  
-  8170                                  ;-896         expect(T_NAME);
+  8148                                  ;-932 char doglobName[IDLENMAX];
+  8149 00003887 C9                       LEAVE
+  8150 00003888 C3                       ret
+  8151 00003889 46756E6374696F6E20-     dofunc_0 db "Function already defined",0
+  8152 00003892 616C72656164792064-
+  8153 0000389B 6566696E656400     
+  8154 000038A2 5C6E5C6E00              dofunc_1 db "\n\n",0
+  8155 000038A7 3A2050524F4300          dofunc_2 db ": PROC",0
+  8156 000038AE 3B5C6E20454E544552-     dofunc_3 db ";\n ENTER  ",0
+  8157 000038B7 202000             
+  8158 000038BA 2C3000                  dofunc_4 db ",0",0
+  8159 000038BD 5C6E202E7265746E00      dofunc_5 db "\n .retn",0
+  8160 000038C6 204C4541564500          dofunc_6 db " LEAVE",0
+  8161 000038CD 5C6E2072657400          dofunc_7 db "\n ret",0
+  8162 000038D4 5C6E454E445000          dofunc_8 db "\nENDP",0
+  8163                                  ENDP
+  8164                                  section .bss
+  8165                                  absolute 55982
+  8166 0000DAAE <res 0000000F>          doglobName resb 15
+  8167                                  section .text
+  8168                                  
+  8169                                  ;-933 int doglob() {
+  8170                                  
   8171                                  
-  8172 00003A69 680001                   push 256
-  8173 00003A6C E8A7C9                   call expect
-  8174 00003A6F 83C402                   add  sp, 2
-  8175                                  
-  8176                                  ;-897         expect(':');
-  8177                                  
-  8178 00003A72 6A3A                     push 58
-  8179 00003A74 E89FC9                   call expect
-  8180 00003A77 83C402                   add  sp, 2
+  8172                                  doglob: PROC
+  8173                                  
+  8174                                  ;-934     int i; int j; int isstrarr; isstrarr=0;
+  8175                                  ;
+  8176 000038DB C8060000                 ENTER  6,0
+  8177 000038DF B80000                   mov ax, 0
+  8178 000038E2 8946FA                   mov [bp-6], ax
+  8179                                  
+  8180                                  ;-935   if (GTop >= LSTART) error1("Global table full");
   8181                                  
-  8182                                  ;-898         }
-  8183                                  
-  8184                                  
-  8185                                  ;-899   else  {expr(0);; expect(';'); }
-  8186                                  
-  8187 00003A7A E91000                   jmp .stmt471
-  8188                                  .stmt470:
-  8189 00003A7D 6A00                     push 0
-  8190 00003A7F E8BFE0                   call expr
-  8191 00003A82 83C402                   add  sp, 2
-  8192 00003A85 6A3B                     push 59
-  8193 00003A87 E88CC9                   call expect
-  8194 00003A8A 83C402                   add  sp, 2
-  8195                                  
-  8196                                  ;-900 }
-  8197                                  
-  8198                                  .stmt471:
-  8199                                  .stmt469:
-  8200                                  .stmt466:
-  8201                                  .stmt464:
-  8202                                  .stmt462:
-  8203                                  .stmt456:
-  8204                                  .stmt452:
-  8205                                  .stmt450:
-  8206                                  .stmt448:
-  8207                                  .stmt446:
-  8208                                  .stmt444:
-  8209                                  
-  8210                                  ;-901 
-  8211                                  
+  8182 000038E5 A1[3900]                 mov ax, [GTop]
+  8183 000038E8 3DC800                   cmp ax, 200 ;unsigned : 1
+  8184 000038EB 0F8C0900                 jl  .doglob453
+  8185 000038EF 68[303C]                 push doglob_0
+  8186 000038F2 E8EBCC                   call error1
+  8187 000038F5 83C402                   add  sp, 2
+  8188                                  
+  8189                                  ;-936   if (iswidth == 0) error1("no VOID as var type");
+  8190                                  
+  8191                                  .doglob453:
+  8192 000038F8 A0[3600]                 mov al, [iswidth]
+  8193 000038FB 3C00                     cmp al, 0
+  8194 000038FD 0F850900                 jne .doglob454
+  8195 00003901 68[423C]                 push doglob_1
+  8196 00003904 E8D9CC                   call error1
+  8197 00003907 83C402                   add  sp, 2
+  8198                                  
+  8199                                  ;-937   checknamelen();
+  8200                                  
+  8201                                  .doglob454:
+  8202 0000390A E831D0                   call checknamelen
+  8203                                  
+  8204                                  ;-938   if (checkName() != 0) error1("Variable already defined");
+  8205                                  
+  8206 0000390D E89FD1                   call checkName
+  8207 00003910 3C00                     cmp al, 0
+  8208 00003912 0F840900                 je  .doglob455
+  8209 00003916 68[563C]                 push doglob_2
+  8210 00003919 E8C4CC                   call error1
+  8211 0000391C 83C402                   add  sp, 2
   8212                                  
-  8213                                  ;-902 int getstring(int delim) {
-  8214 00003A8D C9                       LEAVE
-  8215 00003A8E C3                       ret
-  8216 00003A8F 5C6E206A6D70202E00      stmt_0 db "\n jmp .",0
-  8217 00003A98 5C6E00                  stmt_1 db "\n",0
-  8218 00003A9B 5C6E00                  stmt_2 db "\n",0
-  8219 00003A9E 4375726C79206F7065-     stmt_3 db "Curly open expected",0
-  8220 00003AA7 6E2065787065637465-
-  8221 00003AB0 6400               
-  8222 00003AB2 5C6E206A6D70202E72-     stmt_4 db "\n jmp .retn",0
-  8223 00003ABB 65746E00           
-  8224 00003ABF 5C6E2E00                stmt_5 db "\n.",0
-  8225                                  ENDP
-  8226                                  
-  8227                                  getstring: PROC
-  8228                                  
-  8229                                  ;-903     int c; char *p;
-  8230                                  
+  8213                                  ;-939   if (istoken('[')) { istype='&';
+  8214                                  
+  8215                                  .doglob455:
+  8216 0000391F 6A5B                     push 91
+  8217 00003921 E8EACE                   call istoken
+  8218 00003924 83C402                   add  sp, 2
+  8219 00003927 08C0                     or  al, al
+  8220 00003929 0F84E201                 je .doglob456
+  8221 0000392D B82600                   mov ax, 38
+  8222 00003930 A2[3000]                 mov byte [istype], al
+  8223                                  
+  8224                                  ;-940     if (istoken(T_CONST)) {
+  8225                                  
+  8226 00003933 680101                   push 257
+  8227 00003936 E8D5CE                   call istoken
+  8228 00003939 83C402                   add  sp, 2
+  8229 0000393C 08C0                     or  al, al
+  8230 0000393E 0F84C200                 je .doglob457
   8231                                  
-  8232                                  ;-904     p=&symbol;
-  8233                                  ;
-  8234 00003AC3 C8040000                 ENTER  4,0
-  8235 00003AC7 B8BB69                   mov ax, symbol
-  8236 00003ACA 8946FC                   mov [bp-4], ax
+  8232                                  ;-941       prs("\nsection .bss\nabsolute ");
+  8233                                  
+  8234 00003942 68[6F3C]                 push doglob_3
+  8235 00003945 E89ACA                   call prs
+  8236 00003948 83C402                   add  sp, 2
   8237                                  
-  8238                                  ;-905     c=next();
+  8238                                  ;-942       prunsign1(orgData);
   8239                                  
-  8240 00003ACD E806C9                   call next
-  8241 00003AD0 8946FE                   mov [bp-2], ax
-  8242                                  
-  8243                                  ;-906     while (c != delim) {
-  8244                                  
-  8245                                  .getstring472:
-  8246 00003AD3 8B46FE                   mov ax, [bp-2]
-  8247 00003AD6 3B4604                   cmp ax, [bp+4]
-  8248 00003AD9 0F841300                 je  .getstring473
-  8249                                  
-  8250                                  ;-907         *p=c;
-  8251                                  
-  8252 00003ADD 8B46FE                   mov ax, [bp-2]
-  8253 00003AE0 8B5EFC                   mov  bx, [bp-4]
-  8254 00003AE3 8807                     mov  [bx], al
+  8240 0000394B FF36[1200]               push word [orgData]
+  8241 0000394F E8F3CB                   call prunsign1
+  8242 00003952 83C402                   add  sp, 2
+  8243                                  
+  8244                                  ;-943       prs("\n"); prs(symbol);
+  8245                                  
+  8246 00003955 68[893C]                 push doglob_4
+  8247 00003958 E887CA                   call prs
+  8248 0000395B 83C402                   add  sp, 2
+  8249 0000395E 8D06BB69                 lea  ax, [symbol]
+  8250 00003962 50                       push ax
+  8251 00003963 E87CCA                   call prs
+  8252 00003966 83C402                   add  sp, 2
+  8253                                  
+  8254                                  ;-944       if (iswidth==1) prs(" resb ");
   8255                                  
-  8256                                  ;-908         p++;
-  8257                                  
-  8258 00003AE5 FF46FC                   inc  word[bp-4]
-  8259                                  
-  8260                                  ;-909         c=next();
-  8261                                  
-  8262 00003AE8 E8EBC8                   call next
-  8263 00003AEB 8946FE                   mov [bp-2], ax
+  8256 00003969 A0[3600]                 mov al, [iswidth]
+  8257 0000396C 3C01                     cmp al, 1
+  8258 0000396E 0F850900                 jne .doglob458
+  8259 00003972 68[8C3C]                 push doglob_5
+  8260 00003975 E86ACA                   call prs
+  8261 00003978 83C402                   add  sp, 2
+  8262                                  
+  8263                                  ;-945       if (iswidth==2) prs(" resw ");
   8264                                  
-  8265                                  ;-910     }
-  8266                                  
-  8267                                  
-  8268                                  ;-911     *p=0;
-  8269                                  
-  8270 00003AEE EBE3                     jmp .getstring472
-  8271                                  .getstring473:
-  8272 00003AF0 B80000                   mov ax, 0
-  8273 00003AF3 8B5EFC                   mov  bx, [bp-4]
-  8274 00003AF6 8807                     mov  [bx], al
-  8275                                  
-  8276                                  ;-912 }
-  8277                                  
-  8278                                  
-  8279                                  ;-913 
-  8280                                  
-  8281                                  
-  8282                                  ;-914 int fgets1() {
-  8283 00003AF8 C9                       LEAVE
-  8284 00003AF9 C3                       ret
-  8285                                  ENDP
-  8286                                  
-  8287                                  fgets1: PROC
-  8288                                  
-  8289                                  ;-915     char c;
-  8290                                  
+  8265                                  .doglob458:
+  8266 0000397B A0[3600]                 mov al, [iswidth]
+  8267 0000397E 3C02                     cmp al, 2
+  8268 00003980 0F850900                 jne .doglob459
+  8269 00003984 68[933C]                 push doglob_6
+  8270 00003987 E858CA                   call prs
+  8271 0000398A 83C402                   add  sp, 2
+  8272                                  
+  8273                                  ;-946       if (iswidth==4) prs(" resd ");
+  8274                                  
+  8275                                  .doglob459:
+  8276 0000398D A0[3600]                 mov al, [iswidth]
+  8277 00003990 3C04                     cmp al, 4
+  8278 00003992 0F850900                 jne .doglob460
+  8279 00003996 68[9A3C]                 push doglob_7
+  8280 00003999 E846CA                   call prs
+  8281 0000399C 83C402                   add  sp, 2
+  8282                                  
+  8283                                  ;-947       prunsign1(lexval);
+  8284                                  
+  8285                                  .doglob460:
+  8286 0000399F FF36[2C00]               push word [lexval]
+  8287 000039A3 E89FCB                   call prunsign1
+  8288 000039A6 83C402                   add  sp, 2
+  8289                                  
+  8290                                  ;-948       prs("\nsection .text");
   8291                                  
-  8292                                  ;-916     c=*fgetsp;
-  8293                                  ;
-  8294 00003AFA C8020000                 ENTER  2,0
-  8295 00003AFE 8B1E[4500]               mov bx, [fgetsp]
-  8296 00003B02 8A07                     mov al, [bx]
-  8297 00003B04 B400                     mov ah, 0
-  8298 00003B06 8846FE                   mov [bp-2], al
-  8299                                  
-  8300                                  ;-917     if (c==0) {
+  8292 000039A9 68[A13C]                 push doglob_8
+  8293 000039AC E833CA                   call prs
+  8294 000039AF 83C402                   add  sp, 2
+  8295                                  
+  8296                                  ;-949       orgData=orgData+lexval;
+  8297                                  
+  8298 000039B2 A1[1200]                 mov ax, [orgData]
+  8299 000039B5 0306[2C00]               add ax, [lexval]
+  8300 000039B9 A3[1200]                 mov word [orgData], ax
   8301                                  
-  8302 00003B09 8A46FE                   mov al, [bp-2]
-  8303 00003B0C 3C00                     cmp al, 0
-  8304 00003B0E 0F852A00                 jne .fgets1474
-  8305                                  
-  8306                                  ;-918         printinputline();
-  8307                                  
-  8308 00003B12 E83700                   call printinputline
-  8309                                  
-  8310                                  ;-919         if (DOS_NoBytes == 0) return 0;
-  8311                                  
-  8312 00003B15 A1[5100]                 mov ax, [DOS_NoBytes]
-  8313 00003B18 83F800                   cmp ax, 0
-  8314 00003B1B 0F850600                 jne .fgets1475
-  8315 00003B1F B80000                   mov ax, 0
-  8316 00003B22 E92500                   jmp .retnfgets1
-  8317                                  
-  8318                                  ;-920         fgetsp=&fgetsdest;
-  8319                                  
-  8320                                  .fgets1475:
-  8321 00003B25 B8A0D9                   mov ax, fgetsdest
-  8322 00003B28 A3[4500]                 mov word [fgetsp], ax
-  8323                                  
-  8324                                  ;-921         c=*fgetsp;
-  8325                                  
-  8326 00003B2B 8B1E[4500]               mov bx, [fgetsp]
-  8327 00003B2F 8A07                     mov al, [bx]
-  8328 00003B31 B400                     mov ah, 0
-  8329 00003B33 8846FE                   mov [bp-2], al
-  8330                                  
-  8331                                  ;-922         column=0;
-  8332                                  
-  8333 00003B36 B80000                   mov ax, 0
-  8334 00003B39 A3[2100]                 mov word [column], ax
+  8302                                  ;-950       if (iswidth==2) orgData=orgData+lexval;
+  8303                                  
+  8304 000039BC A0[3600]                 mov al, [iswidth]
+  8305 000039BF 3C02                     cmp al, 2
+  8306 000039C1 0F850A00                 jne .doglob461
+  8307 000039C5 A1[1200]                 mov ax, [orgData]
+  8308 000039C8 0306[2C00]               add ax, [lexval]
+  8309 000039CC A3[1200]                 mov word [orgData], ax
+  8310                                  
+  8311                                  ;-951       if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
+  8312                                  
+  8313                                  .doglob461:
+  8314 000039CF A0[3600]                 mov al, [iswidth]
+  8315 000039D2 3C04                     cmp al, 4
+  8316 000039D4 0F851400                 jne .doglob462
+  8317 000039D8 A1[2C00]                 mov ax, [lexval]
+  8318 000039DB BB0300                   mov bx, 3
+  8319 000039DE F7E3                     mul bx
+  8320 000039E0 8946FE                   mov [bp-2], ax
+  8321 000039E3 A1[1200]                 mov ax, [orgData]
+  8322 000039E6 0346FE                   add ax, [bp-2]
+  8323 000039E9 A3[1200]                 mov word [orgData], ax
+  8324                                  
+  8325                                  ;-952       GData[GTop]=lexval; expect(']');
+  8326                                  
+  8327                                  .doglob462:
+  8328 000039EC A1[2C00]                 mov ax, [lexval]
+  8329 000039EF 8B1E[3900]               mov bx, [GTop]
+  8330 000039F3 D1E3                     shl bx, 1
+  8331 000039F5 89873873                 mov [GData+bx], ax
+  8332 000039F9 6A5D                     push 93
+  8333 000039FB E832CE                   call expect
+  8334 000039FE 83C402                   add  sp, 2
   8335                                  
-  8336                                  ;-923     }
+  8336                                  ;-953     }else { expect(']');
   8337                                  
-  8338                                  
-  8339                                  ;-924     fgetsp++;
-  8340                                  
-  8341                                  .fgets1474:
-  8342 00003B3C FF06[4500]               inc  word[fgetsp]
+  8338 00003A01 E90801                   jmp .doglob463
+  8339                                  .doglob457:
+  8340 00003A04 6A5D                     push 93
+  8341 00003A06 E827CE                   call expect
+  8342 00003A09 83C402                   add  sp, 2
   8343                                  
-  8344                                  ;-925     column++;
+  8344                                  ;-954       if (iswidth != 1) error1("Only ByteArray allowed");
   8345                                  
-  8346 00003B40 FF06[2100]               inc  word[column]
-  8347                                  
-  8348                                  ;-926     return c;
-  8349                                  
-  8350 00003B44 8A46FE                   mov al, [bp-2]
-  8351 00003B47 E90000                   jmp .retnfgets1
+  8346 00003A0C A0[3600]                 mov al, [iswidth]
+  8347 00003A0F 3C01                     cmp al, 1
+  8348 00003A11 0F840900                 je  .doglob464
+  8349 00003A15 68[B13C]                 push doglob_9
+  8350 00003A18 E8C5CB                   call error1
+  8351 00003A1B 83C402                   add  sp, 2
   8352                                  
-  8353                                  ;-927 }
+  8353                                  ;-955       prs("\n"); prs(symbol); prs(" db ");
   8354                                  
-  8355                                  
-  8356                                  ;-928 int printinputline() {
-  8357                                  
-  8358 00003B4A C9                       .retnfgets1: LEAVE
-  8359 00003B4B C3                       ret
-  8360                                  ENDP
-  8361                                  
-  8362                                  printinputline: PROC
-  8363                                  
-  8364                                  ;-929     int col;
-  8365                                  
+  8355                                  .doglob464:
+  8356 00003A1E 68[C83C]                 push doglob_10
+  8357 00003A21 E8BEC9                   call prs
+  8358 00003A24 83C402                   add  sp, 2
+  8359 00003A27 8D06BB69                 lea  ax, [symbol]
+  8360 00003A2B 50                       push ax
+  8361 00003A2C E8B3C9                   call prs
+  8362 00003A2F 83C402                   add  sp, 2
+  8363 00003A32 68[CB3C]                 push doglob_11
+  8364 00003A35 E8AAC9                   call prs
+  8365 00003A38 83C402                   add  sp, 2
   8366                                  
-  8367                                  ;-930     col=0;
-  8368                                  ;
-  8369 00003B4C C8020000                 ENTER  2,0
-  8370 00003B50 B80000                   mov ax, 0
-  8371 00003B53 8946FE                   mov [bp-2], ax
-  8372                                  
-  8373                                  ;-931     fgetsp=&fgetsdest;
-  8374                                  
-  8375 00003B56 B8A0D9                   mov ax, fgetsdest
-  8376 00003B59 A3[4500]                 mov word [fgetsp], ax
+  8367                                  ;-956       isstrarr=1; strcpy(doglobName, symbol);
+  8368                                  
+  8369 00003A3B B80100                   mov ax, 1
+  8370 00003A3E 8946FA                   mov [bp-6], ax
+  8371 00003A41 8D06BB69                 lea  ax, [symbol]
+  8372 00003A45 50                       push ax
+  8373 00003A46 8D06AEDA                 lea  ax, [doglobName]
+  8374 00003A4A 50                       push ax
+  8375 00003A4B E8DEC7                   call strcpy
+  8376 00003A4E 83C404                   add  sp, 4
   8377                                  
-  8378                                  ;-932     do {
+  8378                                  ;-957       expect('=');
   8379                                  
-  8380                                  .printinputline476:
-  8381                                  
-  8382                                  ;-933         DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+  8380 00003A51 6A3D                     push 61
+  8381 00003A53 E8DACD                   call expect
+  8382 00003A56 83C402                   add  sp, 2
   8383                                  
-  8384 00003B5C 6A01                     push 1
-  8385 00003B5E FF36[1A00]               push word [fdin]
-  8386 00003B62 8D06[5300]               lea  ax, [DOS_ByteRead]
-  8387 00003B66 50                       push ax
-  8388 00003B67 E88CC5                   call readRL
-  8389 00003B6A 83C406                   add  sp, 6
-  8390 00003B6D A3[5100]                 mov word [DOS_NoBytes], ax
+  8384                                  ;-958       if (istoken(T_STRING)) {
+  8385                                  
+  8386 00003A59 680201                   push 258
+  8387 00003A5C E8AFCD                   call istoken
+  8388 00003A5F 83C402                   add  sp, 2
+  8389 00003A62 08C0                     or  al, al
+  8390 00003A64 0F844200                 je .doglob465
   8391                                  
-  8392                                  ;-934         if (DOS_NoBytes == 0) return;
+  8392                                  ;-959         prc(34); prscomment(symbol); prc(34); prs(",0");
   8393                                  
-  8394 00003B70 A1[5100]                 mov ax, [DOS_NoBytes]
-  8395 00003B73 83F800                   cmp ax, 0
-  8396 00003B76 0F850300                 jne .printinputline477
-  8397 00003B7A E96A00                   jmp .retnprintinputline
-  8398                                  
-  8399                                  ;-935         *fgetsp=DOS_ByteRead;
-  8400                                  
-  8401                                  .printinputline477:
-  8402 00003B7D A0[5300]                 mov al, [DOS_ByteRead]
-  8403 00003B80 8B1E[4500]               mov  bx, [fgetsp]
-  8404 00003B84 8807                     mov  [bx], al
-  8405                                  
-  8406                                  ;-936         fgetsp++;
+  8394 00003A68 6A22                     push 34
+  8395 00003A6A E81CC9                   call prc
+  8396 00003A6D 83C402                   add  sp, 2
+  8397 00003A70 8D06BB69                 lea  ax, [symbol]
+  8398 00003A74 50                       push ax
+  8399 00003A75 E83CC9                   call prscomment
+  8400 00003A78 83C402                   add  sp, 2
+  8401 00003A7B 6A22                     push 34
+  8402 00003A7D E809C9                   call prc
+  8403 00003A80 83C402                   add  sp, 2
+  8404 00003A83 68[D03C]                 push doglob_12
+  8405 00003A86 E859C9                   call prs
+  8406 00003A89 83C402                   add  sp, 2
   8407                                  
-  8408 00003B86 FF06[4500]               inc  word[fgetsp]
+  8408                                  ;-960         i=strlen(symbol); GData[GTop]=i; }
   8409                                  
-  8410                                  ;-937         col++;
-  8411                                  
-  8412 00003B8A FF46FE                   inc  word[bp-2]
-  8413                                  
-  8414                                  ;-938         if (col >80) error1("input line longer than 80 char");
-  8415                                  
-  8416 00003B8D 8B46FE                   mov ax, [bp-2]
-  8417 00003B90 83F850                   cmp ax, 80
-  8418 00003B93 0F8E0900                 jle .printinputline478
-  8419 00003B97 68[E93B]                 push printinputline_0
-  8420 00003B9A E8CE00                   call error1
-  8421 00003B9D 83C402                   add  sp, 2
-  8422                                  
-  8423                                  ;-939         }
-  8424                                  
-  8425                                  .printinputline478:
-  8426                                  
-  8427                                  ;-940         while (DOS_ByteRead != 10);
-  8428                                  
-  8429 00003BA0 A0[5300]                 mov al, [DOS_ByteRead]
-  8430 00003BA3 3C0A                     cmp al, 10
-  8431 00003BA5 0F840200                 je  .printinputline479
-  8432 00003BA9 EBB1                     jmp .printinputline476
-  8433                                  .printinputline479:
-  8434                                  
-  8435                                  ;-941     *fgetsp=0;
-  8436                                  
-  8437 00003BAB B80000                   mov ax, 0
-  8438 00003BAE 8B1E[4500]               mov  bx, [fgetsp]
-  8439 00003BB2 8807                     mov  [bx], al
-  8440                                  
-  8441                                  ;-942     if (fdout) {
-  8442                                  
-  8443 00003BB4 A1[1C00]                 mov ax, [fdout]
-  8444 00003BB7 08C0                     or  al, al
-  8445 00003BB9 0F842A00                 je .printinputline480
-  8446                                  
-  8447                                  ;-943         prs("\n\n;-");
-  8448                                  
-  8449 00003BBD 68[083C]                 push printinputline_1
-  8450 00003BC0 E863C9                   call prs
-  8451 00003BC3 83C402                   add  sp, 2
-  8452                                  
-  8453                                  ;-944         prunsign1(lineno);
-  8454                                  
-  8455 00003BC6 FF36[4900]               push word [lineno]
-  8456 00003BCA E8AECA                   call prunsign1
-  8457 00003BCD 83C402                   add  sp, 2
-  8458                                  
-  8459                                  ;-945         prc(' ');
-  8460                                  
-  8461 00003BD0 6A20                     push 32
-  8462 00003BD2 E8EAC8                   call prc
-  8463 00003BD5 83C402                   add  sp, 2
-  8464                                  
-  8465                                  ;-946         lineno++;
+  8410 00003A8C 8D06BB69                 lea  ax, [symbol]
+  8411 00003A90 50                       push ax
+  8412 00003A91 E870C7                   call strlen
+  8413 00003A94 83C402                   add  sp, 2
+  8414 00003A97 8946FE                   mov [bp-2], ax
+  8415 00003A9A 8B46FE                   mov ax, [bp-2]
+  8416 00003A9D 8B1E[3900]               mov bx, [GTop]
+  8417 00003AA1 D1E3                     shl bx, 1
+  8418 00003AA3 89873873                 mov [GData+bx], ax
+  8419                                  
+  8420                                  ;-961       else if (istoken('{' )) { i=0;
+  8421                                  
+  8422 00003AA7 E96200                   jmp .doglob466
+  8423                                  .doglob465:
+  8424 00003AAA 6A7B                     push 123
+  8425 00003AAC E85FCD                   call istoken
+  8426 00003AAF 83C402                   add  sp, 2
+  8427 00003AB2 08C0                     or  al, al
+  8428 00003AB4 0F844B00                 je .doglob467
+  8429 00003AB8 B80000                   mov ax, 0
+  8430 00003ABB 8946FE                   mov [bp-2], ax
+  8431                                  
+  8432                                  ;-962         do { if(i) prc(',');
+  8433                                  
+  8434                                  .doglob468:
+  8435 00003ABE 8B46FE                   mov ax, [bp-2]
+  8436 00003AC1 08C0                     or  al, al
+  8437 00003AC3 0F840800                 je .doglob469
+  8438 00003AC7 6A2C                     push 44
+  8439 00003AC9 E8BDC8                   call prc
+  8440 00003ACC 83C402                   add  sp, 2
+  8441                                  
+  8442                                  ;-963           expect(T_CONST); prunsign1(lexval); i=1; }
+  8443                                  
+  8444                                  .doglob469:
+  8445 00003ACF 680101                   push 257
+  8446 00003AD2 E85BCD                   call expect
+  8447 00003AD5 83C402                   add  sp, 2
+  8448 00003AD8 FF36[2C00]               push word [lexval]
+  8449 00003ADC E866CA                   call prunsign1
+  8450 00003ADF 83C402                   add  sp, 2
+  8451 00003AE2 B80100                   mov ax, 1
+  8452 00003AE5 8946FE                   mov [bp-2], ax
+  8453                                  
+  8454                                  ;-964         while (istoken(',')); expect('}'); }
+  8455                                  
+  8456 00003AE8 6A2C                     push 44
+  8457 00003AEA E821CD                   call istoken
+  8458 00003AED 83C402                   add  sp, 2
+  8459 00003AF0 08C0                     or  al, al
+  8460 00003AF2 0F840200                 je .doglob470
+  8461 00003AF6 EBC6                     jmp .doglob468
+  8462                                  .doglob470:
+  8463 00003AF8 6A7D                     push 125
+  8464 00003AFA E833CD                   call expect
+  8465 00003AFD 83C402                   add  sp, 2
   8466                                  
-  8467 00003BD8 FF06[4900]               inc  word[lineno]
+  8467                                  ;-965       else error1("String or number array expected");
   8468                                  
-  8469                                  ;-947         prscomment(&fgetsdest);
-  8470                                  
-  8471 00003BDC 8D06A0D9                 lea  ax, [fgetsdest]
-  8472 00003BE0 50                       push ax
-  8473 00003BE1 E806C9                   call prscomment
-  8474 00003BE4 83C402                   add  sp, 2
-  8475                                  
-  8476                                  ;-948         }
-  8477                                  
-  8478                                  
-  8479                                  ;-949 }
+  8469 00003B00 E90900                   jmp .doglob471
+  8470                                  .doglob467:
+  8471 00003B03 68[D33C]                 push doglob_13
+  8472 00003B06 E8D7CA                   call error1
+  8473 00003B09 83C402                   add  sp, 2
+  8474                                  
+  8475                                  ;-966       };
+  8476                                  
+  8477                                  .doglob471:
+  8478                                  .doglob466:
+  8479                                  .doglob463:
   8480                                  
-  8481                                  .printinputline480:
+  8481                                  ;-967   }else { //expect('=');
   8482                                  
-  8483                                  ;-950 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
-  8484                                  
-  8485 00003BE7 C9                       .retnprintinputline: LEAVE
-  8486 00003BE8 C3                       ret
-  8487 00003BE9 696E707574206C696E-     printinputline_0 db "input line longer than 80 char",0
-  8488 00003BF2 65206C6F6E67657220-
-  8489 00003BFB 7468616E2038302063-
-  8490 00003C04 68617200           
-  8491 00003C08 5C6E5C6E3B2D00          printinputline_1 db "\n\n;-",0
-  8492                                  ENDP
-  8493                                  
-  8494                                  ifEOL: PROC
-  8495                                  
-  8496                                  ;-951     if (c == 10) return 1;//LF
-  8497                                  ;
-  8498 00003C0F C8000000                 ENTER  0,0
-  8499 00003C13 8A4604                   mov al, [bp+4]
-  8500 00003C16 3C0A                     cmp al, 10
-  8501 00003C18 0F850600                 jne .ifEOL481
-  8502 00003C1C B80100                   mov ax, 1
-  8503 00003C1F E92400                   jmp .retnifEOL
-  8504                                  
-  8505                                  ;-952     if (c == 13) {//CR
+  8483 00003B0C E99E00                   jmp .doglob472
+  8484                                  .doglob456:
+  8485                                  
+  8486                                  ;-968     prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
+  8487                                  
+  8488 00003B0F 68[F33C]                 push doglob_14
+  8489 00003B12 E8CDC8                   call prs
+  8490 00003B15 83C402                   add  sp, 2
+  8491 00003B18 8D06BB69                 lea  ax, [symbol]
+  8492 00003B1C 50                       push ax
+  8493 00003B1D E8C2C8                   call prs
+  8494 00003B20 83C402                   add  sp, 2
+  8495 00003B23 A0[3000]                 mov al, [istype]
+  8496 00003B26 3C2A                     cmp al, 42
+  8497 00003B28 0F850C00                 jne .doglob473
+  8498 00003B2C 68[F63C]                 push doglob_15
+  8499 00003B2F E8B0C8                   call prs
+  8500 00003B32 83C402                   add  sp, 2
+  8501                                  
+  8502                                  ;-969     else {
+  8503                                  
+  8504 00003B35 E93300                   jmp .doglob474
+  8505                                  .doglob473:
   8506                                  
-  8507                                  .ifEOL481:
-  8508 00003C22 8A4604                   mov al, [bp+4]
-  8509 00003C25 3C0D                     cmp al, 13
-  8510 00003C27 0F851500                 jne .ifEOL482
-  8511                                  
-  8512                                  ;-953         if (thechar == 10) c=next();
-  8513                                  
-  8514 00003C2B A0[2300]                 mov al, [thechar]
-  8515 00003C2E 3C0A                     cmp al, 10
-  8516 00003C30 0F850600                 jne .ifEOL483
-  8517 00003C34 E89FC7                   call next
-  8518 00003C37 884604                   mov [bp+4], al
-  8519                                  
-  8520                                  ;-954         return 1;
-  8521                                  
-  8522                                  .ifEOL483:
-  8523 00003C3A B80100                   mov ax, 1
-  8524 00003C3D E90600                   jmp .retnifEOL
-  8525                                  
-  8526                                  ;-955     }
-  8527                                  
+  8507                                  ;-970       if      (iswidth==1) prs(" db ");
+  8508                                  
+  8509 00003B38 A0[3600]                 mov al, [iswidth]
+  8510 00003B3B 3C01                     cmp al, 1
+  8511 00003B3D 0F850C00                 jne .doglob475
+  8512 00003B41 68[FB3C]                 push doglob_16
+  8513 00003B44 E89BC8                   call prs
+  8514 00003B47 83C402                   add  sp, 2
+  8515                                  
+  8516                                  ;-971       else if (iswidth==2) prs(" dw ");
+  8517                                  
+  8518 00003B4A E91E00                   jmp .doglob476
+  8519                                  .doglob475:
+  8520 00003B4D A0[3600]                 mov al, [iswidth]
+  8521 00003B50 3C02                     cmp al, 2
+  8522 00003B52 0F850C00                 jne .doglob477
+  8523 00003B56 68[003D]                 push doglob_17
+  8524 00003B59 E886C8                   call prs
+  8525 00003B5C 83C402                   add  sp, 2
+  8526                                  
+  8527                                  ;-972       else                 prs(" dd ");
   8528                                  
-  8529                                  ;-956     return 0;
-  8530                                  
-  8531                                  .ifEOL482:
-  8532 00003C40 B80000                   mov ax, 0
-  8533 00003C43 E90000                   jmp .retnifEOL
+  8529 00003B5F E90900                   jmp .doglob478
+  8530                                  .doglob477:
+  8531 00003B62 68[053D]                 push doglob_18
+  8532 00003B65 E87AC8                   call prs
+  8533 00003B68 83C402                   add  sp, 2
   8534                                  
-  8535                                  ;-957 }
+  8535                                  ;-973     }
   8536                                  
-  8537                                  
-  8538                                  ;-958 
+  8537                                  .doglob478:
+  8538                                  .doglob476:
   8539                                  
-  8540                                  
-  8541                                  ;-959 int end1(int n) {
-  8542                                  
-  8543 00003C46 C9                       .retnifEOL: LEAVE
-  8544 00003C47 C3                       ret
-  8545                                  ENDP
-  8546                                  
-  8547                                  end1: PROC
-  8548                                  
-  8549                                  ;-960     fcloseR(fdin);
-  8550                                  ;
-  8551 00003C48 C8000000                 ENTER  0,0
-  8552 00003C4C FF36[1A00]               push word [fdin]
-  8553 00003C50 E886C4                   call fcloseR
-  8554 00003C53 83C402                   add  sp, 2
-  8555                                  
-  8556                                  ;-961     fcloseR(fdout);
-  8557                                  
-  8558 00003C56 FF36[1C00]               push word [fdout]
-  8559 00003C5A E87CC4                   call fcloseR
-  8560 00003C5D 83C402                   add  sp, 2
-  8561                                  
-  8562                                  ;-962     exitR(n);
-  8563                                  
-  8564 00003C60 FF7604                   push word [bp+4]
-  8565 00003C63 E882C4                   call exitR
-  8566 00003C66 83C402                   add  sp, 2
-  8567                                  
-  8568                                  ;-963 }
-  8569                                  
-  8570                                  
-  8571                                  ;-964 int error1(char *s) {
-  8572 00003C69 C9                       LEAVE
-  8573 00003C6A C3                       ret
-  8574                                  ENDP
+  8540                                  ;-974     if(istoken('-')) prc('-');
+  8541                                  
+  8542                                  .doglob474:
+  8543 00003B6B 6A2D                     push 45
+  8544 00003B6D E89ECC                   call istoken
+  8545 00003B70 83C402                   add  sp, 2
+  8546 00003B73 08C0                     or  al, al
+  8547 00003B75 0F840800                 je .doglob479
+  8548 00003B79 6A2D                     push 45
+  8549 00003B7B E80BC8                   call prc
+  8550 00003B7E 83C402                   add  sp, 2
+  8551                                  
+  8552                                  ;-975     if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
+  8553                                  
+  8554                                  .doglob479:
+  8555 00003B81 6A3D                     push 61
+  8556 00003B83 E888CC                   call istoken
+  8557 00003B86 83C402                   add  sp, 2
+  8558 00003B89 08C0                     or  al, al
+  8559 00003B8B 0F841600                 je .doglob480
+  8560 00003B8F 680101                   push 257
+  8561 00003B92 E89BCC                   call expect
+  8562 00003B95 83C402                   add  sp, 2
+  8563 00003B98 FF36[2C00]               push word [lexval]
+  8564 00003B9C E8A6C9                   call prunsign1
+  8565 00003B9F 83C402                   add  sp, 2
+  8566                                  
+  8567                                  ;-976     else prunsign1(0); }
+  8568                                  
+  8569 00003BA2 E90800                   jmp .doglob481
+  8570                                  .doglob480:
+  8571 00003BA5 6A00                     push 0
+  8572 00003BA7 E89BC9                   call prunsign1
+  8573 00003BAA 83C402                   add  sp, 2
+  8574                                  .doglob481:
   8575                                  
-  8576                                  error1: PROC
+  8576                                  ;-977   GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
   8577                                  
-  8578                                  ;-965     lineno--;
-  8579                                  ;
-  8580 00003C6B C8000000                 ENTER  0,0
-  8581 00003C6F FF0E[4900]               dec  word[lineno]
-  8582                                  
-  8583                                  ;-966     prnl();
-  8584                                  
-  8585 00003C73 E8A2C8                   call prnl
-  8586                                  
-  8587                                  ;-967     prscomment(&fgetsdest);
+  8578                                  .doglob472:
+  8579 00003BAD A0[3300]                 mov al, [issign]
+  8580 00003BB0 8B1E[3900]               mov bx, [GTop]
+  8581 00003BB4 8887306C                 mov [GSign+bx], al
+  8582 00003BB8 A0[3600]                 mov al, [iswidth]
+  8583 00003BBB 8B1E[3900]               mov bx, [GTop]
+  8584 00003BBF 88875C6D                 mov [GWidth+bx], al
+  8585 00003BC3 A0[3000]                 mov al, [istype]
+  8586 00003BC6 8B1E[3900]               mov bx, [GTop]
+  8587 00003BCA 8887046B                 mov [GType+bx], al
   8588                                  
-  8589 00003C76 8D06A0D9                 lea  ax, [fgetsdest]
-  8590 00003C7A 50                       push ax
-  8591 00003C7B E86CC8                   call prscomment
-  8592 00003C7E 83C402                   add  sp, 2
-  8593                                  
-  8594                                  ;-968     prs(";Line: ");
-  8595                                  
-  8596 00003C81 68[EA3C]                 push error1_0
-  8597 00003C84 E89FC8                   call prs
-  8598 00003C87 83C402                   add  sp, 2
-  8599                                  
-  8600                                  ;-969     prunsign1(lineno);
-  8601                                  
-  8602 00003C8A FF36[4900]               push word [lineno]
-  8603 00003C8E E8EAC9                   call prunsign1
-  8604 00003C91 83C402                   add  sp, 2
-  8605                                  
-  8606                                  ;-970     prs(" ************** ERROR: ");
+  8589                                  ;-978   GAdr [GTop]=lineno-1; GUsed [GTop]=0;
+  8590                                  
+  8591 00003BCE A1[4900]                 mov ax, [lineno]
+  8592 00003BD1 83E801                   sub ax, 1
+  8593 00003BD4 8B1E[3900]               mov bx, [GTop]
+  8594 00003BD8 D1E3                     shl bx, 1
+  8595 00003BDA 8987886E                 mov [GAdr+bx], ax
+  8596 00003BDE B80000                   mov ax, 0
+  8597 00003BE1 8B1E[3900]               mov bx, [GTop]
+  8598 00003BE5 D1E3                     shl bx, 1
+  8599 00003BE7 8987E070                 mov [GUsed+bx], ax
+  8600                                  
+  8601                                  ;-979   pt=adrofname(GTop);
+  8602                                  
+  8603 00003BEB FF36[3900]               push word [GTop]
+  8604 00003BEF E8A7CD                   call adrofname
+  8605 00003BF2 83C402                   add  sp, 2
+  8606 00003BF5 A3[4B00]                 mov word [pt], ax
   8607                                  
-  8608 00003C94 68[F23C]                 push error1_1
-  8609 00003C97 E88CC8                   call prs
-  8610 00003C9A 83C402                   add  sp, 2
-  8611                                  
-  8612                                  ;-971     prs(s);
-  8613                                  
-  8614 00003C9D FF7604                   push word [bp+4]
-  8615 00003CA0 E883C8                   call prs
-  8616 00003CA3 83C402                   add  sp, 2
-  8617                                  
-  8618                                  ;-972     prs("  in column: ");
-  8619                                  
-  8620 00003CA6 68[0A3D]                 push error1_2
-  8621 00003CA9 E87AC8                   call prs
-  8622 00003CAC 83C402                   add  sp, 2
-  8623                                  
-  8624                                  ;-973     prunsign1(column);
+  8608                                  ;-980   if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
+  8609                                  
+  8610 00003BF8 8B46FA                   mov ax, [bp-6]
+  8611 00003BFB 08C0                     or  al, al
+  8612 00003BFD 0F841200                 je .doglob482
+  8613 00003C01 8D06AEDA                 lea  ax, [doglobName]
+  8614 00003C05 50                       push ax
+  8615 00003C06 FF36[4B00]               push word [pt]
+  8616 00003C0A E81FC6                   call strcpy
+  8617 00003C0D 83C404                   add  sp, 4
+  8618 00003C10 E90F00                   jmp .doglob483
+  8619                                  .doglob482:
+  8620 00003C13 8D06BB69                 lea  ax, [symbol]
+  8621 00003C17 50                       push ax
+  8622 00003C18 FF36[4B00]               push word [pt]
+  8623 00003C1C E80DC6                   call strcpy
+  8624 00003C1F 83C404                   add  sp, 4
   8625                                  
-  8626 00003CAF FF36[2100]               push word [column]
-  8627 00003CB3 E8C5C9                   call prunsign1
-  8628 00003CB6 83C402                   add  sp, 2
-  8629                                  
-  8630                                  ;-974     prs("\nToken: ");
-  8631                                  
-  8632 00003CB9 68[183D]                 push error1_3
-  8633 00003CBC E867C8                   call prs
-  8634 00003CBF 83C402                   add  sp, 2
+  8626                                  ;-981   GTop++; expect(';'); }
+  8627                                  
+  8628                                  .doglob483:
+  8629 00003C22 FF06[3900]               inc  word[GTop]
+  8630 00003C26 6A3B                     push 59
+  8631 00003C28 E805CC                   call expect
+  8632 00003C2B 83C402                   add  sp, 2
+  8633                                  
+  8634                                  ;-982 
   8635                                  
-  8636                                  ;-975     prunsign1(token);
-  8637                                  
-  8638 00003CC2 FF36[1E00]               push word [token]
-  8639 00003CC6 E8B2C9                   call prunsign1
-  8640 00003CC9 83C402                   add  sp, 2
-  8641                                  
-  8642                                  ;-976 //    prs(", globC: ");
-  8643                                  
-  8644                                  
-  8645                                  ;-977 //    prc(globC);
-  8646                                  
-  8647                                  
-  8648                                  ;-978 //    prs(", thechar: ");
-  8649                                  
-  8650                                  
-  8651                                  ;-979 //    prunsign1(thechar);
-  8652                                  
-  8653                                  
-  8654                                  ;-980     prs(", symbol: ");
-  8655                                  
-  8656 00003CCC 68[223D]                 push error1_4
-  8657 00003CCF E854C8                   call prs
-  8658 00003CD2 83C402                   add  sp, 2
-  8659                                  
-  8660                                  ;-981     prs(symbol);
-  8661                                  
-  8662 00003CD5 8D06BB69                 lea  ax, [symbol]
-  8663 00003CD9 50                       push ax
-  8664 00003CDA E849C8                   call prs
-  8665 00003CDD 83C402                   add  sp, 2
-  8666                                  
-  8667                                  ;-982     end1(1);
-  8668                                  
-  8669 00003CE0 6A01                     push 1
-  8670 00003CE2 E863FF                   call end1
-  8671 00003CE5 83C402                   add  sp, 2
-  8672                                  
-  8673                                  ;-983 }
-  8674                                  
+  8636                                  
+  8637                                  ;-983 int end1(int n) {
+  8638 00003C2E C9                       LEAVE
+  8639 00003C2F C3                       ret
+  8640 00003C30 476C6F62616C207461-     doglob_0 db "Global table full",0
+  8641 00003C39 626C652066756C6C00 
+  8642 00003C42 6E6F20564F49442061-     doglob_1 db "no VOID as var type",0
+  8643 00003C4B 732076617220747970-
+  8644 00003C54 6500               
+  8645 00003C56 5661726961626C6520-     doglob_2 db "Variable already defined",0
+  8646 00003C5F 616C72656164792064-
+  8647 00003C68 6566696E656400     
+  8648 00003C6F 5C6E73656374696F6E-     doglob_3 db "\nsection .bss\nabsolute ",0
+  8649 00003C78 202E6273735C6E6162-
+  8650 00003C81 736F6C7574652000   
+  8651 00003C89 5C6E00                  doglob_4 db "\n",0
+  8652 00003C8C 20726573622000          doglob_5 db " resb ",0
+  8653 00003C93 20726573772000          doglob_6 db " resw ",0
+  8654 00003C9A 20726573642000          doglob_7 db " resd ",0
+  8655 00003CA1 5C6E73656374696F6E-     doglob_8 db "\nsection .text",0
+  8656 00003CAA 202E7465787400     
+  8657 00003CB1 4F6E6C792042797465-     doglob_9 db "Only ByteArray allowed",0
+  8658 00003CBA 417272617920616C6C-
+  8659 00003CC3 6F77656400         
+  8660 00003CC8 5C6E00                  doglob_10 db "\n",0
+  8661 00003CCB 2064622000              doglob_11 db " db ",0
+  8662 00003CD0 2C3000                  doglob_12 db ",0",0
+  8663 00003CD3 537472696E67206F72-     doglob_13 db "String or number array expected",0
+  8664 00003CDC 206E756D6265722061-
+  8665 00003CE5 727261792065787065-
+  8666 00003CEE 6374656400         
+  8667 00003CF3 5C6E00                  doglob_14 db "\n",0
+  8668 00003CF6 2064772000              doglob_15 db " dw ",0
+  8669 00003CFB 2064622000              doglob_16 db " db ",0
+  8670 00003D00 2064772000              doglob_17 db " dw ",0
+  8671 00003D05 2064642000              doglob_18 db " dd ",0
+  8672                                  ENDP
+  8673                                  
+  8674                                  end1: PROC
   8675                                  
-  8676                                  ;-984 
-  8677                                  
-  8678                                  
-  8679                                  ;-985 unsigned int MAXUI=65535;
-  8680 00003CE8 C9                       LEAVE
-  8681 00003CE9 C3                       ret
-  8682 00003CEA 3B4C696E653A2000        error1_0 db ";Line: ",0
-  8683 00003CF2 202A2A2A2A2A2A2A2A-     error1_1 db " ************** ERROR: ",0
-  8684 00003CFB 2A2A2A2A2A2A204552-
-  8685 00003D04 524F523A2000       
-  8686 00003D0A 2020696E20636F6C75-     error1_2 db "  in column: ",0
-  8687 00003D13 6D6E3A2000         
-  8688 00003D18 5C6E546F6B656E3A20-     error1_3 db "\nToken: ",0
-  8689 00003D21 00                 
-  8690 00003D22 2C2073796D626F6C3A-     error1_4 db ", symbol: ",0
-  8691 00003D2B 2000               
-  8692                                  ENDP
-  8693 00003D2D FFFF                    MAXUI dw 65535
+  8676                                  ;-984     fcloseR(fdin);
+  8677                                  ;
+  8678 00003D0A C8000000                 ENTER  0,0
+  8679 00003D0E FF36[1A00]               push word [fdin]
+  8680 00003D12 E8C4C3                   call fcloseR
+  8681 00003D15 83C402                   add  sp, 2
+  8682                                  
+  8683                                  ;-985     fcloseR(fdout);
+  8684                                  
+  8685 00003D18 FF36[1C00]               push word [fdout]
+  8686 00003D1C E8BAC3                   call fcloseR
+  8687 00003D1F 83C402                   add  sp, 2
+  8688                                  
+  8689                                  ;-986     exitR(n);
+  8690                                  
+  8691 00003D22 FF7604                   push word [bp+4]
+  8692 00003D25 E8C0C3                   call exitR
+  8693 00003D28 83C402                   add  sp, 2
   8694                                  
-  8695                                  ;-986 int epilog() {
+  8695                                  ;-987 }
   8696                                  
   8697                                  
-  8698                                  epilog: PROC
+  8698                                  ;-988 
   8699                                  
-  8700                                  ;-987     unsigned int i;
-  8701                                  
-  8702                                  
-  8703                                  ;-988     prs("\n;Input: "); prs(&namein);
-  8704                                  ;
-  8705 00003D2F C8020000                 ENTER  2,0
-  8706 00003D33 68[A33E]                 push epilog_0
-  8707 00003D36 E8EDC7                   call prs
-  8708 00003D39 83C402                   add  sp, 2
-  8709 00003D3C 8D067E6A                 lea  ax, [namein]
-  8710 00003D40 50                       push ax
-  8711 00003D41 E8E2C7                   call prs
-  8712 00003D44 83C402                   add  sp, 2
+  8700                                  
+  8701                                  ;-989 unsigned int MAXUI=65535;
+  8702 00003D2B C9                       LEAVE
+  8703 00003D2C C3                       ret
+  8704                                  ENDP
+  8705 00003D2D FFFF                    MAXUI dw 65535
+  8706                                  
+  8707                                  ;-990 int epilog() {
+  8708                                  
+  8709                                  
+  8710                                  epilog: PROC
+  8711                                  
+  8712                                  ;-991     unsigned int i;
   8713                                  
-  8714                                  ;-989     prs(", List: ");   prs(&namelst);
-  8715                                  
-  8716 00003D47 68[AE3E]                 push epilog_1
-  8717 00003D4A E8D9C7                   call prs
-  8718 00003D4D 83C402                   add  sp, 2
-  8719 00003D50 8D06C16A                 lea  ax, [namelst]
-  8720 00003D54 50                       push ax
-  8721 00003D55 E8CEC7                   call prs
-  8722 00003D58 83C402                   add  sp, 2
-  8723                                  
-  8724                                  ;-990     prs(",  Lines:"); printint51(lineno);
+  8714                                  
+  8715                                  ;-992     prs("\n;Input: "); prs(&namein);
+  8716                                  ;
+  8717 00003D2F C8020000                 ENTER  2,0
+  8718 00003D33 68[A33E]                 push epilog_0
+  8719 00003D36 E8A9C6                   call prs
+  8720 00003D39 83C402                   add  sp, 2
+  8721 00003D3C 8D067E6A                 lea  ax, [namein]
+  8722 00003D40 50                       push ax
+  8723 00003D41 E89EC6                   call prs
+  8724 00003D44 83C402                   add  sp, 2
   8725                                  
-  8726 00003D5B 68[B73E]                 push epilog_2
-  8727 00003D5E E8C5C7                   call prs
-  8728 00003D61 83C402                   add  sp, 2
-  8729 00003D64 FF36[4900]               push word [lineno]
-  8730 00003D68 E854C9                   call printint51
-  8731 00003D6B 83C402                   add  sp, 2
-  8732                                  
-  8733                                  ;-991     prs("\n;Glob. variables:"); GTop--; printint51(GTop);
-  8734                                  
-  8735 00003D6E 68[C13E]                 push epilog_3
-  8736 00003D71 E8B2C7                   call prs
-  8737 00003D74 83C402                   add  sp, 2
-  8738 00003D77 FF0E[3900]               dec  word[GTop]
-  8739 00003D7B FF36[3900]               push word [GTop]
-  8740 00003D7F E83DC9                   call printint51
-  8741 00003D82 83C402                   add  sp, 2
-  8742                                  
-  8743                                  ;-992     prs(" max.:"); printint51(LSTART);
+  8726                                  ;-993     prs(", List: ");   prs(&namelst);
+  8727                                  
+  8728 00003D47 68[AE3E]                 push epilog_1
+  8729 00003D4A E895C6                   call prs
+  8730 00003D4D 83C402                   add  sp, 2
+  8731 00003D50 8D06C16A                 lea  ax, [namelst]
+  8732 00003D54 50                       push ax
+  8733 00003D55 E88AC6                   call prs
+  8734 00003D58 83C402                   add  sp, 2
+  8735                                  
+  8736                                  ;-994     prs(",  Lines:"); printint51(lineno);
+  8737                                  
+  8738 00003D5B 68[B73E]                 push epilog_2
+  8739 00003D5E E881C6                   call prs
+  8740 00003D61 83C402                   add  sp, 2
+  8741 00003D64 FF36[4900]               push word [lineno]
+  8742 00003D68 E81EC8                   call printint51
+  8743 00003D6B 83C402                   add  sp, 2
   8744                                  
-  8745 00003D85 68[D53E]                 push epilog_4
-  8746 00003D88 E89BC7                   call prs
-  8747 00003D8B 83C402                   add  sp, 2
-  8748 00003D8E 68C800                   push 200
-  8749 00003D91 E82BC9                   call printint51
-  8750 00003D94 83C402                   add  sp, 2
-  8751                                  
-  8752                                  ;-993     prs("\n;Functions      :"); printint51(FTop);
-  8753                                  
-  8754 00003D97 68[DC3E]                 push epilog_5
-  8755 00003D9A E889C7                   call prs
-  8756 00003D9D 83C402                   add  sp, 2
-  8757 00003DA0 FF36[3D00]               push word [FTop]
-  8758 00003DA4 E818C9                   call printint51
-  8759 00003DA7 83C402                   add  sp, 2
-  8760                                  
-  8761                                  ;-994     prs(" max.:"); printint51(FUNCMAX);
-  8762                                  
-  8763 00003DAA 68[F03E]                 push epilog_6
-  8764 00003DAD E876C7                   call prs
-  8765 00003DB0 83C402                   add  sp, 2
-  8766 00003DB3 682C01                   push 300
-  8767 00003DB6 E806C9                   call printint51
-  8768 00003DB9 83C402                   add  sp, 2
-  8769                                  
-  8770                                  ;-995     prs("\n;Calls          :"); printint51(CTop);
-  8771                                  
-  8772 00003DBC 68[F73E]                 push epilog_7
-  8773 00003DBF E864C7                   call prs
-  8774 00003DC2 83C402                   add  sp, 2
-  8775 00003DC5 FF36[4300]               push word [CTop]
-  8776 00003DC9 E8F3C8                   call printint51
-  8777 00003DCC 83C402                   add  sp, 2
-  8778                                  
-  8779                                  ;-996     prs(" max.:"); printint51(CALLMAX);
-  8780                                  
-  8781 00003DCF 68[0B3F]                 push epilog_8
-  8782 00003DD2 E851C7                   call prs
-  8783 00003DD5 83C402                   add  sp, 2
-  8784 00003DD8 68DC05                   push 1500
-  8785 00003DDB E8E1C8                   call printint51
-  8786 00003DDE 83C402                   add  sp, 2
-  8787                                  
-  8788                                  ;-997     i = CNamePtr - &CNameField;
-  8789                                  
-  8790 00003DE1 A1[3F00]                 mov ax, [CNamePtr]
-  8791 00003DE4 2D80B2                   sub ax, CNameField
-  8792 00003DE7 8946FE                   mov [bp-2], ax
-  8793                                  
-  8794                                  ;-998     prs("\n;NameField      :"); printint51(i);
-  8795                                  
-  8796 00003DEA 68[123F]                 push epilog_9
-  8797 00003DED E836C7                   call prs
-  8798 00003DF0 83C402                   add  sp, 2
-  8799 00003DF3 FF76FE                   push word [bp-2]
-  8800 00003DF6 E8C6C8                   call printint51
-  8801 00003DF9 83C402                   add  sp, 2
-  8802                                  
-  8803                                  ;-999     prs(" max.:"); printint51(CNAMEMAX);
-  8804                                  
-  8805 00003DFC 68[263F]                 push epilog_10
-  8806 00003DFF E824C7                   call prs
-  8807 00003E02 83C402                   add  sp, 2
-  8808 00003E05 681027                   push 10000
-  8809 00003E08 E8B4C8                   call printint51
-  8810 00003E0B 83C402                   add  sp, 2
-  8811                                  
-  8812                                  ;-1000     prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
-  8813                                  
-  8814 00003E0E 68[2D3F]                 push epilog_11
-  8815 00003E11 E812C7                   call prs
-  8816 00003E14 83C402                   add  sp, 2
-  8817 00003E17 8D067869                 lea  ax, [coname]
-  8818 00003E1B 50                       push ax
-  8819 00003E1C E807C7                   call prs
-  8820 00003E1F 83C402                   add  sp, 2
-  8821 00003E22 68[3B3F]                 push epilog_12
-  8822 00003E25 E8FEC6                   call prs
-  8823 00003E28 83C402                   add  sp, 2
-  8824 00003E2B FF36[1400]               push word [maxco]
-  8825 00003E2F E88DC8                   call printint51
-  8826 00003E32 83C402                   add  sp, 2
-  8827                                  
-  8828                                  ;-1001     prs(" max.:"); printint51(COMAX);
-  8829                                  
-  8830 00003E35 68[3F3F]                 push epilog_13
-  8831 00003E38 E8EBC6                   call prs
-  8832 00003E3B 83C402                   add  sp, 2
-  8833 00003E3E 68D007                   push 2000
-  8834 00003E41 E87BC8                   call printint51
-  8835 00003E44 83C402                   add  sp, 2
-  8836                                  
-  8837                                  ;-1002     i=COMAX; i=i-maxco;
-  8838                                  
-  8839 00003E47 B8D007                   mov ax, 2000
-  8840 00003E4A 8946FE                   mov [bp-2], ax
-  8841 00003E4D 8B46FE                   mov ax, [bp-2]
-  8842 00003E50 2B06[1400]               sub ax, [maxco]
-  8843 00003E54 8946FE                   mov [bp-2], ax
-  8844                                  
-  8845                                  ;-1003     if (i <= 1000)prs(" *** Warning *** constant area too small");
-  8846                                  
-  8847 00003E57 8B46FE                   mov ax, [bp-2]
-  8848 00003E5A 3DE803                   cmp ax, 1000
-  8849 00003E5D 0F870900                 ja  .epilog484
-  8850 00003E61 68[463F]                 push epilog_14
-  8851 00003E64 E8BFC6                   call prs
-  8852 00003E67 83C402                   add  sp, 2
-  8853                                  
-  8854                                  ;-1004     prs(", stacksize: ");
-  8855                                  
-  8856                                  .epilog484:
-  8857 00003E6A 68[6F3F]                 push epilog_15
-  8858 00003E6D E8B6C6                   call prs
-  8859 00003E70 83C402                   add  sp, 2
-  8860                                  
-  8861                                  ;-1005     i=MAXUI-orgData; printint51(i);
-  8862                                  
-  8863 00003E73 A1[2D3D]                 mov ax, [MAXUI]
-  8864 00003E76 2B06[1200]               sub ax, [orgData]
-  8865 00003E7A 8946FE                   mov [bp-2], ax
-  8866 00003E7D FF76FE                   push word [bp-2]
-  8867 00003E80 E83CC8                   call printint51
-  8868 00003E83 83C402                   add  sp, 2
-  8869                                  
-  8870                                  ;-1006     if (i <= 1000) prs(" *** Warning *** Stack too small");
-  8871                                  
-  8872 00003E86 8B46FE                   mov ax, [bp-2]
-  8873 00003E89 3DE803                   cmp ax, 1000
-  8874 00003E8C 0F870900                 ja  .epilog485
-  8875 00003E90 68[7D3F]                 push epilog_16
-  8876 00003E93 E890C6                   call prs
-  8877 00003E96 83C402                   add  sp, 2
-  8878                                  
-  8879                                  ;-1007   end1(0);}
-  8880                                  
-  8881                                  .epilog485:
-  8882 00003E99 6A00                     push 0
-  8883 00003E9B E8AAFD                   call end1
-  8884 00003E9E 83C402                   add  sp, 2
-  8885                                  
-  8886                                  ;-1008 
-  8887                                  
-  8888                                  
-  8889                                  ;-1009 int dodefine() {
-  8890 00003EA1 C9                       LEAVE
-  8891 00003EA2 C3                       ret
-  8892 00003EA3 5C6E3B496E7075743A-     epilog_0 db "\n;Input: ",0
-  8893 00003EAC 2000               
-  8894 00003EAE 2C204C6973743A2000      epilog_1 db ", List: ",0
-  8895 00003EB7 2C20204C696E65733A-     epilog_2 db ",  Lines:",0
-  8896 00003EC0 00                 
-  8897 00003EC1 5C6E3B476C6F622E20-     epilog_3 db "\n;Glob. variables:",0
-  8898 00003ECA 7661726961626C6573-
-  8899 00003ED3 3A00               
-  8900 00003ED5 206D61782E3A00          epilog_4 db " max.:",0
-  8901 00003EDC 5C6E3B46756E637469-     epilog_5 db "\n;Functions      :",0
-  8902 00003EE5 6F6E73202020202020-
-  8903 00003EEE 3A00               
-  8904 00003EF0 206D61782E3A00          epilog_6 db " max.:",0
-  8905 00003EF7 5C6E3B43616C6C7320-     epilog_7 db "\n;Calls          :",0
-  8906 00003F00 202020202020202020-
-  8907 00003F09 3A00               
-  8908 00003F0B 206D61782E3A00          epilog_8 db " max.:",0
-  8909 00003F12 5C6E3B4E616D654669-     epilog_9 db "\n;NameField      :",0
-  8910 00003F1B 656C64202020202020-
-  8911 00003F24 3A00               
-  8912 00003F26 206D61782E3A00          epilog_10 db " max.:",0
-  8913 00003F2D 5C6E3B436F6E737420-     epilog_11 db "\n;Const in '",0
-  8914 00003F36 696E202700         
-  8915 00003F3B 27203A00                epilog_12 db "' :",0
-  8916 00003F3F 206D61782E3A00          epilog_13 db " max.:",0
-  8917 00003F46 202A2A2A205761726E-     epilog_14 db " *** Warning *** constant area too small",0
-  8918 00003F4F 696E67202A2A2A2063-
-  8919 00003F58 6F6E7374616E742061-
-  8920 00003F61 72656120746F6F2073-
-  8921 00003F6A 6D616C6C00         
-  8922 00003F6F 2C20737461636B7369-     epilog_15 db ", stacksize: ",0
-  8923 00003F78 7A653A2000         
-  8924 00003F7D 202A2A2A205761726E-     epilog_16 db " *** Warning *** Stack too small",0
-  8925 00003F86 696E67202A2A2A2053-
-  8926 00003F8F 7461636B20746F6F20-
-  8927 00003F98 736D616C6C00       
-  8928                                  ENDP
-  8929                                  
-  8930                                  dodefine: PROC
-  8931                                  
-  8932                                  ;-1010     int i; int j; int fdtemp;
-  8933                                  
-  8934                                  
-  8935                                  ;-1011     if (eqstr(symbol, "ORGDATA")) {
-  8936                                  ;
-  8937 00003F9E C8060000                 ENTER  6,0
-  8938 00003FA2 68[8840]                 push dodefine_0
-  8939 00003FA5 8D06BB69                 lea  ax, [symbol]
-  8940 00003FA9 50                       push ax
-  8941 00003FAA E8B5C2                   call eqstr
-  8942 00003FAD 83C404                   add  sp, 4
-  8943 00003FB0 08C0                     or  al, al
-  8944 00003FB2 0F841500                 je .dodefine486
+  8745                                  ;-995     prs("\n;Glob. variables:"); GTop--; printint51(GTop);
+  8746                                  
+  8747 00003D6E 68[C13E]                 push epilog_3
+  8748 00003D71 E86EC6                   call prs
+  8749 00003D74 83C402                   add  sp, 2
+  8750 00003D77 FF0E[3900]               dec  word[GTop]
+  8751 00003D7B FF36[3900]               push word [GTop]
+  8752 00003D7F E807C8                   call printint51
+  8753 00003D82 83C402                   add  sp, 2
+  8754                                  
+  8755                                  ;-996     prs(" max.:"); printint51(LSTART);
+  8756                                  
+  8757 00003D85 68[D53E]                 push epilog_4
+  8758 00003D88 E857C6                   call prs
+  8759 00003D8B 83C402                   add  sp, 2
+  8760 00003D8E 68C800                   push 200
+  8761 00003D91 E8F5C7                   call printint51
+  8762 00003D94 83C402                   add  sp, 2
+  8763                                  
+  8764                                  ;-997     prs("\n;Functions      :"); printint51(FTop);
+  8765                                  
+  8766 00003D97 68[DC3E]                 push epilog_5
+  8767 00003D9A E845C6                   call prs
+  8768 00003D9D 83C402                   add  sp, 2
+  8769 00003DA0 FF36[3D00]               push word [FTop]
+  8770 00003DA4 E8E2C7                   call printint51
+  8771 00003DA7 83C402                   add  sp, 2
+  8772                                  
+  8773                                  ;-998     prs(" max.:"); printint51(FUNCMAX);
+  8774                                  
+  8775 00003DAA 68[F03E]                 push epilog_6
+  8776 00003DAD E832C6                   call prs
+  8777 00003DB0 83C402                   add  sp, 2
+  8778 00003DB3 682C01                   push 300
+  8779 00003DB6 E8D0C7                   call printint51
+  8780 00003DB9 83C402                   add  sp, 2
+  8781                                  
+  8782                                  ;-999     prs("\n;Calls          :"); printint51(CTop);
+  8783                                  
+  8784 00003DBC 68[F73E]                 push epilog_7
+  8785 00003DBF E820C6                   call prs
+  8786 00003DC2 83C402                   add  sp, 2
+  8787 00003DC5 FF36[4300]               push word [CTop]
+  8788 00003DC9 E8BDC7                   call printint51
+  8789 00003DCC 83C402                   add  sp, 2
+  8790                                  
+  8791                                  ;-1000     prs(" max.:"); printint51(CALLMAX);
+  8792                                  
+  8793 00003DCF 68[0B3F]                 push epilog_8
+  8794 00003DD2 E80DC6                   call prs
+  8795 00003DD5 83C402                   add  sp, 2
+  8796 00003DD8 68DC05                   push 1500
+  8797 00003DDB E8ABC7                   call printint51
+  8798 00003DDE 83C402                   add  sp, 2
+  8799                                  
+  8800                                  ;-1001     i = CNamePtr - &CNameField;
+  8801                                  
+  8802 00003DE1 A1[3F00]                 mov ax, [CNamePtr]
+  8803 00003DE4 2D80B2                   sub ax, CNameField
+  8804 00003DE7 8946FE                   mov [bp-2], ax
+  8805                                  
+  8806                                  ;-1002     prs("\n;NameField      :"); printint51(i);
+  8807                                  
+  8808 00003DEA 68[123F]                 push epilog_9
+  8809 00003DED E8F2C5                   call prs
+  8810 00003DF0 83C402                   add  sp, 2
+  8811 00003DF3 FF76FE                   push word [bp-2]
+  8812 00003DF6 E890C7                   call printint51
+  8813 00003DF9 83C402                   add  sp, 2
+  8814                                  
+  8815                                  ;-1003     prs(" max.:"); printint51(CNAMEMAX);
+  8816                                  
+  8817 00003DFC 68[263F]                 push epilog_10
+  8818 00003DFF E8E0C5                   call prs
+  8819 00003E02 83C402                   add  sp, 2
+  8820 00003E05 681027                   push 10000
+  8821 00003E08 E87EC7                   call printint51
+  8822 00003E0B 83C402                   add  sp, 2
+  8823                                  
+  8824                                  ;-1004     prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
+  8825                                  
+  8826 00003E0E 68[2D3F]                 push epilog_11
+  8827 00003E11 E8CEC5                   call prs
+  8828 00003E14 83C402                   add  sp, 2
+  8829 00003E17 8D067869                 lea  ax, [coname]
+  8830 00003E1B 50                       push ax
+  8831 00003E1C E8C3C5                   call prs
+  8832 00003E1F 83C402                   add  sp, 2
+  8833 00003E22 68[3B3F]                 push epilog_12
+  8834 00003E25 E8BAC5                   call prs
+  8835 00003E28 83C402                   add  sp, 2
+  8836 00003E2B FF36[1400]               push word [maxco]
+  8837 00003E2F E857C7                   call printint51
+  8838 00003E32 83C402                   add  sp, 2
+  8839                                  
+  8840                                  ;-1005     prs(" max.:"); printint51(COMAX);
+  8841                                  
+  8842 00003E35 68[3F3F]                 push epilog_13
+  8843 00003E38 E8A7C5                   call prs
+  8844 00003E3B 83C402                   add  sp, 2
+  8845 00003E3E 68D007                   push 2000
+  8846 00003E41 E845C7                   call printint51
+  8847 00003E44 83C402                   add  sp, 2
+  8848                                  
+  8849                                  ;-1006     i=COMAX; i=i-maxco;
+  8850                                  
+  8851 00003E47 B8D007                   mov ax, 2000
+  8852 00003E4A 8946FE                   mov [bp-2], ax
+  8853 00003E4D 8B46FE                   mov ax, [bp-2]
+  8854 00003E50 2B06[1400]               sub ax, [maxco]
+  8855 00003E54 8946FE                   mov [bp-2], ax
+  8856                                  
+  8857                                  ;-1007     if (i <= 1000)prs(" *** Warning *** constant area too small");
+  8858                                  
+  8859 00003E57 8B46FE                   mov ax, [bp-2]
+  8860 00003E5A 3DE803                   cmp ax, 1000
+  8861 00003E5D 0F870900                 ja  .epilog484
+  8862 00003E61 68[463F]                 push epilog_14
+  8863 00003E64 E87BC5                   call prs
+  8864 00003E67 83C402                   add  sp, 2
+  8865                                  
+  8866                                  ;-1008     prs(", stacksize: ");
+  8867                                  
+  8868                                  .epilog484:
+  8869 00003E6A 68[6F3F]                 push epilog_15
+  8870 00003E6D E872C5                   call prs
+  8871 00003E70 83C402                   add  sp, 2
+  8872                                  
+  8873                                  ;-1009     i=MAXUI-orgData; printint51(i);
+  8874                                  
+  8875 00003E73 A1[2D3D]                 mov ax, [MAXUI]
+  8876 00003E76 2B06[1200]               sub ax, [orgData]
+  8877 00003E7A 8946FE                   mov [bp-2], ax
+  8878 00003E7D FF76FE                   push word [bp-2]
+  8879 00003E80 E806C7                   call printint51
+  8880 00003E83 83C402                   add  sp, 2
+  8881                                  
+  8882                                  ;-1010     if (i <= 1000) prs(" *** Warning *** Stack too small");
+  8883                                  
+  8884 00003E86 8B46FE                   mov ax, [bp-2]
+  8885 00003E89 3DE803                   cmp ax, 1000
+  8886 00003E8C 0F870900                 ja  .epilog485
+  8887 00003E90 68[7D3F]                 push epilog_16
+  8888 00003E93 E84CC5                   call prs
+  8889 00003E96 83C402                   add  sp, 2
+  8890                                  
+  8891                                  ;-1011   end1(0);}
+  8892                                  
+  8893                                  .epilog485:
+  8894 00003E99 6A00                     push 0
+  8895 00003E9B E86CFE                   call end1
+  8896 00003E9E 83C402                   add  sp, 2
+  8897                                  
+  8898                                  ;-1012 
+  8899                                  
+  8900                                  
+  8901                                  ;-1013 int dodefine() {
+  8902 00003EA1 C9                       LEAVE
+  8903 00003EA2 C3                       ret
+  8904 00003EA3 5C6E3B496E7075743A-     epilog_0 db "\n;Input: ",0
+  8905 00003EAC 2000               
+  8906 00003EAE 2C204C6973743A2000      epilog_1 db ", List: ",0
+  8907 00003EB7 2C20204C696E65733A-     epilog_2 db ",  Lines:",0
+  8908 00003EC0 00                 
+  8909 00003EC1 5C6E3B476C6F622E20-     epilog_3 db "\n;Glob. variables:",0
+  8910 00003ECA 7661726961626C6573-
+  8911 00003ED3 3A00               
+  8912 00003ED5 206D61782E3A00          epilog_4 db " max.:",0
+  8913 00003EDC 5C6E3B46756E637469-     epilog_5 db "\n;Functions      :",0
+  8914 00003EE5 6F6E73202020202020-
+  8915 00003EEE 3A00               
+  8916 00003EF0 206D61782E3A00          epilog_6 db " max.:",0
+  8917 00003EF7 5C6E3B43616C6C7320-     epilog_7 db "\n;Calls          :",0
+  8918 00003F00 202020202020202020-
+  8919 00003F09 3A00               
+  8920 00003F0B 206D61782E3A00          epilog_8 db " max.:",0
+  8921 00003F12 5C6E3B4E616D654669-     epilog_9 db "\n;NameField      :",0
+  8922 00003F1B 656C64202020202020-
+  8923 00003F24 3A00               
+  8924 00003F26 206D61782E3A00          epilog_10 db " max.:",0
+  8925 00003F2D 5C6E3B436F6E737420-     epilog_11 db "\n;Const in '",0
+  8926 00003F36 696E202700         
+  8927 00003F3B 27203A00                epilog_12 db "' :",0
+  8928 00003F3F 206D61782E3A00          epilog_13 db " max.:",0
+  8929 00003F46 202A2A2A205761726E-     epilog_14 db " *** Warning *** constant area too small",0
+  8930 00003F4F 696E67202A2A2A2063-
+  8931 00003F58 6F6E7374616E742061-
+  8932 00003F61 72656120746F6F2073-
+  8933 00003F6A 6D616C6C00         
+  8934 00003F6F 2C20737461636B7369-     epilog_15 db ", stacksize: ",0
+  8935 00003F78 7A653A2000         
+  8936 00003F7D 202A2A2A205761726E-     epilog_16 db " *** Warning *** Stack too small",0
+  8937 00003F86 696E67202A2A2A2053-
+  8938 00003F8F 7461636B20746F6F20-
+  8939 00003F98 736D616C6C00       
+  8940                                  ENDP
+  8941                                  
+  8942                                  dodefine: PROC
+  8943                                  
+  8944                                  ;-1014     int i; int j; int fdtemp;
   8945                                  
-  8946                                  ;-1012         token=getlex();
-  8947                                  
-  8948 00003FB6 E83BF2                   call getlex
-  8949 00003FB9 A3[1E00]                 mov word [token], ax
-  8950                                  
-  8951                                  ;-1013         ORGDATAORIG=lexval;
-  8952                                  
-  8953 00003FBC A1[2C00]                 mov ax, [lexval]
-  8954 00003FBF A3[1000]                 mov word [ORGDATAORIG], ax
-  8955                                  
-  8956                                  ;-1014         orgData=lexval;
+  8946                                  
+  8947                                  ;-1015     if (eqstr(symbol, "ORGDATA")) {
+  8948                                  ;
+  8949 00003F9E C8060000                 ENTER  6,0
+  8950 00003FA2 68[8840]                 push dodefine_0
+  8951 00003FA5 8D06BB69                 lea  ax, [symbol]
+  8952 00003FA9 50                       push ax
+  8953 00003FAA E8B5C2                   call eqstr
+  8954 00003FAD 83C404                   add  sp, 4
+  8955 00003FB0 08C0                     or  al, al
+  8956 00003FB2 0F841500                 je .dodefine486
   8957                                  
-  8958 00003FC2 A1[2C00]                 mov ax, [lexval]
-  8959 00003FC5 A3[1200]                 mov word [orgData], ax
-  8960                                  
-  8961                                  ;-1015         return;
+  8958                                  ;-1016         token=getlex();
+  8959                                  
+  8960 00003FB6 E883ED                   call getlex
+  8961 00003FB9 A3[1E00]                 mov word [token], ax
   8962                                  
-  8963 00003FC8 E9BB00                   jmp .retndodefine
+  8963                                  ;-1017         ORGDATAORIG=lexval;
   8964                                  
-  8965                                  ;-1016     }
-  8966                                  
+  8965 00003FBC A1[2C00]                 mov ax, [lexval]
+  8966 00003FBF A3[1000]                 mov word [ORGDATAORIG], ax
   8967                                  
-  8968                                  ;-1017     expect(T_NAME);
+  8968                                  ;-1018         orgData=lexval;
   8969                                  
-  8970                                  .dodefine486:
-  8971 00003FCB 680001                   push 256
-  8972 00003FCE E845C4                   call expect
-  8973 00003FD1 83C402                   add  sp, 2
+  8970 00003FC2 A1[2C00]                 mov ax, [lexval]
+  8971 00003FC5 A3[1200]                 mov word [orgData], ax
+  8972                                  
+  8973                                  ;-1019         return;
   8974                                  
-  8975                                  ;-1018     if (token==T_CONST) {
+  8975 00003FC8 E9BB00                   jmp .retndodefine
   8976                                  
-  8977 00003FD4 A1[1E00]                 mov ax, [token]
-  8978 00003FD7 3D0101                   cmp ax, 257
-  8979 00003FDA 0F85A800                 jne .dodefine487
-  8980                                  
-  8981                                  ;-1019         if (GTop >= LSTART) error1("global table (define) full");
-  8982                                  
-  8983 00003FDE A1[3900]                 mov ax, [GTop]
-  8984 00003FE1 3DC800                   cmp ax, 200 ;unsigned : 1
-  8985 00003FE4 0F8C0900                 jl  .dodefine488
-  8986 00003FE8 68[9040]                 push dodefine_1
-  8987 00003FEB E87DFC                   call error1
-  8988 00003FEE 83C402                   add  sp, 2
-  8989                                  
-  8990                                  ;-1020         i=strlen(symbol);
-  8991                                  
-  8992                                  .dodefine488:
-  8993 00003FF1 8D06BB69                 lea  ax, [symbol]
-  8994 00003FF5 50                       push ax
-  8995 00003FF6 E80BC2                   call strlen
-  8996 00003FF9 83C402                   add  sp, 2
-  8997 00003FFC 8946FE                   mov [bp-2], ax
-  8998                                  
-  8999                                  ;-1021         if (i>15) error1("Define name longer 15 char");
-  9000                                  
-  9001 00003FFF 8B46FE                   mov ax, [bp-2]
-  9002 00004002 83F80F                   cmp ax, 15
-  9003 00004005 0F8E0900                 jle .dodefine489
-  9004 00004009 68[AB40]                 push dodefine_2
-  9005 0000400C E85CFC                   call error1
-  9006 0000400F 83C402                   add  sp, 2
-  9007                                  
-  9008                                  ;-1022         GSign [GTop]='U';
-  9009                                  
-  9010                                  .dodefine489:
-  9011 00004012 B85500                   mov ax, 85
-  9012 00004015 8B1E[3900]               mov bx, [GTop]
-  9013 00004019 8887306C                 mov [GSign+bx], al
-  9014                                  
-  9015                                  ;-1023         GWidth[GTop]=1;
-  9016                                  
-  9017 0000401D B80100                   mov ax, 1
-  9018 00004020 8B1E[3900]               mov bx, [GTop]
-  9019 00004024 88875C6D                 mov [GWidth+bx], al
-  9020                                  
-  9021                                  ;-1024         GType [GTop]='#';
-  9022                                  
-  9023 00004028 B82300                   mov ax, 35
-  9024 0000402B 8B1E[3900]               mov bx, [GTop]
-  9025 0000402F 8887046B                 mov [GType+bx], al
+  8977                                  ;-1020     }
+  8978                                  
+  8979                                  
+  8980                                  ;-1021     expect(T_NAME);
+  8981                                  
+  8982                                  .dodefine486:
+  8983 00003FCB 680001                   push 256
+  8984 00003FCE E85FC8                   call expect
+  8985 00003FD1 83C402                   add  sp, 2
+  8986                                  
+  8987                                  ;-1022     if (token==T_CONST) {
+  8988                                  
+  8989 00003FD4 A1[1E00]                 mov ax, [token]
+  8990 00003FD7 3D0101                   cmp ax, 257
+  8991 00003FDA 0F85A800                 jne .dodefine487
+  8992                                  
+  8993                                  ;-1023         if (GTop >= LSTART) error1("global table (define) full");
+  8994                                  
+  8995 00003FDE A1[3900]                 mov ax, [GTop]
+  8996 00003FE1 3DC800                   cmp ax, 200 ;unsigned : 1
+  8997 00003FE4 0F8C0900                 jl  .dodefine488
+  8998 00003FE8 68[9040]                 push dodefine_1
+  8999 00003FEB E8F2C5                   call error1
+  9000 00003FEE 83C402                   add  sp, 2
+  9001                                  
+  9002                                  ;-1024         i=strlen(symbol);
+  9003                                  
+  9004                                  .dodefine488:
+  9005 00003FF1 8D06BB69                 lea  ax, [symbol]
+  9006 00003FF5 50                       push ax
+  9007 00003FF6 E80BC2                   call strlen
+  9008 00003FF9 83C402                   add  sp, 2
+  9009 00003FFC 8946FE                   mov [bp-2], ax
+  9010                                  
+  9011                                  ;-1025         if (i>15) error1("Define name longer 15 char");
+  9012                                  
+  9013 00003FFF 8B46FE                   mov ax, [bp-2]
+  9014 00004002 83F80F                   cmp ax, 15
+  9015 00004005 0F8E0900                 jle .dodefine489
+  9016 00004009 68[AB40]                 push dodefine_2
+  9017 0000400C E8D1C5                   call error1
+  9018 0000400F 83C402                   add  sp, 2
+  9019                                  
+  9020                                  ;-1026         GSign [GTop]='U';
+  9021                                  
+  9022                                  .dodefine489:
+  9023 00004012 B85500                   mov ax, 85
+  9024 00004015 8B1E[3900]               mov bx, [GTop]
+  9025 00004019 8887306C                 mov [GSign+bx], al
   9026                                  
-  9027                                  ;-1025         GAdr [GTop]=lineno-1;
+  9027                                  ;-1027         GWidth[GTop]=1;
   9028                                  
-  9029 00004033 A1[4900]                 mov ax, [lineno]
-  9030 00004036 83E801                   sub ax, 1
-  9031 00004039 8B1E[3900]               mov bx, [GTop]
-  9032 0000403D D1E3                     shl bx, 1
-  9033 0000403F 8987886E                 mov [GAdr+bx], ax
+  9029 0000401D B80100                   mov ax, 1
+  9030 00004020 8B1E[3900]               mov bx, [GTop]
+  9031 00004024 88875C6D                 mov [GWidth+bx], al
+  9032                                  
+  9033                                  ;-1028         GType [GTop]='#';
   9034                                  
-  9035                                  ;-1026         GUsed [GTop]=0;
-  9036                                  
-  9037 00004043 B80000                   mov ax, 0
-  9038 00004046 8B1E[3900]               mov bx, [GTop]
-  9039 0000404A D1E3                     shl bx, 1
-  9040 0000404C 8987E070                 mov [GUsed+bx], ax
-  9041                                  
-  9042                                  ;-1027         pt=adrofname(GTop);
-  9043                                  
-  9044 00004050 FF36[3900]               push word [GTop]
-  9045 00004054 E8A5CB                   call adrofname
-  9046 00004057 83C402                   add  sp, 2
-  9047 0000405A A3[4B00]                 mov word [pt], ax
+  9035 00004028 B82300                   mov ax, 35
+  9036 0000402B 8B1E[3900]               mov bx, [GTop]
+  9037 0000402F 8887046B                 mov [GType+bx], al
+  9038                                  
+  9039                                  ;-1029         GAdr [GTop]=lineno-1;
+  9040                                  
+  9041 00004033 A1[4900]                 mov ax, [lineno]
+  9042 00004036 83E801                   sub ax, 1
+  9043 00004039 8B1E[3900]               mov bx, [GTop]
+  9044 0000403D D1E3                     shl bx, 1
+  9045 0000403F 8987886E                 mov [GAdr+bx], ax
+  9046                                  
+  9047                                  ;-1030         GUsed [GTop]=0;
   9048                                  
-  9049                                  ;-1028         strcpy(pt, symbol);
-  9050                                  
-  9051 0000405D 8D06BB69                 lea  ax, [symbol]
-  9052 00004061 50                       push ax
-  9053 00004062 FF36[4B00]               push word [pt]
-  9054 00004066 E8C3C1                   call strcpy
-  9055 00004069 83C404                   add  sp, 4
-  9056                                  
-  9057                                  ;-1029         GData[GTop]=lexval;
-  9058                                  
-  9059 0000406C A1[2C00]                 mov ax, [lexval]
-  9060 0000406F 8B1E[3900]               mov bx, [GTop]
-  9061 00004073 D1E3                     shl bx, 1
-  9062 00004075 89873873                 mov [GData+bx], ax
-  9063                                  
-  9064                                  ;-1030         expect(T_CONST);
-  9065                                  
-  9066 00004079 680101                   push 257
-  9067 0000407C E897C3                   call expect
-  9068 0000407F 83C402                   add  sp, 2
-  9069                                  
-  9070                                  ;-1031         GTop++;
-  9071                                  
-  9072 00004082 FF06[3900]               inc  word[GTop]
-  9073                                  
-  9074                                  ;-1032     }
+  9049 00004043 B80000                   mov ax, 0
+  9050 00004046 8B1E[3900]               mov bx, [GTop]
+  9051 0000404A D1E3                     shl bx, 1
+  9052 0000404C 8987E070                 mov [GUsed+bx], ax
+  9053                                  
+  9054                                  ;-1031         pt=adrofname(GTop);
+  9055                                  
+  9056 00004050 FF36[3900]               push word [GTop]
+  9057 00004054 E842C9                   call adrofname
+  9058 00004057 83C402                   add  sp, 2
+  9059 0000405A A3[4B00]                 mov word [pt], ax
+  9060                                  
+  9061                                  ;-1032         strcpy(pt, symbol);
+  9062                                  
+  9063 0000405D 8D06BB69                 lea  ax, [symbol]
+  9064 00004061 50                       push ax
+  9065 00004062 FF36[4B00]               push word [pt]
+  9066 00004066 E8C3C1                   call strcpy
+  9067 00004069 83C404                   add  sp, 4
+  9068                                  
+  9069                                  ;-1033         GData[GTop]=lexval;
+  9070                                  
+  9071 0000406C A1[2C00]                 mov ax, [lexval]
+  9072 0000406F 8B1E[3900]               mov bx, [GTop]
+  9073 00004073 D1E3                     shl bx, 1
+  9074 00004075 89873873                 mov [GData+bx], ax
   9075                                  
-  9076                                  
-  9077                                  ;-1033 }
-  9078                                  
-  9079                                  .dodefine487:
-  9080                                  
-  9081                                  ;-1034 
-  9082                                  
+  9076                                  ;-1034         expect(T_CONST);
+  9077                                  
+  9078 00004079 680101                   push 257
+  9079 0000407C E8B1C7                   call expect
+  9080 0000407F 83C402                   add  sp, 2
+  9081                                  
+  9082                                  ;-1035         GTop++;
   9083                                  
-  9084                                  ;-1035 int parse() {
+  9084 00004082 FF06[3900]               inc  word[GTop]
   9085                                  
-  9086 00004086 C9                       .retndodefine: LEAVE
-  9087 00004087 C3                       ret
-  9088 00004088 4F52474441544100        dodefine_0 db "ORGDATA",0
-  9089 00004090 676C6F62616C207461-     dodefine_1 db "global table (define) full",0
-  9090 00004099 626C65202864656669-
-  9091 000040A2 6E65292066756C6C00 
-  9092 000040AB 446566696E65206E61-     dodefine_2 db "Define name longer 15 char",0
-  9093 000040B4 6D65206C6F6E676572-
-  9094 000040BD 203135206368617200 
-  9095                                  ENDP
-  9096                                  
-  9097                                  parse: PROC
-  9098                                  
-  9099                                  ;-1036     CNamePtr = &CNameField;
-  9100                                  
-  9101 000040C6 B880B2                   mov ax, CNameField
-  9102 000040C9 A3[3F00]                 mov word [CNamePtr], ax
-  9103                                  
-  9104                                  ;-1037     token=getlex();
-  9105                                  
-  9106 000040CC E825F1                   call getlex
-  9107 000040CF A3[1E00]                 mov word [token], ax
+  9086                                  ;-1036     }
+  9087                                  
+  9088                                  
+  9089                                  ;-1037 }
+  9090                                  
+  9091                                  .dodefine487:
+  9092                                  
+  9093                                  ;-1038 
+  9094                                  
+  9095                                  
+  9096                                  ;-1039 int parse() {
+  9097                                  
+  9098 00004086 C9                       .retndodefine: LEAVE
+  9099 00004087 C3                       ret
+  9100 00004088 4F52474441544100        dodefine_0 db "ORGDATA",0
+  9101 00004090 676C6F62616C207461-     dodefine_1 db "global table (define) full",0
+  9102 00004099 626C65202864656669-
+  9103 000040A2 6E65292066756C6C00 
+  9104 000040AB 446566696E65206E61-     dodefine_2 db "Define name longer 15 char",0
+  9105 000040B4 6D65206C6F6E676572-
+  9106 000040BD 203135206368617200 
+  9107                                  ENDP
   9108                                  
-  9109                                  ;-1038     do {
+  9109                                  parse: PROC
   9110                                  
-  9111                                  .parse490:
+  9111                                  ;-1040     CNamePtr = &CNameField;
   9112                                  
-  9113                                  ;-1039         if (token <= 0) return 1;
-  9114                                  
-  9115 000040D2 A1[1E00]                 mov ax, [token]
-  9116 000040D5 83F800                   cmp ax, 0
-  9117 000040D8 0F8F0600                 jg  .parse491
-  9118 000040DC B80100                   mov ax, 1
-  9119 000040DF E95000                   jmp .retnparse
+  9113 000040C6 B880B2                   mov ax, CNameField
+  9114 000040C9 A3[3F00]                 mov word [CNamePtr], ax
+  9115                                  
+  9116                                  ;-1041     token=getlex();
+  9117                                  
+  9118 000040CC E86DEC                   call getlex
+  9119 000040CF A3[1E00]                 mov word [token], ax
   9120                                  
-  9121                                  ;-1040         if (istoken('#')) {
+  9121                                  ;-1042     do {
   9122                                  
-  9123                                  .parse491:
-  9124 000040E2 6A23                     push 35
-  9125 000040E4 E80DC3                   call istoken
-  9126 000040E7 83C402                   add  sp, 2
-  9127 000040EA 08C0                     or  al, al
-  9128 000040EC 0F842100                 je .parse492
-  9129                                  
-  9130                                  ;-1041              if (istoken(T_DEFINE))  dodefine();
-  9131                                  
-  9132 000040F0 68FF01                   push 511
-  9133 000040F3 E8FEC2                   call istoken
-  9134 000040F6 83C402                   add  sp, 2
-  9135 000040F9 08C0                     or  al, al
-  9136 000040FB 0F840600                 je .parse493
-  9137 000040FF E89CFE                   call dodefine
-  9138                                  
-  9139                                  ;-1042              else error1("define expected");
-  9140                                  
-  9141 00004102 E90900                   jmp .parse494
-  9142                                  .parse493:
-  9143 00004105 68[3341]                 push parse_0
-  9144 00004108 E860FB                   call error1
-  9145 0000410B 83C402                   add  sp, 2
-  9146                                  
-  9147                                  ;-1043         }
-  9148                                  
-  9149                                  .parse494:
+  9123                                  .parse490:
+  9124                                  
+  9125                                  ;-1043         if (token <= 0) return 1;
+  9126                                  
+  9127 000040D2 A1[1E00]                 mov ax, [token]
+  9128 000040D5 83F800                   cmp ax, 0
+  9129 000040D8 0F8F0600                 jg  .parse491
+  9130 000040DC B80100                   mov ax, 1
+  9131 000040DF E95000                   jmp .retnparse
+  9132                                  
+  9133                                  ;-1044         if (istoken('#')) {
+  9134                                  
+  9135                                  .parse491:
+  9136 000040E2 6A23                     push 35
+  9137 000040E4 E827C7                   call istoken
+  9138 000040E7 83C402                   add  sp, 2
+  9139 000040EA 08C0                     or  al, al
+  9140 000040EC 0F842100                 je .parse492
+  9141                                  
+  9142                                  ;-1045              if (istoken(T_DEFINE))  dodefine();
+  9143                                  
+  9144 000040F0 68FF01                   push 511
+  9145 000040F3 E818C7                   call istoken
+  9146 000040F6 83C402                   add  sp, 2
+  9147 000040F9 08C0                     or  al, al
+  9148 000040FB 0F840600                 je .parse493
+  9149 000040FF E89CFE                   call dodefine
   9150                                  
-  9151                                  ;-1044     else{
+  9151                                  ;-1046              else error1("define expected");
   9152                                  
-  9153 0000410E E91600                   jmp .parse495
-  9154                                  .parse492:
-  9155                                  
-  9156                                  ;-1045         typeName();
-  9157                                  
-  9158 00004111 E83ECC                   call typeName
-  9159                                  
-  9160                                  ;-1046         if (token=='(') dofunc();
-  9161                                  
-  9162 00004114 A1[1E00]                 mov ax, [token]
-  9163 00004117 83F828                   cmp ax, 40
-  9164 0000411A 0F850600                 jne .parse496
-  9165 0000411E E837CF                   call dofunc
-  9166                                  
-  9167                                  ;-1047         else doglob(); }
-  9168                                  
-  9169 00004121 E90300                   jmp .parse497
-  9170                                  .parse496:
-  9171 00004124 E8EFC5                   call doglob
-  9172                                  .parse497:
+  9153 00004102 E90900                   jmp .parse494
+  9154                                  .parse493:
+  9155 00004105 68[3341]                 push parse_0
+  9156 00004108 E8D5C4                   call error1
+  9157 0000410B 83C402                   add  sp, 2
+  9158                                  
+  9159                                  ;-1047         }
+  9160                                  
+  9161                                  .parse494:
+  9162                                  
+  9163                                  ;-1048     else{
+  9164                                  
+  9165 0000410E E91600                   jmp .parse495
+  9166                                  .parse492:
+  9167                                  
+  9168                                  ;-1049         typeName();
+  9169                                  
+  9170 00004111 E81FCA                   call typeName
+  9171                                  
+  9172                                  ;-1050         if (token=='(') dofunc();
   9173                                  
-  9174                                  ;-1048     } while(1);
-  9175                                  
-  9176                                  .parse495:
-  9177 00004127 B80100                   mov ax, 1
-  9178 0000412A 08C0                     or  al, al
-  9179 0000412C 0F840200                 je .parse498
-  9180 00004130 EBA0                     jmp .parse490
-  9181                                  .parse498:
-  9182                                  
-  9183                                  ;-1049 }
-  9184                                  
+  9174 00004114 A1[1E00]                 mov ax, [token]
+  9175 00004117 83F828                   cmp ax, 40
+  9176 0000411A 0F850600                 jne .parse496
+  9177 0000411E E821F5                   call dofunc
+  9178                                  
+  9179                                  ;-1051         else doglob(); }
+  9180                                  
+  9181 00004121 E90300                   jmp .parse497
+  9182                                  .parse496:
+  9183 00004124 E8B4F7                   call doglob
+  9184                                  .parse497:
   9185                                  
-  9186                                  ;-1050 
+  9186                                  ;-1052     } while(1);
   9187                                  
-  9188                                  
-  9189                                  ;-1051 int getfirstchar() {
-  9190                                  
-  9191                                   .retnparse:
-  9192 00004132 C3                       ret
-  9193 00004133 646566696E65206578-     parse_0 db "define expected",0
-  9194 0000413C 70656374656400     
-  9195                                  ENDP
+  9188                                  .parse495:
+  9189 00004127 B80100                   mov ax, 1
+  9190 0000412A 08C0                     or  al, al
+  9191 0000412C 0F840200                 je .parse498
+  9192 00004130 EBA0                     jmp .parse490
+  9193                                  .parse498:
+  9194                                  
+  9195                                  ;-1053 }
   9196                                  
-  9197                                  getfirstchar: PROC
-  9198                                  
-  9199                                  ;-1052     fgetsp=&fgetsdest;
+  9197                                  
+  9198                                  ;-1054 
+  9199                                  
   9200                                  
-  9201 00004143 B8A0D9                   mov ax, fgetsdest
-  9202 00004146 A3[4500]                 mov word [fgetsp], ax
-  9203                                  
-  9204                                  ;-1053     *fgetsp=0;
-  9205                                  
-  9206 00004149 B80000                   mov ax, 0
-  9207 0000414C 8B1E[4500]               mov  bx, [fgetsp]
-  9208 00004150 8807                     mov  [bx], al
-  9209                                  
-  9210                                  ;-1054     thechar=fgets1();
-  9211                                  
-  9212 00004152 E8A5F9                   call fgets1
-  9213 00004155 A2[2300]                 mov byte [thechar], al
-  9214                                  
-  9215                                  ;-1055     }
-  9216                                  
+  9201                                  ;-1055 int getfirstchar() {
+  9202                                  
+  9203                                   .retnparse:
+  9204 00004132 C3                       ret
+  9205 00004133 646566696E65206578-     parse_0 db "define expected",0
+  9206 0000413C 70656374656400     
+  9207                                  ENDP
+  9208                                  
+  9209                                  getfirstchar: PROC
+  9210                                  
+  9211                                  ;-1056     fgetsp=&fgetsdest;
+  9212                                  
+  9213 00004143 B8A0D9                   mov ax, fgetsdest
+  9214 00004146 A3[4500]                 mov word [fgetsp], ax
+  9215                                  
+  9216                                  ;-1057     *fgetsp=0;
   9217                                  
-  9218                                  ;-1056 
-  9219                                  
-  9220                                  
-  9221                                  ;-1057 char *arglen=0x80; char *argv=0x82;
-  9222                                  
-  9223 00004158 C3                       ret
-  9224                                  ENDP
-  9225 00004159 8000                    arglen dw 128
-  9226 0000415B 8200                    argv dw 130
-  9227                                  
-  9228                                  ;-1058 int getarg() {
+  9218 00004149 B80000                   mov ax, 0
+  9219 0000414C 8B1E[4500]               mov  bx, [fgetsp]
+  9220 00004150 8807                     mov  [bx], al
+  9221                                  
+  9222                                  ;-1058     thechar=fgets1();
+  9223                                  
+  9224 00004152 E849C6                   call fgets1
+  9225 00004155 A2[2300]                 mov byte [thechar], al
+  9226                                  
+  9227                                  ;-1059     }
+  9228                                  
   9229                                  
-  9230                                  
-  9231                                  getarg: PROC
+  9230                                  ;-1060 
+  9231                                  
   9232                                  
-  9233                                  ;-1059     int arglen1; int i; char *c;
+  9233                                  ;-1061 char *arglen=0x80; char *argv=0x82;
   9234                                  
-  9235                                  
-  9236                                  ;-1060     arglen1=*arglen;
-  9237                                  ;
-  9238 0000415D C8060000                 ENTER  6,0
-  9239 00004161 8B1E[5941]               mov bx, [arglen]
-  9240 00004165 8A07                     mov al, [bx]
-  9241 00004167 B400                     mov ah, 0
-  9242 00004169 8946FE                   mov [bp-2], ax
-  9243                                  
-  9244                                  ;-1061     if (arglen1 == 0) {
-  9245                                  
-  9246 0000416C 8B46FE                   mov ax, [bp-2]
-  9247 0000416F 83F800                   cmp ax, 0
-  9248 00004172 0F851C00                 jne .getarg499
-  9249                                  
-  9250                                  ;-1062         cputs(Version1);
-  9251                                  
-  9252 00004176 8D06[0300]               lea  ax, [Version1]
-  9253 0000417A 50                       push ax
-  9254 0000417B E8F8BE                   call cputs
-  9255 0000417E 83C402                   add  sp, 2
-  9256                                  
-  9257                                  ;-1063         cputs(" Usage: A.COM in_file[.C]: ");
-  9258                                  
-  9259 00004181 68[C042]                 push getarg_0
-  9260 00004184 E8EFBE                   call cputs
-  9261 00004187 83C402                   add  sp, 2
-  9262                                  
-  9263                                  ;-1064         exitR(3);
-  9264                                  
-  9265 0000418A 6A03                     push 3
-  9266 0000418C E859BF                   call exitR
-  9267 0000418F 83C402                   add  sp, 2
+  9235 00004158 C3                       ret
+  9236                                  ENDP
+  9237 00004159 8000                    arglen dw 128
+  9238 0000415B 8200                    argv dw 130
+  9239                                  
+  9240                                  ;-1062 int getarg() {
+  9241                                  
+  9242                                  
+  9243                                  getarg: PROC
+  9244                                  
+  9245                                  ;-1063     int arglen1; int i; char *c;
+  9246                                  
+  9247                                  
+  9248                                  ;-1064     arglen1=*arglen;
+  9249                                  ;
+  9250 0000415D C8060000                 ENTER  6,0
+  9251 00004161 8B1E[5941]               mov bx, [arglen]
+  9252 00004165 8A07                     mov al, [bx]
+  9253 00004167 B400                     mov ah, 0
+  9254 00004169 8946FE                   mov [bp-2], ax
+  9255                                  
+  9256                                  ;-1065     if (arglen1 == 0) {
+  9257                                  
+  9258 0000416C 8B46FE                   mov ax, [bp-2]
+  9259 0000416F 83F800                   cmp ax, 0
+  9260 00004172 0F851C00                 jne .getarg499
+  9261                                  
+  9262                                  ;-1066         cputs(Version1);
+  9263                                  
+  9264 00004176 8D06[0300]               lea  ax, [Version1]
+  9265 0000417A 50                       push ax
+  9266 0000417B E8F8BE                   call cputs
+  9267 0000417E 83C402                   add  sp, 2
   9268                                  
-  9269                                  ;-1065         }
+  9269                                  ;-1067         cputs(" Usage: A.COM in_file[.C]: ");
   9270                                  
-  9271                                  
-  9272                                  ;-1066     i=arglen1+129;
-  9273                                  
-  9274                                  .getarg499:
-  9275 00004192 8B46FE                   mov ax, [bp-2]
-  9276 00004195 058100                   add ax, 129
-  9277 00004198 8946FC                   mov [bp-4], ax
-  9278                                  
-  9279                                  ;-1067     *i=0;
+  9271 00004181 68[C042]                 push getarg_0
+  9272 00004184 E8EFBE                   call cputs
+  9273 00004187 83C402                   add  sp, 2
+  9274                                  
+  9275                                  ;-1068         exitR(3);
+  9276                                  
+  9277 0000418A 6A03                     push 3
+  9278 0000418C E859BF                   call exitR
+  9279 0000418F 83C402                   add  sp, 2
   9280                                  
-  9281 0000419B B80000                   mov ax, 0
-  9282 0000419E 8B5EFC                   mov  bx, [bp-4]
-  9283 000041A1 8907                     mov  [bx], ax
-  9284                                  
-  9285                                  ;-1068     arglen1--;
-  9286                                  
-  9287 000041A3 FF4EFE                   dec  word[bp-2]
-  9288                                  
-  9289                                  ;-1069     toupper(argv);
+  9281                                  ;-1069         }
+  9282                                  
+  9283                                  
+  9284                                  ;-1070     i=arglen1+129;
+  9285                                  
+  9286                                  .getarg499:
+  9287 00004192 8B46FE                   mov ax, [bp-2]
+  9288 00004195 058100                   add ax, 129
+  9289 00004198 8946FC                   mov [bp-4], ax
   9290                                  
-  9291 000041A6 FF36[5B41]               push word [argv]
-  9292 000041AA E826C1                   call toupper
-  9293 000041AD 83C402                   add  sp, 2
-  9294                                  
-  9295                                  ;-1070     strcpy(namein, argv);
+  9291                                  ;-1071     *i=0;
+  9292                                  
+  9293 0000419B B80000                   mov ax, 0
+  9294 0000419E 8B5EFC                   mov  bx, [bp-4]
+  9295 000041A1 8907                     mov  [bx], ax
   9296                                  
-  9297 000041B0 FF36[5B41]               push word [argv]
-  9298 000041B4 8D067E6A                 lea  ax, [namein]
-  9299 000041B8 50                       push ax
-  9300 000041B9 E870C0                   call strcpy
-  9301 000041BC 83C404                   add  sp, 4
+  9297                                  ;-1072     arglen1--;
+  9298                                  
+  9299 000041A3 FF4EFE                   dec  word[bp-2]
+  9300                                  
+  9301                                  ;-1073     toupper(argv);
   9302                                  
-  9303                                  ;-1071     if (instr1(namein, '.') == 0) strcat1(namein, ".C");
-  9304                                  
-  9305 000041BF 6A2E                     push 46
-  9306 000041C1 8D067E6A                 lea  ax, [namein]
-  9307 000041C5 50                       push ax
-  9308 000041C6 E84DC1                   call instr1
-  9309 000041C9 83C404                   add  sp, 4
-  9310 000041CC 83F800                   cmp ax, 0
-  9311 000041CF 0F850E00                 jne .getarg500
-  9312 000041D3 68[DC42]                 push getarg_1
-  9313 000041D6 8D067E6A                 lea  ax, [namein]
-  9314 000041DA 50                       push ax
-  9315 000041DB E8D0C0                   call strcat1
-  9316 000041DE 83C404                   add  sp, 4
-  9317                                  
-  9318                                  ;-1072     strcpy(namelst, namein);
-  9319                                  
-  9320                                  .getarg500:
-  9321 000041E1 8D067E6A                 lea  ax, [namein]
-  9322 000041E5 50                       push ax
-  9323 000041E6 8D06C16A                 lea  ax, [namelst]
-  9324 000041EA 50                       push ax
-  9325 000041EB E83EC0                   call strcpy
-  9326 000041EE 83C404                   add  sp, 4
-  9327                                  
-  9328                                  ;-1073     i=strlen(namelst);
+  9303 000041A6 FF36[5B41]               push word [argv]
+  9304 000041AA E826C1                   call toupper
+  9305 000041AD 83C402                   add  sp, 2
+  9306                                  
+  9307                                  ;-1074     strcpy(namein, argv);
+  9308                                  
+  9309 000041B0 FF36[5B41]               push word [argv]
+  9310 000041B4 8D067E6A                 lea  ax, [namein]
+  9311 000041B8 50                       push ax
+  9312 000041B9 E870C0                   call strcpy
+  9313 000041BC 83C404                   add  sp, 4
+  9314                                  
+  9315                                  ;-1075     if (instr1(namein, '.') == 0) strcat1(namein, ".C");
+  9316                                  
+  9317 000041BF 6A2E                     push 46
+  9318 000041C1 8D067E6A                 lea  ax, [namein]
+  9319 000041C5 50                       push ax
+  9320 000041C6 E84DC1                   call instr1
+  9321 000041C9 83C404                   add  sp, 4
+  9322 000041CC 83F800                   cmp ax, 0
+  9323 000041CF 0F850E00                 jne .getarg500
+  9324 000041D3 68[DC42]                 push getarg_1
+  9325 000041D6 8D067E6A                 lea  ax, [namein]
+  9326 000041DA 50                       push ax
+  9327 000041DB E8D0C0                   call strcat1
+  9328 000041DE 83C404                   add  sp, 4
   9329                                  
-  9330 000041F1 8D06C16A                 lea  ax, [namelst]
-  9331 000041F5 50                       push ax
-  9332 000041F6 E80BC0                   call strlen
-  9333 000041F9 83C402                   add  sp, 2
-  9334 000041FC 8946FC                   mov [bp-4], ax
-  9335                                  
-  9336                                  ;-1074     i--;
-  9337                                  
-  9338 000041FF FF4EFC                   dec  word[bp-4]
+  9330                                  ;-1076     strcpy(namelst, namein);
+  9331                                  
+  9332                                  .getarg500:
+  9333 000041E1 8D067E6A                 lea  ax, [namein]
+  9334 000041E5 50                       push ax
+  9335 000041E6 8D06C16A                 lea  ax, [namelst]
+  9336 000041EA 50                       push ax
+  9337 000041EB E83EC0                   call strcpy
+  9338 000041EE 83C404                   add  sp, 4
   9339                                  
-  9340                                  ;-1075     c=&namelst+i;
+  9340                                  ;-1077     i=strlen(namelst);
   9341                                  
-  9342 00004202 B8C16A                   mov ax, namelst
-  9343 00004205 0346FC                   add ax, [bp-4]
-  9344 00004208 8946FA                   mov [bp-6], ax
-  9345                                  
-  9346                                  ;-1076     *c='S';
+  9342 000041F1 8D06C16A                 lea  ax, [namelst]
+  9343 000041F5 50                       push ax
+  9344 000041F6 E80BC0                   call strlen
+  9345 000041F9 83C402                   add  sp, 2
+  9346 000041FC 8946FC                   mov [bp-4], ax
   9347                                  
-  9348 0000420B B85300                   mov ax, 83
-  9349 0000420E 8B5EFA                   mov  bx, [bp-6]
-  9350 00004211 8807                     mov  [bx], al
+  9348                                  ;-1078     i--;
+  9349                                  
+  9350 000041FF FF4EFC                   dec  word[bp-4]
   9351                                  
-  9352                                  ;-1077 
+  9352                                  ;-1079     c=&namelst+i;
   9353                                  
-  9354                                  
-  9355                                  ;-1078     fdin=openR (namein);
-  9356                                  
-  9357 00004213 8D067E6A                 lea  ax, [namein]
-  9358 00004217 50                       push ax
-  9359 00004218 E89DBE                   call openR
-  9360 0000421B 83C402                   add  sp, 2
-  9361 0000421E A3[1A00]                 mov word [fdin], ax
-  9362                                  
-  9363                                  ;-1079     if(DOS_ERR){
-  9364                                  
-  9365 00004221 A1[4F00]                 mov ax, [DOS_ERR]
-  9366 00004224 08C0                     or  al, al
-  9367 00004226 0F841C00                 je .getarg501
+  9354 00004202 B8C16A                   mov ax, namelst
+  9355 00004205 0346FC                   add ax, [bp-4]
+  9356 00004208 8946FA                   mov [bp-6], ax
+  9357                                  
+  9358                                  ;-1080     *c='S';
+  9359                                  
+  9360 0000420B B85300                   mov ax, 83
+  9361 0000420E 8B5EFA                   mov  bx, [bp-6]
+  9362 00004211 8807                     mov  [bx], al
+  9363                                  
+  9364                                  ;-1081 
+  9365                                  
+  9366                                  
+  9367                                  ;-1082     fdin=openR (namein);
   9368                                  
-  9369                                  ;-1080         cputs("Source file missing (.C): ");
-  9370                                  
-  9371 0000422A 68[DF42]                 push getarg_2
-  9372 0000422D E846BE                   call cputs
-  9373 00004230 83C402                   add  sp, 2
+  9369 00004213 8D067E6A                 lea  ax, [namein]
+  9370 00004217 50                       push ax
+  9371 00004218 E89DBE                   call openR
+  9372 0000421B 83C402                   add  sp, 2
+  9373 0000421E A3[1A00]                 mov word [fdin], ax
   9374                                  
-  9375                                  ;-1081         cputs(namein);
+  9375                                  ;-1083     if(DOS_ERR){
   9376                                  
-  9377 00004233 8D067E6A                 lea  ax, [namein]
-  9378 00004237 50                       push ax
-  9379 00004238 E83BBE                   call cputs
-  9380 0000423B 83C402                   add  sp, 2
-  9381                                  
-  9382                                  ;-1082         exitR(1);
-  9383                                  
-  9384 0000423E 6A01                     push 1
-  9385 00004240 E8A5BE                   call exitR
-  9386 00004243 83C402                   add  sp, 2
-  9387                                  
-  9388                                  ;-1083         }
-  9389                                  
-  9390                                  
-  9391                                  ;-1084     fdout=creatR(namelst);
-  9392                                  
-  9393                                  .getarg501:
-  9394 00004246 8D06C16A                 lea  ax, [namelst]
-  9395 0000424A 50                       push ax
-  9396 0000424B E879BE                   call creatR
-  9397 0000424E 83C402                   add  sp, 2
-  9398 00004251 A3[1C00]                 mov word [fdout], ax
+  9377 00004221 A1[4F00]                 mov ax, [DOS_ERR]
+  9378 00004224 08C0                     or  al, al
+  9379 00004226 0F841C00                 je .getarg501
+  9380                                  
+  9381                                  ;-1084         cputs("Source file missing (.C): ");
+  9382                                  
+  9383 0000422A 68[DF42]                 push getarg_2
+  9384 0000422D E846BE                   call cputs
+  9385 00004230 83C402                   add  sp, 2
+  9386                                  
+  9387                                  ;-1085         cputs(namein);
+  9388                                  
+  9389 00004233 8D067E6A                 lea  ax, [namein]
+  9390 00004237 50                       push ax
+  9391 00004238 E83BBE                   call cputs
+  9392 0000423B 83C402                   add  sp, 2
+  9393                                  
+  9394                                  ;-1086         exitR(1);
+  9395                                  
+  9396 0000423E 6A01                     push 1
+  9397 00004240 E8A5BE                   call exitR
+  9398 00004243 83C402                   add  sp, 2
   9399                                  
-  9400                                  ;-1085     if(DOS_ERR){
+  9400                                  ;-1087         }
   9401                                  
-  9402 00004254 A1[4F00]                 mov ax, [DOS_ERR]
-  9403 00004257 08C0                     or  al, al
-  9404 00004259 0F841C00                 je .getarg502
-  9405                                  
-  9406                                  ;-1086         cputs("list file not creatable: ");
-  9407                                  
-  9408 0000425D 68[FA42]                 push getarg_3
-  9409 00004260 E813BE                   call cputs
-  9410 00004263 83C402                   add  sp, 2
+  9402                                  
+  9403                                  ;-1088     fdout=creatR(namelst);
+  9404                                  
+  9405                                  .getarg501:
+  9406 00004246 8D06C16A                 lea  ax, [namelst]
+  9407 0000424A 50                       push ax
+  9408 0000424B E879BE                   call creatR
+  9409 0000424E 83C402                   add  sp, 2
+  9410 00004251 A3[1C00]                 mov word [fdout], ax
   9411                                  
-  9412                                  ;-1087         cputs(namelst);
+  9412                                  ;-1089     if(DOS_ERR){
   9413                                  
-  9414 00004266 8D06C16A                 lea  ax, [namelst]
-  9415 0000426A 50                       push ax
-  9416 0000426B E808BE                   call cputs
-  9417 0000426E 83C402                   add  sp, 2
-  9418                                  
-  9419                                  ;-1088         exitR(2);
-  9420                                  
-  9421 00004271 6A02                     push 2
-  9422 00004273 E872BE                   call exitR
-  9423 00004276 83C402                   add  sp, 2
-  9424                                  
-  9425                                  ;-1089         }
-  9426                                  
-  9427                                  
-  9428                                  ;-1090     prs("\n; ");
-  9429                                  
-  9430                                  .getarg502:
-  9431 00004279 68[1443]                 push getarg_4
-  9432 0000427C E8A7C2                   call prs
-  9433 0000427F 83C402                   add  sp, 2
-  9434                                  
-  9435                                  ;-1091     prs(Version1);
+  9414 00004254 A1[4F00]                 mov ax, [DOS_ERR]
+  9415 00004257 08C0                     or  al, al
+  9416 00004259 0F841C00                 je .getarg502
+  9417                                  
+  9418                                  ;-1090         cputs("list file not creatable: ");
+  9419                                  
+  9420 0000425D 68[FA42]                 push getarg_3
+  9421 00004260 E813BE                   call cputs
+  9422 00004263 83C402                   add  sp, 2
+  9423                                  
+  9424                                  ;-1091         cputs(namelst);
+  9425                                  
+  9426 00004266 8D06C16A                 lea  ax, [namelst]
+  9427 0000426A 50                       push ax
+  9428 0000426B E808BE                   call cputs
+  9429 0000426E 83C402                   add  sp, 2
+  9430                                  
+  9431                                  ;-1092         exitR(2);
+  9432                                  
+  9433 00004271 6A02                     push 2
+  9434 00004273 E872BE                   call exitR
+  9435 00004276 83C402                   add  sp, 2
   9436                                  
-  9437 00004282 8D06[0300]               lea  ax, [Version1]
-  9438 00004286 50                       push ax
-  9439 00004287 E89CC2                   call prs
-  9440 0000428A 83C402                   add  sp, 2
+  9437                                  ;-1093         }
+  9438                                  
+  9439                                  
+  9440                                  ;-1094     prs("\n; ");
   9441                                  
-  9442                                  ;-1092     prs(", Source: "); prs(namein);
-  9443                                  
-  9444 0000428D 68[1943]                 push getarg_5
-  9445 00004290 E893C2                   call prs
-  9446 00004293 83C402                   add  sp, 2
-  9447 00004296 8D067E6A                 lea  ax, [namein]
-  9448 0000429A 50                       push ax
-  9449 0000429B E888C2                   call prs
-  9450 0000429E 83C402                   add  sp, 2
-  9451                                  
-  9452                                  ;-1093     prs(", Output asm: "); prs(namelst);
+  9442                                  .getarg502:
+  9443 00004279 68[1443]                 push getarg_4
+  9444 0000427C E863C1                   call prs
+  9445 0000427F 83C402                   add  sp, 2
+  9446                                  
+  9447                                  ;-1095     prs(Version1);
+  9448                                  
+  9449 00004282 8D06[0300]               lea  ax, [Version1]
+  9450 00004286 50                       push ax
+  9451 00004287 E858C1                   call prs
+  9452 0000428A 83C402                   add  sp, 2
   9453                                  
-  9454 000042A1 68[2443]                 push getarg_6
-  9455 000042A4 E87FC2                   call prs
-  9456 000042A7 83C402                   add  sp, 2
-  9457 000042AA 8D06C16A                 lea  ax, [namelst]
-  9458 000042AE 50                       push ax
-  9459 000042AF E874C2                   call prs
-  9460 000042B2 83C402                   add  sp, 2
-  9461                                  
-  9462                                  ;-1094     prs("\norg  256 \njmp main");
+  9454                                  ;-1096     prs(", Source: "); prs(namein);
+  9455                                  
+  9456 0000428D 68[1943]                 push getarg_5
+  9457 00004290 E84FC1                   call prs
+  9458 00004293 83C402                   add  sp, 2
+  9459 00004296 8D067E6A                 lea  ax, [namein]
+  9460 0000429A 50                       push ax
+  9461 0000429B E844C1                   call prs
+  9462 0000429E 83C402                   add  sp, 2
   9463                                  
-  9464 000042B5 68[3343]                 push getarg_7
-  9465 000042B8 E86BC2                   call prs
-  9466 000042BB 83C402                   add  sp, 2
-  9467                                  
-  9468                                  ;-1095 }
-  9469                                  
-  9470                                  
-  9471                                  ;-1096 
-  9472                                  
+  9464                                  ;-1097     prs(", Output asm: "); prs(namelst);
+  9465                                  
+  9466 000042A1 68[2443]                 push getarg_6
+  9467 000042A4 E83BC1                   call prs
+  9468 000042A7 83C402                   add  sp, 2
+  9469 000042AA 8D06C16A                 lea  ax, [namelst]
+  9470 000042AE 50                       push ax
+  9471 000042AF E830C1                   call prs
+  9472 000042B2 83C402                   add  sp, 2
   9473                                  
-  9474                                  ;-1097 int main() {
-  9475 000042BE C9                       LEAVE
-  9476 000042BF C3                       ret
-  9477 000042C0 2055736167653A2041-     getarg_0 db " Usage: A.COM in_file[.C]: ",0
-  9478 000042C9 2E434F4D20696E5F66-
-  9479 000042D2 696C655B2E435D3A20-
-  9480 000042DB 00                 
-  9481 000042DC 2E4300                  getarg_1 db ".C",0
-  9482 000042DF 536F75726365206669-     getarg_2 db "Source file missing (.C): ",0
-  9483 000042E8 6C65206D697373696E-
-  9484 000042F1 6720282E43293A2000 
-  9485 000042FA 6C6973742066696C65-     getarg_3 db "list file not creatable: ",0
-  9486 00004303 206E6F742063726561-
-  9487 0000430C 7461626C653A2000   
-  9488 00004314 5C6E3B2000              getarg_4 db "\n; ",0
-  9489 00004319 2C20536F757263653A-     getarg_5 db ", Source: ",0
-  9490 00004322 2000               
-  9491 00004324 2C204F757470757420-     getarg_6 db ", Output asm: ",0
-  9492 0000432D 61736D3A2000       
-  9493 00004333 5C6E6F726720203235-     getarg_7 db "\norg  256 \njmp main",0
-  9494 0000433C 36205C6E6A6D70206D-
-  9495 00004345 61696E00           
-  9496                                  ENDP
-  9497                                  
-  9498                                  main: PROC
-  9499                                  
-  9500                                  ;-1098     getarg();
-  9501                                  
-  9502 00004349 E811FE                   call getarg
-  9503                                  
-  9504                                  ;-1099     CNameTop=0;
-  9505                                  
-  9506 0000434C B80000                   mov ax, 0
-  9507 0000434F A3[4100]                 mov word [CNameTop], ax
-  9508                                  
-  9509                                  ;-1100     coname=0;
-  9510                                  
-  9511 00004352 B80000                   mov ax, 0
-  9512 00004355 A27869                   mov byte [coname], al
+  9474                                  ;-1098     prs("\norg  256 \njmp main");
+  9475                                  
+  9476 000042B5 68[3343]                 push getarg_7
+  9477 000042B8 E827C1                   call prs
+  9478 000042BB 83C402                   add  sp, 2
+  9479                                  
+  9480                                  ;-1099 }
+  9481                                  
+  9482                                  
+  9483                                  ;-1100 
+  9484                                  
+  9485                                  
+  9486                                  ;-1101 int main() {
+  9487 000042BE C9                       LEAVE
+  9488 000042BF C3                       ret
+  9489 000042C0 2055736167653A2041-     getarg_0 db " Usage: A.COM in_file[.C]: ",0
+  9490 000042C9 2E434F4D20696E5F66-
+  9491 000042D2 696C655B2E435D3A20-
+  9492 000042DB 00                 
+  9493 000042DC 2E4300                  getarg_1 db ".C",0
+  9494 000042DF 536F75726365206669-     getarg_2 db "Source file missing (.C): ",0
+  9495 000042E8 6C65206D697373696E-
+  9496 000042F1 6720282E43293A2000 
+  9497 000042FA 6C6973742066696C65-     getarg_3 db "list file not creatable: ",0
+  9498 00004303 206E6F742063726561-
+  9499 0000430C 7461626C653A2000   
+  9500 00004314 5C6E3B2000              getarg_4 db "\n; ",0
+  9501 00004319 2C20536F757263653A-     getarg_5 db ", Source: ",0
+  9502 00004322 2000               
+  9503 00004324 2C204F757470757420-     getarg_6 db ", Output asm: ",0
+  9504 0000432D 61736D3A2000       
+  9505 00004333 5C6E6F726720203235-     getarg_7 db "\norg  256 \njmp main",0
+  9506 0000433C 36205C6E6A6D70206D-
+  9507 00004345 61696E00           
+  9508                                  ENDP
+  9509                                  
+  9510                                  main: PROC
+  9511                                  
+  9512                                  ;-1102     getarg();
   9513                                  
-  9514                                  ;-1101     orgData=ORGDATAORIG;
+  9514 00004349 E811FE                   call getarg
   9515                                  
-  9516 00004358 A1[1000]                 mov ax, [ORGDATAORIG]
-  9517 0000435B A3[1200]                 mov word [orgData], ax
-  9518                                  
-  9519                                  ;-1102     getfirstchar();
+  9516                                  ;-1103     CNameTop=0;
+  9517                                  
+  9518 0000434C B80000                   mov ax, 0
+  9519 0000434F A3[4100]                 mov word [CNameTop], ax
   9520                                  
-  9521 0000435E E8E2FD                   call getfirstchar
+  9521                                  ;-1104     coname=0;
   9522                                  
-  9523                                  ;-1103     parse();
-  9524                                  
-  9525 00004361 E862FD                   call parse
-  9526                                  
-  9527                                  ;-1104   epilog();
-  9528                                  
-  9529 00004364 E8C8F9                   call epilog
+  9523 00004352 B80000                   mov ax, 0
+  9524 00004355 A27869                   mov byte [coname], al
+  9525                                  
+  9526                                  ;-1105     orgData=ORGDATAORIG;
+  9527                                  
+  9528 00004358 A1[1000]                 mov ax, [ORGDATAORIG]
+  9529 0000435B A3[1200]                 mov word [orgData], ax
   9530                                  
-  9531                                  ;-1105 }
+  9531                                  ;-1106     getfirstchar();
   9532                                  
-  9533 00004367 C3                       ret
-  9534                                  ENDP
-  9535                                  ;Input: A.C, List: A.S,  Lines: 1106
-  9536                                  ;Glob. variables:  118 max.:  200
-  9537                                  ;Functions      :   91 max.:  300
-  9538                                  ;Calls          :  786 max.: 1500
-  9539                                  ;NameField      : 4999 max.:10000
-  9540                                  ;Const in 'checkreg' :  712 max.: 2000, stacksize:  9538
+  9533 0000435E E8E2FD                   call getfirstchar
+  9534                                  
+  9535                                  ;-1107     parse();
+  9536                                  
+  9537 00004361 E862FD                   call parse
+  9538                                  
+  9539                                  ;-1108   epilog();
+  9540                                  
+  9541 00004364 E8C8F9                   call epilog
+  9542                                  
+  9543                                  ;-1109 }
+  9544                                  
+  9545 00004367 C3                       ret
+  9546                                  ENDP
+  9547                                  ;Input: A.C, List: A.S,  Lines: 1110
+  9548                                  ;Glob. variables:  118 max.:  200
+  9549                                  ;Functions      :   91 max.:  300
+  9550                                  ;Calls          :  786 max.: 1500
+  9551                                  ;NameField      : 4999 max.:10000
+  9552                                  ;Const in 'checkreg' :  712 max.: 2000, stacksize:  9538

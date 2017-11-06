@@ -108,7 +108,7 @@ int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
 int mkneg(int n)   { n; __asm {neg ax} }
 
 int DosInt() {
-    asm int 0x21
+    __emit__(0xCD,0x21);//inth 0x21;
     __emit__(0x73, 04); //ifcarry DOS_ERR++;
     DOS_ERR++;
 }
@@ -180,43 +180,6 @@ int instr1(char *s, char c) {
 }
 
 
-int a(unsigned int i) { printName(i);//address
-}
-int v(unsigned int i) {//value
-    if (i < LSTART) prc('[');
-    printName(i);
-    if (i < LSTART) prc(']');
-}
-int checknamelen() {
-    int i;
-    i=strlen(symbol);
-    if (i > IDLENMAX) error1("Item name is too long in characters)");
-}
-
-int next() {
-    char r;
-    r = thechar;
-    globC=r;
-    thechar = fgets1();
-    return r;
-}
-int istoken(int t) {
-    if (token == t) {
-        token=getlex();
-        return 1;
-    }
-    return 0;
-}
-int expect(int t) {
-    if (istoken(t)==0) {
-        *cloc=0;
-        prs(co);
-        prs("\nExpected ASCII(dez): ");
-        pint1(t);
-        error1(" not found");
-    }
-}
-
 int eprc(char c)  {
     *cloc=c;
     cloc++;
@@ -246,10 +209,6 @@ int prscomment(unsigned char *s) {
         s++;
     }
 }
-int prnl() {
-    prs("\n ");
-}
-
 int prs(unsigned char *s) {
     unsigned char c; int com;
     com=0;
@@ -269,6 +228,11 @@ int prs(unsigned char *s) {
         s++;
     }
 }
+int prnl() {
+    prs("\n ");
+}
+
+
 int eprnum(int n){//for docall1 procedure
     int e;
     if(n<0) {
@@ -312,57 +276,115 @@ int printint51(unsigned int j)  {
     prunsign1(j);
 }
 
+int error1(char *s) {
+    lineno--;
+    prnl();
+    prscomment(&fgetsdest);
+    prs(";Line: ");
+    prunsign1(lineno);
+    prs(" ************** ERROR: ");
+    prs(s);
+    prs("  in column: ");
+    prunsign1(column);
+    prs("\nToken: ");
+    prunsign1(token);
+    prs(", symbol: ");
+    prs(symbol);
+    end1(1);
+}
 
-char doglobName[IDLENMAX];
-int doglob() {
-    int i; int j; int isstrarr; isstrarr=0;
-  if (GTop >= LSTART) error1("Global table full");
-  if (iswidth == 0) error1("no VOID as var type");
-  checknamelen();
-  if (checkName() != 0) error1("Variable already defined");
-  if (istoken('[')) { istype='&';
-    if (istoken(T_CONST)) {
-      prs("\nsection .bss\nabsolute ");
-      prunsign1(orgData);
-      prs("\n"); prs(symbol);
-      if (iswidth==1) prs(" resb ");
-      if (iswidth==2) prs(" resw ");
-      if (iswidth==4) prs(" resd ");
-      prunsign1(lexval);
-      prs("\nsection .text");
-      orgData=orgData+lexval;
-      if (iswidth==2) orgData=orgData+lexval;
-      if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
-      GData[GTop]=lexval; expect(']');
-    }else { expect(']');
-      if (iswidth != 1) error1("Only ByteArray allowed");
-      prs("\n"); prs(symbol); prs(" db ");
-      isstrarr=1; strcpy(doglobName, symbol);
-      expect('=');
-      if (istoken(T_STRING)) {
-        prc(34); prscomment(symbol); prc(34); prs(",0");
-        i=strlen(symbol); GData[GTop]=i; }
-      else if (istoken('{' )) { i=0;
-        do { if(i) prc(',');
-          expect(T_CONST); prunsign1(lexval); i=1; }
-        while (istoken(',')); expect('}'); }
-      else error1("String or number array expected");
-      };
-  }else { //expect('=');
-    prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
-    else {
-      if      (iswidth==1) prs(" db ");
-      else if (iswidth==2) prs(" dw ");
-      else                 prs(" dd ");
+int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
+    if (c == 10) return 1;//LF
+    if (c == 13) {//CR
+        if (thechar == 10) c=next();
+        return 1;
     }
-    if(istoken('-')) prc('-');
-    if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
-    else prunsign1(0); }
-  GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
-  GAdr [GTop]=lineno-1; GUsed [GTop]=0;
-  pt=adrofname(GTop);
-  if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
-  GTop++; expect(';'); }
+    return 0;
+}
+int printinputline() {
+    int col;
+    col=0;
+    fgetsp=&fgetsdest;
+    do {
+        DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
+        if (DOS_NoBytes == 0) return;
+        *fgetsp=DOS_ByteRead;
+        fgetsp++;
+        col++;
+        if (col >80) error1("input line longer than 80 char");
+        }
+        while (DOS_ByteRead != 10);
+    *fgetsp=0;
+    if (fdout) {
+        prs("\n\n;-");
+        prunsign1(lineno);
+        prc(' ');
+        lineno++;
+        prscomment(&fgetsdest);
+        }
+}
+int fgets1() {
+    char c;
+    c=*fgetsp;
+    if (c==0) {
+        printinputline();
+        if (DOS_NoBytes == 0) return 0;
+        fgetsp=&fgetsdest;
+        c=*fgetsp;
+        column=0;
+    }
+    fgetsp++;
+    column++;
+    return c;
+}
+
+
+int next() {
+    char r;
+    r = thechar;
+    globC=r;
+    thechar = fgets1();
+    return r;
+}
+int istoken(int t) {
+    if (token == t) {
+        token=getlex();
+        return 1;
+    }
+    return 0;
+}
+int expect(int t) {
+    if (istoken(t)==0) {
+        *cloc=0;
+        prs(co);
+        prs("\nExpected ASCII(dez): ");
+        pint1(t);
+        error1(" not found");
+    }
+}
+
+int printName(unsigned int i) {int j;
+  if (i < LSTART) { i=adrofname(i); prs(i); }
+  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+}
+
+int a(unsigned int i) { printName(i);//address
+}
+int v(unsigned int i) {//value
+    if (i < LSTART) prc('[');
+    printName(i);
+    if (i < LSTART) prc(']');
+}
+int checknamelen() {
+    int i;
+    i=strlen(symbol);
+    if (i > IDLENMAX) error1("Item name is too long in characters)");
+}
+
+int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
+  __asm{ add ax, [bp+4]  ; offset s } }
+
+  int adrofname(unsigned int i) { adrF(GNameField, i); }
 
 int gettypes(int i) {int j; char c;
   c=GSign [i]; if (c=='S') signi =1;    else signi =0;
@@ -373,13 +395,6 @@ int gettypes(int i) {int j; char c;
   c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
   if (c=='&')  typei=2;
   return i; }
-int adrofname(unsigned int i) { adrF(GNameField, i); }
-int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
-  __asm{ add ax, [bp+4]  ; offset s } }
-int printName(unsigned int i) {int j;
-  if (i < LSTART) { i=adrofname(i); prs(i); }
-  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
-}
 int searchname() { unsigned int i;
   i=checkName(); if (i == 0) error1("Variable unknown");
   GUsed[i]=GUsed[i] + 1; return i;
@@ -436,48 +451,7 @@ int checkFunction() { unsigned int i; unsigned int j; i=0;
   while (i < FTop) {
     j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
   return 0; }
-int dofunc() { int nloc; int i; int narg;
-  cloc=&co;
-  checknamelen();
-  strcpy(fname, symbol);
-  if (checkFunction() ) error1("Function already defined");
-  storefunc();
-  prs("\n\n"); prs(symbol); prs(": PROC");
-  expect('('); LTop=LSTART;  i=0;
-  if (istoken(')')==0) { narg=2;
-    do { typeName();  addlocal(); narg+=2;
-         GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
-    while (istoken(','));  expect(')'); }
 
-  expect('{'); /*body*/
-  nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
-  while(isvariable()) {
-    do {typeName();
-        checknamelen();
-        addlocal(); nloc-=2;
-        if (iswidth == 4) nloc-=2;
-        GData[LTop]=nloc;
-        if (istoken('[')){
-            istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
-            nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc;
-            }
-        LTop++;
-      } while (istoken(',')); expect(';'); }
-  if (LTop>LSTART){prs(";\n ENTER  ");
-    nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
-  while(istoken('}')==0)   stmt();
-  if (nreturn) {
-        prs("\n .retn");
-        prs(fname);
-        prc(':');
-        }
-  if (LTop > LSTART) prs(" LEAVE");
-  prs("\n ret");
-  *cloc=0; prs(co);
-  maxco1=strlen(co);
-  if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
-  prs("\nENDP");
-}
 int isvariable() {
     if(token==T_SIGNED)   goto v1;
     if(token==T_UNSIGNED) goto v1;
@@ -911,75 +885,105 @@ int getstring(int delim) {
     *p=0;
 }
 
-int fgets1() {
-    char c;
-    c=*fgetsp;
-    if (c==0) {
-        printinputline();
-        if (DOS_NoBytes == 0) return 0;
-        fgetsp=&fgetsdest;
-        c=*fgetsp;
-        column=0;
-    }
-    fgetsp++;
-    column++;
-    return c;
-}
-int printinputline() {
-    int col;
-    col=0;
-    fgetsp=&fgetsdest;
-    do {
-        DOS_NoBytes=readRL(&DOS_ByteRead, fdin, 1);
-        if (DOS_NoBytes == 0) return;
-        *fgetsp=DOS_ByteRead;
-        fgetsp++;
-        col++;
-        if (col >80) error1("input line longer than 80 char");
+
+int dofunc() { int nloc; int i; int narg;
+  cloc=&co;
+  checknamelen();
+  strcpy(fname, symbol);
+  if (checkFunction() ) error1("Function already defined");
+  storefunc();
+  prs("\n\n"); prs(symbol); prs(": PROC");
+  expect('('); LTop=LSTART;  i=0;
+  if (istoken(')')==0) { narg=2;
+    do { typeName();  addlocal(); narg+=2;
+         GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
+    while (istoken(','));  expect(')'); }
+
+  expect('{'); /*body*/
+  nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
+  while(isvariable()) {
+    do {typeName();
+        checknamelen();
+        addlocal(); nloc-=2;
+        if (iswidth == 4) nloc-=2;
+        GData[LTop]=nloc;
+        if (istoken('[')){
+            istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
+            nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc;
+            }
+        LTop++;
+      } while (istoken(',')); expect(';'); }
+  if (LTop>LSTART){prs(";\n ENTER  ");
+    nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
+  while(istoken('}')==0)   stmt();
+  if (nreturn) {
+        prs("\n .retn");
+        prs(fname);
+        prc(':');
         }
-        while (DOS_ByteRead != 10);
-    *fgetsp=0;
-    if (fdout) {
-        prs("\n\n;-");
-        prunsign1(lineno);
-        prc(' ');
-        lineno++;
-        prscomment(&fgetsdest);
-        }
+  if (LTop > LSTART) prs(" LEAVE");
+  prs("\n ret");
+  *cloc=0; prs(co);
+  maxco1=strlen(co);
+  if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
+  prs("\nENDP");
 }
-int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
-    if (c == 10) return 1;//LF
-    if (c == 13) {//CR
-        if (thechar == 10) c=next();
-        return 1;
+
+char doglobName[IDLENMAX];
+int doglob() {
+    int i; int j; int isstrarr; isstrarr=0;
+  if (GTop >= LSTART) error1("Global table full");
+  if (iswidth == 0) error1("no VOID as var type");
+  checknamelen();
+  if (checkName() != 0) error1("Variable already defined");
+  if (istoken('[')) { istype='&';
+    if (istoken(T_CONST)) {
+      prs("\nsection .bss\nabsolute ");
+      prunsign1(orgData);
+      prs("\n"); prs(symbol);
+      if (iswidth==1) prs(" resb ");
+      if (iswidth==2) prs(" resw ");
+      if (iswidth==4) prs(" resd ");
+      prunsign1(lexval);
+      prs("\nsection .text");
+      orgData=orgData+lexval;
+      if (iswidth==2) orgData=orgData+lexval;
+      if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
+      GData[GTop]=lexval; expect(']');
+    }else { expect(']');
+      if (iswidth != 1) error1("Only ByteArray allowed");
+      prs("\n"); prs(symbol); prs(" db ");
+      isstrarr=1; strcpy(doglobName, symbol);
+      expect('=');
+      if (istoken(T_STRING)) {
+        prc(34); prscomment(symbol); prc(34); prs(",0");
+        i=strlen(symbol); GData[GTop]=i; }
+      else if (istoken('{' )) { i=0;
+        do { if(i) prc(',');
+          expect(T_CONST); prunsign1(lexval); i=1; }
+        while (istoken(',')); expect('}'); }
+      else error1("String or number array expected");
+      };
+  }else { //expect('=');
+    prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
+    else {
+      if      (iswidth==1) prs(" db ");
+      else if (iswidth==2) prs(" dw ");
+      else                 prs(" dd ");
     }
-    return 0;
-}
+    if(istoken('-')) prc('-');
+    if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
+    else prunsign1(0); }
+  GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
+  GAdr [GTop]=lineno-1; GUsed [GTop]=0;
+  pt=adrofname(GTop);
+  if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
+  GTop++; expect(';'); }
 
 int end1(int n) {
     fcloseR(fdin);
     fcloseR(fdout);
     exitR(n);
-}
-int error1(char *s) {
-    lineno--;
-    prnl();
-    prscomment(&fgetsdest);
-    prs(";Line: ");
-    prunsign1(lineno);
-    prs(" ************** ERROR: ");
-    prs(s);
-    prs("  in column: ");
-    prunsign1(column);
-    prs("\nToken: ");
-    prunsign1(token);
-//    prs(", globC: ");
-//    prc(globC);
-//    prs(", thechar: ");
-//    prunsign1(thechar);
-    prs(", symbol: ");
-    prs(symbol);
-    end1(1);
 }
 
 unsigned int MAXUI=65535;
