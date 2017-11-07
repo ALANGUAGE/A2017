@@ -37,7 +37,7 @@ char Version1[]="A.COM V0.9.2";//todo: 2. op=reg not recognized
 
 unsigned int ORGDATAORIG=25000;//start of arrays
 unsigned int orgData;//actual max of array, must be less than stack
-#define COMAX        2000
+#define COMAX        3000
 char co[COMAX];//constant storage
 int maxco=0;
 int maxco1=0;
@@ -93,7 +93,6 @@ int  CTop=0;
 
 char fgetsdest[COLUMNMAX];
 unsigned char *fgetsp=0;
-unsigned int segE;
 unsigned int lineno=1;
 unsigned char *pt=0;
 unsigned char *p1=0;
@@ -180,7 +179,6 @@ int instr1(char *s, char c) {
     }
     return 0;
 }
-
 
 int eprc(char c)  {
     *cloc=c;
@@ -301,14 +299,6 @@ int error1(char *s) {
     end1(1);
 }
 
-int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
-    if (c == 10) return 1;//LF
-    if (c == 13) {//CR
-        if (thechar == 10) c=next();
-        return 1;
-    }
-    return 0;
-}
 int printinputline() {
     int col;
     col=0;
@@ -374,6 +364,32 @@ int getstring(int delim) {
     *p=0;
 }
 
+int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
+  __asm{ add ax, [bp+4]  ; offset s } }
+
+int adrofname(unsigned int i) { adrF(GNameField, i); }
+
+int printName(unsigned int i) {int j;
+  if (i < LSTART) { i=adrofname(i); prs(i); }
+  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+}
+int convertdefine() { int i; int j;   i=0;
+  while (i < GTop) {
+   j=adrofname(i);
+   if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
+   return T_CONST; } }
+   i++; }
+   return 0; }
+
+int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
+    if (c == 10) return 1;//LF
+    if (c == 13) {//CR
+        if (thechar == 10) c=next();
+        return 1;
+    }
+    return 0;
+}
+
 char symboltemp[80];
 int getlex() { char c; char *p;
 g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
@@ -423,9 +439,11 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (eqstr(symbol,"do"      )) return T_DO;
     if (eqstr(symbol,"goto"    )) return T_GOTO;
     if (eqstr(symbol,"define"  )) return T_DEFINE;
-    if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
-    return T_NAME; } error1("Input item not recognized"); }
-
+    if (convertdefine() ) {
+        strcpy(symbol, symboltemp); return T_CONST;
+    }
+    return T_NAME; } error1("Input item not recognized");
+}
 
 int istoken(int t) {
     if (token == t) {
@@ -444,15 +462,6 @@ int expect(int t) {
     }
 }
 
-int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
-  __asm{ add ax, [bp+4]  ; offset s } }
-
-int adrofname(unsigned int i) { adrF(GNameField, i); }
-
-int printName(unsigned int i) {int j;
-  if (i < LSTART) { i=adrofname(i); prs(i); }
-  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
-}
 
 int a(unsigned int i) { printName(i);//address
 }
@@ -466,13 +475,6 @@ int checknamelen() {
     i=strlen(symbol);
     if (i > IDLENMAX) error1("Item name is too long in characters)");
 }
-int convertdefine() { int i; int j;   i=0;
-  while (i < GTop) {
-   j=adrofname(i);
-   if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
-   return T_CONST; } }
-   i++; }
-   return 0; }
 
 int checkName() { unsigned int i; unsigned int j;
   i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
@@ -845,42 +847,70 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
 
 /***************************************************************/
 
-int doemit() {prs("\n db ");
-  L1: token=getlex(); prunsign1(lexval); token=getlex();
-    if (token== ',') {prc(','); goto L1;} expect(')'); }
+int prlabel(int n) {
+    prs("\n.");
+    prs(fname);
+    prunsign1(n);
+    prc(':');
+}
+int prjump (int n) {
+    prs("\n jmp .");
+    prs(fname);
+    prunsign1(n);
+}
 
-
-int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
-int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
-int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
-  pint1(jdest); stmt();
-  if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
-    prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
-  else prlabel(jdest); }
-
-int dodo() {int jdest; int jtemp;
-  nlabel++; jdest=nlabel; prlabel(jdest); stmt();
-  expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
-  prjump(jdest); prlabel(jtemp); }
-int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
-  prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
-  stmt(); prjump(jdest); prlabel(tst); }
-
-int stmt() { int c; char cha;
+int stmt() {
+    int c; char cha;
+    int jdest; int tst; int jtemp;
        if(istoken('{'))     {while(istoken('}')==0) stmt();}
-  else if(istoken(T_IF))    doif();
-  else if(istoken(T_DO))    dodo();
-  else if(istoken(T_WHILE)) dowhile();
+  else if(istoken(T_IF)) {
+      int jdest; int tst;
+      pexpr(); nlabel++; jdest=nlabel;
+      pint1(jdest); stmt();
+      if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
+          prjump(tst); prlabel(jdest); stmt(); prlabel(tst);
+      }
+      else prlabel(jdest);
+  }
+  else if(istoken(T_DO)) {
+      nlabel++; jdest=nlabel; prlabel(jdest); stmt();
+      expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
+      prjump(jdest); prlabel(jtemp);
+  }
+  else if(istoken(T_WHILE)) {
+      nlabel++; jdest=nlabel;
+      prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
+      stmt(); prjump(jdest); prlabel(tst);
+  }
   else if(istoken(T_GOTO))  {
-    prs("\n jmp .");name1();prs(symbol);expect(';');}
-  else if(token==T_ASM)     {prs("\n"); c=next();
-        while(c != '\n') { prc(c);	c=next(); }; token=getlex(); }
-  else if(istoken(T_ASMBLOCK)) { if (token== '{' )  { prs("\n"); cha=next();
-        while(cha!= '}') { prc(cha); cha=next(); }
-        token=getlex(); }
-        else error1("Curly open expected");
+      prs("\n jmp .");name1();prs(symbol);expect(';');
+  }
+  else if(token==T_ASM)     {
+      prs("\n"); c=next();
+      while(c != '\n') { prc(c);	c=next(); };
+      token=getlex();
+  }
+  else if(istoken(T_ASMBLOCK)) {
+      if (token== '{' )  {
+          prs("\n"); cha=next();
+          while(cha!= '}') {
+              prc(cha);
+              cha=next();
+          }
+          token=getlex();
+      } else error1("Curly open expected");
         }
-  else if(istoken(T_EMIT))   doemit();
+  else if(istoken(T_EMIT)) {
+      prs("\n db ");
+    L1: token=getlex();
+      prunsign1(lexval);
+      token=getlex();
+      if (token== ',') {
+          prc(',');
+          goto L1;
+      }
+      expect(')');
+  }
   else if(istoken(';'))      { }
   else if(istoken(T_RETURN)) {
         if (token!=';') expr(0);
@@ -1011,11 +1041,13 @@ int epilog() {
     prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
     prs(" max.:"); printint51(COMAX);
     i=COMAX; i=i-maxco;
-    if (i <= 1000)prs(" *** Warning *** constant area too small");
+    if (i <= 1000)prs("\n *** Warning *** constant area too small");
     prs(", stacksize: ");
     i=MAXUI-orgData; printint51(i);
-    if (i <= 1000) prs(" *** Warning *** Stack too small");
-  end1(0);}
+    if (i <= 1000) prs("\n *** Warning *** Stack too small");
+    prs("\n");
+    end1(0);
+}
 
 int dodefine() {
     int i; int j; int fdtemp;
