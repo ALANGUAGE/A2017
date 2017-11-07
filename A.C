@@ -100,7 +100,9 @@ unsigned char *p1=0;
 int DOS_ERR=0;
 int DOS_NoBytes=0;
 char DOS_ByteRead=0;
-
+int ireg1;
+int mod2;
+int ireg2;
 
 int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); }
 int putch(char c)  {if (c==10) {al=13; writetty();} al=c; writetty(); }
@@ -276,6 +278,12 @@ int printint51(unsigned int j)  {
     prunsign1(j);
 }
 
+int end1(int n) {
+    fcloseR(fdin);
+    fcloseR(fdout);
+    exitR(n);
+}
+
 int error1(char *s) {
     lineno--;
     prnl();
@@ -337,8 +345,6 @@ int fgets1() {
     column++;
     return c;
 }
-
-
 int next() {
     char r;
     r = thechar;
@@ -346,430 +352,27 @@ int next() {
     thechar = fgets1();
     return r;
 }
-int istoken(int t) {
-    if (token == t) {
-        token=getlex();
-        return 1;
+
+int getdigit(char c) { int i;
+    lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
+    if (thechar=='x') thechar='X'; if (thechar=='X') { next();
+      while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
+	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
+     i=0; i=c; lexval=lexval+i;}
+    }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
+     i=0; i=c; lexval=lexval+i; } }
+}
+int getstring(int delim) {
+    int c; char *p;
+    p=&symbol;
+    c=next();
+    while (c != delim) {
+        *p=c;
+        p++;
+        c=next();
     }
-    return 0;
+    *p=0;
 }
-int expect(int t) {
-    if (istoken(t)==0) {
-        *cloc=0;
-        prs(co);
-        prs("\nExpected ASCII(dez): ");
-        pint1(t);
-        error1(" not found");
-    }
-}
-
-int printName(unsigned int i) {int j;
-  if (i < LSTART) { i=adrofname(i); prs(i); }
-  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
-}
-
-int a(unsigned int i) { printName(i);//address
-}
-int v(unsigned int i) {//value
-    if (i < LSTART) prc('[');
-    printName(i);
-    if (i < LSTART) prc(']');
-}
-int checknamelen() {
-    int i;
-    i=strlen(symbol);
-    if (i > IDLENMAX) error1("Item name is too long in characters)");
-}
-
-int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
-  __asm{ add ax, [bp+4]  ; offset s } }
-
-  int adrofname(unsigned int i) { adrF(GNameField, i); }
-
-int gettypes(int i) {int j; char c;
-  c=GSign [i]; if (c=='S') signi =1;    else signi =0;
-  c=GWidth[i]; widthi=0;wi=0;
-  if (c==1) {widthi=1;wi=1;}
-  if (c==2) {widthi=2;wi=2;}
-  if (c==4) {widthi=4;wi=4;}
-  c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
-  if (c=='&')  typei=2;
-  return i; }
-int searchname() { unsigned int i;
-  i=checkName(); if (i == 0) error1("Variable unknown");
-  GUsed[i]=GUsed[i] + 1; return i;
-}
-int checkName() { unsigned int i; unsigned int j;
-  i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
-  i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
-  return 0;
-}
-int typeName() { int m; //0=V,1=*,2=&
-    issign='S';
-    if(istoken(T_SIGNED))   issign='S';
-    if(istoken(T_UNSIGNED)) issign='U';
-    iswidth=2;
-    if(istoken(T_VOID))     iswidth=0;
-    if(istoken(T_CHAR))     iswidth=1;
-    if(istoken(T_INT))      iswidth=2;
-    if(istoken(T_LONG))     iswidth=4;
-    istype='V';
-    m=0;
-    if(istoken('*'))  {istype='*'; m=1;}
-    if(istoken('&'))  {istype='&'; m=2;}
-    name1();
-    return m;
-}
-int name1() {
-    if (token!=T_NAME) error1("Name expected");
-    token=getlex();
-}
-
-int storeCall1() {//todo
-    unsigned int i;
-    CTop++;
-    if (CTop >= CALLMAX) error1("too many calls");
-    i = CNamePtr - &CNameField;
-    if (i >= CNAMEMAX) error1("too many call names");
-    CType[CTop]=0;
-    CAdr [CTop]=CNamePtr;
-    CNamePtr=strcpy(CNamePtr, symbol);
-    CNamePtr++;
-}
-
-int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
-    FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
-    pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
-}
-int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
-  if (checkName() != 0) error1("Variable already defined");
-  GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
-  GAdr [LTop]=lineno-1; GUsed[LTop]=0;
-  pt=adrF(GNameField, LTop); strcpy(pt, symbol);
-}
-int checkFunction() { unsigned int i; unsigned int j; i=0;
-  while (i < FTop) {
-    j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
-  return 0; }
-
-int isvariable() {
-    if(token==T_SIGNED)   goto v1;
-    if(token==T_UNSIGNED) goto v1;
-    if(token==T_CHAR)     goto v1;
-    if(token==T_INT)      goto v1;
-    if(token==T_LONG)     goto v1;
-    return 0;
-v1: return 1;
-}
-
-int ireg1;
-int mod2; int ireg2;
-
-int pexpr() {expect('('); iscmp=0;
-  if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
-    ireg1=checkreg();
-    if (ireg1) { doreg1(1); return; }  }
-  expr(0);
-  if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
-  expect(')'); }
-
-int constantexpr() { int mode; int id1;int ids;
-  token=getlex();   mode=typeName();
-  id1=searchname(); gettypes(id1); ids=signi;
-  if (isrelational() ==0) error1("Relational expression expected");
-  expect(T_CONST);  prs(" ; constant expression");
-  prs("\ncmp ");
-  gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
-  expect(')');
-}
-
-char ops[5];
-int doreg1(int iscmp1) { int i;
-  if (istoken('='))          strcpy(ops, "mov");
-  if (istoken(T_PLUSASS))    strcpy(ops, "add");
-  if (istoken(T_MINUSASS))   strcpy(ops, "sub");
-  if (istoken(T_ANDASS))     strcpy(ops, "and");
-  if (istoken(T_ORASS))      strcpy(ops, "or" );
-  if (istoken(T_LESSLESS))   strcpy(ops, "shl");
-  if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
-  if (iscmp1 == 1) { token=getlex();
-      if (isrelational() ==0) error1("Relational expected");
-      strcpy(ops, "cmp"); }
-  prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
-
-  if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
-  mod2=typeName(); ireg2=checkreg();
-  if (ireg2) {printreg(ireg2); goto reg1;}
-  i=searchname();  if (mod2 == 2) a(i); else v(i);
-  reg1: if (iscmp1 == 1) {cmpneg(0); prs(fname); expect(')'); }
-}
-int checkreg() { // >=17 = 16bit, >=47 = 32bit
-  if (strlen(symbol) <  2) return 0;
-  if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
-  if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
-  if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
-  if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
-  if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
-  if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
-  if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
-  if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
-  if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
-  if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
-  if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
-  // (eqstr(symbol,"ip")) return 45;
-  if (strlen(symbol) >   3) return 0;
-  if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
-  if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
-  if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
-  if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
-  if (eqstr(symbol,"cr0")) return 71;
-  return 0;   }
-
-char printregstr[]
-="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
-
-int printreg(int i) {  unsigned int k; unsigned char c;
-  k = &printregstr + i; c=*k; prc(c); i++;
-  k = &printregstr + i; c=*k; prc(c);
-  if (i > 47) { i++; k = &printregstr + i; c=*k; prc(c); }
-}
-int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
-int expr(int isRight)
-{ int mode; int id1;     int ixarr; int ixconst;
-  int ids;  int isCONST; int i;     unsigned char *p;
-  if (istoken(T_CONST)) { evalue=lexval;
-    prs("\n mov ax, "); prunsign1(lexval); return 4; }
-  mode=typeName(); /*0=V,1=*,2=&*/
-  ireg1=checkreg();
-  if (ireg1) { doreg1(0); return; }
-  if (token=='(')  {docall1(); goto e1; }
-  if (isreg()) goto e1;
-
-  id1=searchname(); gettypes(id1); ids=signi;
-  ixarr=0;  ixconst=0;
-    if (istoken('[')) { if (istoken(T_CONST)) {
-      ixconst=1; ixarr=lexval; expect(']');  }
-    else {ixarr=searchname(); expect(T_NAME); expect(']');
-    gettypes(ixarr);
-    if (widthi != 2) error1("Array index must be number or int"); } }
-  if (istoken(T_PLUSPLUS  )) {if(mode)error1("Only var allowed");
-     prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
-     v(id1); goto e1;}
-  if (istoken(T_MINUSMINUS)) {if(mode)error1("Only var allowed");
-     prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
-     v(id1); goto e1;}
-
-  if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
-  if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
-  if (istoken(T_ANDASS    )) {compoundass("and", mode, id1); goto e1;}
-  if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}
-  if (istoken(T_MULASS    )) {error1("not implemented");}
-  if (istoken(T_DIVASS    )) {error1("not implemented");}
-
-  if (istoken('=')) { exprtype= expr(1);
-  doassign(mode, id1, ixarr, ixconst); goto e1;  }
-  dovar1(mode, "mov", ixarr, id1);
-
-e1:    if (istoken('+')) rterm("add");
-  else if (istoken('-')) rterm("sub" );
-  else if (istoken('&')) rterm("and" );
-  else if (istoken('|')) rterm("or" );
-  else if (istoken(T_LESSLESS)) rterm("shl");
-  else if (istoken(T_GREATGREAT)) rterm("shr");
-  else if (istoken('*')) domul (ids);
-  else if (istoken('/')) doidiv(ids);
-  else if (istoken('%')) domod (ids);
-  if (isrelational()) { rterm("cmp"); cmpneg(ids);}
-  return 0;
-}
-
-int compoundass(char *op, int mode, int id1) {
-  if(mode) error1("only scalar Var allowed");
-  prnl(); prs(op); prs("  ");
-  gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  v(id1); prs(", ");
-  expect(T_CONST); prunsign1(lexval);
-}
-int dovar1(int mode, int op, int ixarr, int id1) {
-  gettypes(id1);
-  if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
-    if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
-    if(widthi == 2) prs(" ax, [bx]");
-    return; }
-  if (mode==2){prnl();prs(op);prs(" ax, "); a(id1); return; }
-  if (ixarr) {
-    prs("\n mov bx, "); v(ixarr);
-    if (wi==2) prs("\n shl bx, 1");
-    prs("\n "); prs(op);
-    if (wi==2) prs(" ax, "); else prs(" al, ");
-// v(id1); prs(" [bx]");
-    prc('['); printName(id1); prs(" + bx]");
-    return; }
-  prnl();prs(op);
-  if(wi==1) prs(" al, ");
-  if(wi==2) prs(" ax, ");
-  if(wi==4) prs(" eax, ");
-  v(id1);
-}
-int rterm(char *op) {int mode; int opint; int ixarr; int id1;
-  if (istoken(T_CONST)) { prnl(); prs(op);
-    if (wi==1) prs(" al, ");
-    if (wi==2) prs(" ax, ");
-    if (wi==4) prs(" eax, ");
-    prunsign1(lexval); return;}
-  mode=typeName(); id1=searchname(); ixarr=0;
-  if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');
-    gettypes(ixarr);
-    if (widthi != 2) error1("Arrayindex muss int sein"); }
-  if (eqstr(symbol,"_AX")) return;
-  opint=op; dovar1(mode, opint, ixarr, id1);
-}
-int isreg() {
-  if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
-  if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
-  if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
-  if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
-  if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
-  if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
-  if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
-  if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
-  if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
-  if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
-  if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
-  if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
-  if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
-  if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
-  if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
-  return 0;   r1: return 1;
-}
-int doreg(char *dr) { int i; expect('=');
-  prs("\n mov  "); prs(dr); prs(", ");
-       if (istoken(T_CONST)) prunsign1(lexval);
-  else if (istoken(T_NAME )) { i=searchname(); v(i); }
-  else error1("only number or var allowed"); }
-
-int doassign(int mode, int i, int ixarr, int ixconst) {
-  gettypes(i);
-  if (mode==1) {prs("\n mov  bx, ");v(i);
-    if (widthi == 2) prs("\n mov  [bx], ax");
-    else  prs("\n mov  [bx], al"); return;}
-  if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
-  if (ixarr) {  prs("\n mov bx, ");
-    if(ixconst) prunsign1(ixarr); else v(ixarr);
-    if (wi==2) prs("\n shl bx, 1");
-    prs("\n mov ["); printName(i);
-    if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
-  if (wi==1){prs("\n mov ");if(i<LSTART) {prs("byte ");
-    } v(i); prs(", al"); return; }
-  if (wi==2){prs("\n mov ");if(i<LSTART) {prs("word ");
-    } v(i); prs(", ax"); return; }
-  if (wi==4){prs("\n mov ");if(i<LSTART) {prs("dword ");
-    } v(i); prs(", eax"); return; }
-}
-int domul(int ids) {
-  if (ids) rterm("imul"); else {
-  if (istoken(T_CONST)) {
-    prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx");
-    }
-  else error1("with MUL only const number as multiplicator allowed"); } }
-int doidiv(int ids) { int mode; int id1;
-  if (istoken(T_CONST)) {
-    prs("\n mov bx, "); prunsign1(lexval);
-    if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
-  else {
-    mode=typeName(); id1=searchname();
-    if (mode) error1("only const number or int as divisor allowed");
-    gettypes(id1);
-    if (typei) error1("only int as simple var divisor allowed");
-    if (wi!=2) error1("only int, no byte as divisor allowed");
-    prs("\n mov bx, "); v(id1);
-    if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
-}
-int domod(int ids) { doidiv(ids); prs("\n mov ax, dx"); }
-
-int docalltype[10]; int docallvalue[10];
-char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
-int docall1() {int i; int narg; int t0; int n0;  int sz32;
-  narg=0;  sz32=0;
-  checknamelen();
-  strcpy(&procname, symbol);
-  storeCall1();
-  expect('(');
-	if (istoken(')') ==0 ) {
-	  do { narg++;
-	    if (narg >9 ) error1("Max. 9 parameters");  t0=0;
-      if(istoken(T_CONST)) {t0=1; n0=lexval; }
-      if(istoken(T_STRING)){t0=2; n0=nconst;
-        eprs("\n"); eprs(fname); eprc(95);eprnum(nconst);eprs(" db ");
-        eprc(34);eprs(symbol);eprc(34);eprs(",0"); nconst++; }
-      if(istoken('&'))     {t0=3; name1(); n0=searchname();}
-      if(istoken(T_NAME))  { n0=checkreg();
-        if (n0) t0=5;
-        else {t0=4; n0=searchname();
-          p1=&GType; p1=p1+n0; if (*p1=='&') t0=3; }  }
-      if (t0==0) error1("parameter not recognized (no * allowed)");
-      docalltype [narg] = t0;
-      docallvalue[narg] = n0;
-    } while (istoken(','));
-
-  	expect(')');  i=narg;
-    do {
-      t0 = docalltype [i];
-      n0 = docallvalue[i];
-      if(t0==1){ prs("\n push "); prunsign1(n0);}
-      if(t0==2){ prs("\n push ");
-        prs(fname);prc(95);prunsign1(n0);}
-      if(t0==3){ prs("\n lea  ax, ");   v(n0);
-        prs("\n push ax");}
-      if(t0==4){ gettypes(n0);
-        if(wi==2) { prs("\n push word "); v(n0);}
-        else { prs("\n mov al, byte ");   v(n0);
-        prs("\n mov ah, 0\n push ax"); } }
-      if(t0==5){ prs("\n push "); printreg(n0); if (n0 >= 47) sz32+2;  }
-   i--; } while (i > 0);  }
-	 prs("\n call "); prs(&procname);
-	 if (narg>0) {prs("\n add  sp, ");
-     narg=narg+narg; narg=narg+sz32; prunsign1(narg); } }
-/***************************************************************/
-
-int doemit() {prs("\n db ");
-  L1: token=getlex(); prunsign1(lexval); token=getlex();
-    if (token== ',') {prc(','); goto L1;} expect(')'); }
-
-int cmpneg(int ids) {
-       if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
-  else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
-  else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
-                           else prs("\n ja  .");//ZF=0 CF=0
-  else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jl  .");}//          SF!=OF
-                           else{prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jb  .");}//jb=jc=CF=1
-  else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
-  else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
-  else error1("internal error compare unknown in CMPNEG()");  }
-
-int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
-int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
-int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
-  pint1(jdest); stmt();
-  if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
-    prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
-  else prlabel(jdest); }
-
-int dodo() {int jdest; int jtemp;
-  nlabel++; jdest=nlabel; prlabel(jdest); stmt();
-  expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
-  prjump(jdest); prlabel(jtemp); }
-int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
-  prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
-  stmt(); prjump(jdest); prlabel(tst); }
-int isrelational() {
-  if (token==T_EQ) goto w; if (token==T_NE) goto w;
-  if (token==T_LE) goto w; if (token==T_GE) goto w;
-  if (token=='<' ) goto w; if (token=='>' ) goto w;
-  return 0;  w: iscmp=token; token=getlex(); return 1;}
 
 char symboltemp[80];
 int getlex() { char c; char *p;
@@ -823,6 +426,46 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (convertdefine() ) {strcpy(symbol, symboltemp); return T_CONST;}
     return T_NAME; } error1("Input item not recognized"); }
 
+
+int istoken(int t) {
+    if (token == t) {
+        token=getlex();
+        return 1;
+    }
+    return 0;
+}
+int expect(int t) {
+    if (istoken(t)==0) {
+        *cloc=0;
+        prs(co);
+        prs("\nExpected ASCII(dez): ");
+        pint1(t);
+        error1(" not found");
+    }
+}
+
+int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
+  __asm{ add ax, [bp+4]  ; offset s } }
+
+int adrofname(unsigned int i) { adrF(GNameField, i); }
+
+int printName(unsigned int i) {int j;
+  if (i < LSTART) { i=adrofname(i); prs(i); }
+  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+}
+
+int a(unsigned int i) { printName(i);//address
+}
+int v(unsigned int i) {//value
+    if (i < LSTART) prc('[');
+    printName(i);
+    if (i < LSTART) prc(']');
+}
+int checknamelen() {
+    int i;
+    i=strlen(symbol);
+    if (i > IDLENMAX) error1("Item name is too long in characters)");
+}
 int convertdefine() { int i; int j;   i=0;
   while (i < GTop) {
    j=adrofname(i);
@@ -831,15 +474,397 @@ int convertdefine() { int i; int j;   i=0;
    i++; }
    return 0; }
 
-int getdigit(char c) { int i;
-    lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
-    if (thechar=='x') thechar='X'; if (thechar=='X') { next();
-      while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
-	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
-     i=0; i=c; lexval=lexval+i;}
-    }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
-     i=0; i=c; lexval=lexval+i; } }
+int checkName() { unsigned int i; unsigned int j;
+  i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
+  i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
+  return 0;
 }
+int searchname() { unsigned int i;
+  i=checkName(); if (i == 0) error1("Variable unknown");
+  GUsed[i]=GUsed[i] + 1; return i;
+}
+int name1() {
+    if (token!=T_NAME) error1("Name expected");
+    token=getlex();
+}
+int typeName() { int m; //0=V,1=*,2=&
+    issign='S';
+    if(istoken(T_SIGNED))   issign='S';
+    if(istoken(T_UNSIGNED)) issign='U';
+    iswidth=2;
+    if(istoken(T_VOID))     iswidth=0;
+    if(istoken(T_CHAR))     iswidth=1;
+    if(istoken(T_INT))      iswidth=2;
+    if(istoken(T_LONG))     iswidth=4;
+    istype='V';
+    m=0;
+    if(istoken('*'))  {istype='*'; m=1;}
+    if(istoken('&'))  {istype='&'; m=2;}
+    name1();
+    return m;
+}
+int gettypes(int i) {int j; char c;
+  c=GSign [i]; if (c=='S') signi =1;    else signi =0;
+  c=GWidth[i]; widthi=0;wi=0;
+  if (c==1) {widthi=1;wi=1;}
+  if (c==2) {widthi=2;wi=2;}
+  if (c==4) {widthi=4;wi=4;}
+  c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
+  if (c=='&')  typei=2;
+  return i; }
+
+int storeCall1() {//todo
+    unsigned int i;
+    CTop++;
+    if (CTop >= CALLMAX) error1("too many calls");
+    i = CNamePtr - &CNameField;
+    if (i >= CNAMEMAX) error1("too many call names");
+    CType[CTop]=0;
+    CAdr [CTop]=CNamePtr;
+    CNamePtr=strcpy(CNamePtr, symbol);
+    CNamePtr++;
+}
+
+int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
+    FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
+    pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
+}
+int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
+  if (checkName() != 0) error1("Variable already defined");
+  GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
+  GAdr [LTop]=lineno-1; GUsed[LTop]=0;
+  pt=adrF(GNameField, LTop); strcpy(pt, symbol);
+}
+int checkFunction() { unsigned int i; unsigned int j; i=0;
+  while (i < FTop) {
+    j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
+  return 0; }
+
+int isvariable() {
+    if(token==T_SIGNED)   goto v1;
+    if(token==T_UNSIGNED) goto v1;
+    if(token==T_CHAR)     goto v1;
+    if(token==T_INT)      goto v1;
+    if(token==T_LONG)     goto v1;
+    return 0;
+v1: return 1;
+}
+
+int cmpneg(int ids) {
+       if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
+  else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
+  else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
+                           else prs("\n ja  .");//ZF=0 CF=0
+  else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
+                               prs("\n jl  .");}//          SF!=OF
+                           else{prs(" ;unsigned : "); prunsign1(ids);
+                               prs("\n jb  .");}//jb=jc=CF=1
+  else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
+  else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
+  else error1("internal error compare unknown in CMPNEG()");  }
+
+  int isrelational() {
+    if (token==T_EQ) goto w; if (token==T_NE) goto w;
+    if (token==T_LE) goto w; if (token==T_GE) goto w;
+    if (token=='<' ) goto w; if (token=='>' ) goto w;
+    return 0;  w: iscmp=token; token=getlex(); return 1;}
+
+int checkreg() { // >=17 = 16bit, >=47 = 32bit
+  if (strlen(symbol) <  2) return 0;
+  if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
+  if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
+  if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
+  if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
+  if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
+  if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
+  if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
+  if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
+  if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
+  if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
+  if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
+  // (eqstr(symbol,"ip")) return 45;
+  if (strlen(symbol) >   3) return 0;
+  if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
+  if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
+  if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
+  if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
+  if (eqstr(symbol,"cr0")) return 71;
+  return 0;   }
+
+char printregstr[]
+="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
+
+int printreg(int i) {  unsigned int k; unsigned char c;
+  k = &printregstr + i; c=*k; prc(c); i++;
+  k = &printregstr + i; c=*k; prc(c);
+  if (i > 47) { i++; k = &printregstr + i; c=*k; prc(c); }
+}
+
+int constantexpr() { int mode; int id1;int ids;
+  token=getlex();   mode=typeName();
+  id1=searchname(); gettypes(id1); ids=signi;
+  if (isrelational() ==0) error1("Relational expression expected");
+  expect(T_CONST);  prs(" ; constant expression");
+  prs("\ncmp ");
+  gettypes(id1); if (wi==2) prs("word"); else prs("byte");
+  v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
+  expect(')');
+}
+
+char ops[5];
+int doreg1(int iscmp1) { int i;
+  if (istoken('='))          strcpy(ops, "mov");
+  if (istoken(T_PLUSASS))    strcpy(ops, "add");
+  if (istoken(T_MINUSASS))   strcpy(ops, "sub");
+  if (istoken(T_ANDASS))     strcpy(ops, "and");
+  if (istoken(T_ORASS))      strcpy(ops, "or" );
+  if (istoken(T_LESSLESS))   strcpy(ops, "shl");
+  if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
+  if (iscmp1 == 1) { token=getlex();
+      if (isrelational() ==0) error1("Relational expected");
+      strcpy(ops, "cmp"); }
+  prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
+
+  if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
+  mod2=typeName(); ireg2=checkreg();
+  if (ireg2) {printreg(ireg2); goto reg1;}
+  i=searchname();  if (mod2 == 2) a(i); else v(i);
+  reg1: if (iscmp1 == 1) {cmpneg(0); prs(fname); expect(')'); }
+}
+
+int compoundass(char *op, int mode, int id1) {
+  if(mode) error1("only scalar Var allowed");
+  prnl(); prs(op); prs("  ");
+  gettypes(id1); if (wi==2) prs("word"); else prs("byte");
+  v(id1); prs(", ");
+  expect(T_CONST); prunsign1(lexval);
+}
+int dovar1(int mode, int op, int ixarr, int id1) {
+  gettypes(id1);
+  if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
+    if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
+    if(widthi == 2) prs(" ax, [bx]");
+    return; }
+  if (mode==2){prnl();prs(op);prs(" ax, "); a(id1); return; }
+  if (ixarr) {
+    prs("\n mov bx, "); v(ixarr);
+    if (wi==2) prs("\n shl bx, 1");
+    prs("\n "); prs(op);
+    if (wi==2) prs(" ax, "); else prs(" al, ");
+// v(id1); prs(" [bx]");
+    prc('['); printName(id1); prs(" + bx]");
+    return; }
+  prnl();prs(op);
+  if(wi==1) prs(" al, ");
+  if(wi==2) prs(" ax, ");
+  if(wi==4) prs(" eax, ");
+  v(id1);
+}
+int rterm(char *op) {int mode; int opint; int ixarr; int id1;
+  if (istoken(T_CONST)) { prnl(); prs(op);
+    if (wi==1) prs(" al, ");
+    if (wi==2) prs(" ax, ");
+    if (wi==4) prs(" eax, ");
+    prunsign1(lexval); return;}
+  mode=typeName(); id1=searchname(); ixarr=0;
+  if (istoken('[')) { ixarr=searchname(); expect(T_NAME); expect(']');
+    gettypes(ixarr);
+    if (widthi != 2) error1("Arrayindex muss int sein"); }
+  if (eqstr(symbol,"_AX")) return;
+  opint=op; dovar1(mode, opint, ixarr, id1);
+}
+
+int doreg(char *dr) { int i; expect('=');
+  prs("\n mov  "); prs(dr); prs(", ");
+       if (istoken(T_CONST)) prunsign1(lexval);
+  else if (istoken(T_NAME )) { i=searchname(); v(i); }
+  else error1("only number or var allowed");
+}
+int isreg() {
+  if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
+  if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
+  if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
+  if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
+  if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
+  if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
+  if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
+  if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
+  if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
+  if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
+  if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
+  if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
+  if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
+  if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
+  if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
+  return 0;   r1: return 1;
+}
+
+int doassign(int mode, int i, int ixarr, int ixconst) {
+  gettypes(i);
+  if (mode==1) {prs("\n mov  bx, ");v(i);
+    if (widthi == 2) prs("\n mov  [bx], ax");
+    else  prs("\n mov  [bx], al"); return;}
+  if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
+  if (ixarr) {  prs("\n mov bx, ");
+    if(ixconst) prunsign1(ixarr); else v(ixarr);
+    if (wi==2) prs("\n shl bx, 1");
+    prs("\n mov ["); printName(i);
+    if (wi==2) prs("+bx], ax"); else prs("+bx], al"); return; }
+  if (wi==1){prs("\n mov ");if(i<LSTART) {prs("byte ");
+    } v(i); prs(", al"); return; }
+  if (wi==2){prs("\n mov ");if(i<LSTART) {prs("word ");
+    } v(i); prs(", ax"); return; }
+  if (wi==4){prs("\n mov ");if(i<LSTART) {prs("dword ");
+    } v(i); prs(", eax"); return; }
+}
+int domul(int ids) {
+  if (ids) rterm("imul"); else {
+  if (istoken(T_CONST)) {
+    prs("\n mov bx, "); prunsign1(lexval); prs("\n mul bx");
+    }
+  else error1("with MUL only const number as multiplicator allowed"); } }
+int doidiv(int ids) { int mode; int id1;
+  if (istoken(T_CONST)) {
+    prs("\n mov bx, "); prunsign1(lexval);
+    if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
+  else {
+    mode=typeName(); id1=searchname();
+    if (mode) error1("only const number or int as divisor allowed");
+    gettypes(id1);
+    if (typei) error1("only int as simple var divisor allowed");
+    if (wi!=2) error1("only int, no byte as divisor allowed");
+    prs("\n mov bx, "); v(id1);
+    if (ids) prs("\n cwd\n idiv bx"); else prs("\n mov dx, 0\n div bx"); }
+}
+int domod(int ids) { doidiv(ids); prs("\n mov ax, dx"); }
+
+
+int docalltype[10]; int docallvalue[10];
+char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
+int docall1() {int i; int narg; int t0; int n0;  int sz32;
+  narg=0;  sz32=0;
+  checknamelen();
+  strcpy(&procname, symbol);
+  storeCall1();
+  expect('(');
+	if (istoken(')') ==0 ) {
+	  do { narg++;
+	    if (narg >9 ) error1("Max. 9 parameters");  t0=0;
+      if(istoken(T_CONST)) {t0=1; n0=lexval; }
+      if(istoken(T_STRING)){t0=2; n0=nconst;
+        eprs("\n"); eprs(fname); eprc(95);eprnum(nconst);eprs(" db ");
+        eprc(34);eprs(symbol);eprc(34);eprs(",0"); nconst++; }
+      if(istoken('&'))     {t0=3; name1(); n0=searchname();}
+      if(istoken(T_NAME))  { n0=checkreg();
+        if (n0) t0=5;
+        else {t0=4; n0=searchname();
+          p1=&GType; p1=p1+n0; if (*p1=='&') t0=3; }  }
+      if (t0==0) error1("parameter not recognized (no * allowed)");
+      docalltype [narg] = t0;
+      docallvalue[narg] = n0;
+    } while (istoken(','));
+
+  	expect(')');  i=narg;
+    do {
+      t0 = docalltype [i];
+      n0 = docallvalue[i];
+      if(t0==1){ prs("\n push "); prunsign1(n0);}
+      if(t0==2){ prs("\n push ");
+        prs(fname);prc(95);prunsign1(n0);}
+      if(t0==3){ prs("\n lea  ax, ");   v(n0);
+        prs("\n push ax");}
+      if(t0==4){ gettypes(n0);
+        if(wi==2) { prs("\n push word "); v(n0);}
+        else { prs("\n mov al, byte ");   v(n0);
+        prs("\n mov ah, 0\n push ax"); } }
+      if(t0==5){ prs("\n push "); printreg(n0); if (n0 >= 47) sz32+2;  }
+   i--; } while (i > 0);  }
+	 prs("\n call "); prs(&procname);
+	 if (narg>0) {prs("\n add  sp, ");
+     narg=narg+narg; narg=narg+sz32; prunsign1(narg); }
+ }
+
+ int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
+ int expr(int isRight)
+ { int mode; int id1;     int ixarr; int ixconst;
+   int ids;  int isCONST; int i;     unsigned char *p;
+   if (istoken(T_CONST)) { evalue=lexval;
+     prs("\n mov ax, "); prunsign1(lexval); return 4; }
+   mode=typeName(); /*0=V,1=*,2=&*/
+   ireg1=checkreg();
+   if (ireg1) { doreg1(0); return; }
+   if (token=='(')  {docall1(); goto e1; }
+   if (isreg()) goto e1;
+
+   id1=searchname(); gettypes(id1); ids=signi;
+   ixarr=0;  ixconst=0;
+     if (istoken('[')) { if (istoken(T_CONST)) {
+       ixconst=1; ixarr=lexval; expect(']');  }
+     else {ixarr=searchname(); expect(T_NAME); expect(']');
+     gettypes(ixarr);
+     if (widthi != 2) error1("Array index must be number or int"); } }
+   if (istoken(T_PLUSPLUS  )) {if(mode)error1("Only var allowed");
+      prs("\n inc  "); if (wi==2) prs("word"); else prs("byte");
+      v(id1); goto e1;}
+   if (istoken(T_MINUSMINUS)) {if(mode)error1("Only var allowed");
+      prs("\n dec  "); if (wi==2) prs("word"); else prs("byte");
+      v(id1); goto e1;}
+
+   if (istoken(T_PLUSASS   )) {compoundass("add", mode, id1); goto e1;}
+   if (istoken(T_MINUSASS  )) {compoundass("sub", mode, id1); goto e1;}
+   if (istoken(T_ANDASS    )) {compoundass("and", mode, id1); goto e1;}
+   if (istoken(T_ORASS     )) {compoundass("or" , mode, id1); goto e1;}
+   if (istoken(T_MULASS    )) {error1("not implemented");}
+   if (istoken(T_DIVASS    )) {error1("not implemented");}
+
+   if (istoken('=')) { exprtype= expr(1);
+   doassign(mode, id1, ixarr, ixconst); goto e1;  }
+   dovar1(mode, "mov", ixarr, id1);
+
+ e1:    if (istoken('+')) rterm("add");
+   else if (istoken('-')) rterm("sub" );
+   else if (istoken('&')) rterm("and" );
+   else if (istoken('|')) rterm("or" );
+   else if (istoken(T_LESSLESS)) rterm("shl");
+   else if (istoken(T_GREATGREAT)) rterm("shr");
+   else if (istoken('*')) domul (ids);
+   else if (istoken('/')) doidiv(ids);
+   else if (istoken('%')) domod (ids);
+   if (isrelational()) { rterm("cmp"); cmpneg(ids);}
+   return 0;
+ }
+
+ int pexpr() {expect('('); iscmp=0;
+   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
+     ireg1=checkreg();
+     if (ireg1) { doreg1(1); return; }  }
+   expr(0);
+   if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
+   expect(')');
+ }
+
+/***************************************************************/
+
+int doemit() {prs("\n db ");
+  L1: token=getlex(); prunsign1(lexval); token=getlex();
+    if (token== ',') {prc(','); goto L1;} expect(')'); }
+
+
+int prlabel(int n) {prs("\n."); prs(fname); prunsign1(n); prc(':'); }
+int prjump (int n) {prs("\n jmp ."); prs(fname); prunsign1(n); }
+int doif() {int jdest; int tst; pexpr(); nlabel++; jdest=nlabel;
+  pint1(jdest); stmt();
+  if (istoken(T_ELSE)) { nlabel++; tst=nlabel;
+    prjump(tst); prlabel(jdest); stmt(); prlabel(tst); }
+  else prlabel(jdest); }
+
+int dodo() {int jdest; int jtemp;
+  nlabel++; jdest=nlabel; prlabel(jdest); stmt();
+  expect(T_WHILE); pexpr(); nlabel++; jtemp=nlabel; pint1(jtemp);
+  prjump(jdest); prlabel(jtemp); }
+int dowhile() {int jdest; int tst; nlabel++; jdest=nlabel;
+  prlabel(jdest); pexpr(); nlabel++; tst=nlabel; pint1(tst);
+  stmt(); prjump(jdest); prlabel(tst); }
 
 int stmt() { int c; char cha;
        if(istoken('{'))     {while(istoken('}')==0) stmt();}
@@ -871,18 +896,6 @@ int stmt() { int c; char cha;
         expect(':');
         }
   else  {expr(0);; expect(';'); }
-}
-
-int getstring(int delim) {
-    int c; char *p;
-    p=&symbol;
-    c=next();
-    while (c != delim) {
-        *p=c;
-        p++;
-        c=next();
-    }
-    *p=0;
 }
 
 
@@ -979,12 +992,6 @@ int doglob() {
   pt=adrofname(GTop);
   if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
   GTop++; expect(';'); }
-
-int end1(int n) {
-    fcloseR(fdin);
-    fcloseR(fdout);
-    exitR(n);
-}
 
 unsigned int MAXUI=65535;
 int epilog() {
