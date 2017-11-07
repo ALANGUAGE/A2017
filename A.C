@@ -1,4 +1,4 @@
-char Version1[]="A.COM V0.9.2";//todo: 2. op=reg not recognized
+char Version1[]="A.COM V0.9.3";//todo: 2. op=reg not recognized
 #define IDLENMAX       15//max length of names
 #define COLUMNMAX     128//output, input is 80
 #define T_NAME        256//the following defines for better clearity
@@ -51,7 +51,6 @@ char *cloc=0;
 int fdin=0;
 int fdout=0;
 int token=0;
-char globC=0;
 int column=0;
 char thechar=0;   //reads one char forward
 int iscmp=0;
@@ -82,15 +81,6 @@ int  FAdr  [FUNCMAX];
 int  FCalls[FUNCMAX];
 char FNameField[FNAMEMAX];
 int  FTop=0;
-#define CALLMAX      1500//max call
-char CType[CALLMAX]; //0=unresolved,  1=resolved
-int  CAdr [CALLMAX]; //start of nameof address in CNameField
-#define CNAMEMAX    10000//space for call names
-char CNameField[10016];//CNAMEMAX+IDLENMAX+1
-char *CNamePtr;     //first free position in CNameField
-unsigned char *CNameTop=0;
-int  CTop=0;
-
 char fgetsdest[COLUMNMAX];
 unsigned char *fgetsp=0;
 unsigned int lineno=1;
@@ -338,7 +328,6 @@ int fgets1() {
 int next() {
     char r;
     r = thechar;
-    globC=r;
     thechar = fgets1();
     return r;
 }
@@ -364,18 +353,28 @@ int getstring(int delim) {
     *p=0;
 }
 
-int adrF(char *s, unsigned int i) { i << 4;//*16; IDLENMAX=15!
-  __asm{ add ax, [bp+4]  ; offset s } }
+int adrF(char *s, unsigned int i) {
+    i << 4;//*16; IDLENMAX=15!
+    __asm{ add ax, [bp+4]  ; offset s }
+}
 
-int adrofname(unsigned int i) { adrF(GNameField, i); }
-
-int printName(unsigned int i) {int j;
-  if (i < LSTART) { i=adrofname(i); prs(i); }
-  else { prs("[bp"); j = GData[i]; if (j>0) prc('+'); pint1(j); prc(']'); }
+int printName(unsigned int i) {
+    int j;
+    if (i < LSTART) {
+        i=adrF(GNameField, i);
+        prs(i);
+    }
+    else {
+        prs("[bp");
+        j = GData[i];
+        if (j>0) prc('+');
+        pint1(j);
+        prc(']');
+    }
 }
 int convertdefine() { int i; int j;   i=0;
   while (i < GTop) {
-   j=adrofname(i);
+   j=adrF(GNameField, i);
    if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
    return T_CONST; } }
    i++; }
@@ -462,9 +461,6 @@ int expect(int t) {
     }
 }
 
-
-int a(unsigned int i) { printName(i);//address
-}
 int v(unsigned int i) {//value
     if (i < LSTART) prc('[');
     printName(i);
@@ -477,9 +473,19 @@ int checknamelen() {
 }
 
 int checkName() { unsigned int i; unsigned int j;
-  i=LSTART;while(i<LTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
-  i=1;     while(i<GTop) {j=adrofname(i);if(eqstr(symbol,j))return i; i++;}
-  return 0;
+    i=LSTART;
+    while(i<LTop) {
+        j=adrF(GNameField, i);
+        if(eqstr(symbol,j))return i;
+        i++;
+    }
+    i=1;
+    while(i<GTop) {
+        j=adrF(GNameField, i);
+        if(eqstr(symbol,j))return i;
+        i++;
+    }
+    return 0;
 }
 int searchname() { unsigned int i;
   i=checkName(); if (i == 0) error1("Variable unknown");
@@ -514,18 +520,6 @@ int gettypes(int i) {int j; char c;
   c=GType [i]; typei=0; if (c=='*') {typei=1;wi=2;}
   if (c=='&')  typei=2;
   return i; }
-
-int storeCall1() {//todo
-    unsigned int i;
-    CTop++;
-    if (CTop >= CALLMAX) error1("too many calls");
-    i = CNamePtr - &CNameField;
-    if (i >= CNAMEMAX) error1("too many call names");
-    CType[CTop]=0;
-    CAdr [CTop]=CNamePtr;
-    CNamePtr=strcpy(CNamePtr, symbol);
-    CNamePtr++;
-}
 
 int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
     FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
@@ -630,7 +624,7 @@ int doreg1(int iscmp1) { int i;
   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
   mod2=typeName(); ireg2=checkreg();
   if (ireg2) {printreg(ireg2); goto reg1;}
-  i=searchname();  if (mod2 == 2) a(i); else v(i);
+  i=searchname();  if (mod2 == 2) printName(i); else v(i);
   reg1: if (iscmp1 == 1) {cmpneg(0); prs(fname); expect(')'); }
 }
 
@@ -647,7 +641,7 @@ int dovar1(int mode, int op, int ixarr, int id1) {
     if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
     if(widthi == 2) prs(" ax, [bx]");
     return; }
-  if (mode==2){prnl();prs(op);prs(" ax, "); a(id1); return; }
+  if (mode==2){prnl();prs(op);prs(" ax, "); printName(id1); return; }
   if (ixarr) {
     prs("\n mov bx, "); v(ixarr);
     if (wi==2) prs("\n shl bx, 1");
@@ -706,7 +700,7 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
   if (mode==1) {prs("\n mov  bx, ");v(i);
     if (widthi == 2) prs("\n mov  [bx], ax");
     else  prs("\n mov  [bx], al"); return;}
-  if (mode==2) {prs("\n mov  ");a(i); prs(", ax"); return;}
+  if (mode==2) {prs("\n mov  ");printName(i); prs(", ax"); return;}
   if (ixarr) {  prs("\n mov bx, ");
     if(ixconst) prunsign1(ixarr); else v(ixarr);
     if (wi==2) prs("\n shl bx, 1");
@@ -747,7 +741,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
   narg=0;  sz32=0;
   checknamelen();
   strcpy(&procname, symbol);
-  storeCall1();
+//  storeCall1();
   expect('(');
 	if (istoken(')') ==0 ) {
 	  do { narg++;
@@ -1019,35 +1013,10 @@ int doglob() {
     else prunsign1(0); }
   GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
   GAdr [GTop]=lineno-1; GUsed [GTop]=0;
-  pt=adrofname(GTop);
+  pt=adrF(GNameField, GTop);
   if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
   GTop++; expect(';'); }
 
-unsigned int MAXUI=65535;
-int epilog() {
-    unsigned int i;
-    prs("\n;Input: "); prs(&namein);
-    prs(", List: ");   prs(&namelst);
-    prs(",  Lines:"); printint51(lineno);
-    prs("\n;Glob. variables:"); GTop--; printint51(GTop);
-    prs(" max.:"); printint51(LSTART);
-    prs("\n;Functions      :"); printint51(FTop);
-    prs(" max.:"); printint51(FUNCMAX);
-    prs("\n;Calls          :"); printint51(CTop);
-    prs(" max.:"); printint51(CALLMAX);
-    i = CNamePtr - &CNameField;
-    prs("\n;NameField      :"); printint51(i);
-    prs(" max.:"); printint51(CNAMEMAX);
-    prs("\n;Const in '"); prs(coname); prs("' :"); printint51(maxco);
-    prs(" max.:"); printint51(COMAX);
-    i=COMAX; i=i-maxco;
-    if (i <= 1000)prs("\n *** Warning *** constant area too small");
-    prs(", stacksize: ");
-    i=MAXUI-orgData; printint51(i);
-    if (i <= 1000) prs("\n *** Warning *** Stack too small");
-    prs("\n");
-    end1(0);
-}
 
 int dodefine() {
     int i; int j; int fdtemp;
@@ -1067,7 +1036,7 @@ int dodefine() {
         GType [GTop]='#';
         GAdr [GTop]=lineno-1;
         GUsed [GTop]=0;
-        pt=adrofname(GTop);
+        pt=adrF(GNameField, GTop);
         strcpy(pt, symbol);
         GData[GTop]=lexval;
         expect(T_CONST);
@@ -1076,7 +1045,6 @@ int dodefine() {
 }
 
 int parse() {
-    CNamePtr = &CNameField;
     token=getlex();
     do {
         if (token <= 0) return 1;
@@ -1091,15 +1059,9 @@ int parse() {
     } while(1);
 }
 
-int getfirstchar() {
-    fgetsp=&fgetsdest;
-    *fgetsp=0;
-    thechar=fgets1();
-    }
-
 char *arglen=0x80; char *argv=0x82;
-int getarg() {
-    int arglen1; int i; char *c;
+int main() {
+    int arglen1; unsigned int i; char *c;
     arglen1=*arglen;
     if (arglen1 == 0) {
         cputs(Version1);
@@ -1135,14 +1097,27 @@ int getarg() {
     prs(", Source: "); prs(namein);
     prs(", Output asm: "); prs(namelst);
     prs("\norg  256 \njmp main");
-}
-
-int main() {
-    getarg();
-    CNameTop=0;
     coname=0;
     orgData=ORGDATAORIG;
-    getfirstchar();
+    fgetsp=&fgetsdest;
+    *fgetsp=0;
+    thechar=fgets1();
     parse();
-  epilog();
+    prs("\n;Input: "); prs(namein);
+    prs(", List: ");   prs(namelst);
+    prs(", Lines: "); prunsign1(lineno);
+    prs("\n;Glob. variables: "); GTop--; prunsign1(GTop);
+    prs(" ("); prunsign1(LSTART);
+    prs("), Functions: "); prunsign1(FTop);
+    prs(" ("); prunsign1(FUNCMAX);
+    prs(")\n;Const in '"); prs(coname); prs("': "); prunsign1(maxco);
+    prs(" ("); prunsign1(COMAX);
+    i=COMAX; i=i-maxco;
+    if (i <= 1000)prs("\n *** Warning *** constant area too small");
+    prs("), stacksize: ");
+    i=65636; i=i-orgData;
+    prunsign1(i);
+    if (i <= 1000) prs("\n *** Warning *** Stack too small");
+    prs("          ");
+    end1(0);
 }
