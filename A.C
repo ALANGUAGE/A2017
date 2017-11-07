@@ -332,27 +332,6 @@ int next() {
     return r;
 }
 
-int getdigit(char c) { int i;
-    lexval=0; lexval=c-'0'; // lexval=int hi=0, c=char
-    if (thechar=='x') thechar='X'; if (thechar=='X') { next();
-      while(alnum(thechar)) { c=next(); if(c>96) c=c-39;
-	if (c>64) c=c-7; c=c-48; lexval=lexval << 4; // * 16
-     i=0; i=c; lexval=lexval+i;}
-    }else { while(digit(thechar)) { c=next(); c=c-48; lexval=lexval*10;
-     i=0; i=c; lexval=lexval+i; } }
-}
-int getstring(int delim) {
-    int c; char *p;
-    p=&symbol;
-    c=next();
-    while (c != delim) {
-        *p=c;
-        p++;
-        c=next();
-    }
-    *p=0;
-}
-
 int adrF(char *s, unsigned int i) {
     i << 4;//*16; IDLENMAX=15!
     __asm{ add ax, [bp+4]  ; offset s }
@@ -372,13 +351,6 @@ int printName(unsigned int i) {
         prc(']');
     }
 }
-int convertdefine() { int i; int j;   i=0;
-  while (i < GTop) {
-   j=adrF(GNameField, i);
-   if (eqstr(symbol,j)) { if (GType[i]=='#') { lexval=GData[i];
-   return T_CONST; } }
-   i++; }
-   return 0; }
 
 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
     if (c == 10) return 1;//LF
@@ -390,8 +362,12 @@ int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
 }
 
 char symboltemp[80];
-int getlex() { char c; char *p;
-g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
+int getlex() {
+    char c; char *p;
+    int i; int j;
+g1: c=next();
+    if (c == 0) return 0;
+    if (c <= ' ') goto g1;
   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
@@ -407,21 +383,82 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
-  if (c == '/') { if (thechar == '/') {
-      do c=next(); while(ifEOL(c)==0) return getlex(); } }
-  if (c == '/') { if (thechar == '*') {
-      g2: c=next(); if (c != '*') goto g2; if (thechar != '/') goto g2;
-      c=next(); return getlex(); } else  return '/'; }
-  if (c == '"') {getstring(c); return T_STRING;}
-  if (digit(c)) { getdigit(c); return T_CONST; }
-  if (c==39) { lexval=next();
-    if (lexval==92) {lexval=next();
-      if (lexval=='n') lexval=10; if (lexval=='t') lexval= 9;
-      if (lexval=='0') lexval= 0; } next(); return T_CONST; }
+  if (c == '/') {
+      if (thechar == '/') {
+          do c=next();
+          while(ifEOL(c)==0) return getlex();
+      }
+  }
+  if (c == '/') {
+      if (thechar == '*') {
+          g2: c=next();
+          if (c != '*') goto g2;
+          if (thechar != '/') goto g2;
+          c=next();
+          return getlex();
+      } else  return '/';
+  }
+  if (c == '"') {
+      p=&symbol;
+      c=next();
+      while (c != '"') {
+          *p=c;
+          p++;
+          c=next();
+          }
+          *p=0;
+      return T_STRING;
+  }
+  if (digit(c)) {
+      lexval=0;
+      lexval=c-'0'; // lexval=int hi=0, c=char
+      if (thechar=='x') thechar='X';
+      if (thechar=='X') {
+          next();
+          while(alnum(thechar)) {
+              c=next();
+              if(c>96) c=c-39;
+      	       if (c>64) c=c-7;
+               c=c-48;
+               lexval=lexval << 4; // * 16
+               i=0;
+               i=c;
+               lexval=lexval+i;
+           }
+       }else {
+           while(digit(thechar)) {
+               c=next();
+               c=c-48;
+               lexval=lexval*10;
+               i=0;
+               i=c;
+               lexval=lexval+i;
+           }
+       }
+      return T_CONST;
+  }
+  if (c==39) {
+      lexval=next();
+      if (lexval==92) {
+          lexval=next();
+          if (lexval=='n') lexval=10;
+          if (lexval=='t') lexval= 9;
+          if (lexval=='0') lexval= 0;
+      }
+      next();
+      return T_CONST;
+  }
   if (alnum(c)) {
-    strcpy(symboltemp, symbol); p=&symbol;  *p=c;  p++;
-    while(alnum(thechar)) {c=next(); *p=c;  p++; }
-      *p=0;
+    strcpy(symboltemp, symbol);
+    p=&symbol;
+    *p=c;
+    p++;
+    while(alnum(thechar)) {
+        c=next();
+        *p=c;
+        p++;
+    }
+    *p=0;
     if (eqstr(symbol,"signed"  )) return T_SIGNED;
     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
     if (eqstr(symbol,"void"    )) return T_VOID;
@@ -438,8 +475,18 @@ g1: c=next(); if (c == 0) return 0; if (c <= ' ') goto g1;
     if (eqstr(symbol,"do"      )) return T_DO;
     if (eqstr(symbol,"goto"    )) return T_GOTO;
     if (eqstr(symbol,"define"  )) return T_DEFINE;
-    if (convertdefine() ) {
-        strcpy(symbol, symboltemp); return T_CONST;
+
+    i=0;//convert define to value
+    while (i < GTop) {
+        j=adrF(GNameField, i);
+        if (eqstr(symbol,j)) {
+            if (GType[i]=='#') {
+                lexval=GData[i];
+                strcpy(symbol, symboltemp);
+                return T_CONST;
+            }
+        }
+        i++;
     }
     return T_NAME; } error1("Input item not recognized");
 }
@@ -521,10 +568,6 @@ int gettypes(int i) {int j; char c;
   if (c=='&')  typei=2;
   return i; }
 
-int storefunc() { if (FTop >= FUNCMAX) error1("Function table full");
-    FAdr[FTop]=lineno - 1;  FCalls[FTop]=0;   FType[FTop]=iswidth;
-    pt=adrF(FNameField, FTop); strcpy(pt, symbol); FTop++;
-}
 int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
   if (checkName() != 0) error1("Variable already defined");
   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
@@ -741,7 +784,6 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
   narg=0;  sz32=0;
   checknamelen();
   strcpy(&procname, symbol);
-//  storeCall1();
   expect('(');
 	if (istoken(')') ==0 ) {
 	  do { narg++;
@@ -924,11 +966,18 @@ int stmt() {
 
 
 int dofunc() { int nloc; int i; int narg;
-  cloc=&co;
-  checknamelen();
-  strcpy(fname, symbol);
-  if (checkFunction() ) error1("Function already defined");
-  storefunc();
+    cloc=&co;
+    checknamelen();
+    strcpy(fname, symbol);
+    if (checkFunction() ) error1("Function already defined");
+    if (FTop >= FUNCMAX) error1("Function table full");
+    FAdr[FTop]=lineno - 1;
+    FCalls[FTop]=0;
+    FType[FTop]=iswidth;
+    pt=adrF(FNameField, FTop);
+    strcpy(pt, symbol);
+    FTop++;
+
   prs("\n\n"); prs(symbol); prs(": PROC");
   expect('('); LTop=LSTART;  i=0;
   if (istoken(')')==0) { narg=2;
