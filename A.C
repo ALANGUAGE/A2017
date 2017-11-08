@@ -35,14 +35,13 @@ char Version1[]="A.COM V0.9.3";//todo: 2. op=reg not recognized
 #define T_LESSLESS   1240
 #define T_GREATGREAT 1241
 
-unsigned int ORGDATAORIG=25000;//start of arrays
+unsigned int ORGDATAORIG=25000;//start of arrays, end of text
 unsigned int orgData;//actual max of array, must be less than stack
 #define COMAX        3000
 char co[COMAX];//constant storage
 int maxco=0;
 int maxco1=0;
 #define CMDLENMAX      67
-char coname[CMDLENMAX];
 char symbol[COLUMNMAX];
 char fname[CMDLENMAX];
 char namein[CMDLENMAX];
@@ -62,23 +61,18 @@ int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
-#define VARMAX        300//max global and local var
+#define VARMAX        400//max global and local var
 #define LSTART        200//max global var
-#define GNAMEMAX     4800// 16*VARMAX
+#define GNAMEMAX     6400// 16*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
-int GAdr  [VARMAX];
-int GUsed [VARMAX];
 int GData [VARMAX];
 char GNameField[GNAMEMAX];
 int GTop=1;
 int LTop=LSTART;
 #define FUNCMAX       300//max functions
 #define FNAMEMAX     4800// 16*FUNCMAX
-char FType [FUNCMAX];
-int  FAdr  [FUNCMAX];
-int  FCalls[FUNCMAX];
 char FNameField[FNAMEMAX];
 int  FTop=0;
 char fgetsdest[COLUMNMAX];
@@ -536,7 +530,7 @@ int checkName() { unsigned int i; unsigned int j;
 }
 int searchname() { unsigned int i;
   i=checkName(); if (i == 0) error1("Variable unknown");
-  GUsed[i]=GUsed[i] + 1; return i;
+  return i;
 }
 int name1() {
     if (token!=T_NAME) error1("Name expected");
@@ -571,7 +565,6 @@ int gettypes(int i) {int j; char c;
 int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
   if (checkName() != 0) error1("Variable already defined");
   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
-  GAdr [LTop]=lineno-1; GUsed[LTop]=0;
   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
 }
 int checkFunction() { unsigned int i; unsigned int j; i=0;
@@ -822,7 +815,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); }
  }
 
- int evalue=0; int exprtype=10;// 0=V, 4=const left, 3=const right
+ int evalue=0;
  int expr(int isRight)
  { int mode; int id1;     int ixarr; int ixconst;
    int ids;  int isCONST; int i;     unsigned char *p;
@@ -855,8 +848,11 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
    if (istoken(T_MULASS    )) {error1("not implemented");}
    if (istoken(T_DIVASS    )) {error1("not implemented");}
 
-   if (istoken('=')) { exprtype= expr(1);
-   doassign(mode, id1, ixarr, ixconst); goto e1;  }
+   if (istoken('=')) {
+       expr(1);
+       doassign(mode, id1, ixarr, ixconst);
+       goto e1;
+   }
    dovar1(mode, "mov", ixarr, id1);
 
  e1:    if (istoken('+')) rterm("add");
@@ -971,9 +967,6 @@ int dofunc() { int nloc; int i; int narg;
     strcpy(fname, symbol);
     if (checkFunction() ) error1("Function already defined");
     if (FTop >= FUNCMAX) error1("Function table full");
-    FAdr[FTop]=lineno - 1;
-    FCalls[FTop]=0;
-    FType[FTop]=iswidth;
     pt=adrF(FNameField, FTop);
     strcpy(pt, symbol);
     FTop++;
@@ -1011,7 +1004,7 @@ int dofunc() { int nloc; int i; int narg;
   prs("\n ret");
   *cloc=0; prs(co);
   maxco1=strlen(co);
-  if (maxco1 > maxco) {maxco=maxco1; strcpy(coname, fname); }
+  if (maxco1 > maxco) maxco=maxco1;
   prs("\nENDP");
 }
 
@@ -1061,7 +1054,6 @@ int doglob() {
     if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
     else prunsign1(0); }
   GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
-  GAdr [GTop]=lineno-1; GUsed [GTop]=0;
   pt=adrF(GNameField, GTop);
   if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
   GTop++; expect(';'); }
@@ -1083,8 +1075,6 @@ int dodefine() {
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
-        GAdr [GTop]=lineno-1;
-        GUsed [GTop]=0;
         pt=adrF(GNameField, GTop);
         strcpy(pt, symbol);
         GData[GTop]=lexval;
@@ -1146,7 +1136,6 @@ int main() {
     prs(", Source: "); prs(namein);
     prs(", Output asm: "); prs(namelst);
     prs("\norg  256 \njmp main");
-    coname=0;
     orgData=ORGDATAORIG;
     fgetsp=&fgetsdest;
     *fgetsp=0;
@@ -1159,7 +1148,7 @@ int main() {
     prs(" ("); prunsign1(LSTART);
     prs("), Functions: "); prunsign1(FTop);
     prs(" ("); prunsign1(FUNCMAX);
-    prs(")\n;Const in '"); prs(coname); prs("': "); prunsign1(maxco);
+    prs(")\n;Constant: ");   prunsign1(maxco);
     prs(" ("); prunsign1(COMAX);
     i=COMAX; i=i-maxco;
     if (i <= 1000)prs("\n *** Warning *** constant area too small");
