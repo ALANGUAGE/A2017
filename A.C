@@ -212,10 +212,6 @@ int prs(unsigned char *s) {
         s++;
     }
 }
-int prnl() {
-    prs("\n ");
-}
-
 
 int eprnum(int n){//for docall1 procedure
     int e;
@@ -252,13 +248,6 @@ int prunsign1(unsigned int n) {
     n += '0';
     prc(n);
 }
-int printint51(unsigned int j)  {
-    if (j<10000) prc(32);
-    if (j<1000) prc(32);
-    if (j<100) prc(32);
-    if (j<10) prc(32);
-    prunsign1(j);
-}
 
 int end1(int n) {
     fcloseR(fdin);
@@ -268,7 +257,7 @@ int end1(int n) {
 
 int error1(char *s) {
     lineno--;
-    prnl();
+    prs("\n ");
     prscomment(&fgetsdest);
     prs(";Line: ");
     prunsign1(lineno);
@@ -567,10 +556,6 @@ int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
   GSign[LTop]=issign; GWidth[LTop]=iswidth; GType[LTop]=istype;
   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
 }
-int checkFunction() { unsigned int i; unsigned int j; i=0;
-  while (i < FTop) {
-    j=adrF(FNameField, i); if(eqstr(symbol, j))return i; i++;}
-  return 0; }
 
 int isvariable() {
     if(token==T_SIGNED)   goto v1;
@@ -655,7 +640,7 @@ int doreg1(int iscmp1) { int i;
   if (iscmp1 == 1) { token=getlex();
       if (isrelational() ==0) error1("Relational expected");
       strcpy(ops, "cmp"); }
-  prnl(); prs(ops); prs("  "); printreg(ireg1); prs(", ");
+  prs("\n "); prs(ops); prs("  "); printreg(ireg1); prs(", ");
 
   if (istoken(T_CONST)) {prunsign1(lexval); goto reg1;}
   mod2=typeName(); ireg2=checkreg();
@@ -666,18 +651,18 @@ int doreg1(int iscmp1) { int i;
 
 int compoundass(char *op, int mode, int id1) {
   if(mode) error1("only scalar Var allowed");
-  prnl(); prs(op); prs("  ");
+  prs("\n "); prs(op); prs("  ");
   gettypes(id1); if (wi==2) prs("word"); else prs("byte");
   v(id1); prs(", ");
   expect(T_CONST); prunsign1(lexval);
 }
 int dovar1(int mode, int op, int ixarr, int id1) {
   gettypes(id1);
-  if (mode==1) {prs("\n mov bx, "); v(id1); prnl(); prs(op);
+  if (mode==1) {prs("\n mov bx, "); v(id1); prs("\n "); prs(op);
     if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
     if(widthi == 2) prs(" ax, [bx]");
     return; }
-  if (mode==2){prnl();prs(op);prs(" ax, "); printName(id1); return; }
+  if (mode==2){prs("\n ");prs(op);prs(" ax, "); printName(id1); return; }
   if (ixarr) {
     prs("\n mov bx, "); v(ixarr);
     if (wi==2) prs("\n shl bx, 1");
@@ -686,14 +671,14 @@ int dovar1(int mode, int op, int ixarr, int id1) {
 // v(id1); prs(" [bx]");
     prc('['); printName(id1); prs(" + bx]");
     return; }
-  prnl();prs(op);
+  prs("\n ");prs(op);
   if(wi==1) prs(" al, ");
   if(wi==2) prs(" ax, ");
   if(wi==4) prs(" eax, ");
   v(id1);
 }
 int rterm(char *op) {int mode; int opint; int ixarr; int id1;
-  if (istoken(T_CONST)) { prnl(); prs(op);
+  if (istoken(T_CONST)) { prs("\n "); prs(op);
     if (wi==1) prs(" al, ");
     if (wi==2) prs(" ax, ");
     if (wi==4) prs(" eax, ");
@@ -815,11 +800,10 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); }
  }
 
- int evalue=0;
  int expr(int isRight)
  { int mode; int id1;     int ixarr; int ixconst;
    int ids;  int isCONST; int i;     unsigned char *p;
-   if (istoken(T_CONST)) { evalue=lexval;
+   if (istoken(T_CONST)) {
      prs("\n mov ax, "); prunsign1(lexval); return 4; }
    mode=typeName(); /*0=V,1=*,2=&*/
    ireg1=checkreg();
@@ -961,25 +945,30 @@ int stmt() {
 }
 
 
-int dofunc() { int nloc; int i; int narg;
+int dofunc() { int nloc; int i; unsigned int j;int narg;
     cloc=&co;
     checknamelen();
     strcpy(fname, symbol);
-    if (checkFunction() ) error1("Function already defined");
+    i=0;
+    while (i < FTop) {
+        j=adrF(FNameField, i);
+        if(eqstr(symbol, j)) error1("Function already defined");
+        i++;
+    }
     if (FTop >= FUNCMAX) error1("Function table full");
     pt=adrF(FNameField, FTop);
     strcpy(pt, symbol);
     FTop++;
 
   prs("\n\n"); prs(symbol); prs(": PROC");
-  expect('('); LTop=LSTART;  i=0;
+  expect('('); LTop=LSTART;
   if (istoken(')')==0) { narg=2;
     do { typeName();  addlocal(); narg+=2;
          GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
     while (istoken(','));  expect(')'); }
 
   expect('{'); /*body*/
-  nloc=0; nreturn=0; nconst=0; i=0; /*nlabel=0; */
+  nloc=0; nreturn=0; nconst=0;
   while(isvariable()) {
     do {typeName();
         checknamelen();
@@ -1156,6 +1145,6 @@ int main() {
     i=65636; i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
-    prs("          ");
+    prs("    ");
     end1(0);
 }
