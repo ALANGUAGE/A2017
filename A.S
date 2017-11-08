@@ -358,8 +358,8 @@ ireg2 dw 0
 
 
 writetty: PROC
- mov  ÞÈ, 14
- mov  , 0
+ mov  ah, 14
+ mov  bx, 0
  db 205,16
 
 ;-91 int putch(char c)  {if (c==10) {al=13; writetty();} al=c; writetty(); }
@@ -372,10 +372,10 @@ putch: PROC;
  mov al, [bp+4]
  cmp al, 10
  jne .putch1
- mov   ÿ, 13
+ mov  al, 13
  call writetty
 .putch1:
- mov   ÿ, [bp+4]
+ mov  al, [bp+4]
  call writetty
 
 ;-92 int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
@@ -446,8 +446,8 @@ ENDP
 
 openR: PROC;
  ENTER  0,0
- mov  , [bp+4]
- mov  , 15618
+ mov  dx, [bp+4]
+ mov  ax, 15618
  call DosInt
 
 ;-101 int creatR(char *s) { dx=s; cx=0; ax=0x3C00; DosInt(); }
@@ -457,9 +457,9 @@ ENDP
 
 creatR: PROC;
  ENTER  0,0
- mov  , [bp+4]
- mov  , 0
- mov  , 15360
+ mov  dx, [bp+4]
+ mov  cx, 0
+ mov  ax, 15360
  call DosInt
 
 ;-102 int fcloseR(int fd) {bx=fd;       ax=0x3E00; DosInt(); }
@@ -469,8 +469,8 @@ ENDP
 
 fcloseR: PROC;
  ENTER  0,0
- mov  , [bp+4]
- mov  , 15872
+ mov  bx, [bp+4]
+ mov  ax, 15872
  call DosInt
 
 ;-103 int exitR  (char c) {ah=0x4C; al=c;          DosInt(); }
@@ -480,8 +480,8 @@ ENDP
 
 exitR: PROC;
  ENTER  0,0
- mov  ÞÈ, 76
- mov   ÿ, [bp+4]
+ mov  ah, 76
+ mov  al, [bp+4]
  call DosInt
 
 ;-104 int readRL(char *s, int fd, int len){
@@ -494,10 +494,10 @@ readRL: PROC
 ;-105     dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
 ;
  ENTER  0,0
- mov  , [bp+4]
- mov  , [bp+8]
- mov  , [bp+6]
- mov  , 16128
+ mov  dx, [bp+4]
+ mov  cx, [bp+8]
+ mov  bx, [bp+6]
+ mov  ax, 16128
  call DosInt
 
 ;-106 int fputcR(char *n, int fd) { __asm{lea dx, [bp+4]}; /* = *n */
@@ -511,9 +511,9 @@ lea dx, [bp+4]
 
 ;-107   cx=1; bx=fd; ax=0x4000; DosInt(); }
 
- mov  , 1
- mov  , [bp+6]
- mov  , 16384
+ mov  cx, 1
+ mov  bx, [bp+6]
+ mov  ax, 16384
  call DosInt
 
 ;-108 
