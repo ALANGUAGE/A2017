@@ -282,7 +282,7 @@ int printinputline() {
         *fgetsp=DOS_ByteRead;
         fgetsp++;
         col++;
-        if (col >80) error1("input line longer than 80 char");
+        if (col >100) error1("input line longer than 100 char");
         }
         while (DOS_ByteRead != 10);
     *fgetsp=0;
@@ -605,11 +605,11 @@ int checkreg() { // >=17 = 16bit, >=47 = 32bit
   if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
   if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
   if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
-  if (eqstr(symbol,"cr0")) return 71;
+//  if (eqstr(symbol,"cr0")) return 71;
   return 0;   }
 
 char printregstr[]
-="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedicr0";
+="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi";
 
 int printreg(int i) {  unsigned int k; unsigned char c;
   k = &printregstr + i; c=*k; prc(c); i++;
