@@ -178,10 +178,10 @@ int eprs(char *s) {
 }
 int prc(unsigned char c) {
     if (c==10) {
-        _AX=13;
+        ax=13;
         writetty();
     }
-    _AL=c;
+    al=c;
     writetty();
     fputcR(c, fdout);
 }
@@ -617,17 +617,6 @@ int printreg(int i) {  unsigned int k; unsigned char c;
   if (i > 47) { i++; k = &printregstr + i; c=*k; prc(c); }
 }
 
-int constantexpr() { int mode; int id1;int ids;
-  token=getlex();   mode=typeName();
-  id1=searchname(); gettypes(id1); ids=signi;
-  if (isrelational() ==0) error1("Relational expression expected");
-  expect(T_CONST);  prs(" ; constant expression");
-  prs("\ncmp ");
-  gettypes(id1); if (wi==2) prs("word"); else prs("byte");
-  v(id1); prs(", "); prunsign1(lexval); cmpneg(ids);   prs(fname);
-  expect(')');
-}
-
 char ops[5];
 int doreg1(int iscmp1) { int i;
   if (istoken('='))          strcpy(ops, "mov");
@@ -689,31 +678,6 @@ int rterm(char *op) {int mode; int opint; int ixarr; int id1;
     if (widthi != 2) error1("Arrayindex muss int sein"); }
   if (eqstr(symbol,"_AX")) return;
   opint=op; dovar1(mode, opint, ixarr, id1);
-}
-
-int doreg(char *dr) { int i; expect('=');
-  prs("\n mov  "); prs(dr); prs(", ");
-       if (istoken(T_CONST)) prunsign1(lexval);
-  else if (istoken(T_NAME )) { i=searchname(); v(i); }
-  else error1("only number or var allowed");
-}
-int isreg() {
-  if (eqstr(symbol,"_AH")) {doreg("ah"); goto r1;}
-  if (eqstr(symbol,"_AL")) {doreg("al"); goto r1;}
-  if (eqstr(symbol,"_AX")) {doreg("ax"); goto r1;}
-  if (eqstr(symbol,"_BH")) {doreg("bh"); goto r1;}
-  if (eqstr(symbol,"_BL")) {doreg("bl"); goto r1;}
-  if (eqstr(symbol,"_BX")) {doreg("bx"); goto r1;}
-  if (eqstr(symbol,"_CH")) {doreg("ch"); goto r1;}
-  if (eqstr(symbol,"_CL")) {doreg("cl"); goto r1;}
-  if (eqstr(symbol,"_CX")) {doreg("cx"); goto r1;}
-  if (eqstr(symbol,"_DH")) {doreg("dh"); goto r1;}
-  if (eqstr(symbol,"_DL")) {doreg("dl"); goto r1;}
-  if (eqstr(symbol,"_DX")) {doreg("dx"); goto r1;}
-  if (eqstr(symbol,"_SI")) {doreg("si"); goto r1;}
-  if (eqstr(symbol,"_DI")) {doreg("di"); goto r1;}
-  if (eqstr(symbol,"_FLAGS")) {doreg("flags"); goto r1;}
-  return 0;   r1: return 1;
 }
 
 int doassign(int mode, int i, int ixarr, int ixconst) {
@@ -800,7 +764,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); }
  }
 
- int expr(int isRight)
+int expr(int isRight)
  { int mode; int id1;     int ixarr; int ixconst;
    int ids;  int isCONST; int i;     unsigned char *p;
    if (istoken(T_CONST)) {
@@ -809,7 +773,6 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
    ireg1=checkreg();
    if (ireg1) { doreg1(0); return; }
    if (token=='(')  {docall1(); goto e1; }
-   if (isreg()) goto e1;
 
    id1=searchname(); gettypes(id1); ids=signi;
    ixarr=0;  ixconst=0;
@@ -853,7 +816,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
  }
 
  int pexpr() {expect('('); iscmp=0;
-   if (token==T_NAME) {if (eqstr(symbol, "_")) {constantexpr(); return;}
+   if (token==T_NAME) {
      ireg1=checkreg();
      if (ireg1) { doreg1(1); return; }  }
    expr(0);
@@ -861,7 +824,6 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
    expect(')');
  }
 
-/***************************************************************/
 
 int prlabel(int n) {
     prs("\n.");
