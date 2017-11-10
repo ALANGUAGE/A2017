@@ -1,4 +1,4 @@
-char Version1[]="A.COM V0.9.3";//todo: 2. op=reg not recognized
+char Version1[]="A.COM V0.9.4";//todo: 2. op=reg not recognized
 #define IDLENMAX       15//max length of names
 #define COLUMNMAX     128//output, input is 80
 #define T_NAME        256//the following defines for better clearity
@@ -35,6 +35,7 @@ char Version1[]="A.COM V0.9.3";//todo: 2. op=reg not recognized
 #define T_LESSLESS   1240
 #define T_GREATGREAT 1241
 
+char isPrint=1;
 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
 unsigned int orgData;//actual max of array, must be less than stack
 #define COMAX        3000
@@ -87,8 +88,8 @@ int ireg1;
 int mod2;
 int ireg2;
 
-int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); }
-int putch(char c)  {if (c==10) {al=13; writetty();} al=c; writetty(); }
+int writetty()     {ah=0x0E; bx=0; __emit__(0xCD,0x10); }
+int putch(char c)  {if (c==10)  {al=13; writetty();} al=c; writetty(); }
 int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
 int mkneg(int n)   { n; __asm {neg ax} }
 
@@ -177,12 +178,14 @@ int eprs(char *s) {
     }
 }
 int prc(unsigned char c) {
-    if (c==10) {
-        ax=13;
+    if (isPrint) {
+        if (c==10) {
+            ax=13;
+            writetty();
+        }
+        al=c;
         writetty();
     }
-    al=c;
-    writetty();
     fputcR(c, fdout);
 }
 int prscomment(unsigned char *s) {
@@ -256,6 +259,7 @@ int end1(int n) {
 }
 
 int error1(char *s) {
+    isPrint=1;
     lineno--;
     prs("\n ");
     prscomment(&fgetsdest);
@@ -557,15 +561,6 @@ int addlocal() { if(LTop >= VARMAX) error1("Local variable table full");
   pt=adrF(GNameField, LTop); strcpy(pt, symbol);
 }
 
-int isvariable() {
-    if(token==T_SIGNED)   goto v1;
-    if(token==T_UNSIGNED) goto v1;
-    if(token==T_CHAR)     goto v1;
-    if(token==T_INT)      goto v1;
-    if(token==T_LONG)     goto v1;
-    return 0;
-v1: return 1;
-}
 
 int cmpneg(int ids) {
        if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
@@ -764,7 +759,7 @@ int docall1() {int i; int narg; int t0; int n0;  int sz32;
      narg=narg+narg; narg=narg+sz32; prunsign1(narg); }
  }
 
-int expr(int isRight)
+int expr()
  { int mode; int id1;     int ixarr; int ixconst;
    int ids;  int isCONST; int i;     unsigned char *p;
    if (istoken(T_CONST)) {
@@ -796,7 +791,7 @@ int expr(int isRight)
    if (istoken(T_DIVASS    )) {error1("not implemented");}
 
    if (istoken('=')) {
-       expr(1);
+       expr();
        doassign(mode, id1, ixarr, ixconst);
        goto e1;
    }
@@ -819,7 +814,7 @@ int expr(int isRight)
    if (token==T_NAME) {
      ireg1=checkreg();
      if (ireg1) { doreg1(1); return; }  }
-   expr(0);
+   expr();
    if (iscmp==0) prs("\n or  al, al\n je .");  prs(fname);
    expect(')');
  }
@@ -891,7 +886,7 @@ int stmt() {
   }
   else if(istoken(';'))      { }
   else if(istoken(T_RETURN)) {
-        if (token!=';') expr(0);
+        if (token!=';') expr();
         prs("\n jmp .retn");
         prs(fname);
         nreturn++;
@@ -903,11 +898,21 @@ int stmt() {
         expect(T_NAME);
         expect(':');
         }
-  else  {expr(0);; expect(';'); }
+  else  {expr();; expect(';'); }
 }
 
+int isvariable() {
+    if(token==T_SIGNED)   goto v1;
+    if(token==T_UNSIGNED) goto v1;
+    if(token==T_CHAR)     goto v1;
+    if(token==T_INT)      goto v1;
+    if(token==T_LONG)     goto v1;
+    return 0;
+v1: return 1;
+}
 
-int dofunc() { int nloc; int i; unsigned int j;int narg;
+int dofunc() { 
+    int nloc; int i; unsigned int j;int narg;
     cloc=&co;
     checknamelen();
     strcpy(fname, symbol);
@@ -921,94 +926,151 @@ int dofunc() { int nloc; int i; unsigned int j;int narg;
     pt=adrF(FNameField, FTop);
     strcpy(pt, symbol);
     FTop++;
-
-  prs("\n\n"); prs(symbol); prs(": PROC");
-  expect('('); LTop=LSTART;
-  if (istoken(')')==0) { narg=2;
-    do { typeName();  addlocal(); narg+=2;
-         GData[LTop]=narg; if (iswidth == 4) narg+=2; LTop++; }
-    while (istoken(','));  expect(')'); }
-
-  expect('{'); /*body*/
-  nloc=0; nreturn=0; nconst=0;
-  while(isvariable()) {
-    do {typeName();
-        checknamelen();
-        addlocal(); nloc-=2;
-        if (iswidth == 4) nloc-=2;
-        GData[LTop]=nloc;
-        if (istoken('[')){
-            istype='&';GType[LTop]='&';expect(T_CONST);expect(']');
-            nloc=nloc-lexval; nloc+=2; GData[LTop]=nloc;
-            }
-        LTop++;
-      } while (istoken(',')); expect(';'); }
-  if (LTop>LSTART){prs(";\n ENTER  ");
-    nloc=mkneg(nloc); prunsign1 (nloc); prs(",0"); }
-  while(istoken('}')==0)   stmt();
-  if (nreturn) {
-        prs("\n .retn");
-        prs(fname);
-        prc(':');
+    prs("\n\n"); 
+    prs(symbol); 
+    prs(": PROC");
+    expect('('); 
+    LTop=LSTART;
+    if (istoken(')')==0) { 
+        narg=2;
+        do { 
+            typeName();  
+            addlocal(); 
+            narg+=2;
+            GData[LTop]=narg; 
+            if (iswidth == 4) narg+=2; 
+                LTop++; 
+                }
+        while (istoken(','));  
+        expect(')'); 
         }
-  if (LTop > LSTART) prs(" LEAVE");
-  prs("\n ret");
-  *cloc=0; prs(co);
-  maxco1=strlen(co);
-  if (maxco1 > maxco) maxco=maxco1;
-  prs("\nENDP");
+
+    expect('{'); /*body*/
+    nloc=0; 
+    nreturn=0; 
+    nconst=0;
+    while(isvariable()) {
+        do {
+            typeName();
+            checknamelen();
+            addlocal(); 
+            nloc-=2;
+            if (iswidth == 4) nloc-=2;
+            GData[LTop]=nloc;
+            if (istoken('[')){
+                istype='&';
+                GType[LTop]='&';
+                expect(T_CONST);
+                expect(']');
+                nloc=nloc-lexval; 
+                nloc+=2; 
+                GData[LTop]=nloc;
+            }
+            LTop++;
+        } while (istoken(',')); 
+        expect(';'); 
+    }
+    if (LTop>LSTART){
+        prs(";\n ENTER  ");
+        nloc=mkneg(nloc); 
+        prunsign1 (nloc); 
+        prs(",0"); 
+        }
+    
+    while(istoken('}')==0)  stmt();
+  
+    if (nreturn) {
+            prs("\n .retn");
+            prs(fname);
+            prc(':');
+        }
+    if (LTop > LSTART) prs(" LEAVE");
+    prs("\n ret");
+    *cloc=0; 
+    prs(co);
+    maxco1=strlen(co);
+    if (maxco1 > maxco) maxco=maxco1;
+    prs("\nENDP");
 }
 
 char doglobName[IDLENMAX];
 int doglob() {
-    int i; int j; int isstrarr; isstrarr=0;
-  if (GTop >= LSTART) error1("Global table full");
-  if (iswidth == 0) error1("no VOID as var type");
-  checknamelen();
-  if (checkName() != 0) error1("Variable already defined");
-  if (istoken('[')) { istype='&';
-    if (istoken(T_CONST)) {
-      prs("\nsection .bss\nabsolute ");
-      prunsign1(orgData);
-      prs("\n"); prs(symbol);
-      if (iswidth==1) prs(" resb ");
-      if (iswidth==2) prs(" resw ");
-      if (iswidth==4) prs(" resd ");
-      prunsign1(lexval);
-      prs("\nsection .text");
-      orgData=orgData+lexval;
-      if (iswidth==2) orgData=orgData+lexval;
-      if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
-      GData[GTop]=lexval; expect(']');
-    }else { expect(']');
-      if (iswidth != 1) error1("Only ByteArray allowed");
-      prs("\n"); prs(symbol); prs(" db ");
-      isstrarr=1; strcpy(doglobName, symbol);
-      expect('=');
-      if (istoken(T_STRING)) {
-        prc(34); prscomment(symbol); prc(34); prs(",0");
-        i=strlen(symbol); GData[GTop]=i; }
-      else if (istoken('{' )) { i=0;
-        do { if(i) prc(',');
-          expect(T_CONST); prunsign1(lexval); i=1; }
-        while (istoken(',')); expect('}'); }
-      else error1("String or number array expected");
-      };
-  }else { //expect('=');
-    prs("\n"); prs(symbol); if (istype=='*') prs(" dw ");
-    else {
-      if      (iswidth==1) prs(" db ");
-      else if (iswidth==2) prs(" dw ");
-      else                 prs(" dd ");
-    }
+    int i; int j; int isstrarr; 
+    isstrarr=0;
+    if (GTop >= LSTART) error1("Global table full");
+    if (iswidth == 0) error1("no VOID as var type");
+    checknamelen();
+    if (checkName() != 0) error1("Variable already defined");
+    if (istoken('[')) { 
+        istype='&';
+        if (istoken(T_CONST)) {
+            prs("\nsection .bss\nabsolute ");
+            prunsign1(orgData);
+            prs("\n"); prs(symbol);
+            if (iswidth==1) prs(" resb ");
+            if (iswidth==2) prs(" resw ");
+            if (iswidth==4) prs(" resd ");
+            prunsign1(lexval);
+            prs("\nsection .text");
+            orgData=orgData+lexval;
+            if (iswidth==2) orgData=orgData+lexval;
+            if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
+            GData[GTop]=lexval; 
+            expect(']');
+        }else { 
+            expect(']');
+            if (iswidth != 1) error1("Only ByteArray allowed");
+            prs("\n"); 
+            prs(symbol); 
+            prs(" db ");
+            isstrarr=1; 
+            strcpy(doglobName, symbol);
+            expect('=');
+            if (istoken(T_STRING)) {
+                prc(34); 
+                prscomment(symbol); 
+                prc(34); 
+                prs(",0");
+                i=strlen(symbol); 
+                GData[GTop]=i; 
+                }
+            else if (istoken('{' )) { 
+                i=0;
+                do { 
+                    if(i) prc(',');
+                    expect(T_CONST); 
+                    prunsign1(lexval); 
+                    i=1; 
+                    }
+                    while (istoken(',')); 
+                expect('}');
+            }
+        else error1("String or number array expected");
+        };
+    }else { //expect('=');
+        prs("\n"); 
+        prs(symbol); 
+        if (istype=='*') prs(" dw ");
+        else {
+            if      (iswidth==1) prs(" db ");
+            else if (iswidth==2) prs(" dw ");
+            else                 prs(" dd ");
+        }
     if(istoken('-')) prc('-');
-    if (istoken('=')) {expect(T_CONST); prunsign1(lexval); }
-    else prunsign1(0); }
-  GSign[GTop]=issign; GWidth[GTop]=iswidth; GType[GTop]=istype;
-  pt=adrF(GNameField, GTop);
-  if (isstrarr) strcpy(pt, doglobName); else strcpy(pt, symbol);
-  GTop++; expect(';'); }
-
+    if (istoken('=')) {
+        expect(T_CONST); 
+        prunsign1(lexval); 
+        }else prunsign1(0); 
+    }
+    GSign[GTop]=issign; 
+    GWidth[GTop]=iswidth; 
+    GType[GTop]=istype;
+    pt=adrF(GNameField, GTop);
+    if (isstrarr) strcpy(pt, doglobName); 
+        else strcpy(pt, symbol);
+    GTop++; 
+    expect(';'); 
+}
 
 int dodefine() {
     int i; int j; int fdtemp;
@@ -1052,6 +1114,7 @@ int parse() {
 char *arglen=0x80; char *argv=0x82;
 int main() {
     int arglen1; unsigned int i; char *c;
+    isPrint=1;
     arglen1=*arglen;
     if (arglen1 == 0) {
         cputs(Version1);
@@ -1082,24 +1145,24 @@ int main() {
         cputs(namelst);
         exitR(2);
         }
-    prs("\n; ");
+    prs("\n;");
     prs(Version1);
-    prs(", Source: "); prs(namein);
-    prs(", Output asm: "); prs(namelst);
+    prs(", Input: "); prs(namein);
+    prs(", Output: "); prs(namelst);
+    isPrint=0;
     prs("\norg  256 \njmp main");
     orgData=ORGDATAORIG;
     fgetsp=&fgetsdest;
     *fgetsp=0;
     thechar=fgets1();
-    parse();
-    prs("\n;Input: "); prs(namein);
-    prs(", List: ");   prs(namelst);
-    prs(", Lines: "); prunsign1(lineno);
-    prs("\n;Glob. variables: "); GTop--; prunsign1(GTop);
+    parse(); 
+    isPrint=1;
+    prs("\n;Glob. variables:"); GTop--; prunsign1(GTop);
     prs(" ("); prunsign1(LSTART);
-    prs("), Functions: "); prunsign1(FTop);
+    prs("), Functions:"); prunsign1(FTop);
     prs(" ("); prunsign1(FUNCMAX);
-    prs(")\n;Constant: ");   prunsign1(maxco);
+    prs("), Lines:"); prunsign1(lineno);
+    prs("\n;Constant: ");   prunsign1(maxco);
     prs(" ("); prunsign1(COMAX);
     i=COMAX; i=i-maxco;
     if (i <= 1000)prs("\n *** Warning *** constant area too small");
@@ -1107,6 +1170,6 @@ int main() {
     i=65636; i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
-    prs("    ");
+    prs("..........");
     end1(0);
 }
