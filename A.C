@@ -296,7 +296,7 @@ int printinputline() {
         while (DOS_ByteRead != 10);
     *fgetsp=0;
     if (fdout) {
-        prs("\n\n;-");
+        prs("\n;-");
         prunsign1(lineno);
         prc(' ');
         lineno++;

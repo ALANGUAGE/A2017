@@ -1,4 +1,4 @@
-char Version1[]="AS.C V1.0";//Assembler like NASM
+char Version1[]="NASM like AS.C V1.0";//Assembler like NASM
 #define SYMBOLMAX    31
 char Symbol[SYMBOLMAX]; //next symbol to decode
 char SymbolUpper[SYMBOLMAX];//set toupper in getName
@@ -1463,8 +1463,6 @@ int getarg() {
     prs(";");
     prs(Version1);
     prs(", Source: "); prs(namein);
-    prs(", Output: "); prs(namelst);
-    prs(", "); prs(namebin);
     prs("\n");
 }
 
