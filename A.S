@@ -9712,15 +9712,12 @@ main: PROC
  call prs
  add  sp, 2
 
-;-1460     prs("..........");
+;-1460 //    prs("\n;");
 
-.main470:
- push main_18
- call prs
- add  sp, 2
 
 ;-1461     end1(0);
 
+.main470:
  push 0
  call end1
  add  sp, 2
@@ -9746,7 +9743,6 @@ main_14 db " (",0
 main_15 db "\n *** Warning *** constant area too small",0
 main_16 db "), stacksize: ",0
 main_17 db "\n *** Warning *** Stack too small",0
-main_18 db "..........",0
 ENDP
 ;Glob. variables:100 (200), Functions:71 (300), Lines:1463
-;Constant: 688 (3000), stacksize: 23822..........
+;Constant: 688 (3000), stacksize: 23822

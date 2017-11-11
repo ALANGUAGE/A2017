@@ -1,13 +1,13 @@
-char Version1[]="AS.C V1.0";//BAS.BAT, AS TE, NAS.BAT
-//#include "DECL.C"
+char Version1[]="AS.C V1.0";//Assembler like NASM
 #define SYMBOLMAX    31
 char Symbol[SYMBOLMAX]; //next symbol to decode
 char SymbolUpper[SYMBOLMAX];//set toupper in getName
 char ProcName[SYMBOLMAX];//name of actual proc
+char isPrint=1;         //print to screen on
 char isInProc=0;        //is inside a procedure
 unsigned int SymbolInt; //integer value set in getDigit
 #define INPUTBUFMAX 255
-char InputBuf[INPUTBUFMAX];//filled in getLine, no overflow test
+char InputBuf[INPUTBUFMAX];//filled in getLine
 unsigned char *InputPtr;//position in InputBuf
 char namein [67];       //input file name  .S
 char namelst[67];       //list file name   .LST
@@ -91,7 +91,7 @@ char *argv=0x82;        // for main only
 
 
 int writetty()     { ah=0x0E; bx=0; __emit__(0xCD,0x10); }
-int putch(char c)  {if (_ c==10) {al=13; writetty();} al=c; writetty(); }
+int putch(char c)  {if (c==10) {al=13; writetty();} al=c; writetty(); }
 int cputs(char *s) {char c;  while(*s) { c=*s; putch(c); s++; } }
 
 int DosInt() {
@@ -203,12 +203,14 @@ int testReg() {
 
 
 int prc(unsigned char c) {//print char
-        if ( _ c==10) {
+    if (isPrint) {
+        if (c==10) {
             ax=13;
             writetty();
             }
         al=c;
-        writetty();
+        writetty(); 
+    }
     fputcR(c,lst_fd);
 }
 
@@ -259,7 +261,7 @@ int printhex16(unsigned int i) {
 }
 int printIntU(unsigned int n) {
     unsigned int e;
-    if ( _ n >= 10) {
+    if (n >= 10) {
         e=n/10; //DIV
         printIntU(e);
     }
@@ -292,7 +294,7 @@ int printLine() {
 
 int epilog() {
     unsigned int i; char c;     int j;
-    prs("\n Errors: ");
+    prs("Errors:");
     printIntU(ErrorCount);
     if (ErrorCount) prs(" *** ERRORS *** ");
     prs(", Out: ");
@@ -302,8 +304,6 @@ int epilog() {
     prs("= ");
     printIntU(BinLen);
     prs(" bytes.");
-    prs(" Labels: ");
-    printIntU(LabelMaxIx);
     i=0;
     do {
         c = FileBin[i];
@@ -321,6 +321,7 @@ int end1(int n) {
 
 
 int error1(char *s) {
+    isPrint=1;
     ErrorCount++;
     prs("\n******* next line ERROR: ");
     prs(s);
@@ -335,6 +336,7 @@ int errorexit(char *s) {
 int dataexit(){errorexit("DB,DW,DD or RESB,W,D expected");}
 
 int notfounderror(){
+    isPrint=1;
     ErrorCount++;
     prs("\n******* ERROR: label not found: ");
     prs(Symbol);
@@ -958,8 +960,6 @@ int fixJmp() {
     }
 }
 int fixJmpMain() {
-    prs("\n Resting global jmp: ");
-    printIntU(JmpMaxIx);
     if (JmpMaxIx ) error1("resting global jmp");
     strcpy(Symbol, "main");
     FixOneJmp(1);//first instruction, PC=1
@@ -1400,6 +1400,7 @@ int parse() {
     JmpMaxIx=0;
     BinLen=0;
     isInProc=0;
+    isPrint=0;
 
     do {//process a new line
         PCStart=PC;
@@ -1407,27 +1408,30 @@ int parse() {
         OpPrintIndex=0;
         PrintRA=' ';
         getLine();
-        InputPtr = &InputBuf;
-        getTokeType();//getCode in SymbolUpper,
-                      //set TokeType,isLabel by getName
-        if (TokeType == ALNUME) {
-            if (isLabel) {//set in getName
-              if (isInProc == 0)  strcpy(ProcName, Symbol);
-                storeLabel();
-                InputPtr++;//remove :
-                getTokeType();
+        if (DOS_NoBytes) {
+            InputPtr = &InputBuf;
+            getTokeType();//getCode in SymbolUpper,
+                          //set TokeType,isLabel by getName
+            if (TokeType == ALNUME) {
+                if (isLabel) {//set in getName
+                  if (isInProc == 0)  strcpy(ProcName, Symbol);
+                    storeLabel();
+                    InputPtr++;//remove :
+                    getTokeType();
+                }
             }
+            if (TokeType == ALNUME) {
+                lookCode();
+                if(CodeType) process();
+                else getVariable();
+                skipRest();
+            }
+            else if(TokeType >ALNUME)error1("Label or instruction expected");
+            else if(TokeType==DIGIT )error1("No digit allowed at start");
+            printLine();  
         }
-        if (TokeType == ALNUME) {
-            lookCode();
-            if(CodeType) process();
-            else getVariable();
-            skipRest();
-        }
-        else if (TokeType >ALNUME) error1("Label or instruction expected");
-        else if (TokeType==DIGIT ) error1("No digit allowed at start of line");
-        printLine();
     } while (DOS_NoBytes != 0 );
+    isPrint=1;
 }
 
 int getarg() {
