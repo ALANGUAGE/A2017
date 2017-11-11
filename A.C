@@ -1,4 +1,4 @@
-char Version1[]="A.COM V0.9.5";//todo: 2. op=reg not recognized
+char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognized
 #define IDLENMAX       15//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -563,7 +563,7 @@ int typeName() {
 }
 
 int gettypes(int i) {
-    int j; char c;
+    char c;
     c=GSign [i]; 
     if (c=='S') signi =1;  else signi =0;
     c=GWidth[i]; 
@@ -1213,7 +1213,7 @@ int dofunc() {
     pt=adrF(FNameField, FTop);
     strcpy(pt, symbol);
     FTop++;
-    prs("\n\n"); 
+    prs("\n"); 
     prs(symbol); 
     prs(": PROC");
     expect('('); 
@@ -1432,7 +1432,7 @@ int main() {
         cputs(namelst);
         exitR(2);
         }
-    prs("\n;");
+    prs(";");
     prs(Version1);
     prs(", Input: "); prs(namein);
     prs(", Output: "); prs(namelst);

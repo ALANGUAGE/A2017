@@ -1,11 +1,10 @@
-
-;A.COM V0.9.4, Input: A.C, Output: A.S
+;PLA compiler A.COM V0.9.5, Input: A.C, Output: A.S
 org  256 
 jmp main
 
-;-1 char Version1[]="A.COM V0.9.4";//todo: 2. op=reg not recognized
+;-1 char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognized
 
-Version1 db "A.COM V0.9.4",0
+Version1 db "PLA compiler A.COM V0.9.5",0
 
 ;-2 #define IDLENMAX       15//max length of names
 
@@ -360,7 +359,6 @@ ireg2 dw 0
 
 ;-91 int writetty()     {ah=0x0E; bx=0; __emit__(0xCD,0x10); }
 
-
 writetty: PROC
  mov  ah, 14
  mov  bx, 0
@@ -370,7 +368,6 @@ writetty: PROC
 
  ret
 ENDP
-
 putch: PROC;
  ENTER  0,0
  mov al, [bp+4]
@@ -386,7 +383,6 @@ putch: PROC;
  LEAVE
  ret
 ENDP
-
 cputs: PROC;
  ENTER  2,0
 .cputs2:
@@ -412,7 +408,6 @@ cputs: PROC;
  LEAVE
  ret
 ENDP
-
 mkneg: PROC;
  ENTER  0,0
  mov ax, [bp+4]
@@ -425,7 +420,6 @@ neg ax
  LEAVE
  ret
 ENDP
-
 DosInt: PROC
 
 ;-97     __emit__(0xCD,0x21);//inth 0x21;
@@ -447,7 +441,6 @@ DosInt: PROC
 
  ret
 ENDP
-
 openR: PROC;
  ENTER  0,0
  mov  dx, [bp+4]
@@ -458,7 +451,6 @@ openR: PROC;
  LEAVE
  ret
 ENDP
-
 creatR: PROC;
  ENTER  0,0
  mov  dx, [bp+4]
@@ -470,7 +462,6 @@ creatR: PROC;
  LEAVE
  ret
 ENDP
-
 fcloseR: PROC;
  ENTER  0,0
  mov  bx, [bp+4]
@@ -481,7 +472,6 @@ fcloseR: PROC;
  LEAVE
  ret
 ENDP
-
 exitR: PROC;
  ENTER  0,0
  mov  ah, 76
@@ -492,7 +482,6 @@ exitR: PROC;
  LEAVE
  ret
 ENDP
-
 readRL: PROC
 
 ;-106     dx=s; cx=len; bx=fd; ax=0x3F00; DosInt();}
@@ -508,7 +497,6 @@ readRL: PROC
  LEAVE
  ret
 ENDP
-
 fputcR: PROC;
  ENTER  0,0
 lea dx, [bp+4]
@@ -527,7 +515,6 @@ lea dx, [bp+4]
  LEAVE
  ret
 ENDP
-
 letter: PROC
 
 ;-111       if (c=='_') return 1;
@@ -611,7 +598,6 @@ letter: PROC
  .retnletter: LEAVE
  ret
 ENDP
-
 digit: PROC
 
 ;-121       if(c<'0') return 0;
@@ -646,7 +632,6 @@ digit: PROC
  .retndigit: LEAVE
  ret
 ENDP
-
 alnum: PROC
 
 ;-126     if (digit (c)) return 1;
@@ -692,7 +677,6 @@ alnum: PROC
  .retnalnum: LEAVE
  ret
 ENDP
-
 strlen: PROC
 
 ;-132     c=0;
@@ -727,7 +711,6 @@ strlen: PROC
  .retnstrlen: LEAVE
  ret
 ENDP
-
 strcpy: PROC
 
 ;-137     do { *s=*t; s++; t++; }
@@ -771,7 +754,6 @@ strcpy: PROC
  .retnstrcpy: LEAVE
  ret
 ENDP
-
 eqstr: PROC
 
 ;-143     while(*p) {
@@ -831,7 +813,6 @@ eqstr: PROC
  .retneqstr: LEAVE
  ret
 ENDP
-
 strcat1: PROC
 
 ;-151     while (*s != 0) s++;
@@ -861,7 +842,6 @@ strcat1: PROC
  LEAVE
  ret
 ENDP
-
 toupper: PROC
 
 ;-155     while(*s) {
@@ -911,7 +891,6 @@ toupper: PROC
  LEAVE
  ret
 ENDP
-
 instr1: PROC
 
 ;-161     while(*s) {
@@ -960,7 +939,6 @@ instr1: PROC
  .retninstr1: LEAVE
  ret
 ENDP
-
 eprc: PROC
 
 ;-169     *cloc=c;
@@ -981,7 +959,6 @@ eprc: PROC
  LEAVE
  ret
 ENDP
-
 eprs: PROC
 
 ;-173     char c;
@@ -1031,7 +1008,6 @@ eprs: PROC
  LEAVE
  ret
 ENDP
-
 prc: PROC
 
 ;-182     if (isPrint) {
@@ -1090,7 +1066,6 @@ prc: PROC
  LEAVE
  ret
 ENDP
-
 prscomment: PROC
 
 ;-194     unsigned char c;
@@ -1140,7 +1115,6 @@ prscomment: PROC
  LEAVE
  ret
 ENDP
-
 prs: PROC
 
 ;-203     unsigned char c; int com;
@@ -1264,7 +1238,6 @@ prs: PROC
  LEAVE
  ret
 ENDP
-
 eprnum: PROC
 
 ;-223     int e;
@@ -1349,7 +1322,6 @@ eprnum: PROC
  LEAVE
  ret
 ENDP
-
 pint1: PROC
 
 ;-238     int e;
@@ -1423,7 +1395,6 @@ pint1: PROC
  LEAVE
  ret
 ENDP
-
 prunsign1: PROC
 
 ;-250     unsigned int e;
@@ -1483,7 +1454,6 @@ prunsign1: PROC
  LEAVE
  ret
 ENDP
-
 end1: PROC
 
 ;-261     fcloseR(fdin);
@@ -1515,7 +1485,6 @@ end1: PROC
  LEAVE
  ret
 ENDP
-
 error1: PROC
 
 ;-267     isPrint=1;
@@ -1624,7 +1593,6 @@ error1_3 db "  in column: ",0
 error1_4 db "\nToken: ",0
 error1_5 db ", symbol: ",0
 ENDP
-
 printinputline: PROC
 
 ;-285     int col;
@@ -1756,7 +1724,6 @@ printinputline: PROC
 printinputline_0 db "input line longer than 100 char",0
 printinputline_1 db "\n\n;-",0
 ENDP
-
 fgets1: PROC
 
 ;-308     char c;
@@ -1834,7 +1801,6 @@ fgets1: PROC
  .retnfgets1: LEAVE
  ret
 ENDP
-
 next: PROC
 
 ;-323     char r;
@@ -1867,7 +1833,6 @@ next: PROC
  .retnnext: LEAVE
  ret
 ENDP
-
 adrF: PROC
 
 ;-330     i << 4;//*16; IDLENMAX=15!
@@ -1890,7 +1855,6 @@ adrF: PROC
  LEAVE
  ret
 ENDP
-
 printName: PROC
 
 ;-335     int j;
@@ -1976,7 +1940,6 @@ printName: PROC
  ret
 printName_0 db "[bp",0
 ENDP
-
 ifEOL: PROC
 
 ;-350     if (c == 10) return 1;//LF
@@ -2038,7 +2001,6 @@ section .text
 
 
 ;-360 int getlex() {
-
 
 getlex: PROC
 
@@ -3075,7 +3037,6 @@ getlex_15 db "goto",0
 getlex_16 db "define",0
 getlex_17 db "Input item not recognized",0
 ENDP
-
 istoken: PROC
 
 ;-490     if (token == t) {
@@ -3115,7 +3076,6 @@ istoken: PROC
  .retnistoken: LEAVE
  ret
 ENDP
-
 expect: PROC
 
 ;-498     if (istoken(t)==0) {
@@ -3174,7 +3134,6 @@ expect: PROC
 expect_0 db "\nExpected ASCII(dez): ",0
 expect_1 db " not found",0
 ENDP
-
 v: PROC
 
 ;-508     if (i < LSTART) prc('[');
@@ -3211,7 +3170,6 @@ v: PROC
  LEAVE
  ret
 ENDP
-
 checknamelen: PROC
 
 ;-513     int i;
@@ -3247,7 +3205,6 @@ checknamelen: PROC
  ret
 checknamelen_0 db "Item name is too long in characters)",0
 ENDP
-
 checkName: PROC
 
 ;-519     unsigned int i; unsigned int j;
@@ -3356,7 +3313,6 @@ checkName: PROC
  .retncheckName: LEAVE
  ret
 ENDP
-
 searchname: PROC
 
 ;-536     unsigned int i;
@@ -3395,7 +3351,6 @@ searchname: PROC
  ret
 searchname_0 db "Variable unknown",0
 ENDP
-
 name1: PROC
 
 ;-543     if (token!=T_NAME) error1("Name expected");
@@ -3424,7 +3379,6 @@ name1: PROC
  ret
 name1_0 db "Name expected",0
 ENDP
-
 typeName: PROC
 
 ;-548     int m; //0=V,1=*,2=&
@@ -3563,22 +3517,21 @@ typeName: PROC
  .retntypeName: LEAVE
  ret
 ENDP
-
 gettypes: PROC
 
-;-566     int j; char c;
+;-566     char c;
 
 
 ;-567     c=GSign [i]; 
 ;
- ENTER  4,0
+ ENTER  2,0
  mov bx, [bp+4]
  mov al, [GSign + bx]
- mov [bp-4], al
+ mov [bp-2], al
 
 ;-568     if (c=='S') signi =1;  else signi =0;
 
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 83
  jne .gettypes168
  mov ax, 1
@@ -3593,7 +3546,7 @@ gettypes: PROC
 .gettypes169:
  mov bx, [bp+4]
  mov al, [GWidth + bx]
- mov [bp-4], al
+ mov [bp-2], al
 
 ;-570     widthi=0;
 
@@ -3607,7 +3560,7 @@ gettypes: PROC
 
 ;-572     if (c==1) {widthi=1;wi=1;}
 
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 1
  jne .gettypes170
  mov ax, 1
@@ -3618,7 +3571,7 @@ gettypes: PROC
 ;-573     if (c==2) {widthi=2;wi=2;}
 
 .gettypes170:
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 2
  jne .gettypes171
  mov ax, 2
@@ -3629,7 +3582,7 @@ gettypes: PROC
 ;-574     if (c==4) {widthi=4;wi=4;}
 
 .gettypes171:
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 4
  jne .gettypes172
  mov ax, 4
@@ -3642,7 +3595,7 @@ gettypes: PROC
 .gettypes172:
  mov bx, [bp+4]
  mov al, [GType + bx]
- mov [bp-4], al
+ mov [bp-2], al
 
 ;-576     typei=0; 
 
@@ -3651,7 +3604,7 @@ gettypes: PROC
 
 ;-577     if (c=='*') {typei=1;wi=2;}
 
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 42
  jne .gettypes173
  mov ax, 1
@@ -3662,7 +3615,7 @@ gettypes: PROC
 ;-578     if (c=='&')  typei=2;
 
 .gettypes173:
- mov al, [bp-4]
+ mov al, [bp-2]
  cmp al, 38
  jne .gettypes174
  mov ax, 2
@@ -3685,7 +3638,6 @@ gettypes: PROC
  .retngettypes: LEAVE
  ret
 ENDP
-
 addlocal: PROC
 
 ;-583     if(LTop >= VARMAX) error1("Local variable table full");
@@ -3758,7 +3710,6 @@ addlocal: PROC
 addlocal_0 db "Local variable table full",0
 addlocal_1 db "Variable already defined",0
 ENDP
-
 cmpneg: PROC
 
 ;-594        if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
@@ -3903,7 +3854,6 @@ cmpneg_8 db "\n jge .",0
 cmpneg_9 db "\n jle .",0
 cmpneg_10 db "internal error compare unknown in CMPNEG()",0
 ENDP
-
 isrelational: PROC
 
 ;-608     if (token==T_EQ) goto w; 
@@ -3986,7 +3936,6 @@ isrelational: PROC
  .retnisrelational:
  ret
 ENDP
-
 checkreg: PROC
 
 ;-621   if (strlen(symbol) <  2) return 0;
@@ -4420,7 +4369,6 @@ printregstr db "*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespeb
 
 ;-646 int printreg(int i) {  
 
-
 printreg: PROC
 
 ;-647     unsigned int k; unsigned char c;
@@ -4521,7 +4469,6 @@ ops resb 5
 section .text
 
 ;-664 int doreg1(int iscmp1) { 
-
 
 doreg1: PROC
 
@@ -4821,7 +4768,6 @@ doreg1_9 db "\n ",0
 doreg1_10 db "  ",0
 doreg1_11 db ", ",0
 ENDP
-
 compoundass: PROC
 
 ;-705     if(mode) error1("only scalar variable allowed");
@@ -4917,7 +4863,6 @@ compoundass_3 db "word",0
 compoundass_4 db "byte",0
 compoundass_5 db ", ",0
 ENDP
-
 dovar1: PROC
 
 ;-719     gettypes(id1);
@@ -5179,7 +5124,6 @@ dovar1_13 db " al, ",0
 dovar1_14 db " ax, ",0
 dovar1_15 db " eax, ",0
 ENDP
-
 rterm: PROC
 
 ;-757     int mode; int opint; int ixarr; int id1;
@@ -5353,7 +5297,6 @@ rterm_3 db " eax, ",0
 rterm_4 db "Array index must be int",0
 rterm_5 db "ax",0
 ENDP
-
 doassign: PROC
 
 ;-783     gettypes(i);
@@ -5673,7 +5616,6 @@ doassign_16 db "\n mov ",0
 doassign_17 db "dword ",0
 doassign_18 db ", eax",0
 ENDP
-
 domul: PROC
 
 ;-832     if (ids) rterm("imul"); 
@@ -5747,7 +5689,6 @@ domul_1 db "\n mov bx, ",0
 domul_2 db "\n mul bx",0
 domul_3 db "with MUL only const number as multiplicator allowed",0
 ENDP
-
 doidiv: PROC
 
 ;-844     int mode; int id1;
@@ -5899,7 +5840,6 @@ doidiv_6 db "\n mov bx, ",0
 doidiv_7 db "\n cwd\n idiv bx",0
 doidiv_8 db "\n mov dx, 0\n div bx",0
 ENDP
-
 domod: PROC
 
 ;-866     doidiv(ids); 
@@ -5949,7 +5889,6 @@ section .text
 
 
 ;-874 int docall1() {
-
 
 docall1: PROC
 
@@ -6550,7 +6489,6 @@ docall1_12 db "\n push ",0
 docall1_13 db "\n call ",0
 docall1_14 db "\n add  sp, ",0
 ENDP
-
 expr: PROC
 
 ;-977     int mode;   int id1;     
@@ -7180,7 +7118,6 @@ expr_21 db "shl",0
 expr_22 db "shr",0
 expr_23 db "cmp",0
 ENDP
-
 pexpr: PROC
 
 ;-1063     expect('('); 
@@ -7271,7 +7208,6 @@ pexpr: PROC
  ret
 pexpr_0 db "\n or  al, al\n je .",0
 ENDP
-
 prlabel: PROC
 
 ;-1080     prs("\n.");
@@ -7308,7 +7244,6 @@ prlabel: PROC
  ret
 prlabel_0 db "\n.",0
 ENDP
-
 prjump: PROC
 
 ;-1086     prs("\n jmp .");
@@ -7342,7 +7277,6 @@ prjump: PROC
  ret
 prjump_0 db "\n jmp .",0
 ENDP
-
 stmt: PROC
 
 ;-1092     int c; char cha;
@@ -7938,7 +7872,6 @@ stmt_4 db "\n db ",0
 stmt_5 db "\n jmp .retn",0
 stmt_6 db "\n.",0
 ENDP
-
 isvariable: PROC
 
 ;-1192     if(token==T_SIGNED)   goto v1;
@@ -8003,7 +7936,6 @@ isvariable: PROC
  .retnisvariable:
  ret
 ENDP
-
 dofunc: PROC
 
 ;-1202     int nloc; int i; unsigned int j;int narg;
@@ -8103,7 +8035,7 @@ dofunc: PROC
 
  inc  word[FTop]
 
-;-1216     prs("\n\n"); 
+;-1216     prs("\n"); 
 
  push dofunc_2
  call prs
@@ -8492,7 +8424,7 @@ dofunc: PROC
  ret
 dofunc_0 db "Function already defined",0
 dofunc_1 db "Function table full",0
-dofunc_2 db "\n\n",0
+dofunc_2 db "\n",0
 dofunc_3 db ": PROC",0
 dofunc_4 db ";\n ENTER  ",0
 dofunc_5 db ",0",0
@@ -8507,7 +8439,6 @@ doglobName resb 15
 section .text
 
 ;-1284 int doglob() {
-
 
 doglob: PROC
 
@@ -9074,7 +9005,6 @@ doglob_16 db " db ",0
 doglob_17 db " dw ",0
 doglob_18 db " dd ",0
 ENDP
-
 dodefine: PROC
 
 ;-1363     int i; int j; int fdtemp;
@@ -9224,7 +9154,6 @@ dodefine_0 db "ORGDATA",0
 dodefine_1 db "global table (define) full",0
 dodefine_2 db "Define name longer 15 char",0
 ENDP
-
 parse: PROC
 
 ;-1387     token=getlex();
@@ -9322,7 +9251,6 @@ arglen dw 128
 argv dw 130
 
 ;-1402 int main() {
-
 
 main: PROC
 
@@ -9526,7 +9454,7 @@ main: PROC
 ;-1434         }
 
 
-;-1435     prs("\n;");
+;-1435     prs(";");
 
 .main468:
  push main_4
@@ -9712,24 +9640,21 @@ main: PROC
  call prs
  add  sp, 2
 
-;-1460 //    prs("\n;");
-
-
-;-1461     end1(0);
+;-1460     end1(0);
 
 .main470:
  push 0
  call end1
  add  sp, 2
 
-;-1462 }
+;-1461 }
  LEAVE
  ret
 main_0 db " Usage: A.COM in_file[.C]: ",0
 main_1 db ".C",0
 main_2 db "Source file missing (.C): ",0
 main_3 db "list file not creatable: ",0
-main_4 db "\n;",0
+main_4 db ";",0
 main_5 db ", Input: ",0
 main_6 db ", Output: ",0
 main_7 db "\norg  256 \njmp main",0
@@ -9744,5 +9669,5 @@ main_15 db "\n *** Warning *** constant area too small",0
 main_16 db "), stacksize: ",0
 main_17 db "\n *** Warning *** Stack too small",0
 ENDP
-;Glob. variables:100 (200), Functions:71 (300), Lines:1463
+;Glob. variables:100 (200), Functions:71 (300), Lines:1462
 ;Constant: 688 (3000), stacksize: 23822
