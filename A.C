@@ -12,7 +12,6 @@ char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognize
 #define T_DO          516
 #define T_INT         517
 #define T_ASM         518
-#define T_ASMBLOCK    519
 #define T_EMIT        520
 #define T_GOTO        521
 #define T_VOID        529
@@ -373,7 +372,7 @@ int next() {
 
 int adrF(char *s, unsigned int i) {
     i << 4;//*16; IDLENMAX=15!
-    __asm{ add ax, [bp+4]  ; offset s }
+    asm add ax, [bp+4]  ; offset s 
 }
 
 int printName(unsigned int i) {
@@ -505,7 +504,6 @@ g1: c=next();
     if (eqstr(symbol,"int"     )) return T_INT;
     if (eqstr(symbol,"char"    )) return T_CHAR;
     if (eqstr(symbol,"asm"     )) return T_ASM;
-    if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
     if (eqstr(symbol,"__emit__")) return T_EMIT;
     if (eqstr(symbol,"return"  )) return T_RETURN;
     if (eqstr(symbol,"if"      )) return T_IF;
@@ -1195,16 +1193,6 @@ int stmt() {
         c=next();
         };
         token=getlex();
-    }
-    else if(istoken(T_ASMBLOCK)) {
-        if (token== '{' )  {
-            prs("\n"); cha=next();
-            while(cha!= '}') {
-                prc(cha);
-                cha=next();
-            }
-            token=getlex();
-        } else error1("Curly open expected");
     }
     else if(istoken(T_EMIT)) {
       prs("\n db ");
