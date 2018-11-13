@@ -175,7 +175,7 @@ iswidth db 0
 wi dw 0
 ;-65 #define VARMAX        400//max global and local var
 
-;-66 #define LSTART        200//max global var
+;-66 #define LSTART        300//max global var
 
 ;-67 #define GNAMEMAX     6400// 16*VARMAX
 
@@ -214,7 +214,7 @@ section .text
 GTop dw 1
 ;-74 int LTop=LSTART;
 
-LTop dw 200
+LTop dw 300
 ;-75 #define FUNCMAX       300//max functions
 
 ;-76 #define FNAMEMAX     4800// 16*FUNCMAX
@@ -1528,7 +1528,7 @@ printName: PROC
 ;
  ENTER  2,0
  mov ax, [bp+4]
- cmp ax, 200
+ cmp ax, 300
  jge .printName60
 ;-337         i=adrF(GNameField, i);
 
@@ -2632,7 +2632,7 @@ v: PROC
 ;
  ENTER  0,0
  mov ax, [bp+4]
- cmp ax, 200
+ cmp ax, 300
  jge .v149
  push 91
  call prc
@@ -2646,7 +2646,7 @@ v: PROC
 ;-510     if (i < LSTART) prc(']');
 
  mov ax, [bp+4]
- cmp ax, 200
+ cmp ax, 300
  jge .v150
  push 93
  call prc
@@ -2693,7 +2693,7 @@ checkName: PROC
 ;-520     i=LSTART;
 ;
  ENTER  4,0
- mov ax, 200
+ mov ax, 300
  mov [bp-2], ax
 ;-521     while(i<LTop) {
 
@@ -4152,7 +4152,7 @@ dovar1: PROC
  push word [bp+10]
  call gettypes
  add  sp, 2
-;-720     if (mode==1) {
+;-720     if (mode==1) {// * = ptr
 
  mov ax, [bp+4]
  cmp ax, 1
@@ -4198,7 +4198,7 @@ dovar1: PROC
  jmp .retndovar1
 ;-727         }
 
-;-728     if (mode==2){
+;-728     if (mode==2){// & = adr
 
 .dovar1249:
  mov ax, [bp+4]
@@ -4229,7 +4229,7 @@ dovar1: PROC
  jmp .retndovar1
 ;-734         }
 
-;-735     if (ixarr) {
+;-735     if (ixarr) {//array
 
 .dovar1252:
  mov ax, [bp+8]
@@ -4522,7 +4522,7 @@ doassign: PROC
  push word [bp+6]
  call gettypes
  add  sp, 2
-;-784     if (mode==1) {
+;-784     if (mode==1) {// * = ptr
 
  mov ax, [bp+4]
  cmp ax, 1
@@ -4558,7 +4558,7 @@ doassign: PROC
  jmp .retndoassign
 ;-790         }
 
-;-791     if (mode==2) {
+;-791     if (mode==2) {// & = adr
 
 .doassign267:
  mov ax, [bp+4]
@@ -4665,7 +4665,7 @@ doassign: PROC
 ;-810         if(i<LSTART) prs("byte ");
 
  mov ax, [bp+6]
- cmp ax, 200
+ cmp ax, 300
  jge .doassign278
  push doassign_11
  call prs
@@ -4700,7 +4700,7 @@ doassign: PROC
 ;-817         if(i<LSTART) prs("word ");
 
  mov ax, [bp+6]
- cmp ax, 200
+ cmp ax, 300
  jge .doassign280
  push doassign_14
  call prs
@@ -4735,7 +4735,7 @@ doassign: PROC
 ;-824         if(i<LSTART) prs("dword ");
 
  mov ax, [bp+6]
- cmp ax, 200
+ cmp ax, 300
  jge .doassign282
  push doassign_17
  call prs
@@ -5524,7 +5524,7 @@ expr: PROC
 
 ;-981     
 
-;-982     if (istoken(T_CONST)) {
+;-982     if (istoken(T_CONST)) {// constant ;
 ;
  ENTER  16,0
  push 257
@@ -5548,7 +5548,7 @@ expr: PROC
  jmp .retnexpr
 ;-986         }
 
-;-987     mode=typeName(); /*0=V,1=*,2=&*/
+;-987     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
 
 .expr319:
  call typeName
@@ -6027,7 +6027,7 @@ expr: PROC
 
 ;-1061 
 
-;-1062 int pexpr() {
+;-1062 int pexpr() {//called from if, do, while
 
  .retnexpr: LEAVE
  ret
@@ -6842,7 +6842,7 @@ dofunc: PROC
  add  sp, 2
 ;-1220     LTop=LSTART;
 
- mov ax, 200
+ mov ax, 300
  mov word [LTop], ax
 ;-1221     if (istoken(')')==0) { 
 
@@ -7022,7 +7022,7 @@ dofunc: PROC
  jmp .dofunc409
 .dofunc410:
  mov ax, [LTop]
- cmp ax, 200
+ cmp ax, 300
  jle .dofunc415
 ;-1261         prs(";\n ENTER  ");
 
@@ -7090,7 +7090,7 @@ dofunc: PROC
 
 .dofunc418:
  mov ax, [LTop]
- cmp ax, 200
+ cmp ax, 300
  jle .dofunc419
  push dofunc_7
  call prs
@@ -7167,7 +7167,7 @@ doglob: PROC
 ;-1287     if (GTop >= LSTART) error1("Global table full");
 
  mov ax, [GTop]
- cmp ax, 200 ;unsigned : 1
+ cmp ax, 300 ;unsigned : 1
  jl  .doglob421
  push doglob_0
  call error1
@@ -7687,7 +7687,7 @@ dodefine: PROC
 ;-1372         if (GTop >= LSTART) error1("global table (define) full");
 
  mov ax, [GTop]
- cmp ax, 200 ;unsigned : 1
+ cmp ax, 300 ;unsigned : 1
  jl  .dodefine454
  push dodefine_1
  call error1
@@ -8096,7 +8096,7 @@ main: PROC
  push main_9
  call prs
  add  sp, 2
- push 200
+ push 300
  call prunsign1
  add  sp, 2
 ;-1449     prs("), Functions:"); prunsign1(FTop);

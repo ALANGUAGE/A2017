@@ -63,7 +63,7 @@ int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
 #define VARMAX        400//max global and local var
-#define LSTART        200//max global var
+#define LSTART        300//max global var
 #define GNAMEMAX     6400// 16*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
@@ -717,7 +717,7 @@ int compoundass(char *op, int mode, int id1) {
 
 int dovar1(int mode, int op, int ixarr, int id1) {
     gettypes(id1);
-    if (mode==1) {
+    if (mode==1) {// * = ptr
         prs("\n mov bx, "); 
         v(id1); prs("\n "); 
         prs(op);
@@ -725,14 +725,14 @@ int dovar1(int mode, int op, int ixarr, int id1) {
         if(widthi == 2) prs(" ax, [bx]");
         return; 
         }
-    if (mode==2){
+    if (mode==2){// & = adr
         prs("\n ");
         prs(op);
         prs(" ax, "); 
         printName(id1); 
         return; 
         }
-    if (ixarr) {
+    if (ixarr) {//array
         prs("\n mov bx, "); 
         v(ixarr);
         if (wi==2) prs("\n shl bx, 1");
@@ -781,14 +781,14 @@ int rterm(char *op) {
 
 int doassign(int mode, int i, int ixarr, int ixconst) {
     gettypes(i);
-    if (mode==1) {
+    if (mode==1) {// * = ptr
         prs("\n mov  bx, ");
         v(i);
         if (widthi == 2) prs("\n mov  [bx], ax");
             else  prs("\n mov  [bx], al"); 
         return;
         }
-    if (mode==2) {
+    if (mode==2) {// & = adr
         prs("\n mov  ");
         printName(i); 
         prs(", ax"); 
@@ -979,12 +979,12 @@ int expr() {
     int ids;    int isCONST; 
     int i;      unsigned char *p;
     
-    if (istoken(T_CONST)) {
+    if (istoken(T_CONST)) {// constant ;
         prs("\n mov ax, "); 
         prunsign1(lexval); 
         return 4; 
         }
-    mode=typeName(); /*0=V,1=*,2=&*/
+    mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
     ireg1=checkreg();
     if (ireg1) { 
         doreg1(0); 
@@ -1059,7 +1059,7 @@ e1:      if (istoken('+')) rterm("add");
     return 0;
 }
 
-int pexpr() {
+int pexpr() {//called from if, do, while
     expect('('); 
     iscmp=0;
     if (token==T_NAME) {
