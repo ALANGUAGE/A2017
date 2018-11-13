@@ -120,38 +120,38 @@ int DosInt() {
     DOS_ERR++;
 }
 int openR (char *s) {
-    dx=s;
-    ax=0x3D02;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov ax, 15618; ax=0x3D02;
     DosInt();
 }
 int creatR(char *s) {
-    dx=s;
-    cx=0;
-    ax=0x3C00;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov cx, 0
+    asm mov ax, 15360; ax=0x3C00;
     DosInt();
 }
 int fcloseR(int fd) {
-    bx=fd;
-    ax=0x3E00;
+    asm mov bx, [bp+4]; bx=fd;
+    asm mov ax, 15872; ax=0x3E00;
     DosInt();
 }
 int exitR  (char c) {
-    ah=0x4C;
-    al=c;
+    asm mov ah, 76; ah=0x4C;
+    asm mov al, [bp+4]; al=c;
     DosInt();
 }
 int readRL(char *s, int fd, int len){
-    dx=s;
-    cx=len;
-    bx=fd;
-    ax=0x3F00;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov cx, [bp+8]; cx=len;
+    asm mov bx, [bp+6]; bx=fd;
+    asm mov ax, 16128;  ax=0x3F00;
     DosInt();
 }
 int fputcR(char *n, int fd) {
-    __asm{lea dx, [bp+4]}; /* = *n */
-    cx=1;
-    bx=fd;
-    ax=0x4000;
+    asm lea dx, [bp+4]; *n  todo: why not mov ?????
+    asm mov cx, 1;      cx=1;
+    asm mov bx, [bp+6]; bx=fd;
+    asm mov ax, 16384;  ax=0x4000;
     DosInt();
 }
 
@@ -229,10 +229,10 @@ int eprs(char *s) {
 int prc(unsigned char c) {
     if (isPrint) {
         if (c==10) {
-            ax=13;
+            asm mov ax, 13
             writetty();
         }
-        al=c;
+        asm mov al, [bp+4]; al=c;
         writetty();
     }
     fputcR(c, fdout);
@@ -664,6 +664,9 @@ w:  iscmp=token;
 }
 
 int checkreg() { // >=17 = 16bit, >=47 = 32bit
+
+    return 0; // todo:  no reg allowed anymore
+
   if (strlen(symbol) <  2) return 0;
   if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
   if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
