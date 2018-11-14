@@ -18,6 +18,7 @@ char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognize
 #define T_CHAR        530
 #define T_SIGNED      531
 #define T_UNSIGNED    532
+#define T_LONG        533
 #define T_EQ          806
 #define T_NE          807
 #define T_GE          811
@@ -372,7 +373,7 @@ int next() {
 
 int adrF(char *s, unsigned int i) {
     i << 4;//*16; IDLENMAX=15!
-    asm add ax, [bp+4]  ; offset s 
+    asm add ax, [bp+4]  ; offset s
 }
 
 int printName(unsigned int i) {
@@ -502,6 +503,7 @@ g1: c=next();
     if (eqstr(symbol,"unsigned")) return T_UNSIGNED;
     if (eqstr(symbol,"void"    )) return T_VOID;
     if (eqstr(symbol,"int"     )) return T_INT;
+    if (eqstr(symbol,"long"    )) return T_LONG;
     if (eqstr(symbol,"char"    )) return T_CHAR;
     if (eqstr(symbol,"asm"     )) return T_ASM;
     if (eqstr(symbol,"__emit__")) return T_EMIT;
@@ -595,6 +597,7 @@ int typeName() {
     if(istoken(T_VOID))     iswidth=0;
     if(istoken(T_CHAR))     iswidth=1;
     if(istoken(T_INT))      iswidth=2;
+    if(istoken(T_LONG))     iswidth=4;
     istype='V';
     m=0;
     if(istoken('*'))  {istype='*'; m=1;}
@@ -1227,6 +1230,7 @@ int isvariable() {
     if(token==T_UNSIGNED) goto v1;
     if(token==T_CHAR)     goto v1;
     if(token==T_INT)      goto v1;
+    if(token==T_LONG)     goto v1;
     return 0;
 v1: return 1;
 }
