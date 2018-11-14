@@ -83,9 +83,7 @@ unsigned char *p1=0;
 int DOS_ERR=0;
 int DOS_NoBytes=0;
 char DOS_ByteRead=0;
-int ireg1;
-int mod2;
-int ireg2;
+
 
 int writetty()     {//ah=0x0E; bx=0; __emit__(0xCD,0x10);
 asm mov ah, 14
@@ -661,93 +659,6 @@ w:  iscmp=token;
     return 1;
 }
 
-int checkreg() { // >=17 = 16bit, >=47 = 32bit
-
-    return 0; // todo:  no reg allowed anymore
-
-  if (strlen(symbol) <  2) return 0;
-  if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
-  if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
-  if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
-  if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
-  if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
-  if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
-  if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
-  if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
-  if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
-  if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
-  if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
-  // (eqstr(symbol,"ip")) return 45;
-  if (strlen(symbol) >   3) return 0;
-  if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
-  if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
-  if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
-  if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
-//  if (eqstr(symbol,"cr0")) return 71;
-  return 0;
-}
-
-char printregstr[]
-="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi";
-
-int printreg(int i) {
-    unsigned int k; unsigned char c;
-    k = &printregstr + i;
-    c=*k;
-    prc(c);
-    i++;
-    k = &printregstr + i;
-    c=*k;
-    prc(c);
-    if (i > 47) {
-        i++;
-        k = &printregstr + i;
-        c=*k;
-        prc(c);
-        }
-}
-
-char ops[5];
-int doreg1(int iscmp1) {
-    int i;
-    if (istoken('='))          strcpy(ops, "mov");
-    if (istoken(T_PLUSASS))    strcpy(ops, "add");
-    if (istoken(T_MINUSASS))   strcpy(ops, "sub");
-    if (istoken(T_ANDASS))     strcpy(ops, "and");
-    if (istoken(T_ORASS))      strcpy(ops, "or" );
-    if (istoken(T_LESSLESS))   strcpy(ops, "shl");
-    if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
-    if (iscmp1 == 1) {
-            token=getlex();
-            if (isrelational() ==0) error1("Relational expected");
-            strcpy(ops, "cmp");
-        }
-    prs("\n ");
-    prs(ops);
-    prs("  ");
-    printreg(ireg1);
-    prs(", ");
-
-    if (istoken(T_CONST)) {
-        prunsign1(lexval);
-        goto reg1;
-        }
-    mod2=typeName();
-    ireg2=checkreg();
-    if (ireg2) {
-        printreg(ireg2);
-        goto reg1;
-        }
-    i=searchname();
-    if (mod2 == 2) printName(i);
-        else v(i);
-reg1: if (iscmp1 == 1) {
-    cmpneg(0);
-    prs(fname);
-    expect(')');
-    }
-}
-
 int compoundass(char *op, int mode, int id1) {
     if(mode) error1("only scalar variable allowed");
     prs("\n ");
@@ -954,15 +865,15 @@ int docall1() {
                 n0=searchname();
                 }
             if(istoken(T_NAME))  {
-                n0=checkreg();
-                if (n0) t0=5;
-                else {
+
+
+
                     t0=4;
                     n0=searchname();
                     p1=&GType;
                     p1=p1+n0;
                     if (*p1=='&') t0=3;
-                    }
+
                 }
             if (t0==0) error1("parameter not recognized (no * allowed)");
             docalltype [narg] = t0;
@@ -1001,11 +912,6 @@ int docall1() {
                 prs("\n mov ah, 0\n push ax");
                 }
             }
-        if(t0==5){
-            prs("\n push ");
-            printreg(n0);
-            if (n0 >= 47) sz32+2;
-            }
         i--;
         } while (i > 0);
     }
@@ -1032,11 +938,6 @@ int expr() {
         return 4;
         }
     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
-    ireg1=checkreg();
-    if (ireg1) {
-        doreg1(0);
-        return;
-        }
     if (token=='(')  {
         docall1();
         goto e1;
@@ -1109,13 +1010,7 @@ e1:      if (istoken('+')) rterm("add");
 int pexpr() {//called from if, do, while
     expect('(');
     iscmp=0;
-    if (token==T_NAME) {
-        ireg1=checkreg();
-        if (ireg1) {
-            doreg1(1);
-            return;
-            }
-        }
+
     expr();
     if (iscmp==0) prs("\n or  al, al\n je .");
     prs(fname);
