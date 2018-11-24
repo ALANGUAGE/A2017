@@ -1,4 +1,5 @@
-char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognize
+char Version1[]="PLA comp. A.COM V0.9.5";// 13511 bytes
+#define SYMBOLMAX      31//max lemgth of symbols
 #define IDLENMAX       15//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -794,7 +795,7 @@ int domul(int ids) {
             prunsign1(lexval);
             prs("\n mul bx");
             }
-        else error1("with MUL only const number as multiplicator allowed");
+        else error1("with MUL only const number as multipl. allowed");
         }
 }
 
@@ -827,7 +828,7 @@ int domod(int ids) {
 
 
 int docalltype[10]; int docallvalue[10];
-char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
+char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
 
 int docall1() {
     int i; int narg; int t0; int n0;  int sz32;
@@ -1376,17 +1377,20 @@ int main() {
     thechar=fgets1();
     parse();
     isPrint=1;
-    prs("\n;Glob. variables:"); GTop--; prunsign1(GTop);
-    prs(" ("); prunsign1(LSTART);
-    prs("), Functions:"); prunsign1(FTop);
-    prs(" ("); prunsign1(FUNCMAX);
-    prs("), Lines:"); prunsign1(lineno);
-    prs("\n;Constant: ");   prunsign1(maxco);
-    prs(" ("); prunsign1(COMAX);
-    i=COMAX; i=i-maxco;
+    GTop--;
+    prs("\n;Glob. variables:");     prunsign1(GTop);
+    prs(" (");                      prunsign1(LSTART);
+    prs("), Functions:");           prunsign1(FTop);
+    prs(" (");                      prunsign1(FUNCMAX);
+    prs("), Lines:");               prunsign1(lineno);
+    prs("\n;Constant: ");           prunsign1(maxco);
+    prs(" (");                      prunsign1(COMAX);
+    i=COMAX;
+    i=i-maxco;
     if (i <= 1000)prs("\n *** Warning *** constant area too small");
     prs("), stacksize: ");
-    i=65636; i=i-orgData;
+    i=65536;
+    i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
     end1(0);
