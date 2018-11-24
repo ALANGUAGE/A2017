@@ -1,12 +1,12 @@
 ;PLA comp. A.COM V0.9.5, Input: A.C, Output: A.S
 org  256 
 jmp main
-;-1 char Version1[]="PLA comp. A.COM V0.9.5";// 13511 bytes
+;-1 char Version1[]="PLA comp. A.COM V0.9.5";// 13503 bytes
 
 Version1 db "PLA comp. A.COM V0.9.5",0
-;-2 #define SYMBOLMAX      31//max lemgth of symbols
+;-2 //#define SYMBOLMAX      31//max lemgth of symbols
 
-;-3 #define IDLENMAX       15//max length of names
+;-3 #define IDLENMAX       31//max length of names
 
 ;-4 #define COLUMNMAX     128//output, input is 100
 
@@ -173,57 +173,57 @@ iswidth db 0
 ;-64 int wi=0;
 
 wi dw 0
-;-65 #define VARMAX        400//max global and local var
+;-65 #define VARMAX        500//max global and local var
 
-;-66 #define LSTART        300//max global var
+;-66 #define LSTART        400//max global var
 
-;-67 #define GNAMEMAX     6400// 16*VARMAX
+;-67 #define GNAMEMAX    16000// 32*VARMAX
 
 ;-68 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 
 section .bss
 absolute 28329
-GType resb 400
+GType resb 500
 section .text
 ;-69 char GSign [VARMAX]; // 0=U, 1=S
 
 section .bss
-absolute 28729
-GSign resb 400
+absolute 28829
+GSign resb 500
 section .text
 ;-70 char GWidth[VARMAX]; // 0, 1, 2, 4
 
 section .bss
-absolute 29129
-GWidth resb 400
+absolute 29329
+GWidth resb 500
 section .text
 ;-71 int GData [VARMAX];
 
 section .bss
-absolute 29529
-GData resw 400
+absolute 29829
+GData resw 500
 section .text
 ;-72 char GNameField[GNAMEMAX];
 
 section .bss
-absolute 30329
-GNameField resb 6400
+absolute 30829
+GNameField resb 16000
 section .text
 ;-73 int GTop=1;
 
 GTop dw 1
 ;-74 int LTop=LSTART;
 
-LTop dw 300
-;-75 #define FUNCMAX       300//max functions
+LTop dw 400
+;-75 #define FUNCMAX       400//max functions
 
-;-76 #define FNAMEMAX     4800// 16*FUNCMAX
+;-76 #define FNAMEMAX    12800// 32*FUNCMAX
 
 ;-77 char FNameField[FNAMEMAX];
 
 section .bss
-absolute 36729
-FNameField resb 4800
+absolute 46829
+FNameField resb 12800
 section .text
 ;-78 int  FTop=0;
 
@@ -231,7 +231,7 @@ FTop dw 0
 ;-79 char fgetsdest[COLUMNMAX];
 
 section .bss
-absolute 41529
+absolute 59629
 fgetsdest resb 128
 section .text
 ;-80 unsigned char *fgetsp=0;
@@ -1651,11 +1651,11 @@ next: PROC
 ENDP
 
 adrF: PROC
-;-374     i << 4;//*16; IDLENMAX=15!
+;-374     i << 5;//ax=i*32; IDLENMAX=31!
 ;
  ENTER  0,0
  mov ax, [bp+6]
- shl ax, 4
+ shl ax, 5
 ;-375     asm add ax, [bp+4]  ; offset s
 
  add ax, [bp+4]  ; offset s
@@ -1676,7 +1676,7 @@ printName: PROC
 ;
  ENTER  2,0
  mov ax, [bp+4]
- cmp ax, 300
+ cmp ax, 400
  jge .printName59
 ;-381         i=adrF(GNameField, i);
 
@@ -1786,7 +1786,7 @@ ifEOL: PROC
  ret
 ENDP
 section .bss
-absolute 41657
+absolute 59757
 symboltemp resb 80
 section .text
 ;-403 
@@ -2777,7 +2777,7 @@ v: PROC
 ;
  ENTER  0,0
  mov ax, [bp+4]
- cmp ax, 300
+ cmp ax, 400
  jge .v147
  push 91
  call prc
@@ -2791,7 +2791,7 @@ v: PROC
 ;-553     if (i < LSTART) prc(']');
 
  mov ax, [bp+4]
- cmp ax, 300
+ cmp ax, 400
  jge .v148
  push 93
  call prc
@@ -2816,10 +2816,10 @@ checknamelen: PROC
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-558     if (i > IDLENMAX) error1("Item name is too long in characters)");
+;-558     if (i > IDLENMAX) error1("Item name is too long)");
 
  mov ax, [bp-2]
- cmp ax, 15
+ cmp ax, 31
  jle .checknamelen149
  push checknamelen_0
  call error1
@@ -2833,7 +2833,7 @@ checknamelen: PROC
 
  LEAVE
  ret
-checknamelen_0 db "Item name is too long in characters)",0
+checknamelen_0 db "Item name is too long)",0
 ENDP
 
 checkName: PROC
@@ -2842,7 +2842,7 @@ checkName: PROC
 ;-563     i=LSTART;
 ;
  ENTER  4,0
- mov ax, 300
+ mov ax, 400
  mov [bp-2], ax
 ;-564     while(i<LTop) {
 
@@ -3218,7 +3218,7 @@ addlocal: PROC
 ;-626     if(LTop >= VARMAX) error1("Local variable table full");
 
  mov ax, [LTop]
- cmp ax, 400 ;unsigned : 1
+ cmp ax, 500 ;unsigned : 1
  jl  .addlocal173
  push addlocal_0
  call error1
@@ -4085,7 +4085,7 @@ doassign: PROC
 ;-769         if(i<LSTART) prs("byte ");
 
  mov ax, [bp+6]
- cmp ax, 300
+ cmp ax, 400
  jge .doassign229
  push doassign_11
  call prs
@@ -4120,7 +4120,7 @@ doassign: PROC
 ;-776         if(i<LSTART) prs("word ");
 
  mov ax, [bp+6]
- cmp ax, 300
+ cmp ax, 400
  jge .doassign231
  push doassign_14
  call prs
@@ -4155,7 +4155,7 @@ doassign: PROC
 ;-783         if(i<LSTART) prs("dword ");
 
  mov ax, [bp+6]
- cmp ax, 300
+ cmp ax, 400
  jge .doassign233
  push doassign_17
  call prs
@@ -4426,17 +4426,17 @@ domod: PROC
 domod_0 db "\n mov ax, dx",0
 ENDP
 section .bss
-absolute 41737
+absolute 59837
 docalltype resw 10
 section .text
 section .bss
-absolute 41757
+absolute 59857
 docallvalue resw 10
 section .text
 ;-831 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
 
 section .bss
-absolute 41777
+absolute 59877
 procname resb 17
 section .text
 ;-832 
@@ -6092,7 +6092,7 @@ dofunc: PROC
  jmp .dofunc339
 .dofunc340:
  mov ax, [FTop]
- cmp ax, 300 ;unsigned : 1
+ cmp ax, 400 ;unsigned : 1
  jl  .dofunc342
  push dofunc_1
  call error1
@@ -6139,7 +6139,7 @@ dofunc: PROC
  add  sp, 2
 ;-1153     LTop=LSTART;
 
- mov ax, 300
+ mov ax, 400
  mov word [LTop], ax
 ;-1154     if (istoken(')')==0) {
 
@@ -6319,7 +6319,7 @@ dofunc: PROC
  jmp .dofunc347
 .dofunc348:
  mov ax, [LTop]
- cmp ax, 300
+ cmp ax, 400
  jle .dofunc353
 ;-1194         prs(";\n ENTER  ");
 
@@ -6387,7 +6387,7 @@ dofunc: PROC
 
 .dofunc356:
  mov ax, [LTop]
- cmp ax, 300
+ cmp ax, 400
  jle .dofunc357
  push dofunc_7
  call prs
@@ -6449,8 +6449,8 @@ dofunc_8 db "\n ret",0
 dofunc_9 db "\nENDP",0
 ENDP
 section .bss
-absolute 41794
-doglobName resb 15
+absolute 59894
+doglobName resb 31
 section .text
 ;-1217 int doglob() {
 
@@ -6466,7 +6466,7 @@ doglob: PROC
 ;-1220     if (GTop >= LSTART) error1("Global table full");
 
  mov ax, [GTop]
- cmp ax, 300 ;unsigned : 1
+ cmp ax, 400 ;unsigned : 1
  jl  .doglob359
  push doglob_0
  call error1
@@ -6988,7 +6988,7 @@ dodefine: PROC
 ;-1305         if (GTop >= LSTART) error1("global table (define) full");
 
  mov ax, [GTop]
- cmp ax, 300 ;unsigned : 1
+ cmp ax, 400 ;unsigned : 1
  jl  .dodefine392
  push dodefine_1
  call error1
@@ -7001,10 +7001,10 @@ dodefine: PROC
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-1307         if (i>15) error1("Define name longer 15 char");
+;-1307         if (i>IDLENMAX) error1("Define name too long");
 
  mov ax, [bp-2]
- cmp ax, 15
+ cmp ax, 31
  jle .dodefine393
  push dodefine_2
  call error1
@@ -7068,7 +7068,7 @@ dodefine: PROC
  ret
 dodefine_0 db "ORGDATA",0
 dodefine_1 db "global table (define) full",0
-dodefine_2 db "Define name longer 15 char",0
+dodefine_2 db "Define name too long",0
 ENDP
 
 parse: PROC
@@ -7402,7 +7402,7 @@ main: PROC
  push main_9
  call prs
  add  sp, 2
- push 300
+ push 400
  call prunsign1
  add  sp, 2
 ;-1383     prs("), Functions:");           prunsign1(FTop);
@@ -7418,7 +7418,7 @@ main: PROC
  push main_11
  call prs
  add  sp, 2
- push 300
+ push 400
  call prunsign1
  add  sp, 2
 ;-1385     prs("), Lines:");               prunsign1(lineno);
@@ -7519,5 +7519,5 @@ main_15 db "\n *** Warning *** constant area too small",0
 main_16 db "), stacksize: ",0
 main_17 db "\n *** Warning *** Stack too small",0
 ENDP
-;Glob. variables:95 (300), Functions:68 (300), Lines:1398
-;Constant: 570 (3000), stacksize: 23727
+;Glob. variables:94 (400), Functions:68 (400), Lines:1398
+;Constant: 570 (3000), stacksize: 5611

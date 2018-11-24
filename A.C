@@ -1,6 +1,6 @@
-char Version1[]="PLA comp. A.COM V0.9.5";// 13511 bytes
-#define SYMBOLMAX      31//max lemgth of symbols
-#define IDLENMAX       15//max length of names
+char Version1[]="PLA comp. A.COM V0.9.5";// 13483 bytes
+//#define SYMBOLMAX      31//max lemgth of symbols
+#define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
 #define T_CONST       257
@@ -62,9 +62,9 @@ int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
-#define VARMAX        400//max global and local var
-#define LSTART        300//max global var
-#define GNAMEMAX     6400// 16*VARMAX
+#define VARMAX        500//max global and local var
+#define LSTART        400//max global var
+#define GNAMEMAX    16000// 32*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
@@ -72,8 +72,8 @@ int GData [VARMAX];
 char GNameField[GNAMEMAX];
 int GTop=1;
 int LTop=LSTART;
-#define FUNCMAX       300//max functions
-#define FNAMEMAX     4800// 16*FUNCMAX
+#define FUNCMAX       400//max functions
+#define FNAMEMAX    12800// 32*FUNCMAX
 char FNameField[FNAMEMAX];
 int  FTop=0;
 char fgetsdest[COLUMNMAX];
@@ -371,7 +371,7 @@ int next() {
 }
 
 int adrF(char *s, unsigned int i) {
-    i << 4;//*16; IDLENMAX=15!
+    i << 5;//ax=i*32; IDLENMAX=31!
     asm add ax, [bp+4]  ; offset s
 }
 
@@ -555,7 +555,7 @@ int v(unsigned int i) {//value
 int checknamelen() {
     int i;
     i=strlen(symbol);
-    if (i > IDLENMAX) error1("Item name is too long in characters)");
+    if (i > IDLENMAX) error1("Item name is too long)");
 }
 
 int checkName() {
@@ -1304,7 +1304,7 @@ int dodefine() {
     if (token==T_CONST) {
         if (GTop >= LSTART) error1("global table (define) full");
         i=strlen(symbol);
-        if (i>15) error1("Define name longer 15 char");
+        if (i>IDLENMAX) error1("Define name too long");
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
