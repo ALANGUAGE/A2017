@@ -1,5 +1,6 @@
-char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognized
-#define IDLENMAX       15//max length of names
+char Version1[]="PLA comp. A.COM V0.9.5";// 13483 bytes
+//#define SYMBOLMAX      31//max lemgth of symbols
+#define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
 #define T_CONST       257
@@ -12,7 +13,6 @@ char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognized
 #define T_DO          516
 #define T_INT         517
 #define T_ASM         518
-#define T_ASMBLOCK    519
 #define T_EMIT        520
 #define T_GOTO        521
 #define T_VOID        529
@@ -62,9 +62,9 @@ int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
-#define VARMAX        400//max global and local var
-#define LSTART        300//max global var
-#define GNAMEMAX     6400// 16*VARMAX
+#define VARMAX        500//max global and local var
+#define LSTART        400//max global var
+#define GNAMEMAX    16000// 32*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
@@ -72,8 +72,8 @@ int GData [VARMAX];
 char GNameField[GNAMEMAX];
 int GTop=1;
 int LTop=LSTART;
-#define FUNCMAX       300//max functions
-#define FNAMEMAX     4800// 16*FUNCMAX
+#define FUNCMAX       400//max functions
+#define FNAMEMAX    12800// 32*FUNCMAX
 char FNameField[FNAMEMAX];
 int  FTop=0;
 char fgetsdest[COLUMNMAX];
@@ -84,9 +84,7 @@ unsigned char *p1=0;
 int DOS_ERR=0;
 int DOS_NoBytes=0;
 char DOS_ByteRead=0;
-int ireg1;
-int mod2;
-int ireg2;
+
 
 int writetty()     {//ah=0x0E; bx=0; __emit__(0xCD,0x10);
 asm mov ah, 14
@@ -120,38 +118,38 @@ int DosInt() {
     DOS_ERR++;
 }
 int openR (char *s) {
-    dx=s;
-    ax=0x3D02;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov ax, 15618; ax=0x3D02;
     DosInt();
 }
 int creatR(char *s) {
-    dx=s;
-    cx=0;
-    ax=0x3C00;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov cx, 0
+    asm mov ax, 15360; ax=0x3C00;
     DosInt();
 }
 int fcloseR(int fd) {
-    bx=fd;
-    ax=0x3E00;
+    asm mov bx, [bp+4]; bx=fd;
+    asm mov ax, 15872; ax=0x3E00;
     DosInt();
 }
 int exitR  (char c) {
-    ah=0x4C;
-    al=c;
+    asm mov ah, 76; ah=0x4C;
+    asm mov al, [bp+4]; al=c;
     DosInt();
 }
 int readRL(char *s, int fd, int len){
-    dx=s;
-    cx=len;
-    bx=fd;
-    ax=0x3F00;
+    asm mov dx, [bp+4]; dx=s;
+    asm mov cx, [bp+8]; cx=len;
+    asm mov bx, [bp+6]; bx=fd;
+    asm mov ax, 16128;  ax=0x3F00;
     DosInt();
 }
 int fputcR(char *n, int fd) {
-    __asm{lea dx, [bp+4]}; /* = *n */
-    cx=1;
-    bx=fd;
-    ax=0x4000;
+    asm lea dx, [bp+4]; *n  todo: why not mov ?????
+    asm mov cx, 1;      cx=1;
+    asm mov bx, [bp+6]; bx=fd;
+    asm mov ax, 16384;  ax=0x4000;
     DosInt();
 }
 
@@ -229,10 +227,10 @@ int eprs(char *s) {
 int prc(unsigned char c) {
     if (isPrint) {
         if (c==10) {
-            ax=13;
+            asm mov ax, 13
             writetty();
         }
-        al=c;
+        asm mov al, [bp+4]; al=c;
         writetty();
     }
     fputcR(c, fdout);
@@ -373,8 +371,8 @@ int next() {
 }
 
 int adrF(char *s, unsigned int i) {
-    i << 4;//*16; IDLENMAX=15!
-    __asm{ add ax, [bp+4]  ; offset s }
+    i << 5;//ax=i*32; IDLENMAX=31!
+    asm add ax, [bp+4]  ; offset s
 }
 
 int printName(unsigned int i) {
@@ -507,7 +505,6 @@ g1: c=next();
     if (eqstr(symbol,"long"    )) return T_LONG;
     if (eqstr(symbol,"char"    )) return T_CHAR;
     if (eqstr(symbol,"asm"     )) return T_ASM;
-    if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
     if (eqstr(symbol,"__emit__")) return T_EMIT;
     if (eqstr(symbol,"return"  )) return T_RETURN;
     if (eqstr(symbol,"if"      )) return T_IF;
@@ -558,7 +555,7 @@ int v(unsigned int i) {//value
 int checknamelen() {
     int i;
     i=strlen(symbol);
-    if (i > IDLENMAX) error1("Item name is too long in characters)");
+    if (i > IDLENMAX) error1("Item name is too long)");
 }
 
 int checkName() {
@@ -661,90 +658,6 @@ int isrelational() {
 w:  iscmp=token;
     token=getlex();
     return 1;
-}
-
-int checkreg() { // >=17 = 16bit, >=47 = 32bit
-  if (strlen(symbol) <  2) return 0;
-  if (eqstr(symbol,"al")) return 1;   if (eqstr(symbol,"cl")) return 3;
-  if (eqstr(symbol,"dl")) return 5;   if (eqstr(symbol,"bl")) return 7;
-  if (eqstr(symbol,"ah")) return 9;   if (eqstr(symbol,"ch")) return 11;
-  if (eqstr(symbol,"dh")) return 13;  if (eqstr(symbol,"bh")) return 15;
-  if (eqstr(symbol,"ax")) return 17;  if (eqstr(symbol,"cx")) return 19;
-  if (eqstr(symbol,"dx")) return 21;  if (eqstr(symbol,"bx")) return 23;
-  if (eqstr(symbol,"sp")) return 25;  if (eqstr(symbol,"bp")) return 27;
-  if (eqstr(symbol,"si")) return 29;  if (eqstr(symbol,"di")) return 31;
-  if (eqstr(symbol,"es")) return 33;  if (eqstr(symbol,"cs")) return 35;
-  if (eqstr(symbol,"ss")) return 37;  if (eqstr(symbol,"ds")) return 39;
-  if (eqstr(symbol,"fs")) return 41;  if (eqstr(symbol,"gs")) return 43;
-  // (eqstr(symbol,"ip")) return 45;
-  if (strlen(symbol) >   3) return 0;
-  if (eqstr(symbol,"eax")) return 47; if (eqstr(symbol,"ecx")) return 50;
-  if (eqstr(symbol,"edx")) return 53; if (eqstr(symbol,"ebx")) return 56;
-  if (eqstr(symbol,"esp")) return 59; if (eqstr(symbol,"ebp")) return 62;
-  if (eqstr(symbol,"esi")) return 65; if (eqstr(symbol,"edi")) return 68;
-//  if (eqstr(symbol,"cr0")) return 71;
-  return 0;
-}
-
-char printregstr[]
-="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi";
-
-int printreg(int i) {
-    unsigned int k; unsigned char c;
-    k = &printregstr + i;
-    c=*k;
-    prc(c);
-    i++;
-    k = &printregstr + i;
-    c=*k;
-    prc(c);
-    if (i > 47) {
-        i++;
-        k = &printregstr + i;
-        c=*k;
-        prc(c);
-        }
-}
-
-char ops[5];
-int doreg1(int iscmp1) {
-    int i;
-    if (istoken('='))          strcpy(ops, "mov");
-    if (istoken(T_PLUSASS))    strcpy(ops, "add");
-    if (istoken(T_MINUSASS))   strcpy(ops, "sub");
-    if (istoken(T_ANDASS))     strcpy(ops, "and");
-    if (istoken(T_ORASS))      strcpy(ops, "or" );
-    if (istoken(T_LESSLESS))   strcpy(ops, "shl");
-    if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
-    if (iscmp1 == 1) {
-            token=getlex();
-            if (isrelational() ==0) error1("Relational expected");
-            strcpy(ops, "cmp");
-        }
-    prs("\n ");
-    prs(ops);
-    prs("  ");
-    printreg(ireg1);
-    prs(", ");
-
-    if (istoken(T_CONST)) {
-        prunsign1(lexval);
-        goto reg1;
-        }
-    mod2=typeName();
-    ireg2=checkreg();
-    if (ireg2) {
-        printreg(ireg2);
-        goto reg1;
-        }
-    i=searchname();
-    if (mod2 == 2) printName(i);
-        else v(i);
-reg1: if (iscmp1 == 1) {
-    cmpneg(0);
-    prs(fname);
-    expect(')');
-    }
 }
 
 int compoundass(char *op, int mode, int id1) {
@@ -882,7 +795,7 @@ int domul(int ids) {
             prunsign1(lexval);
             prs("\n mul bx");
             }
-        else error1("with MUL only const number as multiplicator allowed");
+        else error1("with MUL only const number as multipl. allowed");
         }
 }
 
@@ -915,7 +828,7 @@ int domod(int ids) {
 
 
 int docalltype[10]; int docallvalue[10];
-char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
+char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
 
 int docall1() {
     int i; int narg; int t0; int n0;  int sz32;
@@ -953,15 +866,15 @@ int docall1() {
                 n0=searchname();
                 }
             if(istoken(T_NAME))  {
-                n0=checkreg();
-                if (n0) t0=5;
-                else {
+
+
+
                     t0=4;
                     n0=searchname();
                     p1=&GType;
                     p1=p1+n0;
                     if (*p1=='&') t0=3;
-                    }
+
                 }
             if (t0==0) error1("parameter not recognized (no * allowed)");
             docalltype [narg] = t0;
@@ -1000,11 +913,6 @@ int docall1() {
                 prs("\n mov ah, 0\n push ax");
                 }
             }
-        if(t0==5){
-            prs("\n push ");
-            printreg(n0);
-            if (n0 >= 47) sz32+2;
-            }
         i--;
         } while (i > 0);
     }
@@ -1031,11 +939,6 @@ int expr() {
         return 4;
         }
     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
-    ireg1=checkreg();
-    if (ireg1) {
-        doreg1(0);
-        return;
-        }
     if (token=='(')  {
         docall1();
         goto e1;
@@ -1108,13 +1011,7 @@ e1:      if (istoken('+')) rterm("add");
 int pexpr() {//called from if, do, while
     expect('(');
     iscmp=0;
-    if (token==T_NAME) {
-        ireg1=checkreg();
-        if (ireg1) {
-            doreg1(1);
-            return;
-            }
-        }
+
     expr();
     if (iscmp==0) prs("\n or  al, al\n je .");
     prs(fname);
@@ -1195,16 +1092,6 @@ int stmt() {
         c=next();
         };
         token=getlex();
-    }
-    else if(istoken(T_ASMBLOCK)) {
-        if (token== '{' )  {
-            prs("\n"); cha=next();
-            while(cha!= '}') {
-                prc(cha);
-                cha=next();
-            }
-            token=getlex();
-        } else error1("Curly open expected");
     }
     else if(istoken(T_EMIT)) {
       prs("\n db ");
@@ -1417,7 +1304,7 @@ int dodefine() {
     if (token==T_CONST) {
         if (GTop >= LSTART) error1("global table (define) full");
         i=strlen(symbol);
-        if (i>15) error1("Define name longer 15 char");
+        if (i>IDLENMAX) error1("Define name too long");
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
@@ -1490,17 +1377,20 @@ int main() {
     thechar=fgets1();
     parse();
     isPrint=1;
-    prs("\n;Glob. variables:"); GTop--; prunsign1(GTop);
-    prs(" ("); prunsign1(LSTART);
-    prs("), Functions:"); prunsign1(FTop);
-    prs(" ("); prunsign1(FUNCMAX);
-    prs("), Lines:"); prunsign1(lineno);
-    prs("\n;Constant: ");   prunsign1(maxco);
-    prs(" ("); prunsign1(COMAX);
-    i=COMAX; i=i-maxco;
+    GTop--;
+    prs("\n;Glob. variables:");     prunsign1(GTop);
+    prs(" (");                      prunsign1(LSTART);
+    prs("), Functions:");           prunsign1(FTop);
+    prs(" (");                      prunsign1(FUNCMAX);
+    prs("), Lines:");               prunsign1(lineno);
+    prs("\n;Constant: ");           prunsign1(maxco);
+    prs(" (");                      prunsign1(COMAX);
+    i=COMAX;
+    i=i-maxco;
     if (i <= 1000)prs("\n *** Warning *** constant area too small");
     prs("), stacksize: ");
-    i=65636; i=i-orgData;
+    i=65536;
+    i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
     end1(0);
