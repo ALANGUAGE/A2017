@@ -1,10 +1,10 @@
-;PLA compiler A.COM V0.9.5, Input: A.C, Output: A.S
+;PLA compiler A.COM V0.9.6, Input: A.C, Output: A.S
 org  256 
 jmp main
-;-1 char Version1[]="PLA compiler A.COM V0.9.5";//todo: 2. op=reg not recognized
+;-1 char Version1[]="PLA compiler A.COM V0.9.6";//todo: 2. op=reg not recognized
 
-Version1 db "PLA compiler A.COM V0.9.5",0
-;-2 #define IDLENMAX       15//max length of names
+Version1 db "PLA compiler A.COM V0.9.6",0
+;-2 #define IDLENMAX       31//max length of names
 
 ;-3 #define COLUMNMAX     128//output, input is 100
 
@@ -177,7 +177,7 @@ wi dw 0
 
 ;-66 #define LSTART        300//max global var
 
-;-67 #define GNAMEMAX     6400// 16*VARMAX
+;-67 #define GNAMEMAX    12800// 32*VARMAX
 
 ;-68 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 
@@ -207,7 +207,7 @@ section .text
 
 section .bss
 absolute 30329
-GNameField resb 6400
+GNameField resb 12800
 section .text
 ;-73 int GTop=1;
 
@@ -217,13 +217,13 @@ GTop dw 1
 LTop dw 300
 ;-75 #define FUNCMAX       300//max functions
 
-;-76 #define FNAMEMAX     4800// 16*FUNCMAX
+;-76 #define FNAMEMAX     9600// 32*FUNCMAX
 
 ;-77 char FNameField[FNAMEMAX];
 
 section .bss
-absolute 36729
-FNameField resb 4800
+absolute 43129
+FNameField resb 9600
 section .text
 ;-78 int  FTop=0;
 
@@ -231,7 +231,7 @@ FTop dw 0
 ;-79 char fgetsdest[COLUMNMAX];
 
 section .bss
-absolute 41529
+absolute 52729
 fgetsdest resb 128
 section .text
 ;-80 unsigned char *fgetsp=0;
@@ -1658,11 +1658,11 @@ next: PROC
 ENDP
 
 adrF: PROC
-;-376     i << 4;//*16; IDLENMAX=15!
+;-376     i << 5;//ax=i*32; IDLENMAX=31!
 ;
  ENTER  0,0
  mov ax, [bp+6]
- shl ax, 4
+ shl ax, 5
 ;-377     __asm{ add ax, [bp+4]  ; offset s }
 
  add ax, [bp+4]  ; offset s 
@@ -1793,7 +1793,7 @@ ifEOL: PROC
  ret
 ENDP
 section .bss
-absolute 41657
+absolute 52857
 symboltemp resb 80
 section .text
 ;-405 
@@ -2836,10 +2836,10 @@ checknamelen: PROC
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-561     if (i > IDLENMAX) error1("Item name is too long in characters)");
+;-561     if (i > IDLENMAX) error1("Item name is too long)");
 
  mov ax, [bp-2]
- cmp ax, 15
+ cmp ax, 31
  jle .checknamelen150
  push checknamelen_0
  call error1
@@ -2853,7 +2853,7 @@ checknamelen: PROC
 
  LEAVE
  ret
-checknamelen_0 db "Item name is too long in characters)",0
+checknamelen_0 db "Item name is too long)",0
 ENDP
 
 checkName: PROC
@@ -3985,7 +3985,7 @@ printreg: PROC
  ret
 ENDP
 section .bss
-absolute 41737
+absolute 52937
 ops resb 5
 section .text
 ;-710 int doreg1(int iscmp1) {
@@ -5199,17 +5199,17 @@ domod: PROC
 domod_0 db "\n mov ax, dx",0
 ENDP
 section .bss
-absolute 41742
+absolute 52942
 docalltype resw 10
 section .text
 section .bss
-absolute 41762
+absolute 52962
 docallvalue resw 10
 section .text
 ;-918 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name 5=register
 
 section .bss
-absolute 41782
+absolute 52982
 procname resb 17
 section .text
 ;-919 
@@ -7365,8 +7365,8 @@ dofunc_8 db "\n ret",0
 dofunc_9 db "\nENDP",0
 ENDP
 section .bss
-absolute 41799
-doglobName resb 15
+absolute 52999
+doglobName resb 31
 section .text
 ;-1330 int doglob() {
 
@@ -7917,10 +7917,10 @@ dodefine: PROC
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-1420         if (i>15) error1("Define name longer 15 char");
+;-1420         if (i>IDLENMAX) error1("Define name too long");
 
  mov ax, [bp-2]
- cmp ax, 15
+ cmp ax, 31
  jle .dodefine454
  push dodefine_2
  call error1
@@ -7984,7 +7984,7 @@ dodefine: PROC
  ret
 dodefine_0 db "ORGDATA",0
 dodefine_1 db "global table (define) full",0
-dodefine_2 db "Define name longer 15 char",0
+dodefine_2 db "Define name too long",0
 ENDP
 
 parse: PROC
@@ -8302,16 +8302,18 @@ main: PROC
 
  mov ax, 1
  mov byte [isPrint], al
-;-1493     prs("\n;Glob. variables:"); GTop--; prunsign1(GTop);
+;-1493     GTop--;
+
+ dec  word[GTop]
+;-1494     prs("\n;Glob. variables:");     prunsign1(GTop);
 
  push main_8
  call prs
  add  sp, 2
- dec  word[GTop]
  push word [GTop]
  call prunsign1
  add  sp, 2
-;-1494     prs(" ("); prunsign1(LSTART);
+;-1495     prs(" (");                      prunsign1(LSTART);
 
  push main_9
  call prs
@@ -8319,7 +8321,7 @@ main: PROC
  push 300
  call prunsign1
  add  sp, 2
-;-1495     prs("), Functions:"); prunsign1(FTop);
+;-1496     prs("), Functions:");           prunsign1(FTop);
 
  push main_10
  call prs
@@ -8327,7 +8329,7 @@ main: PROC
  push word [FTop]
  call prunsign1
  add  sp, 2
-;-1496     prs(" ("); prunsign1(FUNCMAX);
+;-1497     prs(" (");                      prunsign1(FUNCMAX);
 
  push main_11
  call prs
@@ -8335,7 +8337,7 @@ main: PROC
  push 300
  call prunsign1
  add  sp, 2
-;-1497     prs("), Lines:"); prunsign1(lineno);
+;-1498     prs("), Lines:");               prunsign1(lineno);
 
  push main_12
  call prs
@@ -8343,7 +8345,7 @@ main: PROC
  push word [lineno]
  call prunsign1
  add  sp, 2
-;-1498     prs("\n;Constant: ");   prunsign1(maxco);
+;-1499     prs("\n;Constant: ");           prunsign1(maxco);
 
  push main_13
  call prs
@@ -8351,7 +8353,7 @@ main: PROC
  push word [maxco]
  call prunsign1
  add  sp, 2
-;-1499     prs(" ("); prunsign1(COMAX);
+;-1500     prs(" (");                      prunsign1(COMAX);
 
  push main_14
  call prs
@@ -8359,14 +8361,16 @@ main: PROC
  push 3000
  call prunsign1
  add  sp, 2
-;-1500     i=COMAX; i=i-maxco;
+;-1501     i=COMAX;
 
  mov ax, 3000
  mov [bp-4], ax
+;-1502     i=i-maxco;
+
  mov ax, [bp-4]
  sub ax, [maxco]
  mov [bp-4], ax
-;-1501     if (i <= 1000)prs("\n *** Warning *** constant area too small");
+;-1503     if (i <= 1000)prs("\n ** Warning ** constant area too small");
 
  mov ax, [bp-4]
  cmp ax, 1000
@@ -8374,25 +8378,27 @@ main: PROC
  push main_15
  call prs
  add  sp, 2
-;-1502     prs("), stacksize: ");
+;-1504     prs("), stacksize: ");
 
 .main468:
  push main_16
  call prs
  add  sp, 2
-;-1503     i=65636; i=i-orgData;
+;-1505     i=65536; 
 
- mov ax, 100
+ mov ax, 0
  mov [bp-4], ax
+;-1506     i=i-orgData;
+
  mov ax, [bp-4]
  sub ax, [orgData]
  mov [bp-4], ax
-;-1504     prunsign1(i);
+;-1507     prunsign1(i);
 
  push word [bp-4]
  call prunsign1
  add  sp, 2
-;-1505     if (i <= 1000) prs("\n *** Warning *** Stack too small");
+;-1508     if (i <= 1000) prs("\n *** Warning *** Stack too small");
 
  mov ax, [bp-4]
  cmp ax, 1000
@@ -8400,13 +8406,13 @@ main: PROC
  push main_17
  call prs
  add  sp, 2
-;-1506     end1(0);
+;-1509     end1(0);
 
 .main469:
  push 0
  call end1
  add  sp, 2
-;-1507 }
+;-1510 }
 
  LEAVE
  ret
@@ -8425,9 +8431,9 @@ main_11 db " (",0
 main_12 db "), Lines:",0
 main_13 db "\n;Constant: ",0
 main_14 db " (",0
-main_15 db "\n *** Warning *** constant area too small",0
+main_15 db "\n ** Warning ** constant area too small",0
 main_16 db "), stacksize: ",0
 main_17 db "\n *** Warning *** Stack too small",0
 ENDP
-;Glob. variables:100 (300), Functions:71 (300), Lines:1508
-;Constant: 688 (3000), stacksize: 23822
+;Glob. variables:100 (300), Functions:71 (300), Lines:1511
+;Constant: 688 (3000), stacksize: 12606

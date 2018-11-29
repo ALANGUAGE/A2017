@@ -1,5 +1,5 @@
 char Version1[]="PLA compiler A.COM V0.9.6";//todo: 2. op=reg not recognized
-#define IDLENMAX       15//max length of names
+#define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
 #define T_CONST       257
@@ -64,7 +64,7 @@ int widthi;      char iswidth;
 int wi=0;
 #define VARMAX        400//max global and local var
 #define LSTART        300//max global var
-#define GNAMEMAX     6400// 16*VARMAX
+#define GNAMEMAX    12800// 32*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
@@ -73,7 +73,7 @@ char GNameField[GNAMEMAX];
 int GTop=1;
 int LTop=LSTART;
 #define FUNCMAX       300//max functions
-#define FNAMEMAX     4800// 16*FUNCMAX
+#define FNAMEMAX     9600// 32*FUNCMAX
 char FNameField[FNAMEMAX];
 int  FTop=0;
 char fgetsdest[COLUMNMAX];
@@ -373,7 +373,7 @@ int next() {
 }
 
 int adrF(char *s, unsigned int i) {
-    i << 4;//*16; IDLENMAX=15!
+    i << 5;//ax=i*32; IDLENMAX=31!
     __asm{ add ax, [bp+4]  ; offset s }
 }
 
@@ -558,7 +558,7 @@ int v(unsigned int i) {//value
 int checknamelen() {
     int i;
     i=strlen(symbol);
-    if (i > IDLENMAX) error1("Item name is too long in characters)");
+    if (i > IDLENMAX) error1("Item name is too long)");
 }
 
 int checkName() {
@@ -1417,7 +1417,7 @@ int dodefine() {
     if (token==T_CONST) {
         if (GTop >= LSTART) error1("global table (define) full");
         i=strlen(symbol);
-        if (i>15) error1("Define name longer 15 char");
+        if (i>IDLENMAX) error1("Define name too long");
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
@@ -1490,17 +1490,20 @@ int main() {
     thechar=fgets1();
     parse();
     isPrint=1;
-    prs("\n;Glob. variables:"); GTop--; prunsign1(GTop);
-    prs(" ("); prunsign1(LSTART);
-    prs("), Functions:"); prunsign1(FTop);
-    prs(" ("); prunsign1(FUNCMAX);
-    prs("), Lines:"); prunsign1(lineno);
-    prs("\n;Constant: ");   prunsign1(maxco);
-    prs(" ("); prunsign1(COMAX);
-    i=COMAX; i=i-maxco;
-    if (i <= 1000)prs("\n *** Warning *** constant area too small");
+    GTop--;
+    prs("\n;Glob. variables:");     prunsign1(GTop);
+    prs(" (");                      prunsign1(LSTART);
+    prs("), Functions:");           prunsign1(FTop);
+    prs(" (");                      prunsign1(FUNCMAX);
+    prs("), Lines:");               prunsign1(lineno);
+    prs("\n;Constant: ");           prunsign1(maxco);
+    prs(" (");                      prunsign1(COMAX);
+    i=COMAX;
+    i=i-maxco;
+    if (i <= 1000)prs("\n ** Warning ** constant area too small");
     prs("), stacksize: ");
-    i=65636; i=i-orgData;
+    i=65536; 
+    i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
     end1(0);
