@@ -20,6 +20,7 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo: 2. op=reg not recognized
 #define T_SIGNED      531
 #define T_UNSIGNED    532
 #define T_LONG        533
+#define T_INTH        600
 #define T_EQ          806
 #define T_NE          807
 #define T_GE          811
@@ -505,6 +506,7 @@ g1: c=next();
     if (eqstr(symbol,"void"    )) return T_VOID;
     if (eqstr(symbol,"int"     )) return T_INT;
     if (eqstr(symbol,"long"    )) return T_LONG;
+    if (eqstr(symbol,"inth"    )) return T_INTH;
     if (eqstr(symbol,"char"    )) return T_CHAR;
     if (eqstr(symbol,"asm"     )) return T_ASM;
     if (eqstr(symbol,"__asm"   )) return T_ASMBLOCK;
@@ -1206,6 +1208,12 @@ int stmt() {
             token=getlex();
         } else error1("Curly open expected");
     }
+    else if(istoken(T_INTH))  {
+        prs("\n int  ");
+        expect(T_CONST);
+        prunsign1(lexval);
+        expect(';');
+    }
     else if(istoken(T_EMIT)) {
       prs("\n db ");
     L1: token=getlex();
@@ -1502,7 +1510,7 @@ int main() {
     i=i-maxco;
     if (i <= 1000)prs("\n ** Warning ** constant area too small");
     prs("), stacksize: ");
-    i=65536; 
+    i=65536;
     i=i-orgData;
     prunsign1(i);
     if (i <= 1000) prs("\n *** Warning *** Stack too small");
