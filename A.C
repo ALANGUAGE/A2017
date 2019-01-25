@@ -89,17 +89,19 @@ int ireg1;
 int mod2;
 int ireg2;
 
-int writetty()     {//ah=0x0E; bx=0; __emit__(0xCD,0x10);
-asm mov ah, 14
-asm mov bx, 0
-asm int 16
+int writetty()     {//char in AL
+    ah=0x0E;
+    asm push bx
+    bx=0;     //page in BH
+    inth 0x10;
+    asm pop bx
 }
 int putch(char c)  {
-    if (c==10)  {
-        asm mov al, 13
+    if (c==10)  {// LF
+        al=13;   // CR, write CR first and then LF
         writetty();
     }
-    asm mov al, [bp+4]; parameter c
+    al=c;
     writetty();
 }
 int cputs(char *s) {
@@ -111,12 +113,12 @@ int cputs(char *s) {
     }
 }
 int mkneg(int n)   {
-    asm mov ax, [bp+4]; parameter n
+    n; // ax=n;
     asm neg ax
 }
 
 int DosInt() {
-    asm int 33; 21h
+    inth 0x21;
     __emit__(0x73, 04); //jnc over DOS_ERR++
     DOS_ERR++;
 }
@@ -1252,6 +1254,65 @@ int isvariable() {
 v1: return 1;
 }
 
+//***************************************************************
+int listvar(unsigned int i) {
+    unsigned int j;
+    char c;
+    prs("\n;");
+    prunsign1(i);
+    prc(32);
+    c=GType [i];
+    if(c=='V')prs("var ");
+    if(c=='*')prs("ptr ");
+    if(c=='&')prs("arr ");
+    if(c=='#')prs("def ");
+    c=GSign [i];
+    if(c=='S')prs("sign ");
+    if(c=='U')prs("unsg ");
+    c=GWidth[i];
+    if(c== 0)prs("NULL " );
+    if(c== 1)prs("byte " );
+    if(c== 2)prs("word " );
+    if(c== 4)prs("long " );
+    j=i*32;
+    pt=&GNameField + j;
+    prs(pt);
+    if(GType[i]=='#') {
+        prc('=');
+        j=GData[i];
+        prunsign1(j);
+    }
+    if(GType[i]=='&') {
+        prc('[');
+        j=GData[i];
+        prunsign1(j);
+        prc(']');
+    }
+    if (i >= LSTART) {
+        prs(" = bp");
+        j=GData[i];
+        if (j > 0) prc('+');
+        pint1(j);
+    }
+}
+
+int listproc() {
+    int i;
+    if (LTop > LSTART) {
+        prs("\n;Function : ");
+        prs(fname);
+        prs(", Number local Var: ");
+        i=LTop - LSTART;
+        prunsign1(i);
+        prs("\n; # type sign width local variables");
+        i=LSTART;
+        while (i < LTop) {
+            listvar(i);
+            i++;
+        }
+    }
+}
+
 int dofunc() {
     int nloc; int i; unsigned int j;int narg;
     cloc=&co;
@@ -1311,6 +1372,7 @@ int dofunc() {
         } while (istoken(','));
         expect(';');
     }
+    listproc();
     if (LTop>LSTART){
         prs(";\n ENTER  ");
         nloc=mkneg(nloc);
