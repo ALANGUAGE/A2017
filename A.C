@@ -250,7 +250,7 @@ int prscomment(unsigned char *s) {
     }
 }
 
-int prs(unsigned char *s) {
+int printstring(unsigned char *s) {
     unsigned char c; int com;
     com=0;
     while(*s) {
@@ -285,23 +285,23 @@ int eprnum(int n){//for docall1 procedure
     eprc(n);
 }
 
-int pint1 (int n){
+int printinteger (int n){
     int e;
     if(n<0) {  prc('-');  n=mkneg(n); }
     if (n >= 10) {
         e=n/10;
-        pint1(e);
+        printinteger(e);
     }
     n=n%10;
     n += '0';
     prc(n);
 }
 
-int prunsign1(unsigned int n) {
+int printunsigned(unsigned int n) {
     unsigned int e;
     if (n >= 10) {
         e=n/10;
-        prunsign1(e);
+        printunsigned(e);
     }
     n = n % 10; /*unsigned mod*/
     n += '0';
@@ -317,18 +317,18 @@ int end1(int n) {
 int error1(char *s) {
     isPrint=1;
     lineno--;
-    prs("\n ");
+    printstring("\n ");
     prscomment(&fgetsdest);
-    prs(";Line: ");
-    prunsign1(lineno);
-    prs(" ************** ERROR: ");
-    prs(s);
-    prs("  in column: ");
-    prunsign1(column);
-    prs("\nToken: ");
-    prunsign1(token);
-    prs(", symbol: ");
-    prs(symbol);
+    printstring(";Line: ");
+    printunsigned(lineno);
+    printstring(" ************** ERROR: ");
+    printstring(s);
+    printstring("  in column: ");
+    printunsigned(column);
+    printstring("\nToken: ");
+    printunsigned(token);
+    printstring(", symbol: ");
+    printstring(symbol);
     end1(1);
 }
 
@@ -346,8 +346,8 @@ int printinputline() {
         }
         while (DOS_ByteRead != 10);
     *fgetsp=0;
-        prs("\n;-");
-        prunsign1(lineno);
+        printstring("\n;-");
+        printunsigned(lineno);
         prc(' ');
         lineno++;
         prscomment(&fgetsdest);
@@ -384,13 +384,13 @@ int printName(unsigned int i) {
     int j;
     if (i < LSTART) {
         i=adrF(GNameField, i);
-        prs(i);
+        printstring(i);
     }
     else {
-        prs("[bp");
+        printstring("[bp");
         j = GData[i];
         if (j>0) prc('+');
-        pint1(j);
+        printinteger(j);
         prc(']');
     }
 }
@@ -547,9 +547,9 @@ int istoken(int t) {
 int expect(int t) {
     if (istoken(t)==0) {
         *cloc=0;
-        prs(co);
-        prs("\nExpected ASCII(dez): ");
-        pint1(t);
+        printstring(co);
+        printstring("\nExpected ASCII(dez): ");
+        printinteger(t);
         error1(" not found");
     }
 }
@@ -641,16 +641,16 @@ int addlocal() {
 
 
 int cmpneg(int ids) {
-       if(iscmp==T_EQ) prs("\n jne .");         //ZF=0
-  else if(iscmp==T_NE) prs("\n je  .");         //ZF=1
-  else if(iscmp==T_LE) if (ids) prs("\n jg  .");//ZF=0      SF =OF
-                           else prs("\n ja  .");//ZF=0 CF=0
-  else if(iscmp==T_GE) if (ids){prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jl  .");}//          SF!=OF
-                           else{prs(" ;unsigned : "); prunsign1(ids);
-                               prs("\n jb  .");}//jb=jc=CF=1
-  else if(iscmp=='<' ) prs("\n jge .");         //          SF =OF
-  else if(iscmp=='>' ) prs("\n jle .");         //ZF=1 oder SF!=OF
+       if(iscmp==T_EQ) printstring("\n jne .");         //ZF=0
+  else if(iscmp==T_NE) printstring("\n je  .");         //ZF=1
+  else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0      SF =OF
+                           else printstring("\n ja  .");//ZF=0 CF=0
+  else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : "); printunsigned(ids);
+                               printstring("\n jl  .");}//          SF!=OF
+                           else{printstring(" ;unsigned : "); printunsigned(ids);
+                               printstring("\n jb  .");}//jb=jc=CF=1
+  else if(iscmp=='<' ) printstring("\n jge .");         //          SF =OF
+  else if(iscmp=='>' ) printstring("\n jle .");         //ZF=1 oder SF!=OF
   else error1("internal error compare unknown in CMPNEG()");
 }
 
@@ -725,14 +725,14 @@ int doreg1(int iscmp1) {
             if (isrelational() ==0) error1("Relational expected");
             strcpy(ops, "cmp");
         }
-    prs("\n ");
-    prs(ops);
-    prs("  ");
+    printstring("\n ");
+    printstring(ops);
+    printstring("  ");
     printreg(ireg1);
-    prs(", ");
+    printstring(", ");
 
     if (istoken(T_CONST)) {
-        prunsign1(lexval);
+        printunsigned(lexval);
         goto reg1;
         }
     mod2=typeName();
@@ -746,72 +746,72 @@ int doreg1(int iscmp1) {
         else v(i);
 reg1: if (iscmp1 == 1) {
     cmpneg(0);
-    prs(fname);
+    printstring(fname);
     expect(')');
     }
 }
 
 int compoundass(char *op, int mode, int id1) {
     if(mode) error1("only scalar variable allowed");
-    prs("\n ");
-    prs(op);
-    prs("  ");
+    printstring("\n ");
+    printstring(op);
+    printstring("  ");
     gettypes(id1);
-    if (wi==2) prs("word");
-        else prs("byte");
+    if (wi==2) printstring("word");
+        else printstring("byte");
     v(id1);
-    prs(", ");
+    printstring(", ");
     expect(T_CONST);
-    prunsign1(lexval);
+    printunsigned(lexval);
 }
 
 int dovar1(int mode, int op, int ixarr, int id1) {
     gettypes(id1);
     if (mode==1) {// * = ptr
-        prs("\n mov bx, ");
-        v(id1); prs("\n ");
-        prs(op);
-        if(widthi == 1) prs(" al, [bx]\n mov ah, 0");
-        if(widthi == 2) prs(" ax, [bx]");
+        printstring("\n mov bx, ");
+        v(id1); printstring("\n ");
+        printstring(op);
+        if(widthi == 1) printstring(" al, [bx]\n mov ah, 0");
+        if(widthi == 2) printstring(" ax, [bx]");
         return;
         }
     if (mode==2){// & = adr
-        prs("\n ");
-        prs(op);
-        prs(" ax, ");
+        printstring("\n ");
+        printstring(op);
+        printstring(" ax, ");
         printName(id1);
         return;
         }
     if (ixarr) {//array
-        prs("\n mov bx, ");
+        printstring("\n mov bx, ");
         v(ixarr);
-        if (wi==2) prs("\n shl bx, 1");
-        prs("\n ");
-        prs(op);
-        if (wi==2) prs(" ax, ");
-            else prs(" al, ");
+        if (wi==2) printstring("\n shl bx, 1");
+        printstring("\n ");
+        printstring(op);
+        if (wi==2) printstring(" ax, ");
+            else printstring(" al, ");
         prc('[');
         printName(id1);
-        prs(" + bx]");
+        printstring(" + bx]");
         return;
         }
-    prs("\n ");
-    prs(op);
-    if(wi==1) prs(" al, ");
-    if(wi==2) prs(" ax, ");
-    if(wi==4) prs(" eax, ");
+    printstring("\n ");
+    printstring(op);
+    if(wi==1) printstring(" al, ");
+    if(wi==2) printstring(" ax, ");
+    if(wi==4) printstring(" eax, ");
     v(id1);
 }
 
 int rterm(char *op) {
     int mode; int opint; int ixarr; int id1;
     if (istoken(T_CONST)) {
-        prs("\n ");
-        prs(op);
-        if (wi==1) prs(" al, ");
-        if (wi==2) prs(" ax, ");
-        if (wi==4) prs(" eax, ");
-        prunsign1(lexval);
+        printstring("\n ");
+        printstring(op);
+        if (wi==1) printstring(" al, ");
+        if (wi==2) printstring(" ax, ");
+        if (wi==4) printstring(" eax, ");
+        printunsigned(lexval);
         return;
         }
     mode=typeName();
@@ -832,48 +832,48 @@ int rterm(char *op) {
 int doassign(int mode, int i, int ixarr, int ixconst) {
     gettypes(i);
     if (mode==1) {// * = ptr
-        prs("\n mov  bx, ");
+        printstring("\n mov  bx, ");
         v(i);
-        if (widthi == 2) prs("\n mov  [bx], ax");
-            else  prs("\n mov  [bx], al");
+        if (widthi == 2) printstring("\n mov  [bx], ax");
+            else  printstring("\n mov  [bx], al");
         return;
         }
     if (mode==2) {// & = adr
-        prs("\n mov  ");
+        printstring("\n mov  ");
         printName(i);
-        prs(", ax");
+        printstring(", ax");
         return;
         }
     if (ixarr) {
-        prs("\n mov bx, ");
-        if(ixconst) prunsign1(ixarr);
+        printstring("\n mov bx, ");
+        if(ixconst) printunsigned(ixarr);
             else v(ixarr);
-        if (wi==2) prs("\n shl bx, 1");
-        prs("\n mov [");
+        if (wi==2) printstring("\n shl bx, 1");
+        printstring("\n mov [");
         printName(i);
-        if (wi==2) prs("+bx], ax");
-            else prs("+bx], al");
+        if (wi==2) printstring("+bx], ax");
+            else printstring("+bx], al");
         return;
         }
     if (wi==1){
-        prs("\n mov ");
-        if(i<LSTART) prs("byte ");
+        printstring("\n mov ");
+        if(i<LSTART) printstring("byte ");
         v(i);
-        prs(", al");
+        printstring(", al");
         return;
         }
     if (wi==2){
-        prs("\n mov ");
-        if(i<LSTART) prs("word ");
+        printstring("\n mov ");
+        if(i<LSTART) printstring("word ");
         v(i);
-        prs(", ax");
+        printstring(", ax");
         return;
         }
     if (wi==4){
-        prs("\n mov ");
-        if(i<LSTART) prs("dword ");
+        printstring("\n mov ");
+        if(i<LSTART) printstring("dword ");
         v(i);
-        prs(", eax");
+        printstring(", eax");
         return;
         }
 }
@@ -882,9 +882,9 @@ int domul(int ids) {
     if (ids) rterm("imul");
         else {
         if (istoken(T_CONST)) {
-            prs("\n mov bx, ");
-            prunsign1(lexval);
-            prs("\n mul bx");
+            printstring("\n mov bx, ");
+            printunsigned(lexval);
+            printstring("\n mul bx");
             }
         else error1("with MUL only const number as multiplicator allowed");
         }
@@ -893,10 +893,10 @@ int domul(int ids) {
 int doidiv(int ids) {
     int mode; int id1;
     if (istoken(T_CONST)) {
-        prs("\n mov bx, ");
-        prunsign1(lexval);
-        if (ids) prs("\n cwd\n idiv bx");
-            else prs("\n mov dx, 0\n div bx");
+        printstring("\n mov bx, ");
+        printunsigned(lexval);
+        if (ids) printstring("\n cwd\n idiv bx");
+            else printstring("\n mov dx, 0\n div bx");
         }
     else {
         mode=typeName();
@@ -905,16 +905,16 @@ int doidiv(int ids) {
         gettypes(id1);
         if (typei) error1("only int as simple var divisor allowed");
         if (wi!=2) error1("only int, no byte as divisor allowed");
-        prs("\n mov bx, ");
+        printstring("\n mov bx, ");
         v(id1);
-        if (ids) prs("\n cwd\n idiv bx");
-            else prs("\n mov dx, 0\n div bx");
+        if (ids) printstring("\n cwd\n idiv bx");
+            else printstring("\n mov dx, 0\n div bx");
     }
 }
 
 int domod(int ids) {
     doidiv(ids);
-    prs("\n mov ax, dx");
+    printstring("\n mov ax, dx");
 }
 
 
@@ -978,47 +978,47 @@ int docall1() {
         t0 = docalltype [i];
         n0 = docallvalue[i];
         if(t0==1){
-            prs("\n push ");
-            prunsign1(n0);
+            printstring("\n push ");
+            printunsigned(n0);
             }
         if(t0==2){
-            prs("\n push ");
-            prs(fname);
+            printstring("\n push ");
+            printstring(fname);
             prc(95);
-            prunsign1(n0);
+            printunsigned(n0);
             }
         if(t0==3){
-            prs("\n lea  ax, ");
+            printstring("\n lea  ax, ");
             v(n0);
-            prs("\n push ax");
+            printstring("\n push ax");
             }
         if(t0==4){
             gettypes(n0);
             if(wi==2) {
-                prs("\n push word ");
+                printstring("\n push word ");
                 v(n0);
                 }
             else {
-                prs("\n mov al, byte ");
+                printstring("\n mov al, byte ");
                 v(n0);
-                prs("\n mov ah, 0\n push ax");
+                printstring("\n mov ah, 0\n push ax");
                 }
             }
         if(t0==5){
-            prs("\n push ");
+            printstring("\n push ");
             printreg(n0);
             if (n0 >= 47) sz32+2;
             }
         i--;
         } while (i > 0);
     }
-	prs("\n call ");
-	prs(&procname);
+	printstring("\n call ");
+	printstring(&procname);
 	if (narg>0) {
-	    prs("\n add  sp, ");
+	    printstring("\n add  sp, ");
         narg=narg+narg;
         narg=narg+sz32;
-        prunsign1(narg);
+        printunsigned(narg);
         }
 }
 
@@ -1030,8 +1030,8 @@ int expr() {
     int i;      unsigned char *p;
 
     if (istoken(T_CONST)) {// constant ;
-        prs("\n mov ax, ");
-        prunsign1(lexval);
+        printstring("\n mov ax, ");
+        printunsigned(lexval);
         return 4;
         }
     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
@@ -1066,15 +1066,15 @@ int expr() {
         }
     if (istoken(T_PLUSPLUS  )) {
         if(mode)error1("Only var allowed");
-        prs("\n inc  ");
-        if (wi==2) prs("word"); else prs("byte");
+        printstring("\n inc  ");
+        if (wi==2) printstring("word"); else printstring("byte");
         v(id1);
         goto e1;
         }
     if (istoken(T_MINUSMINUS)) {
         if(mode)error1("Only var allowed");
-        prs("\n dec  ");
-        if (wi==2) prs("word"); else prs("byte");
+        printstring("\n dec  ");
+        if (wi==2) printstring("word"); else printstring("byte");
         v(id1);
         goto e1;
         }
@@ -1120,22 +1120,22 @@ int pexpr() {//called from if, do, while
             }
         }
     expr();
-    if (iscmp==0) prs("\n or  al, al\n je .");
-    prs(fname);
+    if (iscmp==0) printstring("\n or  al, al\n je .");
+    printstring(fname);
     expect(')');
 }
 
 
 int prlabel(int n) {
-    prs("\n.");
-    prs(fname);
-    prunsign1(n);
+    printstring("\n.");
+    printstring(fname);
+    printunsigned(n);
     prc(':');
 }
 int prjump (int n) {
-    prs("\n jmp .");
-    prs(fname);
-    prunsign1(n);
+    printstring("\n jmp .");
+    printstring(fname);
+    printunsigned(n);
 }
 
 int stmt() {
@@ -1148,7 +1148,7 @@ int stmt() {
         pexpr();
         nlabel++;
         jdest=nlabel;
-        pint1(jdest);
+        printinteger(jdest);
         stmt();
         if (istoken(T_ELSE)) {
             nlabel++;
@@ -1169,7 +1169,7 @@ int stmt() {
         pexpr();
         nlabel++;
         jtemp=nlabel;
-        pint1(jtemp);
+        printinteger(jtemp);
         prjump(jdest);
          prlabel(jtemp);
     }
@@ -1180,19 +1180,19 @@ int stmt() {
         pexpr();
         nlabel++;
         tst=nlabel;
-        pint1(tst);
+        printinteger(tst);
         stmt();
         prjump(jdest);
         prlabel(tst);
     }
     else if(istoken(T_GOTO))  {
-        prs("\n jmp .");
+        printstring("\n jmp .");
         name1();
-        prs(symbol);
+        printstring(symbol);
         expect(';');
     }
     else if(token==T_ASM)     {
-      prs("\n");
+      printstring("\n");
       c=next();
       while(c != '\n') {
         prc(c);
@@ -1202,7 +1202,7 @@ int stmt() {
     }
     else if(istoken(T_ASMBLOCK)) {
         if (token== '{' )  {
-            prs("\n"); cha=next();
+            printstring("\n"); cha=next();
             while(cha!= '}') {
                 prc(cha);
                 cha=next();
@@ -1211,15 +1211,15 @@ int stmt() {
         } else error1("Curly open expected");
     }
     else if(istoken(T_INTH))  {
-        prs("\n int  ");
+        printstring("\n int  ");
         expect(T_CONST);
-        prunsign1(lexval);
+        printunsigned(lexval);
         expect(';');
     }
     else if(istoken(T_EMIT)) {
-      prs("\n db ");
+      printstring("\n db ");
     L1: token=getlex();
-      prunsign1(lexval);
+      printunsigned(lexval);
       token=getlex();
       if (token== ',') {
           prc(',');
@@ -1230,14 +1230,14 @@ int stmt() {
     else if(istoken(';'))      { }
     else if(istoken(T_RETURN)) {
         if (token!=';') expr();
-        prs("\n jmp .retn");
-        prs(fname);
+        printstring("\n jmp .retn");
+        printstring(fname);
         nreturn++;
         expect(';');
     }
     else if(thechar==':')      {
-        prs("\n."); // Label
-        prs(symbol); prc(':');
+        printstring("\n."); // Label
+        printstring(symbol); prc(':');
         expect(T_NAME);
         expect(':');
     }
@@ -1258,53 +1258,53 @@ v1: return 1;
 int listvar(unsigned int i) {
     unsigned int j;
     char c;
-    prs("\n;");
-    prunsign1(i);
+    printstring("\n;");
+    printunsigned(i);
     prc(32);
     c=GType [i];
-    if(c=='V')prs("var ");
-    if(c=='*')prs("ptr ");
-    if(c=='&')prs("arr ");
-    if(c=='#')prs("def ");
+    if(c=='V')printstring("var ");
+    if(c=='*')printstring("ptr ");
+    if(c=='&')printstring("arr ");
+    if(c=='#')printstring("def ");
     c=GSign [i];
-    if(c=='S')prs("sign ");
-    if(c=='U')prs("unsg ");
+    if(c=='S')printstring("sign ");
+    if(c=='U')printstring("unsg ");
     c=GWidth[i];
-    if(c== 0)prs("NULL " );
-    if(c== 1)prs("byte " );
-    if(c== 2)prs("word " );
-    if(c== 4)prs("long " );
+    if(c== 0)printstring("NULL " );
+    if(c== 1)printstring("byte " );
+    if(c== 2)printstring("word " );
+    if(c== 4)printstring("long " );
     j=i*32;
     pt=&GNameField + j;
-    prs(pt);
+    printstring(pt);
     if(GType[i]=='#') {
         prc('=');
         j=GData[i];
-        prunsign1(j);
+        printunsigned(j);
     }
     if(GType[i]=='&') {
         prc('[');
         j=GData[i];
-        prunsign1(j);
+        printunsigned(j);
         prc(']');
     }
     if (i >= LSTART) {
-        prs(" = bp");
+        printstring(" = bp");
         j=GData[i];
         if (j > 0) prc('+');
-        pint1(j);
+        printinteger(j);
     }
 }
 
 int listproc() {
     int i;
     if (LTop > LSTART) {
-        prs("\n;Function : ");
-        prs(fname);
-        prs(", Number local Var: ");
+        printstring("\n;Function : ");
+        printstring(fname);
+        printstring(", Number local Var: ");
         i=LTop - LSTART;
-        prunsign1(i);
-        prs("\n; # type sign width local variables");
+        printunsigned(i);
+        printstring("\n; # type sign width local variables");
         i=LSTART;
         while (i < LTop) {
             listvar(i);
@@ -1328,9 +1328,9 @@ int dofunc() {
     pt=adrF(FNameField, FTop);
     strcpy(pt, symbol);
     FTop++;
-    prs("\n\n");
-    prs(symbol);
-    prs(": PROC");
+    printstring("\n\n");
+    printstring(symbol);
+    printstring(": PROC");
     expect('(');
     LTop=LSTART;
     if (istoken(')')==0) {
@@ -1374,26 +1374,26 @@ int dofunc() {
     }
     listproc();
     if (LTop>LSTART){
-        prs(";\n ENTER  ");
+        printstring(";\n ENTER  ");
         nloc=mkneg(nloc);
-        prunsign1 (nloc);
-        prs(",0");
+        printunsigned (nloc);
+        printstring(",0");
         }
 
     while(istoken('}')==0)  stmt();
 
     if (nreturn) {
-            prs("\n .retn");
-            prs(fname);
+            printstring("\n .retn");
+            printstring(fname);
             prc(':');
         }
-    if (LTop > LSTART) prs("\n LEAVE");
-    prs("\n ret");
+    if (LTop > LSTART) printstring("\n LEAVE");
+    printstring("\n ret");
     *cloc=0;
-    prs(co);
+    printstring(co);
     maxco1=strlen(co);
     if (maxco1 > maxco) maxco=maxco1;
-    prs("\nENDP");
+    printstring("\nENDP");
 }
 
 char doglobName[IDLENMAX];
@@ -1407,14 +1407,14 @@ int doglob() {
     if (istoken('[')) {
         istype='&';
         if (istoken(T_CONST)) {
-            prs("\nsection .bss\nabsolute ");
-            prunsign1(orgData);
-            prs("\n"); prs(symbol);
-            if (iswidth==1) prs(" resb ");
-            if (iswidth==2) prs(" resw ");
-            if (iswidth==4) prs(" resd ");
-            prunsign1(lexval);
-            prs("\nsection .text");
+            printstring("\nsection .bss\nabsolute ");
+            printunsigned(orgData);
+            printstring("\n"); printstring(symbol);
+            if (iswidth==1) printstring(" resb ");
+            if (iswidth==2) printstring(" resw ");
+            if (iswidth==4) printstring(" resd ");
+            printunsigned(lexval);
+            printstring("\nsection .text");
             orgData=orgData+lexval;
             if (iswidth==2) orgData=orgData+lexval;
             if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
@@ -1423,9 +1423,9 @@ int doglob() {
         }else {
             expect(']');
             if (iswidth != 1) error1("Only ByteArray allowed");
-            prs("\n");
-            prs(symbol);
-            prs(" db ");
+            printstring("\n");
+            printstring(symbol);
+            printstring(" db ");
             isstrarr=1;
             strcpy(doglobName, symbol);
             expect('=');
@@ -1433,7 +1433,7 @@ int doglob() {
                 prc(34);
                 prscomment(symbol);
                 prc(34);
-                prs(",0");
+                printstring(",0");
                 i=strlen(symbol);
                 GData[GTop]=i;
                 }
@@ -1442,7 +1442,7 @@ int doglob() {
                 do {
                     if(i) prc(',');
                     expect(T_CONST);
-                    prunsign1(lexval);
+                    printunsigned(lexval);
                     i=1;
                     }
                     while (istoken(','));
@@ -1451,19 +1451,19 @@ int doglob() {
         else error1("String or number array expected");
         };
     }else { //expect('=');
-        prs("\n");
-        prs(symbol);
-        if (istype=='*') prs(" dw ");
+        printstring("\n");
+        printstring(symbol);
+        if (istype=='*') printstring(" dw ");
         else {
-            if      (iswidth==1) prs(" db ");
-            else if (iswidth==2) prs(" dw ");
-            else                 prs(" dd ");
+            if      (iswidth==1) printstring(" db ");
+            else if (iswidth==2) printstring(" dw ");
+            else                 printstring(" dd ");
         }
     if(istoken('-')) prc('-');
     if (istoken('=')) {
         expect(T_CONST);
-        prunsign1(lexval);
-        }else prunsign1(0);
+        printunsigned(lexval);
+        }else printunsigned(0);
     }
     GSign[GTop]=issign;
     GWidth[GTop]=iswidth;
@@ -1548,12 +1548,12 @@ int main() {
         cputs(namelst);
         exitR(2);
         }
-    prs(";");
-    prs(Version1);
-    prs(", Input: "); prs(namein);
-    prs(", Output: "); prs(namelst);
+    printstring(";");
+    printstring(Version1);
+    printstring(", Input: "); printstring(namein);
+    printstring(", Output: "); printstring(namelst);
     isPrint=0;
-    prs("\norg  256 \njmp main");
+    printstring("\norg  256 \njmp main");
     orgData=ORGDATAORIG;
     fgetsp=&fgetsdest;
     *fgetsp=0;
@@ -1561,20 +1561,20 @@ int main() {
     parse();
     isPrint=1;
     GTop--;
-    prs("\n;Glob. variables:");     prunsign1(GTop);
-    prs(" (");                      prunsign1(LSTART);
-    prs("), Functions:");           prunsign1(FTop);
-    prs(" (");                      prunsign1(FUNCMAX);
-    prs("), Lines:");               prunsign1(lineno);
-    prs("\n;Constant: ");           prunsign1(maxco);
-    prs(" (");                      prunsign1(COMAX);
+    printstring("\n;Glob. variables:");     printunsigned(GTop);
+    printstring(" (");                      printunsigned(LSTART);
+    printstring("), Functions:");           printunsigned(FTop);
+    printstring(" (");                      printunsigned(FUNCMAX);
+    printstring("), Lines:");               printunsigned(lineno);
+    printstring("\n;Constant: ");           printunsigned(maxco);
+    printstring(" (");                      printunsigned(COMAX);
     i=COMAX;
     i=i-maxco;
-    if (i <= 1000)prs("\n ** Warning ** constant area too small");
-    prs("), stacksize: ");
+    if (i <= 1000)printstring("\n ** Warning ** constant area too small");
+    printstring("), stacksize: ");
     i=65536;
     i=i-orgData;
-    prunsign1(i);
-    if (i <= 1000) prs("\n *** Warning *** Stack too small");
+    printunsigned(i);
+    if (i <= 1000) printstring("\n *** Warning *** Stack too small");
     end1(0);
 }
