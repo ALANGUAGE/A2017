@@ -77,7 +77,9 @@ char *VarNamePtr;       //first free position
 int GTop=1;
 int LTop=LSTART;
 
-#define FUNCMAX           300//max functions
+#define FUNCMAX       300//max functions
+#define FNAMEMAX     9600// 32*FUNCMAX
+char FNameField[FNAMEMAX];
 #define FUNCTIONNAMESMAX 3000//Space for preceeding functon names
 char FunctionNames[FUNCTIONNAMESMAX];
 char *FunctionNamePtr;  //first free position in FunctionNames
