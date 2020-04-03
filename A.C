@@ -63,6 +63,8 @@ int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
+int isstrarr;
+
 #define VARMAX        400//max global and local var
 #define LSTART        300//max global var
 #define GNAMEMAX    12800// 32*VARMAX
@@ -70,9 +72,11 @@ char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
 int  GData [VARMAX];
+int  VarNamesIX[VARMAX];//start of names in VarNames
 char GNameField[GNAMEMAX];
-#define VARNAMESMAX 3969//VARMAX * 10 - IDLENMAX
-char VarNames[4000];    //Space for global and local var names
+char doglobName[IDLENMAX];//in doglob
+#define VARNAMESMAX 4000
+char VarNames[VARNAMESMAX];//Space for global and local var names
 char *VarNamePtr;       //first free position
 int GTop=1;
 int LTop=LSTART;
@@ -379,6 +383,24 @@ int next() {
     r = thechar;
     thechar = fgets1();
     return r;
+}
+
+int searchVarName(){
+
+}
+
+int storeGlobalVar() {
+    unsigned int i;
+    if (GTop >= LSTART) error1("Global table full");
+    if (isstrarr) VarNamePtr=strcpy(VarNamePtr, doglobName);
+    else VarNamePtr=strcpy(VarNamePtr, Symbol);
+    i = VarNamePtr - &VarNames;
+    i += IDLENMAX;
+    if (i >= VARNAMESMAX) error1("too many variable name");
+}
+
+int printVarName() {
+
 }
 
 int adrF(char *s, unsigned int i) {
@@ -1422,11 +1444,9 @@ int dofunc() {
     printstring("\nENDP");
 }
 
-char doglobName[IDLENMAX];
 int doglob() {
-    int i; int j; int isstrarr;
+    int i; int j;
     isstrarr=0;
-    if (GTop >= LSTART) error1("Global table full");
     if (iswidth == 0) error1("no VOID as var type");
     checknamelen();
     if (checkName() != 0) error1("Variable already defined");
@@ -1494,9 +1514,12 @@ int doglob() {
     GSign[GTop]=issign;
     GWidth[GTop]=iswidth;
     GType[GTop]=istype;
+    storeGlobalVar();
+
     pt=adrF(GNameField, GTop);
     if (isstrarr) strcpy(pt, doglobName);
         else strcpy(pt, Symbol);
+
     GTop++;
     expect(';');
 }
@@ -1581,6 +1604,7 @@ int main() {
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
+    VarNamePtr=&VarNames;
     FunctionNamePtr=&FunctionNames;
     FunctionMaxIx=0;
     orgData=ORGDATAORIG;
@@ -1596,7 +1620,9 @@ int main() {
     printstring(" (");                      printunsigned(LSTART);
     printstring("), Functions:");           printunsigned(FunctionMaxIx);
     printstring(" (");                      printunsigned(FUNCMAX);
-    printstring("), Lines:");               printunsigned(lineno);
+    i = FunctionNamePtr - &FunctionNames;
+    printstring(")'");                      printunsigned(i);
+    printstring("', Lines:");               printunsigned(lineno);
     printstring("\n;Constant: ");           printunsigned(maxco);
     printstring(" (");                      printunsigned(COMAX);
     i=COMAX;
