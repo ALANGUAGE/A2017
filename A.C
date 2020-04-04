@@ -384,7 +384,14 @@ int next() {
 }
 
 int storeVarName() {
+    unsigned int i;
+    VarNamePtr=strcpy(VarNamePtr, Symbol);
+    VarNamePtr++;
+    i = VarNamePtr - &VarNames;
+    i += IDLENMAX;
+    if (i > VARNAMESMAX) error1("too many Variable names");
 
+    //todo dofunction set start of local VarNamePtr
 }
 
 int adrF(char *s, unsigned int i) {
@@ -649,6 +656,7 @@ int addlocal() {
     GType[LTop]=istype;
     pt=adrF(GNameField, LTop);
     strcpy(pt, Symbol);
+    //storeVarName();
 }
 
 
@@ -1367,6 +1375,7 @@ int dofunc() {
     printstring(": PROC");
     expect('(');
     LTop=LSTART;
+    
     if (istoken(')')==0) {
         narg=2;
         do {
@@ -1589,7 +1598,8 @@ int main() {
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
-    FunctionNamePtr=&FunctionNames;
+    VarNamePtr= &VarNames;
+    FunctionNamePtr= &FunctionNames;
     FunctionMaxIx=0;
     orgData=ORGDATAORIG;
     fgetsp=&fgetsdest;
