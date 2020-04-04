@@ -206,7 +206,7 @@ int eqstr(char *p, char *q) {
     if(*q) return 0;
     return 1;
 }
-int strcat1(char *s, char *t) {
+int strcat(char *s, char *t) {
     while (*s != 0) s++;
     strcpy(s, t);
 }
@@ -381,6 +381,10 @@ int next() {
     r = thechar;
     thechar = fgets1();
     return r;
+}
+
+int storeVarName() {
+
 }
 
 int adrF(char *s, unsigned int i) {
@@ -651,14 +655,16 @@ int addlocal() {
 int cmpneg(int ids) {
        if(iscmp==T_EQ) printstring("\n jne .");         //ZF=0
   else if(iscmp==T_NE) printstring("\n je  .");         //ZF=1
-  else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0      SF =OF
-                           else printstring("\n ja  .");//ZF=0 CF=0
-  else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : "); printunsigned(ids);
-                               printstring("\n jl  .");}//          SF!=OF
-                           else{printstring(" ;unsigned : "); printunsigned(ids);
-                               printstring("\n jb  .");}//jb=jc=CF=1
-  else if(iscmp=='<' ) printstring("\n jge .");         //          SF =OF
-  else if(iscmp=='>' ) printstring("\n jle .");         //ZF=1 oder SF!=OF
+  else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0 SF=O
+                       else     printstring("\n ja  .");//ZF=0 CF=0
+  else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : ");
+                                printunsigned(ids);
+                                printstring("\n jl  .");}//SF!=O
+                       else    {printstring(" ;unsigned : ");
+                                printunsigned(ids);
+                                printstring("\n jb  .");}//jb=jc=CF=1
+  else if(iscmp=='<' ) printstring("\n jge .");          //SF=O
+  else if(iscmp=='>' ) printstring("\n jle .");          //ZF=1 | SF!=O
   else error1("internal error compare unknown in CMPNEG()");
 }
 
@@ -1369,8 +1375,8 @@ int dofunc() {
             narg+=2;
             GData[LTop]=narg;
             if (iswidth == 4) narg+=2;
-                LTop++;
-                }
+            LTop++;
+            }
         while (istoken(','));
         expect(')');
         }
@@ -1557,7 +1563,7 @@ int main() {
     arglen1--;
     toupper(argv);
     strcpy(namein, argv);
-    if (instr1(namein, '.') == 0) strcat1(namein, ".C");
+    if (instr1(namein, '.') == 0) strcat(namein, ".C");
     strcpy(namelst, namein);
     i=strlen(namelst);
     i--;
