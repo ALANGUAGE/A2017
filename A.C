@@ -204,7 +204,8 @@ int eqstr(char *p, char *q) {
         q++;
     }
     if(*q) return 0;
-    return 1; }
+    return 1;
+}
 int strcat1(char *s, char *t) {
     while (*s != 0) s++;
     strcpy(s, t);
