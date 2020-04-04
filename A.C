@@ -39,7 +39,7 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 char isPrint=1;//set screen listing
 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
 unsigned int orgData;//actual max of array, must be less than stack
-#define ORGDATA     24000
+#define ORGDATA     24000// set it to end of text
 #define COMAX        3000
 char co[COMAX];//constant storage
 int maxco=0;
@@ -79,8 +79,6 @@ int GTop=1;
 int LTop=LSTART;
 
 #define FUNCMAX       300//max functions
-#define FNAMEMAX     9600// 32*FUNCMAX
-char FNameField[FNAMEMAX];
 #define FUNCTIONNAMESMAX 3000//Space for preceeding functon names
 char FunctionNames[FUNCTIONNAMESMAX];
 char *FunctionNamePtr;  //first free position in FunctionNames
@@ -279,7 +277,7 @@ int printstring(unsigned char *s) {
     }
 }
 
-int eprnum(int n){//for docall1 procedure
+int eprnum(int n){//for docall procedure
     int e;
     if(n<0) {
         eprc('-');
@@ -930,7 +928,7 @@ int domod(int ids) {
 int docalltype[10]; int docallvalue[10];
 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
 
-int docall1() {
+int docall() {
     int i; int narg; int t0; int n0;  int sz32;
     narg=0;
     sz32=0;
@@ -1051,7 +1049,7 @@ int expr() {
         }
 
     if (token=='(')  {
-        docall1();
+        docall();
         goto e1;
         }
 
