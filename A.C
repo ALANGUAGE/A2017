@@ -39,6 +39,7 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 char isPrint=1;//set screen listing
 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
 unsigned int orgData;//actual max of array, must be less than stack
+#define ORGDATA     24000
 #define COMAX        3000
 char co[COMAX];//constant storage
 int maxco=0;
@@ -1504,18 +1505,18 @@ int doglob() {
 }
 
 int dodefine() {
-    int i; int j; int fdtemp;
-    if (eqstr(Symbol, "ORGDATA")) {
-        token=getlex();
-        ORGDATAORIG=lexval;
-        orgData=lexval;
-        return;
-    }
+    int i;
     expect(T_NAME);
     if (token==T_CONST) {
         if (GTop >= LSTART) error1("global table (define) full");
         i=strlen(Symbol);
         if (i>IDLENMAX) error1("Define name too long");
+        if (eqstr(Symbol, "ORGDATA")) {
+            token=getlex();
+            ORGDATAORIG=lexval;
+            orgData=lexval;
+            return;
+        }
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
