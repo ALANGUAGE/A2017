@@ -1,4 +1,5 @@
 char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
+#define ORGDATA     24000//set it to end of text
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -37,8 +38,7 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 #define T_GREATGREAT 1241
 
 char isPrint=1;//set screen listing
-#define ORGDATA     24000 // set it to end of text
-unsigned int ORGDATAORIG=25000;//start of arrays, end of text
+unsigned int orgDataOriginal=25000;//start of arrays, end of text
 unsigned int orgDatai;//actual max of array, must be less than stack
 #define COMAX        3000
 char co[COMAX];//constant storage
@@ -1524,17 +1524,15 @@ int doglob() {
 }
 
 int dodefine() {
-    int i;
     expect(T_NAME);
     if (token==T_CONST) {
         if (GTop >= VARMAX) error1("global table (define) full");
         checknamelen();
         if (checkName() != 0) error1("#Define var already defined");
         if (eqstr(Symbol, "ORGDATA")) {
-//            token=getlex();
-            ORGDATAORIG=lexval;
+            orgDataOriginal=lexval;
             orgDatai=lexval;
-            expect(T_CONST);//new
+            expect(T_CONST);
             return;
         }
         GSign [GTop]='U';
@@ -1609,7 +1607,7 @@ int main() {
     VarNamePtr= &VarNames;
     FunctionNamePtr= &FunctionNames;
     FunctionMaxIx=0;
-    orgDatai=ORGDATAORIG;
+    orgDatai=orgDataOriginal;
     fgetsp=&fgetsdest;
     *fgetsp=0;
     thechar=fgets1();

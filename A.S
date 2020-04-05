@@ -4,88 +4,88 @@ jmp main
 ;-1 char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 
 Version1 db "PLA compiler A.COM V0.9.6",0
-;-2 #define IDLENMAX       31//max length of names
+;-2 #define ORGDATA     24000//set it to end of text
 
-;-3 #define COLUMNMAX     128//output, input is 100
+;-3 #define IDLENMAX       31//max length of names
 
-;-4 #define T_NAME        256//the following defines for better clearity
+;-4 #define COLUMNMAX     128//output, input is 100
 
-;-5 #define T_CONST       257
+;-5 #define T_NAME        256//the following defines for better clearity
 
-;-6 #define T_STRING      258
+;-6 #define T_CONST       257
 
-;-7 #define T_DEFINE      511
+;-7 #define T_STRING      258
 
-;-8 #define T_RETURN      512
+;-8 #define T_DEFINE      511
 
-;-9 #define T_IF          513
+;-9 #define T_RETURN      512
 
-;-10 #define T_ELSE        514
+;-10 #define T_IF          513
 
-;-11 #define T_WHILE       515
+;-11 #define T_ELSE        514
 
-;-12 #define T_DO          516
+;-12 #define T_WHILE       515
 
-;-13 #define T_INT         517
+;-13 #define T_DO          516
 
-;-14 #define T_ASM         518
+;-14 #define T_INT         517
 
-;-15 #define T_ASMBLOCK    519
+;-15 #define T_ASM         518
 
-;-16 #define T_EMIT        520
+;-16 #define T_ASMBLOCK    519
 
-;-17 #define T_GOTO        521
+;-17 #define T_EMIT        520
 
-;-18 #define T_VOID        529
+;-18 #define T_GOTO        521
 
-;-19 #define T_CHAR        530
+;-19 #define T_VOID        529
 
-;-20 #define T_SIGNED      531
+;-20 #define T_CHAR        530
 
-;-21 #define T_UNSIGNED    532
+;-21 #define T_SIGNED      531
 
-;-22 #define T_LONG        533
+;-22 #define T_UNSIGNED    532
 
-;-23 #define T_INTH        600
+;-23 #define T_LONG        533
 
-;-24 #define T_EQ          806
+;-24 #define T_INTH        600
 
-;-25 #define T_NE          807
+;-25 #define T_EQ          806
 
-;-26 #define T_GE          811
+;-26 #define T_NE          807
 
-;-27 #define T_LE          824
+;-27 #define T_GE          811
 
-;-28 #define T_PLUSPLUS   1219
+;-28 #define T_LE          824
 
-;-29 #define T_MINUSMINUS 1225
+;-29 #define T_PLUSPLUS   1219
 
-;-30 #define T_PLUSASS    1230
+;-30 #define T_MINUSMINUS 1225
 
-;-31 #define T_MINUSASS   1231
+;-31 #define T_PLUSASS    1230
 
-;-32 #define T_MULASS     1232
+;-32 #define T_MINUSASS   1231
 
-;-33 #define T_DIVASS     1233
+;-33 #define T_MULASS     1232
 
-;-34 #define T_ANDASS     1234
+;-34 #define T_DIVASS     1233
 
-;-35 #define T_ORASS      1235
+;-35 #define T_ANDASS     1234
 
-;-36 #define T_LESSLESS   1240
+;-36 #define T_ORASS      1235
 
-;-37 #define T_GREATGREAT 1241
+;-37 #define T_LESSLESS   1240
 
-;-38 
+;-38 #define T_GREATGREAT 1241
 
-;-39 char isPrint=1;//set screen listing
+;-39 
+
+;-40 char isPrint=1;//set screen listing
 
 isPrint db 1
-;-40 #define ORGDATA     24000 // set it to end of text
+;-41 unsigned int orgDataOriginal=25000;//start of arrays, end of text
 
-;-41 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
-
-ORGDATAORIG dw 25000
+orgDataOriginal dw 25000
 ;-42 unsigned int orgDatai;//actual max of array, must be less than stack
 
 orgDatai dw 0
@@ -8664,23 +8664,17 @@ doglob_18 db " dd ",0
 ENDP
 
 dodefine: PROC
-;-1527     int i;
+;-1527     expect(T_NAME);
 
-;-1528     expect(T_NAME);
-
-;Function : dodefine, Number local Var: 1
-; # type sign width local variables
-;104 var sign word i = bp-2;
- ENTER  2,0
  push 256
  call expect
  add  sp, 2
-;-1529     if (token==T_CONST) {
+;-1528     if (token==T_CONST) {
 
  mov ax, [token]
  cmp ax, 257
  jne .dodefine472
-;-1530         if (GTop >= VARMAX) error1("global table (define) full");
+;-1529         if (GTop >= VARMAX) error1("global table (define) full");
 
  mov ax, [GTop]
  cmp ax, 400 ;unsigned : 1
@@ -8688,11 +8682,11 @@ dodefine: PROC
  push dodefine_0
  call error1
  add  sp, 2
-;-1531         checknamelen();
+;-1530         checknamelen();
 
 .dodefine473:
  call checknamelen
-;-1532         if (checkName() != 0) error1("#Define var already defined");
+;-1531         if (checkName() != 0) error1("#Define var already defined");
 
  call checkName
  cmp ax, 0
@@ -8700,7 +8694,7 @@ dodefine: PROC
  push dodefine_1
  call error1
  add  sp, 2
-;-1533         if (eqstr(Symbol, "ORGDATA")) {
+;-1532         if (eqstr(Symbol, "ORGDATA")) {
 
 .dodefine474:
  push dodefine_2
@@ -8710,43 +8704,41 @@ dodefine: PROC
  add  sp, 4
  or  al, al
  je .dodefine475
-;-1534 //            token=getlex();
-
-;-1535             ORGDATAORIG=lexval;
+;-1533             orgDataOriginal=lexval;
 
  mov ax, [lexval]
- mov word [ORGDATAORIG], ax
-;-1536             orgDatai=lexval;
+ mov word [orgDataOriginal], ax
+;-1534             orgDatai=lexval;
 
  mov ax, [lexval]
  mov word [orgDatai], ax
-;-1537             expect(T_CONST);//new
+;-1535             expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1538             return;
+;-1536             return;
 
  jmp .retndodefine
-;-1539         }
+;-1537         }
 
-;-1540         GSign [GTop]='U';
+;-1538         GSign [GTop]='U';
 
 .dodefine475:
  mov ax, 85
  mov bx, [GTop]
  mov [GSign+bx], al
-;-1541         GWidth[GTop]=1;
+;-1539         GWidth[GTop]=1;
 
  mov ax, 1
  mov bx, [GTop]
  mov [GWidth+bx], al
-;-1542         GType [GTop]='#';
+;-1540         GType [GTop]='#';
 
  mov ax, 35
  mov bx, [GTop]
  mov [GType+bx], al
-;-1543         pt=adrF(GNameField, GTop);
+;-1541         pt=adrF(GNameField, GTop);
 
  push word [GTop]
  lea  ax, [GNameField]
@@ -8754,38 +8746,37 @@ dodefine: PROC
  call adrF
  add  sp, 4
  mov word [pt], ax
-;-1544         strcpy(pt, Symbol);
+;-1542         strcpy(pt, Symbol);
 
  lea  ax, [Symbol]
  push ax
  push word [pt]
  call strcpy
  add  sp, 4
-;-1545         GData[GTop]=lexval;
+;-1543         GData[GTop]=lexval;
 
  mov ax, [lexval]
  mov bx, [GTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1546         expect(T_CONST);
+;-1544         expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1547         GTop++;
+;-1545         GTop++;
 
  inc  word[GTop]
-;-1548     }
+;-1546     }
 
-;-1549 }
+;-1547 }
 
 .dodefine472:
-;-1550 
+;-1548 
 
-;-1551 int parse() {
+;-1549 int parse() {
 
  .retndodefine:
- LEAVE
  ret
 dodefine_0 db "global table (define) full",0
 dodefine_1 db "#Define var already defined",0
@@ -8793,21 +8784,21 @@ dodefine_2 db "ORGDATA",0
 ENDP
 
 parse: PROC
-;-1552     token=getlex();
+;-1550     token=getlex();
 
  call getlex
  mov word [token], ax
-;-1553     do {
+;-1551     do {
 
 .parse476:
-;-1554         if (token <= 0) return 1;
+;-1552         if (token <= 0) return 1;
 
  mov ax, [token]
  cmp ax, 0
  jg  .parse477
  mov ax, 1
  jmp .retnparse
-;-1555         if (istoken('#')) {
+;-1553         if (istoken('#')) {
 
 .parse477:
  push 35
@@ -8815,7 +8806,7 @@ parse: PROC
  add  sp, 2
  or  al, al
  je .parse478
-;-1556              if (istoken(T_DEFINE))  dodefine();
+;-1554              if (istoken(T_DEFINE))  dodefine();
 
  push 511
  call istoken
@@ -8823,36 +8814,36 @@ parse: PROC
  or  al, al
  je .parse479
  call dodefine
-;-1557              else error1("define expected");
+;-1555              else error1("define expected");
 
  jmp .parse480
 .parse479:
  push parse_0
  call error1
  add  sp, 2
-;-1558         }
+;-1556         }
 
 .parse480:
-;-1559     else{
+;-1557     else{
 
  jmp .parse481
 .parse478:
-;-1560         typeName();
+;-1558         typeName();
 
  call typeName
-;-1561         if (token=='(') dofunc();
+;-1559         if (token=='(') dofunc();
 
  mov ax, [token]
  cmp ax, 40
  jne .parse482
  call dofunc
-;-1562         else doglob(); }
+;-1560         else doglob(); }
 
  jmp .parse483
 .parse482:
  call doglob
 .parse483:
-;-1563     } while(1);
+;-1561     } while(1);
 
 .parse481:
  mov ax, 1
@@ -8860,11 +8851,11 @@ parse: PROC
  je .parse484
  jmp .parse476
 .parse484:
-;-1564 }
+;-1562 }
 
-;-1565 
+;-1563 
 
-;-1566 char *arglen=0x80; char *argv=0x82;
+;-1564 char *arglen=0x80; char *argv=0x82;
 
  .retnparse:
  ret
@@ -8872,13 +8863,13 @@ parse_0 db "define expected",0
 ENDP
 arglen dw 128
 argv dw 130
-;-1567 int main() {
+;-1565 int main() {
 
 
 main: PROC
-;-1568     int arglen1; unsigned int i; char *c;
+;-1566     int arglen1; unsigned int i; char *c;
 
-;-1569     isPrint=1;
+;-1567     isPrint=1;
 
 ;Function : main, Number local Var: 3
 ; # type sign width local variables
@@ -8888,62 +8879,62 @@ main: PROC
  ENTER  6,0
  mov ax, 1
  mov byte [isPrint], al
-;-1570     arglen1=*arglen;
+;-1568     arglen1=*arglen;
 
  mov bx, [arglen]
  mov al, [bx]
  mov ah, 0
  mov [bp-2], ax
-;-1571     if (arglen1 == 0) {
+;-1569     if (arglen1 == 0) {
 
  mov ax, [bp-2]
  cmp ax, 0
  jne .main485
-;-1572         cputs(Version1);
+;-1570         cputs(Version1);
 
  lea  ax, [Version1]
  push ax
  call cputs
  add  sp, 2
-;-1573         cputs(" Usage: A.COM in_file[.C]: ");
+;-1571         cputs(" Usage: A.COM in_file[.C]: ");
 
  push main_0
  call cputs
  add  sp, 2
-;-1574         exitR(3);
+;-1572         exitR(3);
 
  push 3
  call exitR
  add  sp, 2
-;-1575         }
+;-1573         }
 
-;-1576     i=arglen1+129;
+;-1574     i=arglen1+129;
 
 .main485:
  mov ax, [bp-2]
  add ax, 129
  mov [bp-4], ax
-;-1577     *i=0;
+;-1575     *i=0;
 
  mov ax, 0
  mov  bx, [bp-4]
  mov  [bx], ax
-;-1578     arglen1--;
+;-1576     arglen1--;
 
  dec  word[bp-2]
-;-1579     toupper(argv);
+;-1577     toupper(argv);
 
  push word [argv]
  call toupper
  add  sp, 2
-;-1580     strcpy(namein, argv);
+;-1578     strcpy(namein, argv);
 
  push word [argv]
  lea  ax, [namein]
  push ax
  call strcpy
  add  sp, 4
-;-1581     if (instr1(namein, '.') == 0) strcat(namein, ".C");
+;-1579     if (instr1(namein, '.') == 0) strcat(namein, ".C");
 
  push 46
  lea  ax, [namein]
@@ -8957,7 +8948,7 @@ main: PROC
  push ax
  call strcat
  add  sp, 4
-;-1582     strcpy(namelst, namein);
+;-1580     strcpy(namelst, namein);
 
 .main486:
  lea  ax, [namein]
@@ -8966,59 +8957,59 @@ main: PROC
  push ax
  call strcpy
  add  sp, 4
-;-1583     i=strlen(namelst);
+;-1581     i=strlen(namelst);
 
  lea  ax, [namelst]
  push ax
  call strlen
  add  sp, 2
  mov [bp-4], ax
-;-1584     i--;
+;-1582     i--;
 
  dec  word[bp-4]
-;-1585     c=&namelst+i;
+;-1583     c=&namelst+i;
 
  mov ax, namelst
  add ax, [bp-4]
  mov [bp-6], ax
-;-1586     *c='S';
+;-1584     *c='S';
 
  mov ax, 83
  mov  bx, [bp-6]
  mov  [bx], al
-;-1587 
+;-1585 
 
-;-1588     fdin=openR (namein);
+;-1586     fdin=openR (namein);
 
  lea  ax, [namein]
  push ax
  call openR
  add  sp, 2
  mov word [fdin], ax
-;-1589     if(DOS_ERR){
+;-1587     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
  je .main487
-;-1590         cputs("Source file missing (.C): ");
+;-1588         cputs("Source file missing (.C): ");
 
  push main_2
  call cputs
  add  sp, 2
-;-1591         cputs(namein);
+;-1589         cputs(namein);
 
  lea  ax, [namein]
  push ax
  call cputs
  add  sp, 2
-;-1592         exitR(1);
+;-1590         exitR(1);
 
  push 1
  call exitR
  add  sp, 2
-;-1593         }
+;-1591         }
 
-;-1594     fdout=creatR(namelst);
+;-1592     fdout=creatR(namelst);
 
 .main487:
  lea  ax, [namelst]
@@ -9026,42 +9017,42 @@ main: PROC
  call creatR
  add  sp, 2
  mov word [fdout], ax
-;-1595     if(DOS_ERR){
+;-1593     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
  je .main488
-;-1596         cputs("list file not creatable: ");
+;-1594         cputs("list file not creatable: ");
 
  push main_3
  call cputs
  add  sp, 2
-;-1597         cputs(namelst);
+;-1595         cputs(namelst);
 
  lea  ax, [namelst]
  push ax
  call cputs
  add  sp, 2
-;-1598         exitR(2);
+;-1596         exitR(2);
 
  push 2
  call exitR
  add  sp, 2
-;-1599         }
+;-1597         }
 
-;-1600     printstring(";");
+;-1598     printstring(";");
 
 .main488:
  push main_4
  call printstring
  add  sp, 2
-;-1601     printstring(Version1);
+;-1599     printstring(Version1);
 
  lea  ax, [Version1]
  push ax
  call printstring
  add  sp, 2
-;-1602     printstring(", Input: "); printstring(namein);
+;-1600     printstring(", Input: "); printstring(namein);
 
  push main_5
  call printstring
@@ -9070,7 +9061,7 @@ main: PROC
  push ax
  call printstring
  add  sp, 2
-;-1603     printstring(", Output: "); printstring(namelst);
+;-1601     printstring(", Output: "); printstring(namelst);
 
  push main_6
  call printstring
@@ -9079,67 +9070,67 @@ main: PROC
  push ax
  call printstring
  add  sp, 2
-;-1604     isPrint=0;
+;-1602     isPrint=0;
 
  mov ax, 0
  mov byte [isPrint], al
-;-1605     printstring("\norg  256 \njmp main");
+;-1603     printstring("\norg  256 \njmp main");
 
  push main_7
  call printstring
  add  sp, 2
-;-1606 
+;-1604 
 
-;-1607     LTop=LStart;//new todo put in dofunction
+;-1605     LTop=LStart;//new todo put in dofunction
 
  mov ax, [LStart]
  mov word [LTop], ax
-;-1608 
+;-1606 
 
-;-1609     VarNamePtr= &VarNames;
+;-1607     VarNamePtr= &VarNames;
 
  mov ax, VarNames
  mov word [VarNamePtr], ax
-;-1610     FunctionNamePtr= &FunctionNames;
+;-1608     FunctionNamePtr= &FunctionNames;
 
  mov ax, FunctionNames
  mov word [FunctionNamePtr], ax
-;-1611     FunctionMaxIx=0;
+;-1609     FunctionMaxIx=0;
 
  mov ax, 0
  mov word [FunctionMaxIx], ax
-;-1612     orgDatai=ORGDATAORIG;
+;-1610     orgDatai=orgDataOriginal;
 
- mov ax, [ORGDATAORIG]
+ mov ax, [orgDataOriginal]
  mov word [orgDatai], ax
-;-1613     fgetsp=&fgetsdest;
+;-1611     fgetsp=&fgetsdest;
 
  mov ax, fgetsdest
  mov word [fgetsp], ax
-;-1614     *fgetsp=0;
+;-1612     *fgetsp=0;
 
  mov ax, 0
  mov  bx, [fgetsp]
  mov  [bx], al
-;-1615     thechar=fgets1();
+;-1613     thechar=fgets1();
 
  call fgets1
  mov byte [thechar], al
-;-1616 
+;-1614 
 
-;-1617     parse();
+;-1615     parse();
 
  call parse
-;-1618 
+;-1616 
 
-;-1619     isPrint=1;
+;-1617     isPrint=1;
 
  mov ax, 1
  mov byte [isPrint], al
-;-1620     GTop--;
+;-1618     GTop--;
 
  dec  word[GTop]
-;-1621     printstring("\n;Glob. variables:");     printunsigned(GTop);
+;-1619     printstring("\n;Glob. variables:");     printunsigned(GTop);
 
  push main_8
  call printstring
@@ -9147,7 +9138,7 @@ main: PROC
  push word [GTop]
  call printunsigned
  add  sp, 2
-;-1622     printstring(" (");                      printunsigned(VARMAX);
+;-1620     printstring(" (");                      printunsigned(VARMAX);
 
  push main_9
  call printstring
@@ -9155,7 +9146,7 @@ main: PROC
  push 400
  call printunsigned
  add  sp, 2
-;-1623     printstring("), Functions:");           printunsigned(FunctionMaxIx);
+;-1621     printstring("), Functions:");           printunsigned(FunctionMaxIx);
 
  push main_10
  call printstring
@@ -9163,7 +9154,7 @@ main: PROC
  push word [FunctionMaxIx]
  call printunsigned
  add  sp, 2
-;-1624     printstring(" (");                      printunsigned(FUNCMAX);
+;-1622     printstring(" (");                      printunsigned(FUNCMAX);
 
  push main_11
  call printstring
@@ -9171,7 +9162,7 @@ main: PROC
  push 300
  call printunsigned
  add  sp, 2
-;-1625     printstring("), Lines:");               printunsigned(lineno);
+;-1623     printstring("), Lines:");               printunsigned(lineno);
 
  push main_12
  call printstring
@@ -9179,7 +9170,7 @@ main: PROC
  push word [lineno]
  call printunsigned
  add  sp, 2
-;-1626     printstring("\n;Constant: ");           printunsigned(maxco);
+;-1624     printstring("\n;Constant: ");           printunsigned(maxco);
 
  push main_13
  call printstring
@@ -9187,7 +9178,7 @@ main: PROC
  push word [maxco]
  call printunsigned
  add  sp, 2
-;-1627     printstring(" (");                      printunsigned(COMAX);
+;-1625     printstring(" (");                      printunsigned(COMAX);
 
  push main_14
  call printstring
@@ -9195,16 +9186,16 @@ main: PROC
  push 3000
  call printunsigned
  add  sp, 2
-;-1628     i=COMAX;
+;-1626     i=COMAX;
 
  mov ax, 3000
  mov [bp-4], ax
-;-1629     i=i-maxco;
+;-1627     i=i-maxco;
 
  mov ax, [bp-4]
  sub ax, [maxco]
  mov [bp-4], ax
-;-1630     if (i <= 1000)printstring("\n ** Warning ** constant area too small");
+;-1628     if (i <= 1000)printstring("\n ** Warning ** constant area too small");
 
  mov ax, [bp-4]
  cmp ax, 1000
@@ -9212,27 +9203,27 @@ main: PROC
  push main_15
  call printstring
  add  sp, 2
-;-1631     printstring("), stacksize: ");
+;-1629     printstring("), stacksize: ");
 
 .main489:
  push main_16
  call printstring
  add  sp, 2
-;-1632     i=65536;
+;-1630     i=65536;
 
  mov ax, 0
  mov [bp-4], ax
-;-1633     i=i-orgDatai;
+;-1631     i=i-orgDatai;
 
  mov ax, [bp-4]
  sub ax, [orgDatai]
  mov [bp-4], ax
-;-1634     printunsigned(i);
+;-1632     printunsigned(i);
 
  push word [bp-4]
  call printunsigned
  add  sp, 2
-;-1635     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+;-1633     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
  mov ax, [bp-4]
  cmp ax, 1000
@@ -9240,13 +9231,13 @@ main: PROC
  push main_17
  call printstring
  add  sp, 2
-;-1636     end1(0);
+;-1634     end1(0);
 
 .main490:
  push 0
  call end1
  add  sp, 2
-;-1637 }
+;-1635 }
 
  LEAVE
  ret
@@ -9269,5 +9260,5 @@ main_15 db "\n ** Warning ** constant area too small",0
 main_16 db "), stacksize: ",0
 main_17 db "\n *** Warning *** Stack too small",0
 ENDP
-;Glob. variables:105 (400), Functions:76 (300), Lines:1638
+;Glob. variables:105 (400), Functions:76 (300), Lines:1636
 ;Constant: 688 (3000), stacksize: 16106
