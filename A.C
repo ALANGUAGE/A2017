@@ -37,7 +37,7 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 #define T_GREATGREAT 1241
 
 char isPrint=1;//set screen listing
-//#define ORGDATA     24000 // set it to end of text
+#define ORGDATA     24000 // set it to end of text
 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
 unsigned int orgDatai;//actual max of array, must be less than stack
 #define COMAX        3000
@@ -1528,12 +1528,13 @@ int dodefine() {
     expect(T_NAME);
     if (token==T_CONST) {
         if (GTop >= VARMAX) error1("global table (define) full");
-        i=strlen(Symbol);
-        if (i>IDLENMAX) error1("Define name too long");
+        checknamelen();
+        if (checkName() != 0) error1("#Define var already defined");
         if (eqstr(Symbol, "ORGDATA")) {
-            token=getlex();
+//            token=getlex();
             ORGDATAORIG=lexval;
             orgDatai=lexval;
+            expect(T_CONST);//new
             return;
         }
         GSign [GTop]='U';
@@ -1618,7 +1619,7 @@ int main() {
     isPrint=1;
     GTop--;
     printstring("\n;Glob. variables:");     printunsigned(GTop);
-    printstring(" (");                      printunsigned(LStart);
+    printstring(" (");                      printunsigned(VARMAX);
     printstring("), Functions:");           printunsigned(FunctionMaxIx);
     printstring(" (");                      printunsigned(FUNCMAX);
     printstring("), Lines:");               printunsigned(lineno);
