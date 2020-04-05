@@ -37,9 +37,9 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 #define T_GREATGREAT 1241
 
 char isPrint=1;//set screen listing
+//#define ORGDATA     24000 // set it to end of text
 unsigned int ORGDATAORIG=25000;//start of arrays, end of text
-unsigned int orgData;//actual max of array, must be less than stack
-#define ORGDATA     24000// set it to end of text
+unsigned int orgDatai;//actual max of array, must be less than stack
 #define COMAX        3000
 char co[COMAX];//constant storage
 int maxco=0;
@@ -65,7 +65,6 @@ int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
 #define VARMAX        400//max global and local var
-#define LSTART        300//max global var
 #define GNAMEMAX    12800// 32*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
@@ -76,7 +75,8 @@ char GNameField[GNAMEMAX];
 char VarNames[4000];    //Space for global and local var names
 char *VarNamePtr;       //first free position
 int GTop=1;
-int LTop=LSTART;
+int LStart=300;          //max global var
+int LTop=300;
 
 #define FUNCMAX       300//max functions
 #define FUNCTIONNAMESMAX 3000//Space for preceeding functon names
@@ -401,7 +401,7 @@ int adrF(char *s, unsigned int i) {
 
 int printName(unsigned int i) {
     int j;
-    if (i < LSTART) {
+    if (i < LStart) {
         i=adrF(GNameField, i);
         printstring(i);
     }
@@ -574,9 +574,9 @@ int expect(int t) {
 }
 
 int v(unsigned int i) {//value
-    if (i < LSTART) prc('[');
+    if (i < LStart) prc('[');
     printName(i);
-    if (i < LSTART) prc(']');
+    if (i < LStart) prc(']');
 }
 int checknamelen() {
     int i;
@@ -586,7 +586,7 @@ int checknamelen() {
 
 int checkName() {
     unsigned int i; unsigned int j;
-    i=LSTART;
+    i=LStart;
     while(i<LTop) {
         j=adrF(GNameField, i);
         if(eqstr(Symbol,j))return i;
@@ -879,21 +879,21 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
         }
     if (wi==1){
         printstring("\n mov ");
-        if(i<LSTART) printstring("byte ");
+        if(i<LStart) printstring("byte ");
         v(i);
         printstring(", al");
         return;
         }
     if (wi==2){
         printstring("\n mov ");
-        if(i<LSTART) printstring("word ");
+        if(i<LStart) printstring("word ");
         v(i);
         printstring(", ax");
         return;
         }
     if (wi==4){
         printstring("\n mov ");
-        if(i<LSTART) printstring("dword ");
+        if(i<LStart) printstring("dword ");
         v(i);
         printstring(", eax");
         return;
@@ -1312,7 +1312,7 @@ int listvar(unsigned int i) {
         printunsigned(j);
         prc(']');
     }
-    if (i >= LSTART) {
+    if (i >= LStart) {
         printstring(" = bp");
         j=GData[i];
         if (j > 0) prc('+');
@@ -1322,14 +1322,14 @@ int listvar(unsigned int i) {
 
 int listproc() {
     int i;
-    if (LTop > LSTART) {
+    if (LTop > LStart) {
         printstring("\n;Function : ");
         printstring(fname);
         printstring(", Number local Var: ");
-        i=LTop - LSTART;
+        i=LTop - LStart;
         printunsigned(i);
         printstring("\n; # type sign width local variables");
-        i=LSTART;
+        i=LStart;
         while (i < LTop) {
             listvar(i);
             i++;
@@ -1364,6 +1364,7 @@ int storeFunction() {
 
 int dofunc() {
     int nloc; unsigned int j;int narg;
+    int VarNamePtrLocalStart;
     cloc=&co;
     checknamelen();
     strcpy(fname, Symbol);
@@ -1374,8 +1375,10 @@ int dofunc() {
     printstring(Symbol);
     printstring(": PROC");
     expect('(');
-    LTop=LSTART;
-    
+    LStart=GTop;
+    LTop=LStart;
+    VarNamePtrLocalStart=VarNamePtr;
+
     if (istoken(')')==0) {
         narg=2;
         do {
@@ -1416,7 +1419,7 @@ int dofunc() {
         expect(';');
     }
     listproc();
-    if (LTop>LSTART){
+    if (LTop>LStart){
         printstring(";\n ENTER  ");
         nloc=mkneg(nloc);
         printunsigned (nloc);
@@ -1430,20 +1433,21 @@ int dofunc() {
             printstring(fname);
             prc(':');
         }
-    if (LTop > LSTART) printstring("\n LEAVE");
+    if (LTop > LStart) printstring("\n LEAVE");
     printstring("\n ret");
     *cloc=0;
     printstring(co);
     maxco1=strlen(co);
     if (maxco1 > maxco) maxco=maxco1;
     printstring("\nENDP");
+    VarNamePtr=VarNamePtrLocalStart;//delete local names
 }
 
 char doglobName[IDLENMAX];
 int doglob() {
     int i; int j; int isstrarr;
     isstrarr=0;
-    if (GTop >= LSTART) error1("Global table full");
+    if (GTop >= VARMAX) error1("Global table full");
     if (iswidth == 0) error1("no VOID as var type");
     checknamelen();
     if (checkName() != 0) error1("Variable already defined");
@@ -1451,16 +1455,16 @@ int doglob() {
         istype='&';
         if (istoken(T_CONST)) {
             printstring("\nsection .bss\nabsolute ");
-            printunsigned(orgData);
+            printunsigned(orgDatai);
             printstring("\n"); printstring(Symbol);
             if (iswidth==1) printstring(" resb ");
             if (iswidth==2) printstring(" resw ");
             if (iswidth==4) printstring(" resd ");
             printunsigned(lexval);
             printstring("\nsection .text");
-            orgData=orgData+lexval;
-            if (iswidth==2) orgData=orgData+lexval;
-            if (iswidth==4) {i= lexval * 3; orgData=orgData + i;}
+            orgDatai=orgDatai+lexval;
+            if (iswidth==2) orgDatai=orgDatai+lexval;
+            if (iswidth==4) {i= lexval * 3; orgDatai=orgDatai + i;}
             GData[GTop]=lexval;
             expect(']');
         }else {
@@ -1514,6 +1518,7 @@ int doglob() {
     pt=adrF(GNameField, GTop);
     if (isstrarr) strcpy(pt, doglobName);
         else strcpy(pt, Symbol);
+
     GTop++;
     expect(';');
 }
@@ -1522,13 +1527,13 @@ int dodefine() {
     int i;
     expect(T_NAME);
     if (token==T_CONST) {
-        if (GTop >= LSTART) error1("global table (define) full");
+        if (GTop >= VARMAX) error1("global table (define) full");
         i=strlen(Symbol);
         if (i>IDLENMAX) error1("Define name too long");
         if (eqstr(Symbol, "ORGDATA")) {
             token=getlex();
             ORGDATAORIG=lexval;
-            orgData=lexval;
+            orgDatai=lexval;
             return;
         }
         GSign [GTop]='U';
@@ -1598,10 +1603,12 @@ int main() {
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
+    LTop=LStart;//new todo put in dofunction
+
     VarNamePtr= &VarNames;
     FunctionNamePtr= &FunctionNames;
     FunctionMaxIx=0;
-    orgData=ORGDATAORIG;
+    orgDatai=ORGDATAORIG;
     fgetsp=&fgetsdest;
     *fgetsp=0;
     thechar=fgets1();
@@ -1611,7 +1618,7 @@ int main() {
     isPrint=1;
     GTop--;
     printstring("\n;Glob. variables:");     printunsigned(GTop);
-    printstring(" (");                      printunsigned(LSTART);
+    printstring(" (");                      printunsigned(LStart);
     printstring("), Functions:");           printunsigned(FunctionMaxIx);
     printstring(" (");                      printunsigned(FUNCMAX);
     printstring("), Lines:");               printunsigned(lineno);
@@ -1622,7 +1629,7 @@ int main() {
     if (i <= 1000)printstring("\n ** Warning ** constant area too small");
     printstring("), stacksize: ");
     i=65536;
-    i=i-orgData;
+    i=i-orgDatai;
     printunsigned(i);
     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
     end1(0);
