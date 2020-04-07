@@ -71,11 +71,11 @@ char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
 int  GData [VARMAX];
 char GNameField[GNAMEMAX];
-#define VARNAMESMAX 3969//VARMAX * 10 - IDLENMAX
-char VarNames[4000];    //Space for global and local var names
-char *VarNamePtr;       //first free position
-int GTop=1;
-int LStart=300;          //max global var
+#define VARNAMESMAX 4000//VARMAX * 10 - IDLENMAX
+char VarNames[VARNAMESMAX];//Space for global and local var names
+char *VarNamePtr;   //first free position
+int GTop=1;         //0 = empty
+int LStart=300;     //max global var
 int LTop=300;
 
 #define FUNCMAX       300//max functions
@@ -389,7 +389,7 @@ int storeVarName() {
     VarNamePtr++;
     i = VarNamePtr - &VarNames;
     i += IDLENMAX;
-    if (i > VARNAMESMAX) error1("too many Variable names");
+    if (i > VARNAMESMAX) error1("too many variable names");
 
     //todo dofunction set start of local VarNamePtr
 }
@@ -1341,7 +1341,7 @@ int searchFunction() {
     int FunctionIndex; char *p;
     p= &FunctionNames;
     FunctionIndex=1;          //0=function name not found
-    while (FunctionIndex <= FunctionMaxIx) {
+    while (FunctionIndex <= FunctionMaxIx ) {
         if (eqstr(p, Symbol)) return FunctionIndex;
         p = strlen(p) + p;
         p++;
