@@ -9107,7 +9107,7 @@ epilog: PROC
 ;-1608     GTop--;
 
  dec  word[GTop]
-;-1609     printstring("\n;Glob. variables:");  printunsigned(GTop);
+;-1609     printstring("\n;Glob. variables:"); printunsigned(GTop);
 
  push epilog_0
  call printstring
@@ -9115,7 +9115,7 @@ epilog: PROC
  push word [GTop]
  call printunsigned
  add  sp, 2
-;-1610     printstring(" (");                   printunsigned(VARMAX);
+;-1610     printstring(" (");                  printunsigned(VARMAX);
 
  push epilog_1
  call printstring
@@ -9123,186 +9123,214 @@ epilog: PROC
  push 400
  call printunsigned
  add  sp, 2
-;-1611     printstring("), Functions:");        printunsigned(FunctionMaxIx);
+;-1611     i = VarNamePtr - &VarNames;
+
+ mov ax, [VarNamePtr]
+ sub ax, VarNames
+ mov [bp-2], ax
+;-1612     printstring("):");                  printunsigned(i);
 
  push epilog_2
+ call printstring
+ add  sp, 2
+ push word [bp-2]
+ call printunsigned
+ add  sp, 2
+;-1613     printstring(", Functions:");        printunsigned(FunctionMaxIx);
+
+ push epilog_3
  call printstring
  add  sp, 2
  push word [FunctionMaxIx]
  call printunsigned
  add  sp, 2
-;-1612     printstring(" (");                   printunsigned(FUNCMAX);
+;-1614     printstring(" (");                  printunsigned(FUNCMAX);
 
- push epilog_3
+ push epilog_4
  call printstring
  add  sp, 2
  push 300
  call printunsigned
  add  sp, 2
-;-1613     printstring("), Lines:");            printunsigned(lineno);
+;-1615     i = FunctionNamePtr - &FunctionNames;
 
- push epilog_4
+ mov ax, [FunctionNamePtr]
+ sub ax, FunctionNames
+ mov [bp-2], ax
+;-1616     printstring("):");                  printunsigned(i);
+
+ push epilog_5
+ call printstring
+ add  sp, 2
+ push word [bp-2]
+ call printunsigned
+ add  sp, 2
+;-1617     printstring(", Lines:");            printunsigned(lineno);
+
+ push epilog_6
  call printstring
  add  sp, 2
  push word [lineno]
  call printunsigned
  add  sp, 2
-;-1614     printstring("\n;Constant: ");        printunsigned(maxco);
+;-1618     printstring("\n;Constant: ");       printunsigned(maxco);
 
- push epilog_5
+ push epilog_7
  call printstring
  add  sp, 2
  push word [maxco]
  call printunsigned
  add  sp, 2
-;-1615     printstring(" (");                   printunsigned(COMAX);
+;-1619     printstring(" (");                  printunsigned(COMAX);
 
- push epilog_6
+ push epilog_8
  call printstring
  add  sp, 2
  push 3000
  call printunsigned
  add  sp, 2
-;-1616     i=COMAX;
+;-1620     i = COMAX;
 
  mov ax, 3000
  mov [bp-2], ax
-;-1617     i=i-maxco;
+;-1621     i = i - maxco;
 
  mov ax, [bp-2]
  sub ax, [maxco]
  mov [bp-2], ax
-;-1618     if (i<=1000)printstring("\n ** Warning ** constant area too small");
+;-1622     if (i<=1000)printstring("\n ** Warning ** constant area too small");
 
  mov ax, [bp-2]
  cmp ax, 1000
  jg  .epilog489
- push epilog_7
+ push epilog_9
  call printstring
  add  sp, 2
-;-1619     printstring("), stacksize: ");
+;-1623     printstring("), stacksize: ");
 
 .epilog489:
- push epilog_8
+ push epilog_10
  call printstring
  add  sp, 2
-;-1620     i=65536;
+;-1624     i=65536;
 
  mov ax, 0
  mov [bp-2], ax
-;-1621     i=i-orgDatai;
+;-1625     i=i-orgDatai;
 
  mov ax, [bp-2]
  sub ax, [orgDatai]
  mov [bp-2], ax
-;-1622     printunsigned(i);
+;-1626     printunsigned(i);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1623     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+;-1627     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
  mov ax, [bp-2]
  cmp ax, 1000
  jg  .epilog490
- push epilog_9
+ push epilog_11
  call printstring
  add  sp, 2
-;-1624 
+;-1628 
 
-;-1625 }
+;-1629 }
 
 .epilog490:
-;-1626 
+;-1630 
 
-;-1627 int main() {
+;-1631 int main() {
 
  LEAVE
  ret
 epilog_0 db "\n;Glob. variables:",0
 epilog_1 db " (",0
-epilog_2 db "), Functions:",0
-epilog_3 db " (",0
-epilog_4 db "), Lines:",0
-epilog_5 db "\n;Constant: ",0
-epilog_6 db " (",0
-epilog_7 db "\n ** Warning ** constant area too small",0
-epilog_8 db "), stacksize: ",0
-epilog_9 db "\n *** Warning *** Stack too small",0
+epilog_2 db "):",0
+epilog_3 db ", Functions:",0
+epilog_4 db " (",0
+epilog_5 db "):",0
+epilog_6 db ", Lines:",0
+epilog_7 db "\n;Constant: ",0
+epilog_8 db " (",0
+epilog_9 db "\n ** Warning ** constant area too small",0
+epilog_10 db "), stacksize: ",0
+epilog_11 db "\n *** Warning *** Stack too small",0
 ENDP
 
 main: PROC
-;-1628     getarguments();
+;-1632     getarguments();
 
  call getarguments
-;-1629     openfiles();
+;-1633     openfiles();
 
  call openfiles
-;-1630     isPrint=0;
+;-1634     isPrint=0;
 
  mov ax, 0
  mov byte [isPrint], al
-;-1631     printstring("\norg  256 \njmp main");
+;-1635     printstring("\norg  256 \njmp main");
 
  push main_0
  call printstring
  add  sp, 2
-;-1632 
+;-1636 
 
-;-1633     LTop=LStart;//new todo put in dofunction
+;-1637     LTop=LStart;//new todo put in dofunction
 
  mov ax, [LStart]
  mov word [LTop], ax
-;-1634 
+;-1638 
 
-;-1635     VarNamePtr= &VarNames;
+;-1639     VarNamePtr= &VarNames;
 
  mov ax, VarNames
  mov word [VarNamePtr], ax
-;-1636     FunctionNamePtr= &FunctionNames;
+;-1640     FunctionNamePtr= &FunctionNames;
 
  mov ax, FunctionNames
  mov word [FunctionNamePtr], ax
-;-1637     FunctionMaxIx=0;
+;-1641     FunctionMaxIx=0;
 
  mov ax, 0
  mov word [FunctionMaxIx], ax
-;-1638     orgDatai=orgDataOriginal;
+;-1642     orgDatai=orgDataOriginal;
 
  mov ax, [orgDataOriginal]
  mov word [orgDatai], ax
-;-1639     fgetsp=&fgetsdest;
+;-1643     fgetsp=&fgetsdest;
 
  mov ax, fgetsdest
  mov word [fgetsp], ax
-;-1640     *fgetsp=0;
+;-1644     *fgetsp=0;
 
  mov ax, 0
  mov  bx, [fgetsp]
  mov  [bx], al
-;-1641     thechar=fgets1();
+;-1645     thechar=fgets1();
 
  call fgets1
  mov byte [thechar], al
-;-1642 
+;-1646 
 
-;-1643     parse();
+;-1647     parse();
 
  call parse
-;-1644     
+;-1648 
 
-;-1645     epilog();
+;-1649     epilog();
 
  call epilog
-;-1646     end1(0);
+;-1650     end1(0);
 
  push 0
  call end1
  add  sp, 2
-;-1647 }
+;-1651 }
 
  ret
 main_0 db "\norg  256 \njmp main",0
 ENDP
-;Glob. variables:105 (400), Functions:79 (300), Lines:1648
+;Glob. variables:105 (400):0, Functions:79 (300):628, Lines:1652
 ;Constant: 688 (3000), stacksize: 16106

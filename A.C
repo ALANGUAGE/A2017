@@ -1606,15 +1606,19 @@ int epilog() {
     int i;
     isPrint=1;
     GTop--;
-    printstring("\n;Glob. variables:");  printunsigned(GTop);
-    printstring(" (");                   printunsigned(VARMAX);
-    printstring("), Functions:");        printunsigned(FunctionMaxIx);
-    printstring(" (");                   printunsigned(FUNCMAX);
-    printstring("), Lines:");            printunsigned(lineno);
-    printstring("\n;Constant: ");        printunsigned(maxco);
-    printstring(" (");                   printunsigned(COMAX);
-    i=COMAX;
-    i=i-maxco;
+    printstring("\n;Glob. variables:"); printunsigned(GTop);
+    printstring(" (");                  printunsigned(VARMAX);
+    i = VarNamePtr - &VarNames;
+    printstring("):");                  printunsigned(i);
+    printstring(", Functions:");        printunsigned(FunctionMaxIx);
+    printstring(" (");                  printunsigned(FUNCMAX);
+    i = FunctionNamePtr - &FunctionNames;
+    printstring("):");                  printunsigned(i);
+    printstring(", Lines:");            printunsigned(lineno);
+    printstring("\n;Constant: ");       printunsigned(maxco);
+    printstring(" (");                  printunsigned(COMAX);
+    i = COMAX;
+    i = i - maxco;
     if (i<=1000)printstring("\n ** Warning ** constant area too small");
     printstring("), stacksize: ");
     i=65536;
@@ -1641,7 +1645,7 @@ int main() {
     thechar=fgets1();
 
     parse();
-    
+
     epilog();
     end1(0);
 }
