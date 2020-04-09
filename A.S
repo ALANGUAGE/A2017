@@ -211,21 +211,21 @@ section .bss
 absolute 29329
 GNameField resb 12800
 section .text
-;-74 #define VARNAMESMAX 3969//VARMAX * 10 - IDLENMAX
+;-74 #define VARNAMESMAX 4000//VARMAX * 10 - IDLENMAX
 
-;-75 char VarNames[4000];    //Space for global and local var names
+;-75 char VarNames[VARNAMESMAX];//Space for global and local var names
 
 section .bss
 absolute 42129
 VarNames resb 4000
 section .text
-;-76 char *VarNamePtr;       //first free position
+;-76 char *VarNamePtr;   //first free position
 
 VarNamePtr dw 0
-;-77 int GTop=1;
+;-77 int GTop=1;         //0 = empty
 
 GTop dw 1
-;-78 int LStart=300;          //max global var
+;-78 int LStart=300;     //max global var
 
 LStart dw 300
 ;-79 int LTop=300;
@@ -1823,10 +1823,10 @@ storeVarName: PROC
 ;-391     i += IDLENMAX;
 
  add  word[bp-2], 31
-;-392     if (i > VARNAMESMAX) error1("too many Variable names");
+;-392     if (i > VARNAMESMAX) error1("too many variable names");
 
  mov ax, [bp-2]
- cmp ax, 3969
+ cmp ax, 4000
  jle .storeVarName59
  push storeVarName_0
  call error1
@@ -1844,7 +1844,7 @@ storeVarName: PROC
 
  LEAVE
  ret
-storeVarName_0 db "too many Variable names",0
+storeVarName_0 db "too many variable names",0
 ENDP
 
 adrF: PROC
@@ -7660,7 +7660,7 @@ searchFunction: PROC
 
  mov ax, 1
  mov [bp-2], ax
-;-1344     while (FunctionIndex <= FunctionMaxIx) {
+;-1344     while (FunctionIndex <= FunctionMaxIx ) {
 
 .searchFunction419:
  mov ax, [bp-2]
@@ -8863,15 +8863,15 @@ parse_0 db "define expected",0
 ENDP
 arglen dw 128
 argv dw 130
-;-1565 int main() {
+;-1565 int getarguments() {
 
 
-main: PROC
+getarguments: PROC
 ;-1566     int arglen1; unsigned int i; char *c;
 
 ;-1567     isPrint=1;
 
-;Function : main, Number local Var: 3
+;Function : getarguments, Number local Var: 3
 ; # type sign width local variables
 ;106 var sign word arglen1 = bp-2
 ;107 var unsg word i = bp-4
@@ -8889,7 +8889,7 @@ main: PROC
 
  mov ax, [bp-2]
  cmp ax, 0
- jne .main485
+ jne .getarguments485
 ;-1570         cputs(Version1);
 
  lea  ax, [Version1]
@@ -8898,7 +8898,7 @@ main: PROC
  add  sp, 2
 ;-1571         cputs(" Usage: A.COM in_file[.C]: ");
 
- push main_0
+ push getarguments_0
  call cputs
  add  sp, 2
 ;-1572         exitR(3);
@@ -8910,7 +8910,7 @@ main: PROC
 
 ;-1574     i=arglen1+129;
 
-.main485:
+.getarguments485:
  mov ax, [bp-2]
  add ax, 129
  mov [bp-4], ax
@@ -8942,15 +8942,15 @@ main: PROC
  call instr1
  add  sp, 4
  cmp ax, 0
- jne .main486
- push main_1
+ jne .getarguments486
+ push getarguments_1
  lea  ax, [namein]
  push ax
  call strcat
  add  sp, 4
 ;-1580     strcpy(namelst, namein);
 
-.main486:
+.getarguments486:
  lea  ax, [namein]
  push ax
  lea  ax, [namelst]
@@ -8977,288 +8977,332 @@ main: PROC
  mov ax, 83
  mov  bx, [bp-6]
  mov  [bx], al
-;-1585 
+;-1585 }
 
-;-1586     fdin=openR (namein);
+;-1586 int openfiles() {
+
+ LEAVE
+ ret
+getarguments_0 db " Usage: A.COM in_file[.C]: ",0
+getarguments_1 db ".C",0
+ENDP
+
+openfiles: PROC
+;-1587     fdin=openR (namein);
 
  lea  ax, [namein]
  push ax
  call openR
  add  sp, 2
  mov word [fdin], ax
-;-1587     if(DOS_ERR){
+;-1588     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
- je .main487
-;-1588         cputs("Source file missing (.C): ");
+ je .openfiles487
+;-1589         cputs("Source file missing (.C): ");
 
- push main_2
+ push openfiles_0
  call cputs
  add  sp, 2
-;-1589         cputs(namein);
+;-1590         cputs(namein);
 
  lea  ax, [namein]
  push ax
  call cputs
  add  sp, 2
-;-1590         exitR(1);
+;-1591         exitR(1);
 
  push 1
  call exitR
  add  sp, 2
-;-1591         }
+;-1592         }
 
-;-1592     fdout=creatR(namelst);
+;-1593     fdout=creatR(namelst);
 
-.main487:
+.openfiles487:
  lea  ax, [namelst]
  push ax
  call creatR
  add  sp, 2
  mov word [fdout], ax
-;-1593     if(DOS_ERR){
+;-1594     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
- je .main488
-;-1594         cputs("list file not creatable: ");
+ je .openfiles488
+;-1595         cputs("list file not creatable: ");
 
- push main_3
+ push openfiles_1
  call cputs
  add  sp, 2
-;-1595         cputs(namelst);
+;-1596         cputs(namelst);
 
  lea  ax, [namelst]
  push ax
  call cputs
  add  sp, 2
-;-1596         exitR(2);
+;-1597         exitR(2);
 
  push 2
  call exitR
  add  sp, 2
-;-1597         }
+;-1598         }
 
-;-1598     printstring(";");
+;-1599     printstring(";");
 
-.main488:
- push main_4
+.openfiles488:
+ push openfiles_2
  call printstring
  add  sp, 2
-;-1599     printstring(Version1);
+;-1600     printstring(Version1);
 
  lea  ax, [Version1]
  push ax
  call printstring
  add  sp, 2
-;-1600     printstring(", Input: "); printstring(namein);
+;-1601     printstring(", Input: "); printstring(namein);
 
- push main_5
+ push openfiles_3
  call printstring
  add  sp, 2
  lea  ax, [namein]
  push ax
  call printstring
  add  sp, 2
-;-1601     printstring(", Output: "); printstring(namelst);
+;-1602     printstring(", Output: "); printstring(namelst);
 
- push main_6
+ push openfiles_4
  call printstring
  add  sp, 2
  lea  ax, [namelst]
  push ax
  call printstring
  add  sp, 2
-;-1602     isPrint=0;
+;-1603 }
 
- mov ax, 0
- mov byte [isPrint], al
-;-1603     printstring("\norg  256 \njmp main");
-
- push main_7
- call printstring
- add  sp, 2
 ;-1604 
 
-;-1605     LTop=LStart;//new todo put in dofunction
+;-1605 int epilog() {
 
- mov ax, [LStart]
- mov word [LTop], ax
-;-1606 
+ ret
+openfiles_0 db "Source file missing (.C): ",0
+openfiles_1 db "list file not creatable: ",0
+openfiles_2 db ";",0
+openfiles_3 db ", Input: ",0
+openfiles_4 db ", Output: ",0
+ENDP
 
-;-1607     VarNamePtr= &VarNames;
+epilog: PROC
+;-1606     int i;
 
- mov ax, VarNames
- mov word [VarNamePtr], ax
-;-1608     FunctionNamePtr= &FunctionNames;
+;-1607     isPrint=1;
 
- mov ax, FunctionNames
- mov word [FunctionNamePtr], ax
-;-1609     FunctionMaxIx=0;
-
- mov ax, 0
- mov word [FunctionMaxIx], ax
-;-1610     orgDatai=orgDataOriginal;
-
- mov ax, [orgDataOriginal]
- mov word [orgDatai], ax
-;-1611     fgetsp=&fgetsdest;
-
- mov ax, fgetsdest
- mov word [fgetsp], ax
-;-1612     *fgetsp=0;
-
- mov ax, 0
- mov  bx, [fgetsp]
- mov  [bx], al
-;-1613     thechar=fgets1();
-
- call fgets1
- mov byte [thechar], al
-;-1614 
-
-;-1615     parse();
-
- call parse
-;-1616 
-
-;-1617     isPrint=1;
-
+;Function : epilog, Number local Var: 1
+; # type sign width local variables
+;106 var sign word i = bp-2;
+ ENTER  2,0
  mov ax, 1
  mov byte [isPrint], al
-;-1618     GTop--;
+;-1608     GTop--;
 
  dec  word[GTop]
-;-1619     printstring("\n;Glob. variables:");     printunsigned(GTop);
+;-1609     printstring("\n;Glob. variables:");  printunsigned(GTop);
 
- push main_8
+ push epilog_0
  call printstring
  add  sp, 2
  push word [GTop]
  call printunsigned
  add  sp, 2
-;-1620     printstring(" (");                      printunsigned(VARMAX);
+;-1610     printstring(" (");                   printunsigned(VARMAX);
 
- push main_9
+ push epilog_1
  call printstring
  add  sp, 2
  push 400
  call printunsigned
  add  sp, 2
-;-1621     printstring("), Functions:");           printunsigned(FunctionMaxIx);
+;-1611     printstring("), Functions:");        printunsigned(FunctionMaxIx);
 
- push main_10
+ push epilog_2
  call printstring
  add  sp, 2
  push word [FunctionMaxIx]
  call printunsigned
  add  sp, 2
-;-1622     printstring(" (");                      printunsigned(FUNCMAX);
+;-1612     printstring(" (");                   printunsigned(FUNCMAX);
 
- push main_11
+ push epilog_3
  call printstring
  add  sp, 2
  push 300
  call printunsigned
  add  sp, 2
-;-1623     printstring("), Lines:");               printunsigned(lineno);
+;-1613     printstring("), Lines:");            printunsigned(lineno);
 
- push main_12
+ push epilog_4
  call printstring
  add  sp, 2
  push word [lineno]
  call printunsigned
  add  sp, 2
-;-1624     printstring("\n;Constant: ");           printunsigned(maxco);
+;-1614     printstring("\n;Constant: ");        printunsigned(maxco);
 
- push main_13
+ push epilog_5
  call printstring
  add  sp, 2
  push word [maxco]
  call printunsigned
  add  sp, 2
-;-1625     printstring(" (");                      printunsigned(COMAX);
+;-1615     printstring(" (");                   printunsigned(COMAX);
 
- push main_14
+ push epilog_6
  call printstring
  add  sp, 2
  push 3000
  call printunsigned
  add  sp, 2
-;-1626     i=COMAX;
+;-1616     i=COMAX;
 
  mov ax, 3000
- mov [bp-4], ax
-;-1627     i=i-maxco;
+ mov [bp-2], ax
+;-1617     i=i-maxco;
 
- mov ax, [bp-4]
+ mov ax, [bp-2]
  sub ax, [maxco]
- mov [bp-4], ax
-;-1628     if (i <= 1000)printstring("\n ** Warning ** constant area too small");
+ mov [bp-2], ax
+;-1618     if (i<=1000)printstring("\n ** Warning ** constant area too small");
 
- mov ax, [bp-4]
+ mov ax, [bp-2]
  cmp ax, 1000
- ja  .main489
- push main_15
+ jg  .epilog489
+ push epilog_7
  call printstring
  add  sp, 2
-;-1629     printstring("), stacksize: ");
+;-1619     printstring("), stacksize: ");
 
-.main489:
- push main_16
+.epilog489:
+ push epilog_8
  call printstring
  add  sp, 2
-;-1630     i=65536;
+;-1620     i=65536;
 
  mov ax, 0
- mov [bp-4], ax
-;-1631     i=i-orgDatai;
+ mov [bp-2], ax
+;-1621     i=i-orgDatai;
 
- mov ax, [bp-4]
+ mov ax, [bp-2]
  sub ax, [orgDatai]
- mov [bp-4], ax
-;-1632     printunsigned(i);
+ mov [bp-2], ax
+;-1622     printunsigned(i);
 
- push word [bp-4]
+ push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1633     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+;-1623     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
- mov ax, [bp-4]
+ mov ax, [bp-2]
  cmp ax, 1000
- ja  .main490
- push main_17
+ jg  .epilog490
+ push epilog_9
  call printstring
  add  sp, 2
-;-1634     end1(0);
+;-1624 
 
-.main490:
- push 0
- call end1
- add  sp, 2
-;-1635 }
+;-1625 }
+
+.epilog490:
+;-1626 
+
+;-1627 int main() {
 
  LEAVE
  ret
-main_0 db " Usage: A.COM in_file[.C]: ",0
-main_1 db ".C",0
-main_2 db "Source file missing (.C): ",0
-main_3 db "list file not creatable: ",0
-main_4 db ";",0
-main_5 db ", Input: ",0
-main_6 db ", Output: ",0
-main_7 db "\norg  256 \njmp main",0
-main_8 db "\n;Glob. variables:",0
-main_9 db " (",0
-main_10 db "), Functions:",0
-main_11 db " (",0
-main_12 db "), Lines:",0
-main_13 db "\n;Constant: ",0
-main_14 db " (",0
-main_15 db "\n ** Warning ** constant area too small",0
-main_16 db "), stacksize: ",0
-main_17 db "\n *** Warning *** Stack too small",0
+epilog_0 db "\n;Glob. variables:",0
+epilog_1 db " (",0
+epilog_2 db "), Functions:",0
+epilog_3 db " (",0
+epilog_4 db "), Lines:",0
+epilog_5 db "\n;Constant: ",0
+epilog_6 db " (",0
+epilog_7 db "\n ** Warning ** constant area too small",0
+epilog_8 db "), stacksize: ",0
+epilog_9 db "\n *** Warning *** Stack too small",0
 ENDP
-;Glob. variables:105 (400), Functions:76 (300), Lines:1636
+
+main: PROC
+;-1628     getarguments();
+
+ call getarguments
+;-1629     openfiles();
+
+ call openfiles
+;-1630     isPrint=0;
+
+ mov ax, 0
+ mov byte [isPrint], al
+;-1631     printstring("\norg  256 \njmp main");
+
+ push main_0
+ call printstring
+ add  sp, 2
+;-1632 
+
+;-1633     LTop=LStart;//new todo put in dofunction
+
+ mov ax, [LStart]
+ mov word [LTop], ax
+;-1634 
+
+;-1635     VarNamePtr= &VarNames;
+
+ mov ax, VarNames
+ mov word [VarNamePtr], ax
+;-1636     FunctionNamePtr= &FunctionNames;
+
+ mov ax, FunctionNames
+ mov word [FunctionNamePtr], ax
+;-1637     FunctionMaxIx=0;
+
+ mov ax, 0
+ mov word [FunctionMaxIx], ax
+;-1638     orgDatai=orgDataOriginal;
+
+ mov ax, [orgDataOriginal]
+ mov word [orgDatai], ax
+;-1639     fgetsp=&fgetsdest;
+
+ mov ax, fgetsdest
+ mov word [fgetsp], ax
+;-1640     *fgetsp=0;
+
+ mov ax, 0
+ mov  bx, [fgetsp]
+ mov  [bx], al
+;-1641     thechar=fgets1();
+
+ call fgets1
+ mov byte [thechar], al
+;-1642 
+
+;-1643     parse();
+
+ call parse
+;-1644     
+
+;-1645     epilog();
+
+ call epilog
+;-1646     end1(0);
+
+ push 0
+ call end1
+ add  sp, 2
+;-1647 }
+
+ ret
+main_0 db "\norg  256 \njmp main",0
+ENDP
+;Glob. variables:105 (400), Functions:79 (300), Lines:1648
 ;Constant: 688 (3000), stacksize: 16106

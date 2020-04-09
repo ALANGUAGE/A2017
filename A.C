@@ -1562,7 +1562,7 @@ int parse() {
 }
 
 char *arglen=0x80; char *argv=0x82;
-int main() {
+int getarguments() {
     int arglen1; unsigned int i; char *c;
     isPrint=1;
     arglen1=*arglen;
@@ -1582,7 +1582,8 @@ int main() {
     i--;
     c=&namelst+i;
     *c='S';
-
+}
+int openfiles() {
     fdin=openR (namein);
     if(DOS_ERR){
         cputs("Source file missing (.C): ");
@@ -1599,6 +1600,33 @@ int main() {
     printstring(Version1);
     printstring(", Input: "); printstring(namein);
     printstring(", Output: "); printstring(namelst);
+}
+
+int epilog() {
+    int i;
+    isPrint=1;
+    GTop--;
+    printstring("\n;Glob. variables:");  printunsigned(GTop);
+    printstring(" (");                   printunsigned(VARMAX);
+    printstring("), Functions:");        printunsigned(FunctionMaxIx);
+    printstring(" (");                   printunsigned(FUNCMAX);
+    printstring("), Lines:");            printunsigned(lineno);
+    printstring("\n;Constant: ");        printunsigned(maxco);
+    printstring(" (");                   printunsigned(COMAX);
+    i=COMAX;
+    i=i-maxco;
+    if (i<=1000)printstring("\n ** Warning ** constant area too small");
+    printstring("), stacksize: ");
+    i=65536;
+    i=i-orgDatai;
+    printunsigned(i);
+    if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+
+}
+
+int main() {
+    getarguments();
+    openfiles();
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
@@ -1613,23 +1641,7 @@ int main() {
     thechar=fgets1();
 
     parse();
-
-    isPrint=1;
-    GTop--;
-    printstring("\n;Glob. variables:");     printunsigned(GTop);
-    printstring(" (");                      printunsigned(VARMAX);
-    printstring("), Functions:");           printunsigned(FunctionMaxIx);
-    printstring(" (");                      printunsigned(FUNCMAX);
-    printstring("), Lines:");               printunsigned(lineno);
-    printstring("\n;Constant: ");           printunsigned(maxco);
-    printstring(" (");                      printunsigned(COMAX);
-    i=COMAX;
-    i=i-maxco;
-    if (i <= 1000)printstring("\n ** Warning ** constant area too small");
-    printstring("), stacksize: ");
-    i=65536;
-    i=i-orgDatai;
-    printunsigned(i);
-    if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+    
+    epilog();
     end1(0);
 }
