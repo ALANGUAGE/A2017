@@ -1376,7 +1376,7 @@ int dofunc() {
     printstring(": PROC");
     expect('(');
     LStart=GTop;
-    LTop=LStart;
+    LTop=GTop;
     VarNamePtrLocalStart=VarNamePtr;
 
     if (istoken(')')==0) {
