@@ -1651,8 +1651,7 @@ int main() {
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
-//	LTop=LStart;//new todo put in dofunction
-
+	GTop = 1;
     VarNamePtr= &VarNames;
     FunctionNamePtr= &FunctionNames;
     FunctionMaxIx=0;
