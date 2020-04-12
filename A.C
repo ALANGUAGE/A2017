@@ -75,8 +75,8 @@ char GNameField[GNAMEMAX];
 char VarNames[VARNAMESMAX];//Space for global and local var names
 char *VarNamePtr;   //first free position
 int GTop=1;         //0 = empty
-int LStart=300;     //max global var
-int LTop=300;
+// int LStart=1  ;     //max global var
+int LTop=1;
 
 #define FUNCMAX       300//max functions
 #define FUNCTIONNAMESMAX 3000//Space for preceeding functon names
@@ -401,7 +401,7 @@ int adrF(char *s, unsigned int i) {
 
 int printName(unsigned int i) {
     int j;
-    if (i < LStart) {
+    if (i < GTop) {
         i=adrF(GNameField, i);
         printstring(i);
     }
@@ -574,9 +574,9 @@ int expect(int t) {
 }
 
 int v(unsigned int i) {//value
-    if (i < LStart) prc('[');
+    if (i < GTop) prc('[');
     printName(i);
-    if (i < LStart) prc(']');
+    if (i < GTop) prc(']');
 }
 int checknamelen() {
     int i;
@@ -584,10 +584,27 @@ int checknamelen() {
     if (i > IDLENMAX) error1("Item name is too long)");
 }
 
+int checkName_old() {
+    unsigned int i; unsigned int j;
+    i=GTop;
+    while(i<LTop) {//todo look for local var first
+        j=adrF(GNameField, i);
+        if(eqstr(Symbol,j))return i;
+        i++;
+    }
+    i=1;
+    while(i<GTop) {
+        j=adrF(GNameField, i);
+        if(eqstr(Symbol,j))return i;
+        i++;
+    }
+    return 0;
+}
+
 int checkName() {
     unsigned int i; unsigned int j;
-    i=LStart;
-    while(i<LTop) {
+    i=GTop;
+    while(i<LTop) {//todo look for local var first
         j=adrF(GNameField, i);
         if(eqstr(Symbol,j))return i;
         i++;
@@ -879,21 +896,21 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
         }
     if (wi==1){
         printstring("\n mov ");
-        if(i<LStart) printstring("byte ");
+        if(i<GTop) printstring("byte ");
         v(i);
         printstring(", al");
         return;
         }
     if (wi==2){
         printstring("\n mov ");
-        if(i<LStart) printstring("word ");
+        if(i<GTop) printstring("word ");
         v(i);
         printstring(", ax");
         return;
         }
     if (wi==4){
         printstring("\n mov ");
-        if(i<LStart) printstring("dword ");
+        if(i<GTop) printstring("dword ");
         v(i);
         printstring(", eax");
         return;
@@ -1312,7 +1329,7 @@ int listvar(unsigned int i) {
         printunsigned(j);
         prc(']');
     }
-    if (i >= LStart) {
+    if (i >= GTop) {
         printstring(" = bp");
         j=GData[i];
         if (j > 0) prc('+');
@@ -1322,14 +1339,14 @@ int listvar(unsigned int i) {
 
 int listproc() {
     int i;
-    if (LTop > LStart) {
+    if (LTop > GTop) {
         printstring("\n;Function : ");
         printstring(fname);
         printstring(", Number local Var: ");
-        i=LTop - LStart;
+        i=LTop - GTop;
         printunsigned(i);
         printstring("\n; # type sign width local variables");
-        i=LStart;
+        i=GTop;
         while (i < LTop) {
             listvar(i);
             i++;
@@ -1375,7 +1392,7 @@ int dofunc() {
     printstring(Symbol);
     printstring(": PROC");
     expect('(');
-    LStart=GTop;
+//    LStart=GTop;
     LTop=GTop;
     VarNamePtrLocalStart=VarNamePtr;
 
@@ -1419,7 +1436,7 @@ int dofunc() {
         expect(';');
     }
     listproc();
-    if (LTop>LStart){
+    if (LTop>GTop){
         printstring(";\n ENTER  ");
         nloc=mkneg(nloc);
         printunsigned (nloc);
@@ -1433,7 +1450,7 @@ int dofunc() {
             printstring(fname);
             prc(':');
         }
-    if (LTop > LStart) printstring("\n LEAVE");
+    if (LTop > GTop) printstring("\n LEAVE");
     printstring("\n ret");
     *cloc=0;
     printstring(co);
@@ -1634,7 +1651,7 @@ int main() {
     isPrint=0;
     printstring("\norg  256 \njmp main");
 
-    LTop=LStart;//new todo put in dofunction
+//	LTop=LStart;//new todo put in dofunction
 
     VarNamePtr= &VarNames;
     FunctionNamePtr= &FunctionNames;
