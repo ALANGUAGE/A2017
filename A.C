@@ -603,11 +603,17 @@ int checkName_old() {
 
 int checkName() {
     unsigned int i; unsigned int j;
-    i=LTop;
-    while(i) {
+    i=GTop;
+    while(i<LTop) {//todo look for local var first
         j=adrF(GNameField, i);
         if(eqstr(Symbol,j))return i;
-        i--;
+        i++;
+    }
+    i=1;
+    while(i<GTop) {
+        j=adrF(GNameField, i);
+        if(eqstr(Symbol,j))return i;
+        i++;
     }
     return 0;
 }
