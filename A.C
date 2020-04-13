@@ -584,23 +584,6 @@ int checknamelen() {
     if (i > IDLENMAX) error1("Item name is too long)");
 }
 
-int checkName_old() {
-    unsigned int i; unsigned int j;
-    i=GTop;
-    while(i<LTop) {//todo look for local var first
-        j=adrF(GNameField, i);
-        if(eqstr(Symbol,j))return i;
-        i++;
-    }
-    i=1;
-    while(i<GTop) {
-        j=adrF(GNameField, i);
-        if(eqstr(Symbol,j))return i;
-        i++;
-    }
-    return 0;
-}
-
 int checkName() {
     unsigned int i; unsigned int j;
     i=GTop;
@@ -673,7 +656,7 @@ int addlocal() {
     GType[LTop]=istype;
     pt=adrF(GNameField, LTop);
     strcpy(pt, Symbol);
-    //storeVarName();
+    storeVarName();
 }
 
 
@@ -1491,7 +1474,7 @@ int doglob() {
             printstring(Symbol);
             printstring(" db ");
             isstrarr=1;
-            strcpy(doglobName, Symbol);
+            strcpy(doglobName, Symbol);//save Symbol name
             expect('=');
             if (istoken(T_STRING)) {
                 prc(34);
@@ -1535,7 +1518,8 @@ int doglob() {
     pt=adrF(GNameField, GTop);
     if (isstrarr) strcpy(pt, doglobName);
         else strcpy(pt, Symbol);
-
+	if (isstrarr) strcpy(Symbol, doglobName);
+	storeVarName();
     GTop++;
     expect(';');
 }
@@ -1557,6 +1541,7 @@ int dodefine() {
         GType [GTop]='#';
         pt=adrF(GNameField, GTop);
         strcpy(pt, Symbol);
+        storeVarName();
         GData[GTop]=lexval;
         expect(T_CONST);
         GTop++;
@@ -1627,12 +1612,14 @@ int epilog() {
     printstring(" (");                  printunsigned(VARMAX);
     i = VarNamePtr - &VarNames;
     printstring("):");                  printunsigned(i);
-    printstring(", Functions:");        printunsigned(FunctionMaxIx);
+    printstring(" (");					printunsigned(VARNAMESMAX);
+    printstring("), Functions:");       printunsigned(FunctionMaxIx);
     printstring(" (");                  printunsigned(FUNCMAX);
     i = FunctionNamePtr - &FunctionNames;
     printstring("):");                  printunsigned(i);
-    printstring(", Lines:");            printunsigned(lineno);
-    printstring("\n;Constant: ");       printunsigned(maxco);
+    printstring(" (");					printunsigned(FUNCTIONNAMESMAX);
+    printstring(")\n;Lines:");          printunsigned(lineno);
+    printstring(", Constant: ");        printunsigned(maxco);
     printstring(" (");                  printunsigned(COMAX);
     i = COMAX;
     i = i - maxco;
