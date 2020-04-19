@@ -130,31 +130,31 @@ int DosInt() {
     DOS_ERR++;
 }
 int openR (char *s) {
-    asm mov dx, [bp+4]; dx=s;
-    asm mov ax, 15618; ax=0x3D02;
+	dx=s;
+    ax=0x3D02;
     DosInt();
 }
 int creatR(char *s) {
-    asm mov dx, [bp+4]; dx=s;
-    asm mov cx, 0
-    asm mov ax, 15360; ax=0x3C00;
+    dx=s;
+    cx=0;
+    ax=0x3C00;
     DosInt();
 }
 int fcloseR(int fd) {
-    asm mov bx, [bp+4]; bx=fd;
-    asm mov ax, 15872; ax=0x3E00;
+    bx=fd;
+    ax=0x3E00;
     DosInt();
 }
 int exitR  (char c) {
-    asm mov ah, 76; ah=0x4C;
-    asm mov al, [bp+4]; al=c;
+    ah=0x4C;
+    al=c;
     DosInt();
 }
 int readRL(char *s, int fd, int len){
-    asm mov dx, [bp+4]; dx=s;
-    asm mov cx, [bp+8]; cx=len;
-    asm mov bx, [bp+6]; bx=fd;
-    asm mov ax, 16128;  ax=0x3F00;
+    dx=s;
+    cx=len;
+    bx=fd;
+    ax=0x3F00;
     DosInt();
 }
 int fputcR(char *n, int fd) {
@@ -390,10 +390,12 @@ int storeVarName() {
     i = VarNamePtr - &VarNames;
     i += IDLENMAX;
     if (i > VARNAMESMAX) error1("too many variable names");
-
-    //todo dofunction set start of local VarNamePtr
 }
 
+int searchVarName() {
+	
+}
+	
 int adrF(char *s, unsigned int i) {
     i << 5;//ax=i*32; IDLENMAX=31!
     __asm{ add ax, [bp+4]  ; offset s }
