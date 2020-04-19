@@ -158,10 +158,10 @@ int readRL(char *s, int fd, int len){
     DosInt();
 }
 int fputcR(char *n, int fd) {
-    asm lea dx, [bp+4]; *n  todo: why not mov ?????
-    asm mov cx, 1;      cx=1;
-    asm mov bx, [bp+6]; bx=fd;
-    asm mov ax, 16384;  ax=0x4000;
+    asm lea dx, [bp+4]; = *n  todo: why not mov
+    cx=1;
+    bx=fd;
+    ax=0x4000;
     DosInt();
 }
 
@@ -393,7 +393,16 @@ int storeVarName() {
 }
 
 int searchVarName() {
-	
+	char *p; int i;
+	p = &VarNames;
+	i=1;//start with 1
+	while (i < VARMAX) {
+		if (eqstr(p, Symbol)) return i;
+		p=strlen(p) + p;
+		p++;
+		i++;
+	}
+	return 0;	
 }
 	
 int adrF(char *s, unsigned int i) {
