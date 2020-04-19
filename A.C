@@ -427,10 +427,8 @@ int adrF(char *s, unsigned int i) {
 int printName(unsigned int i) {
     int j;
     if (i < GTop) {
-	    j=getVarName(i);
-	    
-	    
-        i=adrF(GNameField, i);
+	    i=getVarName(i);	    
+//        i=adrF(GNameField, i);
         printstring(i);
     }
     else {
