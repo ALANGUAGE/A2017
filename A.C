@@ -393,9 +393,32 @@ int storeVarName() {
 }
 
 int searchVarName() {
+	char *p; int i;
+	p = &VarNames;
+	i=1;//start with 1
+	while (i < VARMAX) {
+		if (eqstr(p, Symbol)) return i;
+		p=strlen(p) + p;
+		p++;
+		i++;
+	}
+	return 0;	
 	
 }
 	
+int getVarName(unsigned int i) {
+	int j; char *p;
+	j = 1;
+	p = &VarNames;
+	while (j < i) {
+		while (*p) p++;
+		p++;
+		j++;	 		
+	}
+	return p;	
+		
+}
+		
 int adrF(char *s, unsigned int i) {
     i << 5;//ax=i*32; IDLENMAX=31!
     __asm{ add ax, [bp+4]  ; offset s }
@@ -404,6 +427,8 @@ int adrF(char *s, unsigned int i) {
 int printName(unsigned int i) {
     int j;
     if (i < GTop) {
+	    
+	    
         i=adrF(GNameField, i);
         printstring(i);
     }
