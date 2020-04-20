@@ -2958,13 +2958,11 @@ getlex: PROC
  mov ax, [bp-6]
  cmp ax, [GTop]
  jge .getlex152
-;-570         j=adrF(GNameField, i);
+;-570         j=getVarName(i);
 
  push word [bp-6]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov [bp-8], ax
 ;-571         if (eqstr(Symbol,j)) {
 

@@ -613,13 +613,13 @@ int checkName() {
     unsigned int i; unsigned int j;
     i=GTop;
     while(i<LTop) {//todo look for local var first
-        j=adrF(GNameField, i);
+        j=getVarName(i);
         if(eqstr(Symbol,j))return i;
         i++;
     }
     i=1;
     while(i<GTop) {
-        j=adrF(GNameField, i);
+        j=getVarName(i);
         if(eqstr(Symbol,j))return i;
         i++;
     }
@@ -679,7 +679,7 @@ int addlocal() {
     GSign[LTop]=issign;
     GWidth[LTop]=iswidth;
     GType[LTop]=istype;
-    pt=adrF(GNameField, LTop);
+    pt=getVarName(LTop);
     strcpy(pt, Symbol);
     storeVarName();
 }
@@ -1540,7 +1540,7 @@ int doglob() {
     GSign[GTop]=issign;
     GWidth[GTop]=iswidth;
     GType[GTop]=istype;
-    pt=adrF(GNameField, GTop);
+    pt=getVarName(GTop);
     if (isstrarr) strcpy(pt, doglobName);
         else strcpy(pt, Symbol);
 	if (isstrarr) strcpy(Symbol, doglobName);
@@ -1564,7 +1564,7 @@ int dodefine() {
         GSign [GTop]='U';
         GWidth[GTop]=1;
         GType [GTop]='#';
-        pt=adrF(GNameField, GTop);
+        pt=getVarName(GTop);
         strcpy(pt, Symbol);
         storeVarName();
         GData[GTop]=lexval;
