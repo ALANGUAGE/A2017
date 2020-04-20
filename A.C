@@ -419,15 +419,10 @@ int getVarName(unsigned int i) {
 		
 }
 		
-int adrF(char *s, unsigned int i) {
-    i << 5;//ax=i*32; IDLENMAX=31!
-    __asm{ add ax, [bp+4]  ; offset s }
-}
 
 int printName(unsigned int i) {
     if (i < GTop) {
 	    i=getVarName(i);	    
-//        i=adrF(GNameField, i);
         printstring(i);
     }
     else {

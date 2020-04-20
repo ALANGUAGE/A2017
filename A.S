@@ -319,7 +319,7 @@ putch: PROC
 
 ;Function : putch, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [bp+4]
  cmp al, 10
@@ -354,8 +354,8 @@ cputs: PROC
 
 ;Function : cputs, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var sign byte c = bp-2;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign byte printregstr = bp-2;
  ENTER  2,0
 .cputs2:
  mov bx, [bp+4]
@@ -396,7 +396,7 @@ mkneg: PROC
 
 ;Function : mkneg, Number local Var: 1
 ; # type sign width local variables
-;96 var sign word n = bp+4;
+;96 var sign word symboltemp = bp+4;
  ENTER  0,0
  mov ax, [bp+4]
 ;-124     asm neg ax
@@ -434,7 +434,7 @@ openR: PROC
 
 ;Function : openR, Number local Var: 1
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4;
+;96 ptr sign byte symboltemp = bp+4;
  ENTER  0,0
  mov  dx, [bp+4]
 ;-134     ax=0x3D02;
@@ -456,7 +456,7 @@ creatR: PROC
 
 ;Function : creatR, Number local Var: 1
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4;
+;96 ptr sign byte symboltemp = bp+4;
  ENTER  0,0
  mov  dx, [bp+4]
 ;-139     cx=0;
@@ -481,7 +481,7 @@ fcloseR: PROC
 
 ;Function : fcloseR, Number local Var: 1
 ; # type sign width local variables
-;96 var sign word fd = bp+4;
+;96 var sign word symboltemp = bp+4;
  ENTER  0,0
  mov  bx, [bp+4]
 ;-145     ax=0x3E00;
@@ -503,7 +503,7 @@ exitR: PROC
 
 ;Function : exitR, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov  ah, 76
 ;-150     al=c;
@@ -525,9 +525,9 @@ readRL: PROC
 
 ;Function : readRL, Number local Var: 3
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var sign word fd = bp+6
-;98 var sign word len = bp+8;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign word printregstr = bp+6
+;98 var sign word ops = bp+8;
  ENTER  0,0
  mov  dx, [bp+4]
 ;-155     cx=len;
@@ -555,8 +555,8 @@ fputcR: PROC
 
 ;Function : fputcR, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte n = bp+4
-;97 var sign word fd = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign word printregstr = bp+6;
  ENTER  0,0
  lea dx, [bp+4]; *n  todo: why not mov ?????
 ;-162     asm mov cx, 1;      cx=1;
@@ -586,7 +586,7 @@ letter: PROC
 
 ;Function : letter, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [bp+4]
  cmp al, 95
@@ -664,7 +664,7 @@ digit: PROC
 
 ;Function : digit, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [bp+4]
  cmp al, 48
@@ -698,7 +698,7 @@ alnum: PROC
 
 ;Function : alnum, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, byte [bp+4]
  mov ah, 0
@@ -742,8 +742,8 @@ strlen: PROC
 
 ;Function : strlen, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var sign word c = bp-2;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign word printregstr = bp-2;
  ENTER  2,0
  mov ax, 0
  mov [bp-2], ax
@@ -777,8 +777,8 @@ strcpy: PROC
 
 ;Function : strcpy, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 ptr sign byte t = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 ptr sign byte printregstr = bp+6;
  ENTER  0,0
 .strcpy18:
  mov bx, [bp+6]
@@ -820,8 +820,8 @@ eqstr: PROC
 
 ;Function : eqstr, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte p = bp+4
-;97 ptr sign byte q = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 ptr sign byte printregstr = bp+6;
  ENTER  0,0
 .eqstr20:
  mov bx, [bp+4]
@@ -879,8 +879,8 @@ strcat: PROC
 
 ;Function : strcat, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 ptr sign byte t = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 ptr sign byte printregstr = bp+6;
  ENTER  0,0
 .strcat24:
  mov bx, [bp+4]
@@ -910,7 +910,7 @@ toupper: PROC
 
 ;Function : toupper, Number local Var: 1
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4;
+;96 ptr sign byte symboltemp = bp+4;
  ENTER  0,0
 .toupper26:
  mov bx, [bp+4]
@@ -958,8 +958,8 @@ instr1: PROC
 
 ;Function : instr1, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var sign byte c = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign byte printregstr = bp+6;
  ENTER  0,0
 .instr130:
  mov bx, [bp+4]
@@ -1004,7 +1004,7 @@ eprc: PROC
 
 ;Function : eprc, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [bp+4]
  mov  bx, [cloc]
@@ -1027,8 +1027,8 @@ eprs: PROC
 
 ;Function : eprs, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var sign byte c = bp-2;
+;96 ptr sign byte symboltemp = bp+4
+;97 var sign byte printregstr = bp-2;
  ENTER  2,0
 .eprs33:
  mov bx, [bp+4]
@@ -1071,7 +1071,7 @@ prc: PROC
 
 ;Function : prc, Number local Var: 1
 ; # type sign width local variables
-;96 var unsg byte c = bp+4;
+;96 var unsg byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [isPrint]
  or  al, al
@@ -1124,8 +1124,8 @@ prscomment: PROC
 
 ;Function : prscomment, Number local Var: 2
 ; # type sign width local variables
-;96 ptr unsg byte s = bp+4
-;97 var unsg byte c = bp-2;
+;96 ptr unsg byte symboltemp = bp+4
+;97 var unsg byte printregstr = bp-2;
  ENTER  2,0
 .prscomment37:
  mov bx, [bp+4]
@@ -1170,9 +1170,9 @@ printstring: PROC
 
 ;Function : printstring, Number local Var: 3
 ; # type sign width local variables
-;96 ptr unsg byte s = bp+4
-;97 var unsg byte c = bp-2
-;98 var sign word com = bp-4;
+;96 ptr unsg byte symboltemp = bp+4
+;97 var unsg byte printregstr = bp-2
+;98 var sign word ops = bp-4;
  ENTER  4,0
  mov ax, 0
  mov [bp-4], ax
@@ -1280,8 +1280,8 @@ eprnum: PROC
 
 ;Function : eprnum, Number local Var: 2
 ; # type sign width local variables
-;96 var sign word n = bp+4
-;97 var sign word e = bp-2;
+;96 var sign word symboltemp = bp+4
+;97 var sign word printregstr = bp-2;
  ENTER  2,0
  mov ax, [bp+4]
  cmp ax, 0
@@ -1355,8 +1355,8 @@ printinteger: PROC
 
 ;Function : printinteger, Number local Var: 2
 ; # type sign width local variables
-;96 var sign word n = bp+4
-;97 var sign word e = bp-2;
+;96 var sign word symboltemp = bp+4
+;97 var sign word printregstr = bp-2;
  ENTER  2,0
  mov ax, [bp+4]
  cmp ax, 0
@@ -1422,8 +1422,8 @@ printunsigned: PROC
 
 ;Function : printunsigned, Number local Var: 2
 ; # type sign width local variables
-;96 var unsg word n = bp+4
-;97 var unsg word e = bp-2;
+;96 var unsg word symboltemp = bp+4
+;97 var unsg word printregstr = bp-2;
  ENTER  2,0
  mov ax, [bp+4]
  cmp ax, 10 ;unsigned : 0
@@ -1474,7 +1474,7 @@ end1: PROC
 
 ;Function : end1, Number local Var: 1
 ; # type sign width local variables
-;96 var sign word n = bp+4;
+;96 var sign word symboltemp = bp+4;
  ENTER  0,0
  push word [fdin]
  call fcloseR
@@ -1504,7 +1504,7 @@ error1: PROC
 
 ;Function : error1, Number local Var: 1
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4;
+;96 ptr sign byte symboltemp = bp+4;
  ENTER  0,0
  mov ax, 1
  mov byte [isPrint], al
@@ -1601,7 +1601,7 @@ printinputline: PROC
 
 ;Function : printinputline, Number local Var: 1
 ; # type sign width local variables
-;96 var sign word col = bp-2;
+;96 var sign word symboltemp = bp-2;
  ENTER  2,0
  mov ax, 0
  mov [bp-2], ax
@@ -1706,7 +1706,7 @@ fgets1: PROC
 
 ;Function : fgets1, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp-2;
+;96 var sign byte symboltemp = bp-2;
  ENTER  2,0
  mov bx, [fgetsp]
  mov al, [bx]
@@ -1773,7 +1773,7 @@ next: PROC
 
 ;Function : next, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte r = bp-2;
+;96 var sign byte symboltemp = bp-2;
  ENTER  2,0
  mov al, [thechar]
  mov [bp-2], al
@@ -1803,7 +1803,7 @@ storeVarName: PROC
 
 ;Function : storeVarName, Number local Var: 1
 ; # type sign width local variables
-;96 var unsg word i = bp-2;
+;96 var unsg word symboltemp = bp-2;
  ENTER  2,0
  lea  ax, [Symbol]
  push ax
@@ -1849,8 +1849,8 @@ searchVarName: PROC
 
 ;Function : searchVarName, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte p = bp-2
-;97 var sign word i = bp-4;
+;96 ptr sign byte symboltemp = bp-2
+;97 var sign word printregstr = bp-4;
  ENTER  4,0
  mov ax, VarNames
  mov [bp-2], ax
@@ -1917,9 +1917,9 @@ getVarName: PROC
 
 ;Function : getVarName, Number local Var: 3
 ; # type sign width local variables
-;96 var unsg word i = bp+4
-;97 var sign word j = bp-2
-;98 ptr sign byte p = bp-4;
+;96 var unsg word symboltemp = bp+4
+;97 var sign word printregstr = bp-2
+;98 ptr sign byte ops = bp-4;
  ENTER  4,0
  mov ax, 1
  mov [bp-2], ax
@@ -1976,8 +1976,8 @@ adrF: PROC
 
 ;Function : adrF, Number local Var: 2
 ; # type sign width local variables
-;96 ptr sign byte s = bp+4
-;97 var unsg word i = bp+6;
+;96 ptr sign byte symboltemp = bp+4
+;97 var unsg word printregstr = bp+6;
  ENTER  0,0
  mov ax, [bp+6]
  shl ax, 5
@@ -1999,7 +1999,7 @@ printName: PROC
 
 ;Function : printName, Number local Var: 1
 ; # type sign width local variables
-;96 var unsg word i = bp+4;
+;96 var unsg word symboltemp = bp+4;
  ENTER  0,0
  mov ax, [bp+4]
  cmp ax, [GTop]
@@ -2072,7 +2072,7 @@ ifEOL: PROC
 
 ;Function : ifEOL, Number local Var: 1
 ; # type sign width local variables
-;96 var sign byte c = bp+4;
+;96 var sign byte symboltemp = bp+4;
  ENTER  0,0
  mov al, [bp+4]
  cmp al, 10
@@ -2132,10 +2132,10 @@ getlex: PROC
 
 ;Function : getlex, Number local Var: 4
 ; # type sign width local variables
-;97 var sign byte c = bp-2
-;98 ptr sign byte p = bp-4
-;99 var sign word i = bp-6
-;100 var sign word j = bp-8;
+;97 var sign byte printregstr = bp-2
+;98 ptr sign byte ops = bp-4
+;99 var sign word docalltype = bp-6
+;100 var sign word docallvalue = bp-8;
  ENTER  8,0
 .g1:
  call next
@@ -3053,7 +3053,7 @@ istoken: PROC
 
 ;Function : istoken, Number local Var: 1
 ; # type sign width local variables
-;97 var sign word t = bp+4;
+;97 var sign word printregstr = bp+4;
  ENTER  0,0
  mov ax, [token]
  cmp ax, [bp+4]
@@ -3089,7 +3089,7 @@ expect: PROC
 
 ;Function : expect, Number local Var: 1
 ; # type sign width local variables
-;97 var sign word t = bp+4;
+;97 var sign word printregstr = bp+4;
  ENTER  0,0
  push word [bp+4]
  call istoken
@@ -3142,7 +3142,7 @@ v: PROC
 
 ;Function : v, Number local Var: 1
 ; # type sign width local variables
-;97 var unsg word i = bp+4;
+;97 var unsg word printregstr = bp+4;
  ENTER  0,0
  mov ax, [bp+4]
  cmp ax, [GTop]
@@ -3180,7 +3180,7 @@ checknamelen: PROC
 
 ;Function : checknamelen, Number local Var: 1
 ; # type sign width local variables
-;97 var sign word i = bp-2;
+;97 var sign word printregstr = bp-2;
  ENTER  2,0
  lea  ax, [Symbol]
  push ax
@@ -3214,8 +3214,8 @@ checkName: PROC
 
 ;Function : checkName, Number local Var: 2
 ; # type sign width local variables
-;97 var unsg word i = bp-2
-;98 var unsg word j = bp-4;
+;97 var unsg word printregstr = bp-2
+;98 var unsg word ops = bp-4;
  ENTER  4,0
  mov ax, [GTop]
  mov [bp-2], ax
@@ -3225,13 +3225,11 @@ checkName: PROC
  mov ax, [bp-2]
  cmp ax, [LTop]
  jge .checkName161
-;-616         j=adrF(GNameField, i);
+;-616         j=getVarName(i);
 
  push word [bp-2]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov [bp-4], ax
 ;-617         if(eqstr(Symbol,j))return i;
 
@@ -3262,13 +3260,11 @@ checkName: PROC
  mov ax, [bp-2]
  cmp ax, [GTop]
  jge .checkName164
-;-622         j=adrF(GNameField, i);
+;-622         j=getVarName(i);
 
  push word [bp-2]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov [bp-4], ax
 ;-623         if(eqstr(Symbol,j))return i;
 
@@ -3311,7 +3307,7 @@ searchname: PROC
 
 ;Function : searchname, Number local Var: 1
 ; # type sign width local variables
-;97 var unsg word i = bp-2;
+;97 var unsg word printregstr = bp-2;
  ENTER  2,0
  call checkName
  mov [bp-2], ax
@@ -3371,7 +3367,7 @@ typeName: PROC
 
 ;Function : typeName, Number local Var: 1
 ; # type sign width local variables
-;97 var sign word m = bp-2;
+;97 var sign word printregstr = bp-2;
  ENTER  2,0
  mov ax, 83
  mov byte [issign], al
@@ -3496,8 +3492,8 @@ gettypes: PROC
 
 ;Function : gettypes, Number local Var: 2
 ; # type sign width local variables
-;97 var sign word i = bp+4
-;98 var sign byte c = bp-2;
+;97 var sign word printregstr = bp+4
+;98 var sign byte ops = bp-2;
  ENTER  2,0
  mov bx, [bp+4]
  mov al, [GSign + bx]
@@ -3633,13 +3629,11 @@ addlocal: PROC
  mov al, [istype]
  mov bx, [LTop]
  mov [GType+bx], al
-;-682     pt=adrF(GNameField, LTop);
+;-682     pt=getVarName(LTop);
 
  push word [LTop]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov word [pt], ax
 ;-683     strcpy(pt, Symbol);
 
@@ -3669,7 +3663,7 @@ cmpneg: PROC
 
 ;Function : cmpneg, Number local Var: 1
 ; # type sign width local variables
-;97 var sign word ids = bp+4;
+;97 var sign word printregstr = bp+4;
  ENTER  0,0
  mov ax, [iscmp]
  cmp ax, 806
@@ -4288,9 +4282,9 @@ printreg: PROC
 
 ;Function : printreg, Number local Var: 3
 ; # type sign width local variables
-;98 var sign word i = bp+4
-;99 var unsg word k = bp-2
-;100 var unsg byte c = bp-4;
+;98 var sign word ops = bp+4
+;99 var unsg word docalltype = bp-2
+;100 var unsg byte docallvalue = bp-4;
  ENTER  4,0
  mov ax, printregstr
  add ax, [bp+4]
@@ -4378,8 +4372,8 @@ doreg1: PROC
 
 ;Function : doreg1, Number local Var: 2
 ; # type sign width local variables
-;99 var sign word iscmp1 = bp+4
-;100 var sign word i = bp-2;
+;99 var sign word docalltype = bp+4
+;100 var sign word docallvalue = bp-2;
  ENTER  2,0
  push 61
  call istoken
@@ -4640,9 +4634,9 @@ compoundass: PROC
 
 ;Function : compoundass, Number local Var: 3
 ; # type sign width local variables
-;99 ptr sign byte op = bp+4
-;100 var sign word mode = bp+6
-;101 var sign word id1 = bp+8;
+;99 ptr sign byte docalltype = bp+4
+;100 var sign word docallvalue = bp+6
+;101 var sign word procname = bp+8;
  ENTER  0,0
  mov ax, [bp+6]
  or  al, al
@@ -4728,10 +4722,10 @@ dovar1: PROC
 
 ;Function : dovar1, Number local Var: 4
 ; # type sign width local variables
-;99 var sign word mode = bp+4
-;100 var sign word op = bp+6
-;101 var sign word ixarr = bp+8
-;102 var sign word id1 = bp+10;
+;99 var sign word docalltype = bp+4
+;100 var sign word docallvalue = bp+6
+;101 var sign word procname = bp+8
+;102 var sign word doglobName = bp+10;
  ENTER  0,0
  push word [bp+10]
  call gettypes
@@ -4961,11 +4955,11 @@ rterm: PROC
 
 ;Function : rterm, Number local Var: 5
 ; # type sign width local variables
-;99 ptr sign byte op = bp+4
-;100 var sign word mode = bp-2
-;101 var sign word opint = bp-4
-;102 var sign word ixarr = bp-6
-;103 var sign word id1 = bp-8;
+;99 ptr sign byte docalltype = bp+4
+;100 var sign word docallvalue = bp-2
+;101 var sign word procname = bp-4
+;102 var sign word doglobName = bp-6
+;103 var sign word arglen = bp-8;
  ENTER  8,0
  push 257
  call istoken
@@ -5115,10 +5109,10 @@ doassign: PROC
 
 ;Function : doassign, Number local Var: 4
 ; # type sign width local variables
-;99 var sign word mode = bp+4
-;100 var sign word i = bp+6
-;101 var sign word ixarr = bp+8
-;102 var sign word ixconst = bp+10;
+;99 var sign word docalltype = bp+4
+;100 var sign word docallvalue = bp+6
+;101 var sign word procname = bp+8
+;102 var sign word doglobName = bp+10;
  ENTER  0,0
  push word [bp+6]
  call gettypes
@@ -5393,7 +5387,7 @@ domul: PROC
 
 ;Function : domul, Number local Var: 1
 ; # type sign width local variables
-;99 var sign word ids = bp+4;
+;99 var sign word docalltype = bp+4;
  ENTER  0,0
  mov ax, [bp+4]
  or  al, al
@@ -5461,9 +5455,9 @@ doidiv: PROC
 
 ;Function : doidiv, Number local Var: 3
 ; # type sign width local variables
-;99 var sign word ids = bp+4
-;100 var sign word mode = bp-2
-;101 var sign word id1 = bp-4;
+;99 var sign word docalltype = bp+4
+;100 var sign word docallvalue = bp-2
+;101 var sign word procname = bp-4;
  ENTER  4,0
  push 257
  call istoken
@@ -5595,7 +5589,7 @@ domod: PROC
 
 ;Function : domod, Number local Var: 1
 ; # type sign width local variables
-;99 var sign word ids = bp+4;
+;99 var sign word docalltype = bp+4;
  ENTER  0,0
  push word [bp+4]
  call doidiv
@@ -5643,11 +5637,11 @@ docall: PROC
 
 ;Function : docall, Number local Var: 5
 ; # type sign width local variables
-;102 var sign word i = bp-2
-;103 var sign word narg = bp-4
-;104 var sign word t0 = bp-6
-;105 var sign word n0 = bp-8
-;106 var sign word sz32 = bp-10;
+;102 var sign word doglobName = bp-2
+;103 var sign word arglen = bp-4
+;104 var sign word argv = bp-6
+;105 var sign word i = bp-8
+;106 var sign word i = bp-10;
  ENTER  10,0
  mov ax, 0
  mov [bp-4], ax
@@ -6147,14 +6141,14 @@ expr: PROC
 
 ;Function : expr, Number local Var: 8
 ; # type sign width local variables
-;102 var sign word mode = bp-2
-;103 var sign word id1 = bp-4
-;104 var sign word ixarr = bp-6
-;105 var sign word ixconst = bp-8
-;106 var sign word ids = bp-10
-;107 var sign word isCONST = bp-12
-;108 var sign word i = bp-14
-;109 ptr unsg byte p = bp-16;
+;102 var sign word doglobName = bp-2
+;103 var sign word arglen = bp-4
+;104 var sign word argv = bp-6
+;105 var sign word i = bp-8
+;106 var sign word i = bp-10
+;107 var sign word cmain_0 = bp-12
+;108 var sign word og_3 = bp-14
+;109 ptr unsg byte epilog_7 = bp-16;
  ENTER  16,0
  push 257
  call istoken
@@ -6770,7 +6764,7 @@ prlabel: PROC
 
 ;Function : prlabel, Number local Var: 1
 ; # type sign width local variables
-;102 var sign word n = bp+4;
+;102 var sign word doglobName = bp+4;
  ENTER  0,0
  push prlabel_0
  call printstring
@@ -6805,7 +6799,7 @@ prjump: PROC
 
 ;Function : prjump, Number local Var: 1
 ; # type sign width local variables
-;102 var sign word n = bp+4;
+;102 var sign word doglobName = bp+4;
  ENTER  0,0
  push prjump_0
  call printstring
@@ -6841,11 +6835,11 @@ stmt: PROC
 
 ;Function : stmt, Number local Var: 5
 ; # type sign width local variables
-;102 var sign word c = bp-2
-;103 var sign byte cha = bp-4
-;104 var sign word jdest = bp-6
-;105 var sign word tst = bp-8
-;106 var sign word jtemp = bp-10;
+;102 var sign word doglobName = bp-2
+;103 var sign byte arglen = bp-4
+;104 var sign word argv = bp-6
+;105 var sign word i = bp-8
+;106 var sign word i = bp-10;
  ENTER  10,0
  push 123
  call istoken
@@ -7435,9 +7429,9 @@ listvar: PROC
 
 ;Function : listvar, Number local Var: 3
 ; # type sign width local variables
-;102 var unsg word i = bp+4
-;103 var unsg word j = bp-2
-;104 var sign byte c = bp-4;
+;102 var unsg word doglobName = bp+4
+;103 var unsg word arglen = bp-2
+;104 var sign byte argv = bp-4;
  ENTER  4,0
  push listvar_0
  call printstring
@@ -7690,7 +7684,7 @@ listproc: PROC
 
 ;Function : listproc, Number local Var: 1
 ; # type sign width local variables
-;102 var sign word i = bp-2;
+;102 var sign word doglobName = bp-2;
  ENTER  2,0
  mov ax, [LTop]
  cmp ax, [GTop]
@@ -7771,8 +7765,8 @@ searchFunction: PROC
 
 ;Function : searchFunction, Number local Var: 2
 ; # type sign width local variables
-;102 var sign word FunctionIndex = bp-2
-;103 ptr sign byte p = bp-4;
+;102 var sign word doglobName = bp-2
+;103 ptr sign byte arglen = bp-4;
  ENTER  4,0
  mov ax, FunctionNames
  mov [bp-4], ax
@@ -7837,7 +7831,7 @@ storeFunction: PROC
 
 ;Function : storeFunction, Number local Var: 1
 ; # type sign width local variables
-;102 var unsg word i = bp-2;
+;102 var unsg word doglobName = bp-2;
  ENTER  2,0
  inc  word[FunctionMaxIx]
 ;-1381     if (FunctionMaxIx >= FUNCMAX) error1("Function table full");
@@ -7900,10 +7894,10 @@ dofunc: PROC
 
 ;Function : dofunc, Number local Var: 4
 ; # type sign width local variables
-;102 var sign word nloc = bp-2
-;103 var unsg word j = bp-4
-;104 var sign word narg = bp-6
-;105 var sign word VarNamePtrLocalStart = bp-8;
+;102 var sign word doglobName = bp-2
+;103 var unsg word arglen = bp-4
+;104 var sign word argv = bp-6
+;105 var sign word i = bp-8;
  ENTER  8,0
  mov ax, co
  mov word [cloc], ax
@@ -8292,9 +8286,9 @@ doglob: PROC
 
 ;Function : doglob, Number local Var: 3
 ; # type sign width local variables
-;103 var sign word i = bp-2
-;104 var sign word j = bp-4
-;105 var sign word isstrarr = bp-6;
+;103 var sign word arglen = bp-2
+;104 var sign word argv = bp-4
+;105 var sign word i = bp-6;
  ENTER  6,0
  mov ax, 0
  mov [bp-6], ax
@@ -8714,13 +8708,11 @@ doglob: PROC
  mov al, [istype]
  mov bx, [GTop]
  mov [GType+bx], al
-;-1543     pt=adrF(GNameField, GTop);
+;-1543     pt=getVarName(GTop);
 
  push word [GTop]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov word [pt], ax
 ;-1544     if (isstrarr) strcpy(pt, doglobName);
 
@@ -8869,13 +8861,11 @@ dodefine: PROC
  mov ax, 35
  mov bx, [GTop]
  mov [GType+bx], al
-;-1567         pt=adrF(GNameField, GTop);
+;-1567         pt=getVarName(GTop);
 
  push word [GTop]
- lea  ax, [GNameField]
- push ax
- call adrF
- add  sp, 4
+ call getVarName
+ add  sp, 2
  mov word [pt], ax
 ;-1568         strcpy(pt, Symbol);
 
@@ -9007,9 +8997,9 @@ getarguments: PROC
 
 ;Function : getarguments, Number local Var: 3
 ; # type sign width local variables
-;105 var sign word arglen1 = bp-2
+;105 var sign word i = bp-2
 ;106 var unsg word i = bp-4
-;107 ptr sign byte c = bp-6;
+;107 ptr sign byte cmain_0 = bp-6;
  ENTER  6,0
  mov ax, 1
  mov byte [isPrint], al
