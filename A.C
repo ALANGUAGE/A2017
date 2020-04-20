@@ -1,5 +1,4 @@
-char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
-#define ORGDATA     24000//set it to end of text
+char Version1[]="PLA compiler A.COM V1.0";//todo:op=reg not recognized
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -38,7 +37,8 @@ char Version1[]="PLA compiler A.COM V0.9.6";//todo:op=reg not recognized
 #define T_GREATGREAT 1241
 
 char isPrint=1;//set screen listing
-unsigned int orgDataOriginal=25000;//start of arrays, end of text
+#define ORGDATA     20000//set it to end of text
+unsigned int orgDataOriginal=20000;//must be ORGDATA
 unsigned int orgDatai;//actual max of array, must be less than stack
 #define COMAX        3000
 char co[COMAX];//constant storage
@@ -65,12 +65,10 @@ int signi;       char issign;
 int widthi;      char iswidth;
 int wi=0;
 #define VARMAX        400//max global and local var
-#define GNAMEMAX    12800// 32*VARMAX
 char GType [VARMAX]; // 0=V, 1=*, 2=&,#
 char GSign [VARMAX]; // 0=U, 1=S
 char GWidth[VARMAX]; // 0, 1, 2, 4
 int  GData [VARMAX];
-char GNameField[GNAMEMAX];
 #define VARNAMESMAX 4000//VARMAX * 10 - IDLENMAX
 char VarNames[VARNAMESMAX];//Space for global and local var names
 char *VarNamePtr;   //first free position
@@ -92,7 +90,7 @@ unsigned char *p1=0;
 int DOS_ERR=0;
 int DOS_NoBytes=0;
 char DOS_ByteRead=0;
-int ireg1;//todo
+int ireg1;
 int mod2;
 int ireg2;
 
@@ -158,7 +156,7 @@ int readRL(char *s, int fd, int len){
     DosInt();
 }
 int fputcR(char *n, int fd) {
-    asm lea dx, [bp+4]; *n  todo: why not mov ?????
+    asm lea dx, [bp+4]; *n  todo: why not mov
     asm mov cx, 1;      cx=1;
     asm mov bx, [bp+6]; bx=fd;
     asm mov ax, 16384;  ax=0x4000;
@@ -572,7 +570,8 @@ g1: c=next();
         }
         i++;
     }
-    return T_NAME; } error1("Input item not recognized");
+    return T_NAME; } 
+    error1("Input item not recognized");
 }
 
 int istoken(int t) {
@@ -1155,7 +1154,7 @@ e1:      if (istoken('+')) rterm("add");
 int pexpr() {//called from if, do, while
     expect('(');
     iscmp=0;
-    if (token==T_NAME) {//todo
+    if (token==T_NAME) {
         ireg1=checkreg();
         if (ireg1) {
             doreg1(1);
@@ -1318,8 +1317,9 @@ int listvar(unsigned int i) {
     if(c== 1)printstring("byte " );
     if(c== 2)printstring("word " );
     if(c== 4)printstring("long " );
-    j=i*32;
-    pt=&GNameField + j;
+    pt=getVarName(i);
+//    j=i*32;
+//    pt=&GNameField + j;
     printstring(pt);
     if(GType[i]=='#') {
         prc('=');
@@ -1625,7 +1625,7 @@ int openfiles() {
 }
 
 int epilog() {
-    int i;
+    unsigned int i;
     isPrint=1;
     GTop--;
     printstring("\n;Glob. variables:"); printunsigned(GTop);
@@ -1645,7 +1645,7 @@ int epilog() {
     i = i - maxco;
     if (i<=1000)printstring("\n ** Warning ** constant area too small");
     printstring("), stacksize: ");
-    i=65536;
+    i=65535;
     i=i-orgDatai;
     printunsigned(i);
     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
