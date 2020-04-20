@@ -1,4 +1,5 @@
-char Version1[]="PLA compiler A.COM V1.0";//todo:op=reg not recognized
+char Version1[]="PLA compiler A.COM V1.0";//16500 bytes. 32905 stack
+//todo:op=reg not recognized
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -389,7 +390,7 @@ int storeVarName() {
     i += IDLENMAX;
     if (i > VARNAMESMAX) error1("too many variable names");
 }
-
+/*
 int searchVarName() {
 	char *p; int i;
 	p = &VarNames;
@@ -400,10 +401,9 @@ int searchVarName() {
 		p++;
 		i++;
 	}
-	return 0;	
-	
+	return 0;		
 }
-	
+*/	
 int getVarName(unsigned int i) {
 	int j; char *p;
 	j = 1;
@@ -417,7 +417,6 @@ int getVarName(unsigned int i) {
 		
 }
 		
-
 int printName(unsigned int i) {
     if (i < GTop) {
 	    i=getVarName(i);	    

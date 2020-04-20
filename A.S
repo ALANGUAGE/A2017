@@ -1825,87 +1825,45 @@ storeVarName: PROC
 ;-391 }
 
 .storeVarName59:
-;-392 
+;-392 /*
 
 ;-393 int searchVarName() {
+
+;-394 	char *p; int i;
+
+;-395 	p = &VarNames;
+
+;-396 	i=1;//start with 1
+
+;-397 	while (i < VARMAX) {
+
+;-398 		if (eqstr(p, Symbol)) return i;
+
+;-399 		p=strlen(p) + p;
+
+;-400 		p++;
+
+;-401 		i++;
+
+;-402 	}
+
+;-403 	return 0;		
+
+;-404 }
+
+;-405 */	
+
+;-406 int getVarName(unsigned int i) {
 
  LEAVE
  ret
 storeVarName_0 db "too many variable names",0
 ENDP
 
-searchVarName: PROC
-;-394 	char *p; int i;
-
-;-395 	p = &VarNames;
-
-;Function : searchVarName, Number local Var: 2
-; # type sign width local variables
-;94 ptr sign byte p = bp-2
-;95 var sign word i = bp-4;
- ENTER  4,0
- mov ax, VarNames
- mov [bp-2], ax
-;-396 	i=1;//start with 1
-
- mov ax, 1
- mov [bp-4], ax
-;-397 	while (i < VARMAX) {
-
-.searchVarName60:
- mov ax, [bp-4]
- cmp ax, 400
- jge .searchVarName61
-;-398 		if (eqstr(p, Symbol)) return i;
-
- lea  ax, [Symbol]
- push ax
- push word [bp-2]
- call eqstr
- add  sp, 4
- or  al, al
- je .searchVarName62
- mov ax, [bp-4]
- jmp .retnsearchVarName
-;-399 		p=strlen(p) + p;
-
-.searchVarName62:
- push word [bp-2]
- call strlen
- add  sp, 2
- add ax, [bp-2]
- mov [bp-2], ax
-;-400 		p++;
-
- inc  word[bp-2]
-;-401 		i++;
-
- inc  word[bp-4]
-;-402 	}
-
-;-403 	return 0;	
-
- jmp .searchVarName60
-.searchVarName61:
- mov ax, 0
- jmp .retnsearchVarName
-;-404 	
-
-;-405 }
-
-;-406 	
-
-;-407 int getVarName(unsigned int i) {
-
- .retnsearchVarName:
- LEAVE
- ret
-ENDP
-
 getVarName: PROC
-;-408 	int j; char *p;
+;-407 	int j; char *p;
 
-;-409 	j = 1;
+;-408 	j = 1;
 
 ;Function : getVarName, Number local Var: 3
 ; # type sign width local variables
@@ -1915,50 +1873,50 @@ getVarName: PROC
  ENTER  4,0
  mov ax, 1
  mov [bp-2], ax
-;-410 	p = &VarNames;
+;-409 	p = &VarNames;
 
  mov ax, VarNames
  mov [bp-4], ax
-;-411 	while (j < i) {
+;-410 	while (j < i) {
 
-.getVarName63:
+.getVarName60:
  mov ax, [bp-2]
  cmp ax, [bp+4]
- jge .getVarName64
-;-412 		while (*p) p++;
+ jge .getVarName61
+;-411 		while (*p) p++;
 
-.getVarName65:
+.getVarName62:
  mov bx, [bp-4]
  mov al, [bx]
  mov ah, 0
  or  al, al
- je .getVarName66
+ je .getVarName63
  inc  word[bp-4]
-;-413 		p++;
+;-412 		p++;
 
- jmp .getVarName65
-.getVarName66:
+ jmp .getVarName62
+.getVarName63:
  inc  word[bp-4]
-;-414 		j++;	 		
+;-413 		j++;	 		
 
  inc  word[bp-2]
-;-415 	}
+;-414 	}
 
-;-416 	return p;	
+;-415 	return p;	
 
- jmp .getVarName63
-.getVarName64:
+ jmp .getVarName60
+.getVarName61:
  mov ax, [bp-4]
  jmp .retngetVarName
-;-417 		
+;-416 		
 
-;-418 }
+;-417 }
 
-;-419 		
+;-418 		
 
-;-420 
+;-419 
 
-;-421 int printName(unsigned int i) {
+;-420 int printName(unsigned int i) {
 
  .retngetVarName:
  LEAVE
@@ -1966,7 +1924,7 @@ getVarName: PROC
 ENDP
 
 printName: PROC
-;-422     if (i < GTop) {
+;-421     if (i < GTop) {
 
 ;Function : printName, Number local Var: 1
 ; # type sign width local variables
@@ -1974,62 +1932,62 @@ printName: PROC
  ENTER  0,0
  mov ax, [bp+4]
  cmp ax, [GTop]
- jge .printName67
-;-423 	    i=getVarName(i);	    
+ jge .printName64
+;-422 	    i=getVarName(i);	    
 
  push word [bp+4]
  call getVarName
  add  sp, 2
  mov [bp+4], ax
-;-424         printstring(i);
+;-423         printstring(i);
 
  push word [bp+4]
  call printstring
  add  sp, 2
-;-425     }
+;-424     }
 
-;-426     else {
+;-425     else {
 
- jmp .printName68
-.printName67:
-;-427         printstring("[bp");
+ jmp .printName65
+.printName64:
+;-426         printstring("[bp");
 
  push printName_0
  call printstring
  add  sp, 2
-;-428         i = GData[i];
+;-427         i = GData[i];
 
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [GData + bx]
  mov [bp+4], ax
-;-429         if (i>0) prc('+');
+;-428         if (i>0) prc('+');
 
  mov ax, [bp+4]
  cmp ax, 0
- jle .printName69
+ jle .printName66
  push 43
  call prc
  add  sp, 2
-;-430         printinteger(i);
+;-429         printinteger(i);
 
-.printName69:
+.printName66:
  push word [bp+4]
  call printinteger
  add  sp, 2
-;-431         prc(']');
+;-430         prc(']');
 
  push 93
  call prc
  add  sp, 2
-;-432     }
+;-431     }
 
-;-433 }
+;-432 }
 
-.printName68:
-;-434 
+.printName65:
+;-433 
 
-;-435 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
+;-434 int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
 
  LEAVE
  ret
@@ -2037,7 +1995,7 @@ printName_0 db "[bp",0
 ENDP
 
 ifEOL: PROC
-;-436     if (c == 10) return 1;//LF
+;-435     if (c == 10) return 1;//LF
 
 ;Function : ifEOL, Number local Var: 1
 ; # type sign width local variables
@@ -2045,39 +2003,39 @@ ifEOL: PROC
  ENTER  0,0
  mov al, [bp+4]
  cmp al, 10
- jne .ifEOL70
+ jne .ifEOL67
  mov ax, 1
  jmp .retnifEOL
-;-437     if (c == 13) {//CR
+;-436     if (c == 13) {//CR
 
-.ifEOL70:
+.ifEOL67:
  mov al, [bp+4]
  cmp al, 13
- jne .ifEOL71
-;-438         if (thechar == 10) c=next();
+ jne .ifEOL68
+;-437         if (thechar == 10) c=next();
 
  mov al, [thechar]
  cmp al, 10
- jne .ifEOL72
+ jne .ifEOL69
  call next
  mov [bp+4], al
-;-439         return 1;
+;-438         return 1;
 
-.ifEOL72:
+.ifEOL69:
  mov ax, 1
  jmp .retnifEOL
-;-440     }
+;-439     }
 
-;-441     return 0;
+;-440     return 0;
 
-.ifEOL71:
+.ifEOL68:
  mov ax, 0
  jmp .retnifEOL
-;-442 }
+;-441 }
 
-;-443 
+;-442 
 
-;-444 char symboltemp[80];
+;-443 char symboltemp[80];
 
  .retnifEOL:
  LEAVE
@@ -2087,17 +2045,17 @@ section .bss
 absolute 32457
 symboltemp resb 80
 section .text
-;-445 
+;-444 
 
-;-446 int getlex() {
+;-445 int getlex() {
 
 
 getlex: PROC
-;-447     char c; char *p;
+;-446     char c; char *p;
 
-;-448     int i; int j;
+;-447     int i; int j;
 
-;-449 g1: c=next();
+;-448 g1: c=next();
 
 ;Function : getlex, Number local Var: 4
 ; # type sign width local variables
@@ -2109,205 +2067,205 @@ getlex: PROC
 .g1:
  call next
  mov [bp-2], al
-;-450     if (c == 0) return 0;
+;-449     if (c == 0) return 0;
 
  mov al, [bp-2]
  cmp al, 0
- jne .getlex73
+ jne .getlex70
  mov ax, 0
  jmp .retngetlex
-;-451     if (c <= ' ') goto g1;
+;-450     if (c <= ' ') goto g1;
 
-.getlex73:
+.getlex70:
  mov al, [bp-2]
  cmp al, 32
- jg  .getlex74
+ jg  .getlex71
  jmp .g1
-;-452   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
+;-451   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
 
-.getlex74:
+.getlex71:
  mov al, [bp-2]
  cmp al, 61
- jne .getlex75
+ jne .getlex72
  mov al, [thechar]
  cmp al, 61
- jne .getlex76
+ jne .getlex73
  call next
  mov ax, 806
  jmp .retngetlex
-.getlex76:
-;-453   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
+.getlex73:
+;-452   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
 
-.getlex75:
+.getlex72:
  mov al, [bp-2]
  cmp al, 33
- jne .getlex77
+ jne .getlex74
  mov al, [thechar]
  cmp al, 61
- jne .getlex78
+ jne .getlex75
  call next
  mov ax, 807
  jmp .retngetlex
-.getlex78:
-;-454   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
+.getlex75:
+;-453   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
 
-.getlex77:
+.getlex74:
  mov al, [bp-2]
  cmp al, 60
- jne .getlex79
+ jne .getlex76
  mov al, [thechar]
  cmp al, 61
- jne .getlex80
+ jne .getlex77
  call next
  mov ax, 824
  jmp .retngetlex
-.getlex80:
-;-455   if (c=='>') {if(thechar=='=') {next(); return T_GE; }}
+.getlex77:
+;-454   if (c=='>') {if(thechar=='=') {next(); return T_GE; }}
 
-.getlex79:
+.getlex76:
  mov al, [bp-2]
  cmp al, 62
- jne .getlex81
+ jne .getlex78
  mov al, [thechar]
  cmp al, 61
- jne .getlex82
+ jne .getlex79
  call next
  mov ax, 811
  jmp .retngetlex
-.getlex82:
-;-456   if (c=='<') {if(thechar=='<') {next(); return T_LESSLESS;  }}
+.getlex79:
+;-455   if (c=='<') {if(thechar=='<') {next(); return T_LESSLESS;  }}
 
-.getlex81:
+.getlex78:
  mov al, [bp-2]
  cmp al, 60
- jne .getlex83
+ jne .getlex80
  mov al, [thechar]
  cmp al, 60
- jne .getlex84
+ jne .getlex81
  call next
  mov ax, 1240
  jmp .retngetlex
-.getlex84:
-;-457   if (c=='>') {if(thechar=='>') {next(); return T_GREATGREAT;}}
+.getlex81:
+;-456   if (c=='>') {if(thechar=='>') {next(); return T_GREATGREAT;}}
 
-.getlex83:
+.getlex80:
  mov al, [bp-2]
  cmp al, 62
- jne .getlex85
+ jne .getlex82
  mov al, [thechar]
  cmp al, 62
- jne .getlex86
+ jne .getlex83
  call next
  mov ax, 1241
  jmp .retngetlex
-.getlex86:
-;-458   if (c=='+') {if(thechar=='+') {next(); return T_PLUSPLUS;  }}
+.getlex83:
+;-457   if (c=='+') {if(thechar=='+') {next(); return T_PLUSPLUS;  }}
 
-.getlex85:
+.getlex82:
  mov al, [bp-2]
  cmp al, 43
- jne .getlex87
+ jne .getlex84
  mov al, [thechar]
  cmp al, 43
- jne .getlex88
+ jne .getlex85
  call next
  mov ax, 1219
  jmp .retngetlex
-.getlex88:
-;-459   if (c=='-') {if(thechar=='-') {next(); return T_MINUSMINUS;}}
+.getlex85:
+;-458   if (c=='-') {if(thechar=='-') {next(); return T_MINUSMINUS;}}
 
-.getlex87:
+.getlex84:
  mov al, [bp-2]
  cmp al, 45
- jne .getlex89
+ jne .getlex86
  mov al, [thechar]
  cmp al, 45
- jne .getlex90
+ jne .getlex87
  call next
  mov ax, 1225
  jmp .retngetlex
-.getlex90:
-;-460   if (c=='+') {if(thechar=='=') {next(); return T_PLUSASS;   }}
+.getlex87:
+;-459   if (c=='+') {if(thechar=='=') {next(); return T_PLUSASS;   }}
 
-.getlex89:
+.getlex86:
  mov al, [bp-2]
  cmp al, 43
- jne .getlex91
+ jne .getlex88
  mov al, [thechar]
  cmp al, 61
- jne .getlex92
+ jne .getlex89
  call next
  mov ax, 1230
  jmp .retngetlex
-.getlex92:
-;-461   if (c=='-') {if(thechar=='=') {next(); return T_MINUSASS;  }}
+.getlex89:
+;-460   if (c=='-') {if(thechar=='=') {next(); return T_MINUSASS;  }}
 
-.getlex91:
+.getlex88:
  mov al, [bp-2]
  cmp al, 45
- jne .getlex93
+ jne .getlex90
  mov al, [thechar]
  cmp al, 61
- jne .getlex94
+ jne .getlex91
  call next
  mov ax, 1231
  jmp .retngetlex
-.getlex94:
-;-462   if (c=='&') {if(thechar=='=') {next(); return T_ANDASS;    }}
+.getlex91:
+;-461   if (c=='&') {if(thechar=='=') {next(); return T_ANDASS;    }}
 
-.getlex93:
+.getlex90:
  mov al, [bp-2]
  cmp al, 38
- jne .getlex95
+ jne .getlex92
  mov al, [thechar]
  cmp al, 61
- jne .getlex96
+ jne .getlex93
  call next
  mov ax, 1234
  jmp .retngetlex
-.getlex96:
-;-463   if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}
+.getlex93:
+;-462   if (c=='|') {if(thechar=='=') {next(); return T_ORASS;     }}
 
-.getlex95:
+.getlex92:
  mov al, [bp-2]
  cmp al, 124
- jne .getlex97
+ jne .getlex94
  mov al, [thechar]
  cmp al, 61
- jne .getlex98
+ jne .getlex95
  call next
  mov ax, 1235
  jmp .retngetlex
-.getlex98:
-;-464   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
+.getlex95:
+;-463   if (c=='*') {if(thechar=='=') {next(); return T_MULASS;    }}
 
-.getlex97:
+.getlex94:
  mov al, [bp-2]
  cmp al, 42
- jne .getlex99
+ jne .getlex96
  mov al, [thechar]
  cmp al, 61
- jne .getlex100
+ jne .getlex97
  call next
  mov ax, 1232
  jmp .retngetlex
-.getlex100:
-;-465   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
+.getlex97:
+;-464   if (c=='/') {if(thechar=='=') {next(); return T_DIVASS;    }}
 
-.getlex99:
+.getlex96:
  mov al, [bp-2]
  cmp al, 47
- jne .getlex101
+ jne .getlex98
  mov al, [thechar]
  cmp al, 61
- jne .getlex102
+ jne .getlex99
  call next
  mov ax, 1233
  jmp .retngetlex
-.getlex102:
-;-466   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
+.getlex99:
+;-465   if (instr1("()[]{},;*:%-><=+!&|#?", c)) return c ;
 
-.getlex101:
+.getlex98:
  mov al, byte [bp-2]
  mov ah, 0
  push ax
@@ -2315,26 +2273,26 @@ getlex: PROC
  call instr1
  add  sp, 4
  or  al, al
- je .getlex103
+ je .getlex100
  mov al, [bp-2]
  jmp .retngetlex
-;-467   if (c == '/') {
+;-466   if (c == '/') {
 
-.getlex103:
+.getlex100:
  mov al, [bp-2]
  cmp al, 47
- jne .getlex104
-;-468       if (thechar == '/') {
+ jne .getlex101
+;-467       if (thechar == '/') {
 
  mov al, [thechar]
  cmp al, 47
- jne .getlex105
-;-469           do c=next();
+ jne .getlex102
+;-468           do c=next();
 
-.getlex106:
+.getlex103:
  call next
  mov [bp-2], al
-;-470           while(ifEOL(c)==0) return getlex();
+;-469           while(ifEOL(c)==0) return getlex();
 
  mov al, byte [bp-2]
  mov ah, 0
@@ -2342,325 +2300,325 @@ getlex: PROC
  call ifEOL
  add  sp, 2
  cmp al, 0
- jne .getlex107
- jmp .getlex106
-.getlex107:
+ jne .getlex104
+ jmp .getlex103
+.getlex104:
  call getlex
  jmp .retngetlex
-;-471       }
+;-470       }
 
-;-472   }
+;-471   }
 
-.getlex105:
-;-473   if (c == '/') {
+.getlex102:
+;-472   if (c == '/') {
 
-.getlex104:
+.getlex101:
  mov al, [bp-2]
  cmp al, 47
- jne .getlex108
-;-474       if (thechar == '*') {
+ jne .getlex105
+;-473       if (thechar == '*') {
 
  mov al, [thechar]
  cmp al, 42
- jne .getlex109
-;-475           g2: c=next();
+ jne .getlex106
+;-474           g2: c=next();
 
 .g2:
  call next
  mov [bp-2], al
-;-476           if (c != '*') goto g2;
+;-475           if (c != '*') goto g2;
 
  mov al, [bp-2]
  cmp al, 42
- je  .getlex110
+ je  .getlex107
  jmp .g2
-;-477           if (thechar != '/') goto g2;
+;-476           if (thechar != '/') goto g2;
 
-.getlex110:
+.getlex107:
  mov al, [thechar]
  cmp al, 47
- je  .getlex111
+ je  .getlex108
  jmp .g2
-;-478           c=next();
+;-477           c=next();
 
-.getlex111:
+.getlex108:
  call next
  mov [bp-2], al
-;-479           return getlex();
+;-478           return getlex();
 
  call getlex
  jmp .retngetlex
-;-480       } else  return '/';
+;-479       } else  return '/';
 
- jmp .getlex112
-.getlex109:
+ jmp .getlex109
+.getlex106:
  mov ax, 47
  jmp .retngetlex
-;-481   }
+;-480   }
 
-.getlex112:
-;-482   if (c == '"') {
+.getlex109:
+;-481   if (c == '"') {
 
-.getlex108:
+.getlex105:
  mov al, [bp-2]
  cmp al, 34
- jne .getlex113
-;-483       p=&Symbol;
+ jne .getlex110
+;-482       p=&Symbol;
 
  mov ax, Symbol
  mov [bp-4], ax
-;-484       c=next();
+;-483       c=next();
 
  call next
  mov [bp-2], al
-;-485       while (c != '"') {
+;-484       while (c != '"') {
 
-.getlex114:
+.getlex111:
  mov al, [bp-2]
  cmp al, 34
- je  .getlex115
-;-486           *p=c;
+ je  .getlex112
+;-485           *p=c;
 
  mov al, [bp-2]
  mov  bx, [bp-4]
  mov  [bx], al
-;-487           p++;
+;-486           p++;
 
  inc  word[bp-4]
-;-488           c=next();
+;-487           c=next();
 
  call next
  mov [bp-2], al
-;-489           }
+;-488           }
 
-;-490           *p=0;
+;-489           *p=0;
 
- jmp .getlex114
-.getlex115:
+ jmp .getlex111
+.getlex112:
  mov ax, 0
  mov  bx, [bp-4]
  mov  [bx], al
-;-491       return T_STRING;
+;-490       return T_STRING;
 
  mov ax, 258
  jmp .retngetlex
-;-492   }
+;-491   }
 
-;-493   if (digit(c)) {
+;-492   if (digit(c)) {
 
-.getlex113:
+.getlex110:
  mov al, byte [bp-2]
  mov ah, 0
  push ax
  call digit
  add  sp, 2
  or  al, al
- je .getlex116
-;-494       lexval=0;
+ je .getlex113
+;-493       lexval=0;
 
  mov ax, 0
  mov word [lexval], ax
-;-495       lexval=c-'0'; // lexval=int hi=0, c=char
+;-494       lexval=c-'0'; // lexval=int hi=0, c=char
 
  mov al, [bp-2]
  sub al, 48
  mov word [lexval], ax
-;-496       if (thechar=='x') thechar='X';
+;-495       if (thechar=='x') thechar='X';
 
  mov al, [thechar]
  cmp al, 120
- jne .getlex117
+ jne .getlex114
  mov ax, 88
  mov byte [thechar], al
-;-497       if (thechar=='X') {
+;-496       if (thechar=='X') {
 
-.getlex117:
+.getlex114:
  mov al, [thechar]
  cmp al, 88
- jne .getlex118
-;-498           next();
+ jne .getlex115
+;-497           next();
 
  call next
-;-499           while(alnum(thechar)) {
+;-498           while(alnum(thechar)) {
 
-.getlex119:
+.getlex116:
  mov al, byte [thechar]
  mov ah, 0
  push ax
  call alnum
  add  sp, 2
  or  al, al
- je .getlex120
-;-500               c=next();
+ je .getlex117
+;-499               c=next();
 
  call next
  mov [bp-2], al
-;-501               if(c>96) c=c-39;
+;-500               if(c>96) c=c-39;
 
  mov al, [bp-2]
  cmp al, 96
- jle .getlex121
+ jle .getlex118
  mov al, [bp-2]
  sub al, 39
  mov [bp-2], al
-;-502       	       if (c>64) c=c-7;
+;-501       	       if (c>64) c=c-7;
 
-.getlex121:
+.getlex118:
  mov al, [bp-2]
  cmp al, 64
- jle .getlex122
+ jle .getlex119
  mov al, [bp-2]
  sub al, 7
  mov [bp-2], al
-;-503                c=c-48;
+;-502                c=c-48;
 
-.getlex122:
+.getlex119:
  mov al, [bp-2]
  sub al, 48
  mov [bp-2], al
-;-504                lexval=lexval << 4; // * 16
+;-503                lexval=lexval << 4; // * 16
 
  mov ax, [lexval]
  shl ax, 4
  mov word [lexval], ax
-;-505                i=0;
+;-504                i=0;
 
  mov ax, 0
  mov [bp-6], ax
-;-506                i=c;
+;-505                i=c;
 
  mov al, [bp-2]
  mov [bp-6], ax
-;-507                lexval=lexval+i;
+;-506                lexval=lexval+i;
 
  mov ax, [lexval]
  add ax, [bp-6]
  mov word [lexval], ax
-;-508            }
+;-507            }
 
-;-509        }else {
+;-508        }else {
 
- jmp .getlex119
-.getlex120:
- jmp .getlex123
-.getlex118:
-;-510            while(digit(thechar)) {
+ jmp .getlex116
+.getlex117:
+ jmp .getlex120
+.getlex115:
+;-509            while(digit(thechar)) {
 
-.getlex124:
+.getlex121:
  mov al, byte [thechar]
  mov ah, 0
  push ax
  call digit
  add  sp, 2
  or  al, al
- je .getlex125
-;-511                c=next();
+ je .getlex122
+;-510                c=next();
 
  call next
  mov [bp-2], al
-;-512                c=c-48;
+;-511                c=c-48;
 
  mov al, [bp-2]
  sub al, 48
  mov [bp-2], al
-;-513                lexval=lexval*10;
+;-512                lexval=lexval*10;
 
  mov ax, [lexval]
  mov bx, 10
  mul bx
  mov word [lexval], ax
-;-514                i=0;
+;-513                i=0;
 
  mov ax, 0
  mov [bp-6], ax
-;-515                i=c;
+;-514                i=c;
 
  mov al, [bp-2]
  mov [bp-6], ax
-;-516                lexval=lexval+i;
+;-515                lexval=lexval+i;
 
  mov ax, [lexval]
  add ax, [bp-6]
  mov word [lexval], ax
-;-517            }
+;-516            }
 
-;-518        }
+;-517        }
 
- jmp .getlex124
-.getlex125:
-;-519       return T_CONST;
+ jmp .getlex121
+.getlex122:
+;-518       return T_CONST;
 
-.getlex123:
+.getlex120:
  mov ax, 257
  jmp .retngetlex
-;-520   }
+;-519   }
 
-;-521   if (c==39) {
+;-520   if (c==39) {
 
-.getlex116:
+.getlex113:
  mov al, [bp-2]
  cmp al, 39
- jne .getlex126
-;-522       lexval=next();
+ jne .getlex123
+;-521       lexval=next();
 
  call next
  mov word [lexval], ax
-;-523       if (lexval==92) {
+;-522       if (lexval==92) {
 
  mov ax, [lexval]
  cmp ax, 92
- jne .getlex127
-;-524           lexval=next();
+ jne .getlex124
+;-523           lexval=next();
 
  call next
  mov word [lexval], ax
-;-525           if (lexval=='n') lexval=10;
+;-524           if (lexval=='n') lexval=10;
 
  mov ax, [lexval]
  cmp ax, 110
- jne .getlex128
+ jne .getlex125
  mov ax, 10
  mov word [lexval], ax
-;-526           if (lexval=='t') lexval= 9;
+;-525           if (lexval=='t') lexval= 9;
 
-.getlex128:
+.getlex125:
  mov ax, [lexval]
  cmp ax, 116
- jne .getlex129
+ jne .getlex126
  mov ax, 9
  mov word [lexval], ax
-;-527           if (lexval=='0') lexval= 0;
+;-526           if (lexval=='0') lexval= 0;
 
-.getlex129:
+.getlex126:
  mov ax, [lexval]
  cmp ax, 48
- jne .getlex130
+ jne .getlex127
  mov ax, 0
  mov word [lexval], ax
-;-528       }
-
-.getlex130:
-;-529       next();
+;-527       }
 
 .getlex127:
+;-528       next();
+
+.getlex124:
  call next
-;-530       return T_CONST;
+;-529       return T_CONST;
 
  mov ax, 257
  jmp .retngetlex
-;-531   }
+;-530   }
 
-;-532   if (alnum(c)) {
+;-531   if (alnum(c)) {
 
-.getlex126:
+.getlex123:
  mov al, byte [bp-2]
  mov ah, 0
  push ax
  call alnum
  add  sp, 2
  or  al, al
- je .getlex131
-;-533     strcpy(symboltemp, Symbol);
+ je .getlex128
+;-532     strcpy(symboltemp, Symbol);
 
  lea  ax, [Symbol]
  push ax
@@ -2668,50 +2626,50 @@ getlex: PROC
  push ax
  call strcpy
  add  sp, 4
-;-534     p=&Symbol;
+;-533     p=&Symbol;
 
  mov ax, Symbol
  mov [bp-4], ax
-;-535     *p=c;
+;-534     *p=c;
 
  mov al, [bp-2]
  mov  bx, [bp-4]
  mov  [bx], al
-;-536     p++;
+;-535     p++;
 
  inc  word[bp-4]
-;-537     while(alnum(thechar)) {
+;-536     while(alnum(thechar)) {
 
-.getlex132:
+.getlex129:
  mov al, byte [thechar]
  mov ah, 0
  push ax
  call alnum
  add  sp, 2
  or  al, al
- je .getlex133
-;-538         c=next();
+ je .getlex130
+;-537         c=next();
 
  call next
  mov [bp-2], al
-;-539         *p=c;
+;-538         *p=c;
 
  mov al, [bp-2]
  mov  bx, [bp-4]
  mov  [bx], al
-;-540         p++;
+;-539         p++;
 
  inc  word[bp-4]
-;-541     }
+;-540     }
 
-;-542     *p=0;
+;-541     *p=0;
 
- jmp .getlex132
-.getlex133:
+ jmp .getlex129
+.getlex130:
  mov ax, 0
  mov  bx, [bp-4]
  mov  [bx], al
-;-543     if (eqstr(Symbol,"signed"  )) return T_SIGNED;
+;-542     if (eqstr(Symbol,"signed"  )) return T_SIGNED;
 
  push getlex_1
  lea  ax, [Symbol]
@@ -2719,221 +2677,221 @@ getlex: PROC
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex134
+ je .getlex131
  mov ax, 531
  jmp .retngetlex
-;-544     if (eqstr(Symbol,"unsigned")) return T_UNSIGNED;
+;-543     if (eqstr(Symbol,"unsigned")) return T_UNSIGNED;
 
-.getlex134:
+.getlex131:
  push getlex_2
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex135
+ je .getlex132
  mov ax, 532
  jmp .retngetlex
-;-545     if (eqstr(Symbol,"void"    )) return T_VOID;
+;-544     if (eqstr(Symbol,"void"    )) return T_VOID;
 
-.getlex135:
+.getlex132:
  push getlex_3
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex136
+ je .getlex133
  mov ax, 529
  jmp .retngetlex
-;-546     if (eqstr(Symbol,"int"     )) return T_INT;
+;-545     if (eqstr(Symbol,"int"     )) return T_INT;
 
-.getlex136:
+.getlex133:
  push getlex_4
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex137
+ je .getlex134
  mov ax, 517
  jmp .retngetlex
-;-547     if (eqstr(Symbol,"long"    )) return T_LONG;
+;-546     if (eqstr(Symbol,"long"    )) return T_LONG;
 
-.getlex137:
+.getlex134:
  push getlex_5
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex138
+ je .getlex135
  mov ax, 533
  jmp .retngetlex
-;-548     if (eqstr(Symbol,"inth"    )) return T_INTH;
+;-547     if (eqstr(Symbol,"inth"    )) return T_INTH;
 
-.getlex138:
+.getlex135:
  push getlex_6
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex139
+ je .getlex136
  mov ax, 600
  jmp .retngetlex
-;-549     if (eqstr(Symbol,"char"    )) return T_CHAR;
+;-548     if (eqstr(Symbol,"char"    )) return T_CHAR;
 
-.getlex139:
+.getlex136:
  push getlex_7
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex140
+ je .getlex137
  mov ax, 530
  jmp .retngetlex
-;-550     if (eqstr(Symbol,"asm"     )) return T_ASM;
+;-549     if (eqstr(Symbol,"asm"     )) return T_ASM;
 
-.getlex140:
+.getlex137:
  push getlex_8
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex141
+ je .getlex138
  mov ax, 518
  jmp .retngetlex
-;-551     if (eqstr(Symbol,"__asm"   )) return T_ASMBLOCK;
+;-550     if (eqstr(Symbol,"__asm"   )) return T_ASMBLOCK;
 
-.getlex141:
+.getlex138:
  push getlex_9
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex142
+ je .getlex139
  mov ax, 519
  jmp .retngetlex
-;-552     if (eqstr(Symbol,"__emit__")) return T_EMIT;
+;-551     if (eqstr(Symbol,"__emit__")) return T_EMIT;
 
-.getlex142:
+.getlex139:
  push getlex_10
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex143
+ je .getlex140
  mov ax, 520
  jmp .retngetlex
-;-553     if (eqstr(Symbol,"return"  )) return T_RETURN;
+;-552     if (eqstr(Symbol,"return"  )) return T_RETURN;
 
-.getlex143:
+.getlex140:
  push getlex_11
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex144
+ je .getlex141
  mov ax, 512
  jmp .retngetlex
-;-554     if (eqstr(Symbol,"if"      )) return T_IF;
+;-553     if (eqstr(Symbol,"if"      )) return T_IF;
 
-.getlex144:
+.getlex141:
  push getlex_12
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex145
+ je .getlex142
  mov ax, 513
  jmp .retngetlex
-;-555     if (eqstr(Symbol,"else"    )) return T_ELSE;
+;-554     if (eqstr(Symbol,"else"    )) return T_ELSE;
 
-.getlex145:
+.getlex142:
  push getlex_13
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex146
+ je .getlex143
  mov ax, 514
  jmp .retngetlex
-;-556     if (eqstr(Symbol,"while"   )) return T_WHILE;
+;-555     if (eqstr(Symbol,"while"   )) return T_WHILE;
 
-.getlex146:
+.getlex143:
  push getlex_14
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex147
+ je .getlex144
  mov ax, 515
  jmp .retngetlex
-;-557     if (eqstr(Symbol,"do"      )) return T_DO;
+;-556     if (eqstr(Symbol,"do"      )) return T_DO;
 
-.getlex147:
+.getlex144:
  push getlex_15
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex148
+ je .getlex145
  mov ax, 516
  jmp .retngetlex
-;-558     if (eqstr(Symbol,"goto"    )) return T_GOTO;
+;-557     if (eqstr(Symbol,"goto"    )) return T_GOTO;
 
-.getlex148:
+.getlex145:
  push getlex_16
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex149
+ je .getlex146
  mov ax, 521
  jmp .retngetlex
-;-559     if (eqstr(Symbol,"define"  )) return T_DEFINE;
+;-558     if (eqstr(Symbol,"define"  )) return T_DEFINE;
 
-.getlex149:
+.getlex146:
  push getlex_17
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex150
+ je .getlex147
  mov ax, 511
  jmp .retngetlex
-;-560 
+;-559 
 
-;-561     i=0;//convert define to value
+;-560     i=0;//convert define to value
 
-.getlex150:
+.getlex147:
  mov ax, 0
  mov [bp-6], ax
-;-562     while (i < GTop) {
+;-561     while (i < GTop) {
 
-.getlex151:
+.getlex148:
  mov ax, [bp-6]
  cmp ax, [GTop]
- jge .getlex152
-;-563         j=getVarName(i);
+ jge .getlex149
+;-562         j=getVarName(i);
 
  push word [bp-6]
  call getVarName
  add  sp, 2
  mov [bp-8], ax
-;-564         if (eqstr(Symbol,j)) {
+;-563         if (eqstr(Symbol,j)) {
 
  push word [bp-8]
  lea  ax, [Symbol]
@@ -2941,20 +2899,20 @@ getlex: PROC
  call eqstr
  add  sp, 4
  or  al, al
- je .getlex153
-;-565             if (GType[i]=='#') {
+ je .getlex150
+;-564             if (GType[i]=='#') {
 
  mov bx, [bp-6]
  mov al, [GType + bx]
  cmp al, 35
- jne .getlex154
-;-566                 lexval=GData[i];
+ jne .getlex151
+;-565                 lexval=GData[i];
 
  mov bx, [bp-6]
  shl bx, 1
  mov ax, [GData + bx]
  mov word [lexval], ax
-;-567                 strcpy(Symbol, symboltemp);
+;-566                 strcpy(Symbol, symboltemp);
 
  lea  ax, [symboltemp]
  push ax
@@ -2962,38 +2920,38 @@ getlex: PROC
  push ax
  call strcpy
  add  sp, 4
-;-568                 return T_CONST;
+;-567                 return T_CONST;
 
  mov ax, 257
  jmp .retngetlex
-;-569             }
+;-568             }
 
-;-570         }
+;-569         }
 
-.getlex154:
-;-571         i++;
+.getlex151:
+;-570         i++;
 
-.getlex153:
+.getlex150:
  inc  word[bp-6]
-;-572     }
+;-571     }
 
-;-573     return T_NAME; } 
+;-572     return T_NAME; } 
 
- jmp .getlex151
-.getlex152:
+ jmp .getlex148
+.getlex149:
  mov ax, 256
  jmp .retngetlex
-;-574     error1("Input item not recognized");
+;-573     error1("Input item not recognized");
 
-.getlex131:
+.getlex128:
  push getlex_18
  call error1
  add  sp, 2
-;-575 }
+;-574 }
 
-;-576 
+;-575 
 
-;-577 int istoken(int t) {
+;-576 int istoken(int t) {
 
  .retngetlex:
  LEAVE
@@ -3020,7 +2978,7 @@ getlex_18 db "Input item not recognized",0
 ENDP
 
 istoken: PROC
-;-578     if (token == t) {
+;-577     if (token == t) {
 
 ;Function : istoken, Number local Var: 1
 ; # type sign width local variables
@@ -3028,27 +2986,27 @@ istoken: PROC
  ENTER  0,0
  mov ax, [token]
  cmp ax, [bp+4]
- jne .istoken155
-;-579         token=getlex();
+ jne .istoken152
+;-578         token=getlex();
 
  call getlex
  mov word [token], ax
-;-580         return 1;
+;-579         return 1;
 
  mov ax, 1
  jmp .retnistoken
-;-581     }
+;-580     }
 
-;-582     return 0;
+;-581     return 0;
 
-.istoken155:
+.istoken152:
  mov ax, 0
  jmp .retnistoken
-;-583 }
+;-582 }
 
-;-584 
+;-583 
 
-;-585 int expect(int t) {
+;-584 int expect(int t) {
 
  .retnistoken:
  LEAVE
@@ -3056,7 +3014,7 @@ istoken: PROC
 ENDP
 
 expect: PROC
-;-586     if (istoken(t)==0) {
+;-585     if (istoken(t)==0) {
 
 ;Function : expect, Number local Var: 1
 ; # type sign width local variables
@@ -3066,41 +3024,41 @@ expect: PROC
  call istoken
  add  sp, 2
  cmp ax, 0
- jne .expect156
-;-587         *cloc=0;
+ jne .expect153
+;-586         *cloc=0;
 
  mov ax, 0
  mov  bx, [cloc]
  mov  [bx], al
-;-588         printstring(co);
+;-587         printstring(co);
 
  lea  ax, [co]
  push ax
  call printstring
  add  sp, 2
-;-589         printstring("\nExpected ASCII(dez): ");
+;-588         printstring("\nExpected ASCII(dez): ");
 
  push expect_0
  call printstring
  add  sp, 2
-;-590         printinteger(t);
+;-589         printinteger(t);
 
  push word [bp+4]
  call printinteger
  add  sp, 2
-;-591         error1(" not found");
+;-590         error1(" not found");
 
  push expect_1
  call error1
  add  sp, 2
-;-592     }
+;-591     }
 
-;-593 }
+;-592 }
 
-.expect156:
-;-594 
+.expect153:
+;-593 
 
-;-595 int v(unsigned int i) {//value
+;-594 int v(unsigned int i) {//value
 
  LEAVE
  ret
@@ -3109,7 +3067,7 @@ expect_1 db " not found",0
 ENDP
 
 v: PROC
-;-596     if (i < GTop) prc('[');
+;-595     if (i < GTop) prc('[');
 
 ;Function : v, Number local Var: 1
 ; # type sign width local variables
@@ -3117,37 +3075,37 @@ v: PROC
  ENTER  0,0
  mov ax, [bp+4]
  cmp ax, [GTop]
- jge .v157
+ jge .v154
  push 91
  call prc
  add  sp, 2
-;-597     printName(i);
+;-596     printName(i);
 
-.v157:
+.v154:
  push word [bp+4]
  call printName
  add  sp, 2
-;-598     if (i < GTop) prc(']');
+;-597     if (i < GTop) prc(']');
 
  mov ax, [bp+4]
  cmp ax, [GTop]
- jge .v158
+ jge .v155
  push 93
  call prc
  add  sp, 2
-;-599 }
+;-598 }
 
-.v158:
-;-600 int checknamelen() {
+.v155:
+;-599 int checknamelen() {
 
  LEAVE
  ret
 ENDP
 
 checknamelen: PROC
-;-601     int i;
+;-600     int i;
 
-;-602     i=strlen(Symbol);
+;-601     i=strlen(Symbol);
 
 ;Function : checknamelen, Number local Var: 1
 ; # type sign width local variables
@@ -3158,20 +3116,20 @@ checknamelen: PROC
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-603     if (i > IDLENMAX) error1("Item name is too long)");
+;-602     if (i > IDLENMAX) error1("Item name is too long)");
 
  mov ax, [bp-2]
  cmp ax, 31
- jle .checknamelen159
+ jle .checknamelen156
  push checknamelen_0
  call error1
  add  sp, 2
-;-604 }
+;-603 }
 
-.checknamelen159:
-;-605 
+.checknamelen156:
+;-604 
 
-;-606 int checkName() {
+;-605 int checkName() {
 
  LEAVE
  ret
@@ -3179,9 +3137,9 @@ checknamelen_0 db "Item name is too long)",0
 ENDP
 
 checkName: PROC
-;-607     unsigned int i; unsigned int j;
+;-606     unsigned int i; unsigned int j;
 
-;-608     i=GTop;
+;-607     i=GTop;
 
 ;Function : checkName, Number local Var: 2
 ; # type sign width local variables
@@ -3190,19 +3148,54 @@ checkName: PROC
  ENTER  4,0
  mov ax, [GTop]
  mov [bp-2], ax
-;-609     while(i<LTop) {//todo look for local var first
+;-608     while(i<LTop) {//todo look for local var first
 
-.checkName160:
+.checkName157:
  mov ax, [bp-2]
  cmp ax, [LTop]
- jge .checkName161
-;-610         j=getVarName(i);
+ jge .checkName158
+;-609         j=getVarName(i);
 
  push word [bp-2]
  call getVarName
  add  sp, 2
  mov [bp-4], ax
-;-611         if(eqstr(Symbol,j))return i;
+;-610         if(eqstr(Symbol,j))return i;
+
+ push word [bp-4]
+ lea  ax, [Symbol]
+ push ax
+ call eqstr
+ add  sp, 4
+ or  al, al
+ je .checkName159
+ mov ax, [bp-2]
+ jmp .retncheckName
+;-611         i++;
+
+.checkName159:
+ inc  word[bp-2]
+;-612     }
+
+;-613     i=1;
+
+ jmp .checkName157
+.checkName158:
+ mov ax, 1
+ mov [bp-2], ax
+;-614     while(i<GTop) {
+
+.checkName160:
+ mov ax, [bp-2]
+ cmp ax, [GTop]
+ jge .checkName161
+;-615         j=getVarName(i);
+
+ push word [bp-2]
+ call getVarName
+ add  sp, 2
+ mov [bp-4], ax
+;-616         if(eqstr(Symbol,j))return i;
 
  push word [bp-4]
  lea  ax, [Symbol]
@@ -3213,58 +3206,23 @@ checkName: PROC
  je .checkName162
  mov ax, [bp-2]
  jmp .retncheckName
-;-612         i++;
+;-617         i++;
 
 .checkName162:
  inc  word[bp-2]
-;-613     }
+;-618     }
 
-;-614     i=1;
+;-619     return 0;
 
  jmp .checkName160
 .checkName161:
- mov ax, 1
- mov [bp-2], ax
-;-615     while(i<GTop) {
-
-.checkName163:
- mov ax, [bp-2]
- cmp ax, [GTop]
- jge .checkName164
-;-616         j=getVarName(i);
-
- push word [bp-2]
- call getVarName
- add  sp, 2
- mov [bp-4], ax
-;-617         if(eqstr(Symbol,j))return i;
-
- push word [bp-4]
- lea  ax, [Symbol]
- push ax
- call eqstr
- add  sp, 4
- or  al, al
- je .checkName165
- mov ax, [bp-2]
- jmp .retncheckName
-;-618         i++;
-
-.checkName165:
- inc  word[bp-2]
-;-619     }
-
-;-620     return 0;
-
- jmp .checkName163
-.checkName164:
  mov ax, 0
  jmp .retncheckName
-;-621 }
+;-620 }
 
-;-622 
+;-621 
 
-;-623 int searchname() {
+;-622 int searchname() {
 
  .retncheckName:
  LEAVE
@@ -3272,9 +3230,9 @@ checkName: PROC
 ENDP
 
 searchname: PROC
-;-624     unsigned int i;
+;-623     unsigned int i;
 
-;-625     i=checkName();
+;-624     i=checkName();
 
 ;Function : searchname, Number local Var: 1
 ; # type sign width local variables
@@ -3282,24 +3240,24 @@ searchname: PROC
  ENTER  2,0
  call checkName
  mov [bp-2], ax
-;-626     if (i == 0) error1("Variable unknown");
+;-625     if (i == 0) error1("Variable unknown");
 
  mov ax, [bp-2]
  cmp ax, 0
- jne .searchname166
+ jne .searchname163
  push searchname_0
  call error1
  add  sp, 2
-;-627     return i;
+;-626     return i;
 
-.searchname166:
+.searchname163:
  mov ax, [bp-2]
  jmp .retnsearchname
-;-628 }
+;-627 }
 
-;-629 
+;-628 
 
-;-630 int name1() {
+;-629 int name1() {
 
  .retnsearchname:
  LEAVE
@@ -3308,33 +3266,33 @@ searchname_0 db "Variable unknown",0
 ENDP
 
 name1: PROC
-;-631     if (token!=T_NAME) error1("Name expected");
+;-630     if (token!=T_NAME) error1("Name expected");
 
  mov ax, [token]
  cmp ax, 256
- je  .name1167
+ je  .name1164
  push name1_0
  call error1
  add  sp, 2
-;-632     token=getlex();
+;-631     token=getlex();
 
-.name1167:
+.name1164:
  call getlex
  mov word [token], ax
-;-633 }
+;-632 }
 
-;-634 
+;-633 
 
-;-635 int typeName() {
+;-634 int typeName() {
 
  ret
 name1_0 db "Name expected",0
 ENDP
 
 typeName: PROC
-;-636     int m; //0=V,1=*,2=&
+;-635     int m; //0=V,1=*,2=&
 
-;-637     issign='S';
+;-636     issign='S';
 
 ;Function : typeName, Number local Var: 1
 ; # type sign width local variables
@@ -3342,114 +3300,114 @@ typeName: PROC
  ENTER  2,0
  mov ax, 83
  mov byte [issign], al
-;-638     if(istoken(T_SIGNED))   issign='S';
+;-637     if(istoken(T_SIGNED))   issign='S';
 
  push 531
  call istoken
  add  sp, 2
  or  al, al
- je .typeName168
+ je .typeName165
  mov ax, 83
  mov byte [issign], al
-;-639     if(istoken(T_UNSIGNED)) issign='U';
+;-638     if(istoken(T_UNSIGNED)) issign='U';
 
-.typeName168:
+.typeName165:
  push 532
  call istoken
  add  sp, 2
  or  al, al
- je .typeName169
+ je .typeName166
  mov ax, 85
  mov byte [issign], al
-;-640     iswidth=2;
+;-639     iswidth=2;
 
-.typeName169:
+.typeName166:
  mov ax, 2
  mov byte [iswidth], al
-;-641     if(istoken(T_VOID))     iswidth=0;
+;-640     if(istoken(T_VOID))     iswidth=0;
 
  push 529
  call istoken
  add  sp, 2
  or  al, al
- je .typeName170
+ je .typeName167
  mov ax, 0
  mov byte [iswidth], al
-;-642     if(istoken(T_CHAR))     iswidth=1;
+;-641     if(istoken(T_CHAR))     iswidth=1;
 
-.typeName170:
+.typeName167:
  push 530
  call istoken
  add  sp, 2
  or  al, al
- je .typeName171
+ je .typeName168
  mov ax, 1
  mov byte [iswidth], al
-;-643     if(istoken(T_INT))      iswidth=2;
+;-642     if(istoken(T_INT))      iswidth=2;
 
-.typeName171:
+.typeName168:
  push 517
  call istoken
  add  sp, 2
  or  al, al
- je .typeName172
+ je .typeName169
  mov ax, 2
  mov byte [iswidth], al
-;-644     if(istoken(T_LONG))     iswidth=4;
+;-643     if(istoken(T_LONG))     iswidth=4;
 
-.typeName172:
+.typeName169:
  push 533
  call istoken
  add  sp, 2
  or  al, al
- je .typeName173
+ je .typeName170
  mov ax, 4
  mov byte [iswidth], al
-;-645     istype='V';
+;-644     istype='V';
 
-.typeName173:
+.typeName170:
  mov ax, 86
  mov byte [istype], al
-;-646     m=0;
+;-645     m=0;
 
  mov ax, 0
  mov [bp-2], ax
-;-647     if(istoken('*'))  {istype='*'; m=1;}
+;-646     if(istoken('*'))  {istype='*'; m=1;}
 
  push 42
  call istoken
  add  sp, 2
  or  al, al
- je .typeName174
+ je .typeName171
  mov ax, 42
  mov byte [istype], al
  mov ax, 1
  mov [bp-2], ax
-;-648     if(istoken('&'))  {istype='&'; m=2;}
+;-647     if(istoken('&'))  {istype='&'; m=2;}
 
-.typeName174:
+.typeName171:
  push 38
  call istoken
  add  sp, 2
  or  al, al
- je .typeName175
+ je .typeName172
  mov ax, 38
  mov byte [istype], al
  mov ax, 2
  mov [bp-2], ax
-;-649     name1();
+;-648     name1();
 
-.typeName175:
+.typeName172:
  call name1
-;-650     return m;
+;-649     return m;
 
  mov ax, [bp-2]
  jmp .retntypeName
-;-651 }
+;-650 }
 
-;-652 
+;-651 
 
-;-653 int gettypes(int i) {
+;-652 int gettypes(int i) {
 
  .retntypeName:
  LEAVE
@@ -3457,9 +3415,9 @@ typeName: PROC
 ENDP
 
 gettypes: PROC
-;-654     char c;
+;-653     char c;
 
-;-655     c=GSign [i];
+;-654     c=GSign [i];
 
 ;Function : gettypes, Number local Var: 2
 ; # type sign width local variables
@@ -3469,97 +3427,97 @@ gettypes: PROC
  mov bx, [bp+4]
  mov al, [GSign + bx]
  mov [bp-2], al
-;-656     if (c=='S') signi =1;  else signi =0;
+;-655     if (c=='S') signi =1;  else signi =0;
 
  mov al, [bp-2]
  cmp al, 83
- jne .gettypes176
+ jne .gettypes173
  mov ax, 1
  mov word [signi], ax
- jmp .gettypes177
-.gettypes176:
+ jmp .gettypes174
+.gettypes173:
  mov ax, 0
  mov word [signi], ax
-;-657     c=GWidth[i];
+;-656     c=GWidth[i];
 
-.gettypes177:
+.gettypes174:
  mov bx, [bp+4]
  mov al, [GWidth + bx]
  mov [bp-2], al
-;-658     widthi=0;
+;-657     widthi=0;
 
  mov ax, 0
  mov word [widthi], ax
-;-659     wi=0;
+;-658     wi=0;
 
  mov ax, 0
  mov word [wi], ax
-;-660     if (c==1) {widthi=1;wi=1;}
+;-659     if (c==1) {widthi=1;wi=1;}
 
  mov al, [bp-2]
  cmp al, 1
- jne .gettypes178
+ jne .gettypes175
  mov ax, 1
  mov word [widthi], ax
  mov ax, 1
  mov word [wi], ax
-;-661     if (c==2) {widthi=2;wi=2;}
+;-660     if (c==2) {widthi=2;wi=2;}
 
-.gettypes178:
+.gettypes175:
  mov al, [bp-2]
  cmp al, 2
- jne .gettypes179
+ jne .gettypes176
  mov ax, 2
  mov word [widthi], ax
  mov ax, 2
  mov word [wi], ax
-;-662     if (c==4) {widthi=4;wi=4;}
+;-661     if (c==4) {widthi=4;wi=4;}
 
-.gettypes179:
+.gettypes176:
  mov al, [bp-2]
  cmp al, 4
- jne .gettypes180
+ jne .gettypes177
  mov ax, 4
  mov word [widthi], ax
  mov ax, 4
  mov word [wi], ax
-;-663     c=GType [i];
+;-662     c=GType [i];
 
-.gettypes180:
+.gettypes177:
  mov bx, [bp+4]
  mov al, [GType + bx]
  mov [bp-2], al
-;-664     typei=0;
+;-663     typei=0;
 
  mov ax, 0
  mov word [typei], ax
-;-665     if (c=='*') {typei=1;wi=2;}
+;-664     if (c=='*') {typei=1;wi=2;}
 
  mov al, [bp-2]
  cmp al, 42
- jne .gettypes181
+ jne .gettypes178
  mov ax, 1
  mov word [typei], ax
  mov ax, 2
  mov word [wi], ax
-;-666     if (c=='&')  typei=2;
+;-665     if (c=='&')  typei=2;
 
-.gettypes181:
+.gettypes178:
  mov al, [bp-2]
  cmp al, 38
- jne .gettypes182
+ jne .gettypes179
  mov ax, 2
  mov word [typei], ax
-;-667     return i;
+;-666     return i;
 
-.gettypes182:
+.gettypes179:
  mov ax, [bp+4]
  jmp .retngettypes
-;-668 }
+;-667 }
 
-;-669 
+;-668 
 
-;-670 int addlocal() {
+;-669 int addlocal() {
 
  .retngettypes:
  LEAVE
@@ -3567,62 +3525,62 @@ gettypes: PROC
 ENDP
 
 addlocal: PROC
-;-671     if(LTop >= VARMAX) error1("Local variable table full");
+;-670     if(LTop >= VARMAX) error1("Local variable table full");
 
  mov ax, [LTop]
  cmp ax, 400 ;unsigned : 1
- jl  .addlocal183
+ jl  .addlocal180
  push addlocal_0
  call error1
  add  sp, 2
-;-672     if (checkName() != 0) error1("Variable already defined");
+;-671     if (checkName() != 0) error1("Variable already defined");
 
-.addlocal183:
+.addlocal180:
  call checkName
  cmp ax, 0
- je  .addlocal184
+ je  .addlocal181
  push addlocal_1
  call error1
  add  sp, 2
-;-673     GSign[LTop]=issign;
+;-672     GSign[LTop]=issign;
 
-.addlocal184:
+.addlocal181:
  mov al, [issign]
  mov bx, [LTop]
  mov [GSign+bx], al
-;-674     GWidth[LTop]=iswidth;
+;-673     GWidth[LTop]=iswidth;
 
  mov al, [iswidth]
  mov bx, [LTop]
  mov [GWidth+bx], al
-;-675     GType[LTop]=istype;
+;-674     GType[LTop]=istype;
 
  mov al, [istype]
  mov bx, [LTop]
  mov [GType+bx], al
-;-676     pt=getVarName(LTop);
+;-675     pt=getVarName(LTop);
 
  push word [LTop]
  call getVarName
  add  sp, 2
  mov word [pt], ax
-;-677     strcpy(pt, Symbol);
+;-676     strcpy(pt, Symbol);
 
  lea  ax, [Symbol]
  push ax
  push word [pt]
  call strcpy
  add  sp, 4
-;-678     storeVarName();
+;-677     storeVarName();
 
  call storeVarName
-;-679 }
+;-678 }
+
+;-679 
 
 ;-680 
 
-;-681 
-
-;-682 int cmpneg(int ids) {
+;-681 int cmpneg(int ids) {
 
  ret
 addlocal_0 db "Local variable table full",0
@@ -3630,7 +3588,7 @@ addlocal_1 db "Variable already defined",0
 ENDP
 
 cmpneg: PROC
-;-683        if(iscmp==T_EQ) printstring("\n jne .");         //ZF=0
+;-682        if(iscmp==T_EQ) printstring("\n jne .");         //ZF=0
 
 ;Function : cmpneg, Number local Var: 1
 ; # type sign width local variables
@@ -3638,120 +3596,120 @@ cmpneg: PROC
  ENTER  0,0
  mov ax, [iscmp]
  cmp ax, 806
- jne .cmpneg185
+ jne .cmpneg182
  push cmpneg_0
  call printstring
  add  sp, 2
-;-684   else if(iscmp==T_NE) printstring("\n je  .");         //ZF=1
+;-683   else if(iscmp==T_NE) printstring("\n je  .");         //ZF=1
 
- jmp .cmpneg186
-.cmpneg185:
+ jmp .cmpneg183
+.cmpneg182:
  mov ax, [iscmp]
  cmp ax, 807
- jne .cmpneg187
+ jne .cmpneg184
  push cmpneg_1
  call printstring
  add  sp, 2
-;-685   else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0 SF=O
+;-684   else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0 SF=O
 
- jmp .cmpneg188
-.cmpneg187:
+ jmp .cmpneg185
+.cmpneg184:
  mov ax, [iscmp]
  cmp ax, 824
- jne .cmpneg189
+ jne .cmpneg186
  mov ax, [bp+4]
  or  al, al
- je .cmpneg190
+ je .cmpneg187
  push cmpneg_2
  call printstring
  add  sp, 2
-;-686                        else     printstring("\n ja  .");//ZF=0 CF=0
+;-685                        else     printstring("\n ja  .");//ZF=0 CF=0
 
- jmp .cmpneg191
-.cmpneg190:
+ jmp .cmpneg188
+.cmpneg187:
  push cmpneg_3
  call printstring
  add  sp, 2
-;-687   else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : ");
+;-686   else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : ");
 
-.cmpneg191:
- jmp .cmpneg192
-.cmpneg189:
+.cmpneg188:
+ jmp .cmpneg189
+.cmpneg186:
  mov ax, [iscmp]
  cmp ax, 811
- jne .cmpneg193
+ jne .cmpneg190
  mov ax, [bp+4]
  or  al, al
- je .cmpneg194
+ je .cmpneg191
  push cmpneg_4
  call printstring
  add  sp, 2
-;-688                                 printunsigned(ids);
+;-687                                 printunsigned(ids);
 
  push word [bp+4]
  call printunsigned
  add  sp, 2
-;-689                                 printstring("\n jl  .");}//SF!=O
+;-688                                 printstring("\n jl  .");}//SF!=O
 
  push cmpneg_5
  call printstring
  add  sp, 2
-;-690                        else    {printstring(" ;unsigned : ");
+;-689                        else    {printstring(" ;unsigned : ");
 
- jmp .cmpneg195
-.cmpneg194:
+ jmp .cmpneg192
+.cmpneg191:
  push cmpneg_6
  call printstring
  add  sp, 2
-;-691                                 printunsigned(ids);
+;-690                                 printunsigned(ids);
 
  push word [bp+4]
  call printunsigned
  add  sp, 2
-;-692                                 printstring("\n jb  .");}//jb=jc=CF=1
+;-691                                 printstring("\n jb  .");}//jb=jc=CF=1
 
  push cmpneg_7
  call printstring
  add  sp, 2
-;-693   else if(iscmp=='<' ) printstring("\n jge .");          //SF=O
+;-692   else if(iscmp=='<' ) printstring("\n jge .");          //SF=O
 
-.cmpneg195:
- jmp .cmpneg196
-.cmpneg193:
+.cmpneg192:
+ jmp .cmpneg193
+.cmpneg190:
  mov ax, [iscmp]
  cmp ax, 60
- jne .cmpneg197
+ jne .cmpneg194
  push cmpneg_8
  call printstring
  add  sp, 2
-;-694   else if(iscmp=='>' ) printstring("\n jle .");          //ZF=1 | SF!=O
+;-693   else if(iscmp=='>' ) printstring("\n jle .");          //ZF=1 | SF!=O
 
- jmp .cmpneg198
-.cmpneg197:
+ jmp .cmpneg195
+.cmpneg194:
  mov ax, [iscmp]
  cmp ax, 62
- jne .cmpneg199
+ jne .cmpneg196
  push cmpneg_9
  call printstring
  add  sp, 2
-;-695   else error1("internal error compare unknown in CMPNEG()");
+;-694   else error1("internal error compare unknown in CMPNEG()");
 
- jmp .cmpneg200
-.cmpneg199:
+ jmp .cmpneg197
+.cmpneg196:
  push cmpneg_10
  call error1
  add  sp, 2
-;-696 }
+;-695 }
 
-.cmpneg200:
-.cmpneg198:
-.cmpneg196:
-.cmpneg192:
-.cmpneg188:
-.cmpneg186:
-;-697 
+.cmpneg197:
+.cmpneg195:
+.cmpneg193:
+.cmpneg189:
+.cmpneg185:
+.cmpneg183:
+;-696 
 
-;-698 int isrelational() {
+;-697 int isrelational() {
 
  LEAVE
  ret
@@ -3769,441 +3727,441 @@ cmpneg_10 db "internal error compare unknown in CMPNEG()",0
 ENDP
 
 isrelational: PROC
-;-699     if (token==T_EQ) goto w;
+;-698     if (token==T_EQ) goto w;
 
  mov ax, [token]
  cmp ax, 806
+ jne .isrelational198
+ jmp .w
+;-699     if (token==T_NE) goto w;
+
+.isrelational198:
+ mov ax, [token]
+ cmp ax, 807
+ jne .isrelational199
+ jmp .w
+;-700     if (token==T_LE) goto w;
+
+.isrelational199:
+ mov ax, [token]
+ cmp ax, 824
+ jne .isrelational200
+ jmp .w
+;-701     if (token==T_GE) goto w;
+
+.isrelational200:
+ mov ax, [token]
+ cmp ax, 811
  jne .isrelational201
  jmp .w
-;-700     if (token==T_NE) goto w;
+;-702     if (token=='<' ) goto w;
 
 .isrelational201:
  mov ax, [token]
- cmp ax, 807
+ cmp ax, 60
  jne .isrelational202
  jmp .w
-;-701     if (token==T_LE) goto w;
+;-703     if (token=='>' ) goto w;
 
 .isrelational202:
  mov ax, [token]
- cmp ax, 824
+ cmp ax, 62
  jne .isrelational203
  jmp .w
-;-702     if (token==T_GE) goto w;
+;-704     return 0;
 
 .isrelational203:
- mov ax, [token]
- cmp ax, 811
- jne .isrelational204
- jmp .w
-;-703     if (token=='<' ) goto w;
-
-.isrelational204:
- mov ax, [token]
- cmp ax, 60
- jne .isrelational205
- jmp .w
-;-704     if (token=='>' ) goto w;
-
-.isrelational205:
- mov ax, [token]
- cmp ax, 62
- jne .isrelational206
- jmp .w
-;-705     return 0;
-
-.isrelational206:
  mov ax, 0
  jmp .retnisrelational
-;-706 w:  iscmp=token;
+;-705 w:  iscmp=token;
 
 .w:
  mov ax, [token]
  mov word [iscmp], ax
-;-707     token=getlex();
+;-706     token=getlex();
 
  call getlex
  mov word [token], ax
-;-708     return 1;
+;-707     return 1;
 
  mov ax, 1
  jmp .retnisrelational
-;-709 }
+;-708 }
 
-;-710 
+;-709 
 
-;-711 int checkreg() { // >=17 = 16bit, >=47 = 32bit
+;-710 int checkreg() { // >=17 = 16bit, >=47 = 32bit
 
  .retnisrelational:
  ret
 ENDP
 
 checkreg: PROC
-;-712   if (strlen(Symbol) <  2) return 0;
+;-711   if (strlen(Symbol) <  2) return 0;
 
  lea  ax, [Symbol]
  push ax
  call strlen
  add  sp, 2
  cmp ax, 2
- jge .checkreg207
+ jge .checkreg204
  mov ax, 0
  jmp .retncheckreg
-;-713   if (eqstr(Symbol,"al")) return 1;   if (eqstr(Symbol,"cl")) return 3;
+;-712   if (eqstr(Symbol,"al")) return 1;   if (eqstr(Symbol,"cl")) return 3;
 
-.checkreg207:
+.checkreg204:
  push checkreg_0
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg208
+ je .checkreg205
  mov ax, 1
  jmp .retncheckreg
-.checkreg208:
+.checkreg205:
  push checkreg_1
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg209
+ je .checkreg206
  mov ax, 3
  jmp .retncheckreg
-;-714   if (eqstr(Symbol,"dl")) return 5;   if (eqstr(Symbol,"bl")) return 7;
+;-713   if (eqstr(Symbol,"dl")) return 5;   if (eqstr(Symbol,"bl")) return 7;
 
-.checkreg209:
+.checkreg206:
  push checkreg_2
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg210
+ je .checkreg207
  mov ax, 5
  jmp .retncheckreg
-.checkreg210:
+.checkreg207:
  push checkreg_3
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg211
+ je .checkreg208
  mov ax, 7
  jmp .retncheckreg
-;-715   if (eqstr(Symbol,"ah")) return 9;   if (eqstr(Symbol,"ch")) return 11;
+;-714   if (eqstr(Symbol,"ah")) return 9;   if (eqstr(Symbol,"ch")) return 11;
 
-.checkreg211:
+.checkreg208:
  push checkreg_4
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg212
+ je .checkreg209
  mov ax, 9
  jmp .retncheckreg
-.checkreg212:
+.checkreg209:
  push checkreg_5
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg213
+ je .checkreg210
  mov ax, 11
  jmp .retncheckreg
-;-716   if (eqstr(Symbol,"dh")) return 13;  if (eqstr(Symbol,"bh")) return 15;
+;-715   if (eqstr(Symbol,"dh")) return 13;  if (eqstr(Symbol,"bh")) return 15;
 
-.checkreg213:
+.checkreg210:
  push checkreg_6
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg214
+ je .checkreg211
  mov ax, 13
  jmp .retncheckreg
-.checkreg214:
+.checkreg211:
  push checkreg_7
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg215
+ je .checkreg212
  mov ax, 15
  jmp .retncheckreg
-;-717   if (eqstr(Symbol,"ax")) return 17;  if (eqstr(Symbol,"cx")) return 19;
+;-716   if (eqstr(Symbol,"ax")) return 17;  if (eqstr(Symbol,"cx")) return 19;
 
-.checkreg215:
+.checkreg212:
  push checkreg_8
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg216
+ je .checkreg213
  mov ax, 17
  jmp .retncheckreg
-.checkreg216:
+.checkreg213:
  push checkreg_9
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg217
+ je .checkreg214
  mov ax, 19
  jmp .retncheckreg
-;-718   if (eqstr(Symbol,"dx")) return 21;  if (eqstr(Symbol,"bx")) return 23;
+;-717   if (eqstr(Symbol,"dx")) return 21;  if (eqstr(Symbol,"bx")) return 23;
 
-.checkreg217:
+.checkreg214:
  push checkreg_10
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg218
+ je .checkreg215
  mov ax, 21
  jmp .retncheckreg
-.checkreg218:
+.checkreg215:
  push checkreg_11
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg219
+ je .checkreg216
  mov ax, 23
  jmp .retncheckreg
-;-719   if (eqstr(Symbol,"sp")) return 25;  if (eqstr(Symbol,"bp")) return 27;
+;-718   if (eqstr(Symbol,"sp")) return 25;  if (eqstr(Symbol,"bp")) return 27;
 
-.checkreg219:
+.checkreg216:
  push checkreg_12
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg220
+ je .checkreg217
  mov ax, 25
  jmp .retncheckreg
-.checkreg220:
+.checkreg217:
  push checkreg_13
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg221
+ je .checkreg218
  mov ax, 27
  jmp .retncheckreg
-;-720   if (eqstr(Symbol,"si")) return 29;  if (eqstr(Symbol,"di")) return 31;
+;-719   if (eqstr(Symbol,"si")) return 29;  if (eqstr(Symbol,"di")) return 31;
 
-.checkreg221:
+.checkreg218:
  push checkreg_14
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg222
+ je .checkreg219
  mov ax, 29
  jmp .retncheckreg
-.checkreg222:
+.checkreg219:
  push checkreg_15
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg223
+ je .checkreg220
  mov ax, 31
  jmp .retncheckreg
-;-721   if (eqstr(Symbol,"es")) return 33;  if (eqstr(Symbol,"cs")) return 35;
+;-720   if (eqstr(Symbol,"es")) return 33;  if (eqstr(Symbol,"cs")) return 35;
 
-.checkreg223:
+.checkreg220:
  push checkreg_16
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg224
+ je .checkreg221
  mov ax, 33
  jmp .retncheckreg
-.checkreg224:
+.checkreg221:
  push checkreg_17
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg225
+ je .checkreg222
  mov ax, 35
  jmp .retncheckreg
-;-722   if (eqstr(Symbol,"ss")) return 37;  if (eqstr(Symbol,"ds")) return 39;
+;-721   if (eqstr(Symbol,"ss")) return 37;  if (eqstr(Symbol,"ds")) return 39;
 
-.checkreg225:
+.checkreg222:
  push checkreg_18
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg226
+ je .checkreg223
  mov ax, 37
  jmp .retncheckreg
-.checkreg226:
+.checkreg223:
  push checkreg_19
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg227
+ je .checkreg224
  mov ax, 39
  jmp .retncheckreg
-;-723   if (eqstr(Symbol,"fs")) return 41;  if (eqstr(Symbol,"gs")) return 43;
+;-722   if (eqstr(Symbol,"fs")) return 41;  if (eqstr(Symbol,"gs")) return 43;
 
-.checkreg227:
+.checkreg224:
  push checkreg_20
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg228
+ je .checkreg225
  mov ax, 41
  jmp .retncheckreg
-.checkreg228:
+.checkreg225:
  push checkreg_21
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg229
+ je .checkreg226
  mov ax, 43
  jmp .retncheckreg
-;-724   // (eqstr(Symbol,"ip")) return 45;
+;-723   // (eqstr(Symbol,"ip")) return 45;
 
-;-725   if (strlen(Symbol) >   3) return 0;
+;-724   if (strlen(Symbol) >   3) return 0;
 
-.checkreg229:
+.checkreg226:
  lea  ax, [Symbol]
  push ax
  call strlen
  add  sp, 2
  cmp ax, 3
- jle .checkreg230
+ jle .checkreg227
  mov ax, 0
  jmp .retncheckreg
-;-726   if (eqstr(Symbol,"eax")) return 47; if (eqstr(Symbol,"ecx")) return 50;
+;-725   if (eqstr(Symbol,"eax")) return 47; if (eqstr(Symbol,"ecx")) return 50;
 
-.checkreg230:
+.checkreg227:
  push checkreg_22
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg231
+ je .checkreg228
  mov ax, 47
  jmp .retncheckreg
-.checkreg231:
+.checkreg228:
  push checkreg_23
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg232
+ je .checkreg229
  mov ax, 50
  jmp .retncheckreg
-;-727   if (eqstr(Symbol,"edx")) return 53; if (eqstr(Symbol,"ebx")) return 56;
+;-726   if (eqstr(Symbol,"edx")) return 53; if (eqstr(Symbol,"ebx")) return 56;
 
-.checkreg232:
+.checkreg229:
  push checkreg_24
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg233
+ je .checkreg230
  mov ax, 53
  jmp .retncheckreg
-.checkreg233:
+.checkreg230:
  push checkreg_25
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg234
+ je .checkreg231
  mov ax, 56
  jmp .retncheckreg
-;-728   if (eqstr(Symbol,"esp")) return 59; if (eqstr(Symbol,"ebp")) return 62;
+;-727   if (eqstr(Symbol,"esp")) return 59; if (eqstr(Symbol,"ebp")) return 62;
 
-.checkreg234:
+.checkreg231:
  push checkreg_26
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg235
+ je .checkreg232
  mov ax, 59
  jmp .retncheckreg
-.checkreg235:
+.checkreg232:
  push checkreg_27
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg236
+ je .checkreg233
  mov ax, 62
  jmp .retncheckreg
-;-729   if (eqstr(Symbol,"esi")) return 65; if (eqstr(Symbol,"edi")) return 68;
+;-728   if (eqstr(Symbol,"esi")) return 65; if (eqstr(Symbol,"edi")) return 68;
 
-.checkreg236:
+.checkreg233:
  push checkreg_28
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg237
+ je .checkreg234
  mov ax, 65
  jmp .retncheckreg
-.checkreg237:
+.checkreg234:
  push checkreg_29
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .checkreg238
+ je .checkreg235
  mov ax, 68
  jmp .retncheckreg
-;-730 //  if (eqstr(Symbol,"cr0")) return 71;
+;-729 //  if (eqstr(Symbol,"cr0")) return 71;
 
-;-731   return 0;
+;-730   return 0;
 
-.checkreg238:
+.checkreg235:
  mov ax, 0
  jmp .retncheckreg
-;-732 }
+;-731 }
 
-;-733 
+;-732 
 
-;-734 char printregstr[]
+;-733 char printregstr[]
 
  .retncheckreg:
  ret
@@ -4238,18 +4196,18 @@ checkreg_27 db "ebp",0
 checkreg_28 db "esi",0
 checkreg_29 db "edi",0
 ENDP
-;-735 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi";
+;-734 ="*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi";
 
 printregstr db "*alcldlblahchdhbhaxcxdxbxspbpsidiescsssdsfsgsipeaxecxedxebxespebpesiedi",0
-;-736 
+;-735 
 
-;-737 int printreg(int i) {
+;-736 int printreg(int i) {
 
 
 printreg: PROC
-;-738     unsigned int k; unsigned char c;
+;-737     unsigned int k; unsigned char c;
 
-;-739     k = &printregstr + i;
+;-738     k = &printregstr + i;
 
 ;Function : printreg, Number local Var: 3
 ; # type sign width local variables
@@ -4260,71 +4218,71 @@ printreg: PROC
  mov ax, printregstr
  add ax, [bp+4]
  mov [bp-2], ax
-;-740     c=*k;
+;-739     c=*k;
 
  mov bx, [bp-2]
  mov ax, [bx]
  mov [bp-4], al
-;-741     prc(c);
+;-740     prc(c);
 
  mov al, byte [bp-4]
  mov ah, 0
  push ax
  call prc
  add  sp, 2
-;-742     i++;
+;-741     i++;
 
  inc  word[bp+4]
-;-743     k = &printregstr + i;
+;-742     k = &printregstr + i;
 
  mov ax, printregstr
  add ax, [bp+4]
  mov [bp-2], ax
-;-744     c=*k;
+;-743     c=*k;
 
  mov bx, [bp-2]
  mov ax, [bx]
  mov [bp-4], al
-;-745     prc(c);
+;-744     prc(c);
 
  mov al, byte [bp-4]
  mov ah, 0
  push ax
  call prc
  add  sp, 2
-;-746     if (i > 47) {
+;-745     if (i > 47) {
 
  mov ax, [bp+4]
  cmp ax, 47
- jle .printreg239
-;-747         i++;
+ jle .printreg236
+;-746         i++;
 
  inc  word[bp+4]
-;-748         k = &printregstr + i;
+;-747         k = &printregstr + i;
 
  mov ax, printregstr
  add ax, [bp+4]
  mov [bp-2], ax
-;-749         c=*k;
+;-748         c=*k;
 
  mov bx, [bp-2]
  mov ax, [bx]
  mov [bp-4], al
-;-750         prc(c);
+;-749         prc(c);
 
  mov al, byte [bp-4]
  mov ah, 0
  push ax
  call prc
  add  sp, 2
-;-751         }
+;-750         }
 
-;-752 }
+;-751 }
 
-.printreg239:
-;-753 
+.printreg236:
+;-752 
 
-;-754 char ops[5];
+;-753 char ops[5];
 
  LEAVE
  ret
@@ -4333,13 +4291,13 @@ section .bss
 absolute 32537
 ops resb 5
 section .text
-;-755 int doreg1(int iscmp1) {
+;-754 int doreg1(int iscmp1) {
 
 
 doreg1: PROC
-;-756     int i;
+;-755     int i;
 
-;-757     if (istoken('='))          strcpy(ops, "mov");
+;-756     if (istoken('='))          strcpy(ops, "mov");
 
 ;Function : doreg1, Number local Var: 2
 ; # type sign width local variables
@@ -4350,239 +4308,239 @@ doreg1: PROC
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1240
+ je .doreg1237
  push doreg1_0
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-758     if (istoken(T_PLUSASS))    strcpy(ops, "add");
+;-757     if (istoken(T_PLUSASS))    strcpy(ops, "add");
 
-.doreg1240:
+.doreg1237:
  push 1230
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1241
+ je .doreg1238
  push doreg1_1
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-759     if (istoken(T_MINUSASS))   strcpy(ops, "sub");
+;-758     if (istoken(T_MINUSASS))   strcpy(ops, "sub");
 
-.doreg1241:
+.doreg1238:
  push 1231
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1242
+ je .doreg1239
  push doreg1_2
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-760     if (istoken(T_ANDASS))     strcpy(ops, "and");
+;-759     if (istoken(T_ANDASS))     strcpy(ops, "and");
 
-.doreg1242:
+.doreg1239:
  push 1234
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1243
+ je .doreg1240
  push doreg1_3
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-761     if (istoken(T_ORASS))      strcpy(ops, "or" );
+;-760     if (istoken(T_ORASS))      strcpy(ops, "or" );
 
-.doreg1243:
+.doreg1240:
  push 1235
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1244
+ je .doreg1241
  push doreg1_4
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-762     if (istoken(T_LESSLESS))   strcpy(ops, "shl");
+;-761     if (istoken(T_LESSLESS))   strcpy(ops, "shl");
 
-.doreg1244:
+.doreg1241:
  push 1240
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1245
+ je .doreg1242
  push doreg1_5
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-763     if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
+;-762     if (istoken(T_GREATGREAT)) strcpy(ops, "shr");
 
-.doreg1245:
+.doreg1242:
  push 1241
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1246
+ je .doreg1243
  push doreg1_6
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-764     if (iscmp1 == 1) {
+;-763     if (iscmp1 == 1) {
 
-.doreg1246:
+.doreg1243:
  mov ax, [bp+4]
  cmp ax, 1
- jne .doreg1247
-;-765             token=getlex();
+ jne .doreg1244
+;-764             token=getlex();
 
  call getlex
  mov word [token], ax
-;-766             if (isrelational() ==0) error1("Relational expected");
+;-765             if (isrelational() ==0) error1("Relational expected");
 
  call isrelational
  cmp ax, 0
- jne .doreg1248
+ jne .doreg1245
  push doreg1_7
  call error1
  add  sp, 2
-;-767             strcpy(ops, "cmp");
+;-766             strcpy(ops, "cmp");
 
-.doreg1248:
+.doreg1245:
  push doreg1_8
  lea  ax, [ops]
  push ax
  call strcpy
  add  sp, 4
-;-768         }
+;-767         }
 
-;-769     printstring("\n ");
+;-768     printstring("\n ");
 
-.doreg1247:
+.doreg1244:
  push doreg1_9
  call printstring
  add  sp, 2
-;-770     printstring(ops);
+;-769     printstring(ops);
 
  lea  ax, [ops]
  push ax
  call printstring
  add  sp, 2
-;-771     printstring("  ");
+;-770     printstring("  ");
 
  push doreg1_10
  call printstring
  add  sp, 2
-;-772     printreg(ireg1);   //todo
+;-771     printreg(ireg1);   //todo
 
  push word [ireg1]
  call printreg
  add  sp, 2
-;-773     printstring(", ");
+;-772     printstring(", ");
 
  push doreg1_11
  call printstring
  add  sp, 2
-;-774 
+;-773 
 
-;-775     if (istoken(T_CONST)) {
+;-774     if (istoken(T_CONST)) {
 
  push 257
  call istoken
  add  sp, 2
  or  al, al
- je .doreg1249
-;-776         printunsigned(lexval);
+ je .doreg1246
+;-775         printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-777         goto reg1;
+;-776         goto reg1;
 
  jmp .reg1
-;-778         }
+;-777         }
 
-;-779     mod2=typeName();
+;-778     mod2=typeName();
 
-.doreg1249:
+.doreg1246:
  call typeName
  mov word [mod2], ax
-;-780     ireg2=checkreg();
+;-779     ireg2=checkreg();
 
  call checkreg
  mov word [ireg2], ax
-;-781     if (ireg2) {
+;-780     if (ireg2) {
 
  mov ax, [ireg2]
  or  al, al
- je .doreg1250
-;-782         printreg(ireg2);
+ je .doreg1247
+;-781         printreg(ireg2);
 
  push word [ireg2]
  call printreg
  add  sp, 2
-;-783         goto reg1;
+;-782         goto reg1;
 
  jmp .reg1
-;-784         }
+;-783         }
 
-;-785     i=searchname();
+;-784     i=searchname();
 
-.doreg1250:
+.doreg1247:
  call searchname
  mov [bp-2], ax
-;-786     if (mod2 == 2) printName(i);
+;-785     if (mod2 == 2) printName(i);
 
  mov ax, [mod2]
  cmp ax, 2
- jne .doreg1251
+ jne .doreg1248
  push word [bp-2]
  call printName
  add  sp, 2
-;-787         else v(i);
+;-786         else v(i);
 
- jmp .doreg1252
-.doreg1251:
+ jmp .doreg1249
+.doreg1248:
  push word [bp-2]
  call v
  add  sp, 2
-;-788 reg1: if (iscmp1 == 1) {
+;-787 reg1: if (iscmp1 == 1) {
 
-.doreg1252:
+.doreg1249:
 .reg1:
  mov ax, [bp+4]
  cmp ax, 1
- jne .doreg1253
-;-789     cmpneg(0);
+ jne .doreg1250
+;-788     cmpneg(0);
 
  push 0
  call cmpneg
  add  sp, 2
-;-790     printstring(fname);
+;-789     printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-791     expect(')');
+;-790     expect(')');
 
  push 41
  call expect
  add  sp, 2
-;-792     }
+;-791     }
 
-;-793 }
+;-792 }
 
-.doreg1253:
-;-794 
+.doreg1250:
+;-793 
 
-;-795 int compoundass(char *op, int mode, int id1) {
+;-794 int compoundass(char *op, int mode, int id1) {
 
  LEAVE
  ret
@@ -4601,7 +4559,7 @@ doreg1_11 db ", ",0
 ENDP
 
 compoundass: PROC
-;-796     if(mode) error1("only scalar variable allowed");
+;-795     if(mode) error1("only scalar variable allowed");
 
 ;Function : compoundass, Number local Var: 3
 ; # type sign width local variables
@@ -4611,72 +4569,72 @@ compoundass: PROC
  ENTER  0,0
  mov ax, [bp+6]
  or  al, al
- je .compoundass254
+ je .compoundass251
  push compoundass_0
  call error1
  add  sp, 2
-;-797     printstring("\n ");
+;-796     printstring("\n ");
 
-.compoundass254:
+.compoundass251:
  push compoundass_1
  call printstring
  add  sp, 2
-;-798     printstring(op);
+;-797     printstring(op);
 
  push word [bp+4]
  call printstring
  add  sp, 2
-;-799     printstring("  ");
+;-798     printstring("  ");
 
  push compoundass_2
  call printstring
  add  sp, 2
-;-800     gettypes(id1);
+;-799     gettypes(id1);
 
  push word [bp+8]
  call gettypes
  add  sp, 2
-;-801     if (wi==2) printstring("word");
+;-800     if (wi==2) printstring("word");
 
  mov ax, [wi]
  cmp ax, 2
- jne .compoundass255
+ jne .compoundass252
  push compoundass_3
  call printstring
  add  sp, 2
-;-802         else printstring("byte");
+;-801         else printstring("byte");
 
- jmp .compoundass256
-.compoundass255:
+ jmp .compoundass253
+.compoundass252:
  push compoundass_4
  call printstring
  add  sp, 2
-;-803     v(id1);
+;-802     v(id1);
 
-.compoundass256:
+.compoundass253:
  push word [bp+8]
  call v
  add  sp, 2
-;-804     printstring(", ");
+;-803     printstring(", ");
 
  push compoundass_5
  call printstring
  add  sp, 2
-;-805     expect(T_CONST);
+;-804     expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-806     printunsigned(lexval);
+;-805     printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-807 }
+;-806 }
 
-;-808 
+;-807 
 
-;-809 int dovar1(int mode, int op, int ixarr, int id1) {
+;-808 int dovar1(int mode, int op, int ixarr, int id1) {
 
  LEAVE
  ret
@@ -4689,7 +4647,7 @@ compoundass_5 db ", ",0
 ENDP
 
 dovar1: PROC
-;-810     gettypes(id1);
+;-809     gettypes(id1);
 
 ;Function : dovar1, Number local Var: 4
 ; # type sign width local variables
@@ -4701,17 +4659,17 @@ dovar1: PROC
  push word [bp+10]
  call gettypes
  add  sp, 2
-;-811     if (mode==1) {// * = ptr
+;-810     if (mode==1) {// * = ptr
 
  mov ax, [bp+4]
  cmp ax, 1
- jne .dovar1257
-;-812         printstring("\n mov bx, ");
+ jne .dovar1254
+;-811         printstring("\n mov bx, ");
 
  push dovar1_0
  call printstring
  add  sp, 2
-;-813         v(id1); printstring("\n ");
+;-812         v(id1); printstring("\n ");
 
  push word [bp+10]
  call v
@@ -4719,184 +4677,184 @@ dovar1: PROC
  push dovar1_1
  call printstring
  add  sp, 2
-;-814         printstring(op);
+;-813         printstring(op);
 
  push word [bp+6]
  call printstring
  add  sp, 2
-;-815         if(widthi == 1) printstring(" al, [bx]\n mov ah, 0");
+;-814         if(widthi == 1) printstring(" al, [bx]\n mov ah, 0");
 
  mov ax, [widthi]
  cmp ax, 1
- jne .dovar1258
+ jne .dovar1255
  push dovar1_2
  call printstring
  add  sp, 2
-;-816         if(widthi == 2) printstring(" ax, [bx]");
+;-815         if(widthi == 2) printstring(" ax, [bx]");
 
-.dovar1258:
+.dovar1255:
  mov ax, [widthi]
  cmp ax, 2
- jne .dovar1259
+ jne .dovar1256
  push dovar1_3
  call printstring
  add  sp, 2
-;-817         return;
+;-816         return;
 
-.dovar1259:
+.dovar1256:
  jmp .retndovar1
-;-818         }
+;-817         }
 
-;-819     if (mode==2){// & = adr
+;-818     if (mode==2){// & = adr
 
-.dovar1257:
+.dovar1254:
  mov ax, [bp+4]
  cmp ax, 2
- jne .dovar1260
-;-820         printstring("\n ");
+ jne .dovar1257
+;-819         printstring("\n ");
 
  push dovar1_4
  call printstring
  add  sp, 2
-;-821         printstring(op);
+;-820         printstring(op);
 
  push word [bp+6]
  call printstring
  add  sp, 2
-;-822         printstring(" ax, ");
+;-821         printstring(" ax, ");
 
  push dovar1_5
  call printstring
  add  sp, 2
-;-823         printName(id1);
+;-822         printName(id1);
 
  push word [bp+10]
  call printName
  add  sp, 2
-;-824         return;
+;-823         return;
 
  jmp .retndovar1
-;-825         }
+;-824         }
 
-;-826     if (ixarr) {//array
+;-825     if (ixarr) {//array
 
-.dovar1260:
+.dovar1257:
  mov ax, [bp+8]
  or  al, al
- je .dovar1261
-;-827         printstring("\n mov bx, ");
+ je .dovar1258
+;-826         printstring("\n mov bx, ");
 
  push dovar1_6
  call printstring
  add  sp, 2
-;-828         v(ixarr);
+;-827         v(ixarr);
 
  push word [bp+8]
  call v
  add  sp, 2
-;-829         if (wi==2) printstring("\n shl bx, 1");
+;-828         if (wi==2) printstring("\n shl bx, 1");
 
  mov ax, [wi]
  cmp ax, 2
- jne .dovar1262
+ jne .dovar1259
  push dovar1_7
  call printstring
  add  sp, 2
-;-830         printstring("\n ");
+;-829         printstring("\n ");
 
-.dovar1262:
+.dovar1259:
  push dovar1_8
  call printstring
  add  sp, 2
-;-831         printstring(op);
+;-830         printstring(op);
 
  push word [bp+6]
  call printstring
  add  sp, 2
-;-832         if (wi==2) printstring(" ax, ");
+;-831         if (wi==2) printstring(" ax, ");
 
  mov ax, [wi]
  cmp ax, 2
- jne .dovar1263
+ jne .dovar1260
  push dovar1_9
  call printstring
  add  sp, 2
-;-833             else printstring(" al, ");
+;-832             else printstring(" al, ");
 
- jmp .dovar1264
-.dovar1263:
+ jmp .dovar1261
+.dovar1260:
  push dovar1_10
  call printstring
  add  sp, 2
-;-834         prc('[');
+;-833         prc('[');
 
-.dovar1264:
+.dovar1261:
  push 91
  call prc
  add  sp, 2
-;-835         printName(id1);
+;-834         printName(id1);
 
  push word [bp+10]
  call printName
  add  sp, 2
-;-836         printstring(" + bx]");
+;-835         printstring(" + bx]");
 
  push dovar1_11
  call printstring
  add  sp, 2
-;-837         return;
+;-836         return;
 
  jmp .retndovar1
-;-838         }
+;-837         }
 
-;-839     printstring("\n ");
+;-838     printstring("\n ");
 
-.dovar1261:
+.dovar1258:
  push dovar1_12
  call printstring
  add  sp, 2
-;-840     printstring(op);
+;-839     printstring(op);
 
  push word [bp+6]
  call printstring
  add  sp, 2
-;-841     if(wi==1) printstring(" al, ");
+;-840     if(wi==1) printstring(" al, ");
 
  mov ax, [wi]
  cmp ax, 1
- jne .dovar1265
+ jne .dovar1262
  push dovar1_13
  call printstring
  add  sp, 2
-;-842     if(wi==2) printstring(" ax, ");
+;-841     if(wi==2) printstring(" ax, ");
 
-.dovar1265:
+.dovar1262:
  mov ax, [wi]
  cmp ax, 2
- jne .dovar1266
+ jne .dovar1263
  push dovar1_14
  call printstring
  add  sp, 2
-;-843     if(wi==4) printstring(" eax, ");
+;-842     if(wi==4) printstring(" eax, ");
 
-.dovar1266:
+.dovar1263:
  mov ax, [wi]
  cmp ax, 4
- jne .dovar1267
+ jne .dovar1264
  push dovar1_15
  call printstring
  add  sp, 2
-;-844     v(id1);
+;-843     v(id1);
 
-.dovar1267:
+.dovar1264:
  push word [bp+10]
  call v
  add  sp, 2
-;-845 }
+;-844 }
 
-;-846 
+;-845 
 
-;-847 int rterm(char *op) {
+;-846 int rterm(char *op) {
 
  .retndovar1:
  LEAVE
@@ -4920,9 +4878,9 @@ dovar1_15 db " eax, ",0
 ENDP
 
 rterm: PROC
-;-848     int mode; int opint; int ixarr; int id1;
+;-847     int mode; int opint; int ixarr; int id1;
 
-;-849     if (istoken(T_CONST)) {
+;-848     if (istoken(T_CONST)) {
 
 ;Function : rterm, Number local Var: 5
 ; # type sign width local variables
@@ -4936,121 +4894,121 @@ rterm: PROC
  call istoken
  add  sp, 2
  or  al, al
- je .rterm268
-;-850         printstring("\n ");
+ je .rterm265
+;-849         printstring("\n ");
 
  push rterm_0
  call printstring
  add  sp, 2
-;-851         printstring(op);
+;-850         printstring(op);
 
  push word [bp+4]
  call printstring
  add  sp, 2
-;-852         if (wi==1) printstring(" al, ");
+;-851         if (wi==1) printstring(" al, ");
 
  mov ax, [wi]
  cmp ax, 1
- jne .rterm269
+ jne .rterm266
  push rterm_1
  call printstring
  add  sp, 2
-;-853         if (wi==2) printstring(" ax, ");
+;-852         if (wi==2) printstring(" ax, ");
 
-.rterm269:
+.rterm266:
  mov ax, [wi]
  cmp ax, 2
- jne .rterm270
+ jne .rterm267
  push rterm_2
  call printstring
  add  sp, 2
-;-854         if (wi==4) printstring(" eax, ");
+;-853         if (wi==4) printstring(" eax, ");
 
-.rterm270:
+.rterm267:
  mov ax, [wi]
  cmp ax, 4
- jne .rterm271
+ jne .rterm268
  push rterm_3
  call printstring
  add  sp, 2
-;-855         printunsigned(lexval);
+;-854         printunsigned(lexval);
 
-.rterm271:
+.rterm268:
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-856         return;
+;-855         return;
 
  jmp .retnrterm
-;-857         }
+;-856         }
 
-;-858     mode=typeName();
+;-857     mode=typeName();
 
-.rterm268:
+.rterm265:
  call typeName
  mov [bp-2], ax
-;-859     id1=searchname();
+;-858     id1=searchname();
 
  call searchname
  mov [bp-8], ax
-;-860     ixarr=0;
+;-859     ixarr=0;
 
  mov ax, 0
  mov [bp-6], ax
-;-861     if (istoken('[')) {
+;-860     if (istoken('[')) {
 
  push 91
  call istoken
  add  sp, 2
  or  al, al
- je .rterm272
-;-862         ixarr=searchname();
+ je .rterm269
+;-861         ixarr=searchname();
 
  call searchname
  mov [bp-6], ax
-;-863         expect(T_NAME);
+;-862         expect(T_NAME);
 
  push 256
  call expect
  add  sp, 2
-;-864         expect(']');
+;-863         expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-865         gettypes(ixarr);
+;-864         gettypes(ixarr);
 
  push word [bp-6]
  call gettypes
  add  sp, 2
-;-866         if (widthi != 2) error1("Array index must be int");
+;-865         if (widthi != 2) error1("Array index must be int");
 
  mov ax, [widthi]
  cmp ax, 2
- je  .rterm273
+ je  .rterm270
  push rterm_4
  call error1
  add  sp, 2
-;-867         }
+;-866         }
 
-.rterm273:
-;-868     if (eqstr(Symbol,"ax")) return;
+.rterm270:
+;-867     if (eqstr(Symbol,"ax")) return;
 
-.rterm272:
+.rterm269:
  push rterm_5
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .rterm274
+ je .rterm271
  jmp .retnrterm
-;-869     opint=op;
+;-868     opint=op;
 
-.rterm274:
+.rterm271:
  mov ax, [bp+4]
  mov [bp-4], ax
-;-870     dovar1(mode, opint, ixarr, id1);
+;-869     dovar1(mode, opint, ixarr, id1);
 
  push word [bp-8]
  push word [bp-6]
@@ -5058,11 +5016,11 @@ rterm: PROC
  push word [bp-2]
  call dovar1
  add  sp, 8
-;-871 }
+;-870 }
 
-;-872 
+;-871 
 
-;-873 int doassign(int mode, int i, int ixarr, int ixconst) {
+;-872 int doassign(int mode, int i, int ixarr, int ixconst) {
 
  .retnrterm:
  LEAVE
@@ -5076,7 +5034,7 @@ rterm_5 db "ax",0
 ENDP
 
 doassign: PROC
-;-874     gettypes(i);
+;-873     gettypes(i);
 
 ;Function : doassign, Number local Var: 4
 ; # type sign width local variables
@@ -5088,246 +5046,246 @@ doassign: PROC
  push word [bp+6]
  call gettypes
  add  sp, 2
-;-875     if (mode==1) {// * = ptr
+;-874     if (mode==1) {// * = ptr
 
  mov ax, [bp+4]
  cmp ax, 1
- jne .doassign275
-;-876         printstring("\n mov  bx, ");
+ jne .doassign272
+;-875         printstring("\n mov  bx, ");
 
  push doassign_0
  call printstring
  add  sp, 2
-;-877         v(i);
+;-876         v(i);
 
  push word [bp+6]
  call v
  add  sp, 2
-;-878         if (widthi == 2) printstring("\n mov  [bx], ax");
+;-877         if (widthi == 2) printstring("\n mov  [bx], ax");
 
  mov ax, [widthi]
  cmp ax, 2
- jne .doassign276
+ jne .doassign273
  push doassign_1
  call printstring
  add  sp, 2
-;-879             else  printstring("\n mov  [bx], al");
+;-878             else  printstring("\n mov  [bx], al");
 
- jmp .doassign277
-.doassign276:
+ jmp .doassign274
+.doassign273:
  push doassign_2
  call printstring
  add  sp, 2
-;-880         return;
+;-879         return;
 
-.doassign277:
+.doassign274:
  jmp .retndoassign
-;-881         }
+;-880         }
 
-;-882     if (mode==2) {// & = adr
+;-881     if (mode==2) {// & = adr
 
-.doassign275:
+.doassign272:
  mov ax, [bp+4]
  cmp ax, 2
- jne .doassign278
-;-883         printstring("\n mov  ");
+ jne .doassign275
+;-882         printstring("\n mov  ");
 
  push doassign_3
  call printstring
  add  sp, 2
-;-884         printName(i);
+;-883         printName(i);
 
  push word [bp+6]
  call printName
  add  sp, 2
-;-885         printstring(", ax");
+;-884         printstring(", ax");
 
  push doassign_4
  call printstring
  add  sp, 2
-;-886         return;
+;-885         return;
 
  jmp .retndoassign
-;-887         }
+;-886         }
 
-;-888     if (ixarr) {
+;-887     if (ixarr) {
 
-.doassign278:
+.doassign275:
  mov ax, [bp+8]
  or  al, al
- je .doassign279
-;-889         printstring("\n mov bx, ");
+ je .doassign276
+;-888         printstring("\n mov bx, ");
 
  push doassign_5
  call printstring
  add  sp, 2
-;-890         if(ixconst) printunsigned(ixarr);
+;-889         if(ixconst) printunsigned(ixarr);
 
  mov ax, [bp+10]
  or  al, al
- je .doassign280
+ je .doassign277
  push word [bp+8]
  call printunsigned
  add  sp, 2
-;-891             else v(ixarr);
+;-890             else v(ixarr);
 
- jmp .doassign281
-.doassign280:
+ jmp .doassign278
+.doassign277:
  push word [bp+8]
  call v
  add  sp, 2
-;-892         if (wi==2) printstring("\n shl bx, 1");
+;-891         if (wi==2) printstring("\n shl bx, 1");
 
-.doassign281:
+.doassign278:
  mov ax, [wi]
  cmp ax, 2
- jne .doassign282
+ jne .doassign279
  push doassign_6
  call printstring
  add  sp, 2
-;-893         printstring("\n mov [");
+;-892         printstring("\n mov [");
 
-.doassign282:
+.doassign279:
  push doassign_7
  call printstring
  add  sp, 2
-;-894         printName(i);
+;-893         printName(i);
 
  push word [bp+6]
  call printName
  add  sp, 2
-;-895         if (wi==2) printstring("+bx], ax");
+;-894         if (wi==2) printstring("+bx], ax");
 
  mov ax, [wi]
  cmp ax, 2
- jne .doassign283
+ jne .doassign280
  push doassign_8
  call printstring
  add  sp, 2
-;-896             else printstring("+bx], al");
+;-895             else printstring("+bx], al");
 
- jmp .doassign284
-.doassign283:
+ jmp .doassign281
+.doassign280:
  push doassign_9
  call printstring
  add  sp, 2
-;-897         return;
+;-896         return;
 
-.doassign284:
+.doassign281:
  jmp .retndoassign
-;-898         }
+;-897         }
 
-;-899     if (wi==1){
+;-898     if (wi==1){
 
-.doassign279:
+.doassign276:
  mov ax, [wi]
  cmp ax, 1
- jne .doassign285
-;-900         printstring("\n mov ");
+ jne .doassign282
+;-899         printstring("\n mov ");
 
  push doassign_10
  call printstring
  add  sp, 2
-;-901         if(i<GTop) printstring("byte ");
+;-900         if(i<GTop) printstring("byte ");
 
  mov ax, [bp+6]
  cmp ax, [GTop]
- jge .doassign286
+ jge .doassign283
  push doassign_11
  call printstring
  add  sp, 2
-;-902         v(i);
+;-901         v(i);
 
-.doassign286:
+.doassign283:
  push word [bp+6]
  call v
  add  sp, 2
-;-903         printstring(", al");
+;-902         printstring(", al");
 
  push doassign_12
  call printstring
  add  sp, 2
-;-904         return;
+;-903         return;
 
  jmp .retndoassign
-;-905         }
+;-904         }
 
-;-906     if (wi==2){
+;-905     if (wi==2){
 
-.doassign285:
+.doassign282:
  mov ax, [wi]
  cmp ax, 2
- jne .doassign287
-;-907         printstring("\n mov ");
+ jne .doassign284
+;-906         printstring("\n mov ");
 
  push doassign_13
  call printstring
  add  sp, 2
-;-908         if(i<GTop) printstring("word ");
+;-907         if(i<GTop) printstring("word ");
 
  mov ax, [bp+6]
  cmp ax, [GTop]
- jge .doassign288
+ jge .doassign285
  push doassign_14
  call printstring
  add  sp, 2
-;-909         v(i);
+;-908         v(i);
 
-.doassign288:
+.doassign285:
  push word [bp+6]
  call v
  add  sp, 2
-;-910         printstring(", ax");
+;-909         printstring(", ax");
 
  push doassign_15
  call printstring
  add  sp, 2
-;-911         return;
+;-910         return;
 
  jmp .retndoassign
-;-912         }
+;-911         }
 
-;-913     if (wi==4){
+;-912     if (wi==4){
 
-.doassign287:
+.doassign284:
  mov ax, [wi]
  cmp ax, 4
- jne .doassign289
-;-914         printstring("\n mov ");
+ jne .doassign286
+;-913         printstring("\n mov ");
 
  push doassign_16
  call printstring
  add  sp, 2
-;-915         if(i<GTop) printstring("dword ");
+;-914         if(i<GTop) printstring("dword ");
 
  mov ax, [bp+6]
  cmp ax, [GTop]
- jge .doassign290
+ jge .doassign287
  push doassign_17
  call printstring
  add  sp, 2
-;-916         v(i);
+;-915         v(i);
 
-.doassign290:
+.doassign287:
  push word [bp+6]
  call v
  add  sp, 2
-;-917         printstring(", eax");
+;-916         printstring(", eax");
 
  push doassign_18
  call printstring
  add  sp, 2
-;-918         return;
+;-917         return;
 
  jmp .retndoassign
-;-919         }
+;-918         }
 
-;-920 }
+;-919 }
 
-.doassign289:
-;-921 
+.doassign286:
+;-920 
 
-;-922 int domul(int ids) {
+;-921 int domul(int ids) {
 
  .retndoassign:
  LEAVE
@@ -5354,7 +5312,7 @@ doassign_18 db ", eax",0
 ENDP
 
 domul: PROC
-;-923     if (ids) rterm("imul");
+;-922     if (ids) rterm("imul");
 
 ;Function : domul, Number local Var: 1
 ; # type sign width local variables
@@ -5362,54 +5320,54 @@ domul: PROC
  ENTER  0,0
  mov ax, [bp+4]
  or  al, al
- je .domul291
+ je .domul288
  push domul_0
  call rterm
  add  sp, 2
-;-924         else {
+;-923         else {
 
- jmp .domul292
-.domul291:
-;-925         if (istoken(T_CONST)) {
+ jmp .domul289
+.domul288:
+;-924         if (istoken(T_CONST)) {
 
  push 257
  call istoken
  add  sp, 2
  or  al, al
- je .domul293
-;-926             printstring("\n mov bx, ");
+ je .domul290
+;-925             printstring("\n mov bx, ");
 
  push domul_1
  call printstring
  add  sp, 2
-;-927             printunsigned(lexval);
+;-926             printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-928             printstring("\n mul bx");
+;-927             printstring("\n mul bx");
 
  push domul_2
  call printstring
  add  sp, 2
-;-929             }
+;-928             }
 
-;-930         else error1("with MUL only const number as multipl. allowed");
+;-929         else error1("with MUL only const number as multipl. allowed");
 
- jmp .domul294
-.domul293:
+ jmp .domul291
+.domul290:
  push domul_3
  call error1
  add  sp, 2
-;-931         }
+;-930         }
 
-.domul294:
-;-932 }
+.domul291:
+;-931 }
 
-.domul292:
-;-933 
+.domul289:
+;-932 
 
-;-934 int doidiv(int ids) {
+;-933 int doidiv(int ids) {
 
  LEAVE
  ret
@@ -5420,9 +5378,9 @@ domul_3 db "with MUL only const number as multipl. allowed",0
 ENDP
 
 doidiv: PROC
-;-935     int mode; int id1;
+;-934     int mode; int id1;
 
-;-936     if (istoken(T_CONST)) {
+;-935     if (istoken(T_CONST)) {
 
 ;Function : doidiv, Number local Var: 3
 ; # type sign width local variables
@@ -5434,113 +5392,113 @@ doidiv: PROC
  call istoken
  add  sp, 2
  or  al, al
- je .doidiv295
-;-937         printstring("\n mov bx, ");
+ je .doidiv292
+;-936         printstring("\n mov bx, ");
 
  push doidiv_0
  call printstring
  add  sp, 2
-;-938         printunsigned(lexval);
+;-937         printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-939         if (ids) printstring("\n cwd\n idiv bx");
+;-938         if (ids) printstring("\n cwd\n idiv bx");
 
  mov ax, [bp+4]
  or  al, al
- je .doidiv296
+ je .doidiv293
  push doidiv_1
  call printstring
  add  sp, 2
-;-940             else printstring("\n mov dx, 0\n div bx");
+;-939             else printstring("\n mov dx, 0\n div bx");
 
- jmp .doidiv297
-.doidiv296:
+ jmp .doidiv294
+.doidiv293:
  push doidiv_2
  call printstring
  add  sp, 2
-;-941         }
+;-940         }
 
-.doidiv297:
-;-942     else {
+.doidiv294:
+;-941     else {
 
- jmp .doidiv298
-.doidiv295:
-;-943         mode=typeName();
+ jmp .doidiv295
+.doidiv292:
+;-942         mode=typeName();
 
  call typeName
  mov [bp-2], ax
-;-944         id1=searchname();
+;-943         id1=searchname();
 
  call searchname
  mov [bp-4], ax
-;-945         if (mode) error1("only const number or int as divisor allowed");
+;-944         if (mode) error1("only const number or int as divisor allowed");
 
  mov ax, [bp-2]
  or  al, al
- je .doidiv299
+ je .doidiv296
  push doidiv_3
  call error1
  add  sp, 2
-;-946         gettypes(id1);
+;-945         gettypes(id1);
 
-.doidiv299:
+.doidiv296:
  push word [bp-4]
  call gettypes
  add  sp, 2
-;-947         if (typei) error1("only int as simple var divisor allowed");
+;-946         if (typei) error1("only int as simple var divisor allowed");
 
  mov ax, [typei]
  or  al, al
- je .doidiv300
+ je .doidiv297
  push doidiv_4
  call error1
  add  sp, 2
-;-948         if (wi!=2) error1("only int, no byte as divisor allowed");
+;-947         if (wi!=2) error1("only int, no byte as divisor allowed");
 
-.doidiv300:
+.doidiv297:
  mov ax, [wi]
  cmp ax, 2
- je  .doidiv301
+ je  .doidiv298
  push doidiv_5
  call error1
  add  sp, 2
-;-949         printstring("\n mov bx, ");
+;-948         printstring("\n mov bx, ");
 
-.doidiv301:
+.doidiv298:
  push doidiv_6
  call printstring
  add  sp, 2
-;-950         v(id1);
+;-949         v(id1);
 
  push word [bp-4]
  call v
  add  sp, 2
-;-951         if (ids) printstring("\n cwd\n idiv bx");
+;-950         if (ids) printstring("\n cwd\n idiv bx");
 
  mov ax, [bp+4]
  or  al, al
- je .doidiv302
+ je .doidiv299
  push doidiv_7
  call printstring
  add  sp, 2
-;-952             else printstring("\n mov dx, 0\n div bx");
+;-951             else printstring("\n mov dx, 0\n div bx");
 
- jmp .doidiv303
-.doidiv302:
+ jmp .doidiv300
+.doidiv299:
  push doidiv_8
  call printstring
  add  sp, 2
-;-953     }
+;-952     }
 
-.doidiv303:
-;-954 }
+.doidiv300:
+;-953 }
 
-.doidiv298:
-;-955 
+.doidiv295:
+;-954 
 
-;-956 int domod(int ids) {
+;-955 int domod(int ids) {
 
  LEAVE
  ret
@@ -5556,7 +5514,7 @@ doidiv_8 db "\n mov dx, 0\n div bx",0
 ENDP
 
 domod: PROC
-;-957     doidiv(ids);
+;-956     doidiv(ids);
 
 ;Function : domod, Number local Var: 1
 ; # type sign width local variables
@@ -5565,18 +5523,18 @@ domod: PROC
  push word [bp+4]
  call doidiv
  add  sp, 2
-;-958     printstring("\n mov ax, dx");
+;-957     printstring("\n mov ax, dx");
 
  push domod_0
  call printstring
  add  sp, 2
-;-959 }
+;-958 }
+
+;-959 
 
 ;-960 
 
-;-961 
-
-;-962 int docalltype[10]; int docallvalue[10];
+;-961 int docalltype[10]; int docallvalue[10];
 
  LEAVE
  ret
@@ -5590,21 +5548,21 @@ section .bss
 absolute 32562
 docallvalue resw 10
 section .text
-;-963 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
+;-962 char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
 
 section .bss
 absolute 32582
 procname resb 17
 section .text
-;-964 
+;-963 
 
-;-965 int docall() {
+;-964 int docall() {
 
 
 docall: PROC
-;-966     int i; int narg; int t0; int n0;  int sz32;
+;-965     int i; int narg; int t0; int n0;  int sz32;
 
-;-967     narg=0;
+;-966     narg=0;
 
 ;Function : docall, Number local Var: 5
 ; # type sign width local variables
@@ -5616,14 +5574,14 @@ docall: PROC
  ENTER  10,0
  mov ax, 0
  mov [bp-4], ax
-;-968     sz32=0;
+;-967     sz32=0;
 
  mov ax, 0
  mov [bp-10], ax
-;-969     checknamelen();
+;-968     checknamelen();
 
  call checknamelen
-;-970     strcpy(&procname, Symbol);
+;-969     strcpy(&procname, Symbol);
 
  lea  ax, [Symbol]
  push ax
@@ -5631,452 +5589,452 @@ docall: PROC
  push ax
  call strcpy
  add  sp, 4
-;-971     expect('(');
+;-970     expect('(');
 
  push 40
  call expect
  add  sp, 2
-;-972 	if (istoken(')') ==0 ) {
+;-971 	if (istoken(')') ==0 ) {
 
  push 41
  call istoken
  add  sp, 2
  cmp ax, 0
- jne .docall304
-;-973 	    do {
+ jne .docall301
+;-972 	    do {
 
-.docall305:
-;-974 	        narg++;
+.docall302:
+;-973 	        narg++;
 
  inc  word[bp-4]
-;-975 	        if (narg >9 ) error1("Max. 9 parameters");
+;-974 	        if (narg >9 ) error1("Max. 9 parameters");
 
  mov ax, [bp-4]
  cmp ax, 9
- jle .docall306
+ jle .docall303
  push docall_0
  call error1
  add  sp, 2
-;-976 	        t0=0;
+;-975 	        t0=0;
 
-.docall306:
+.docall303:
  mov ax, 0
  mov [bp-6], ax
-;-977             if(istoken(T_CONST)) {
+;-976             if(istoken(T_CONST)) {
 
  push 257
  call istoken
  add  sp, 2
  or  al, al
- je .docall307
-;-978                 t0=1;
+ je .docall304
+;-977                 t0=1;
 
  mov ax, 1
  mov [bp-6], ax
-;-979                 n0=lexval;
+;-978                 n0=lexval;
 
  mov ax, [lexval]
  mov [bp-8], ax
-;-980                 }
+;-979                 }
 
-;-981             if(istoken(T_STRING)){
+;-980             if(istoken(T_STRING)){
 
-.docall307:
+.docall304:
  push 258
  call istoken
  add  sp, 2
  or  al, al
- je .docall308
-;-982                 t0=2;
+ je .docall305
+;-981                 t0=2;
 
  mov ax, 2
  mov [bp-6], ax
-;-983                 n0=nconst;
+;-982                 n0=nconst;
 
  mov ax, [nconst]
  mov [bp-8], ax
-;-984                 eprs("\n");
+;-983                 eprs("\n");
 
  push docall_1
  call eprs
  add  sp, 2
-;-985                 eprs(fname);
+;-984                 eprs(fname);
 
  lea  ax, [fname]
  push ax
  call eprs
  add  sp, 2
-;-986                 eprc(95);
+;-985                 eprc(95);
 
  push 95
  call eprc
  add  sp, 2
-;-987                 eprnum(nconst);
+;-986                 eprnum(nconst);
 
  push word [nconst]
  call eprnum
  add  sp, 2
-;-988                 eprs(" db ");
+;-987                 eprs(" db ");
 
  push docall_2
  call eprs
  add  sp, 2
-;-989                 eprc(34);
+;-988                 eprc(34);
 
  push 34
  call eprc
  add  sp, 2
-;-990                 eprs(Symbol);
+;-989                 eprs(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call eprs
  add  sp, 2
-;-991                 eprc(34);
+;-990                 eprc(34);
 
  push 34
  call eprc
  add  sp, 2
-;-992                 eprs(",0");
+;-991                 eprs(",0");
 
  push docall_3
  call eprs
  add  sp, 2
-;-993                 nconst++;
+;-992                 nconst++;
 
  inc  word[nconst]
-;-994                 }
+;-993                 }
 
-;-995             if(istoken('&'))     {
+;-994             if(istoken('&'))     {
 
-.docall308:
+.docall305:
  push 38
  call istoken
  add  sp, 2
  or  al, al
- je .docall309
-;-996                 t0=3;
+ je .docall306
+;-995                 t0=3;
 
  mov ax, 3
  mov [bp-6], ax
-;-997                 name1();
+;-996                 name1();
 
  call name1
-;-998                 n0=searchname();
+;-997                 n0=searchname();
 
  call searchname
  mov [bp-8], ax
-;-999                 }
+;-998                 }
 
-;-1000             if(istoken(T_NAME))  {
+;-999             if(istoken(T_NAME))  {
 
-.docall309:
+.docall306:
  push 256
  call istoken
  add  sp, 2
  or  al, al
- je .docall310
+ je .docall307
+;-1000 
+
 ;-1001 
 
 ;-1002 
 
-;-1003 
-
-;-1004                     t0=4;
+;-1003                     t0=4;
 
  mov ax, 4
  mov [bp-6], ax
-;-1005                     n0=searchname();
+;-1004                     n0=searchname();
 
  call searchname
  mov [bp-8], ax
-;-1006                     p1=&GType;
+;-1005                     p1=&GType;
 
  mov ax, GType
  mov word [p1], ax
-;-1007                     p1=p1+n0;
+;-1006                     p1=p1+n0;
 
  mov ax, [p1]
  add ax, [bp-8]
  mov word [p1], ax
-;-1008                     if (*p1=='&') t0=3;
+;-1007                     if (*p1=='&') t0=3;
 
  mov bx, [p1]
  mov al, [bx]
  mov ah, 0
  cmp ax, 38
- jne .docall311
+ jne .docall308
  mov ax, 3
  mov [bp-6], ax
-;-1009 
+;-1008 
 
-;-1010                 }
+;-1009                 }
 
-.docall311:
-;-1011             if (t0==0) error1("parameter not recognized (no * allowed)");
+.docall308:
+;-1010             if (t0==0) error1("parameter not recognized (no * allowed)");
 
-.docall310:
+.docall307:
  mov ax, [bp-6]
  cmp ax, 0
- jne .docall312
+ jne .docall309
  push docall_4
  call error1
  add  sp, 2
-;-1012             docalltype [narg] = t0;
+;-1011             docalltype [narg] = t0;
 
-.docall312:
+.docall309:
  mov ax, [bp-6]
  mov bx, [bp-4]
  shl bx, 1
  mov [docalltype+bx], ax
-;-1013             docallvalue[narg] = n0;
+;-1012             docallvalue[narg] = n0;
 
  mov ax, [bp-8]
  mov bx, [bp-4]
  shl bx, 1
  mov [docallvalue+bx], ax
-;-1014         } while (istoken(','));
+;-1013         } while (istoken(','));
 
  push 44
  call istoken
  add  sp, 2
  or  al, al
- je .docall313
- jmp .docall305
-.docall313:
-;-1015 
+ je .docall310
+ jmp .docall302
+.docall310:
+;-1014 
 
-;-1016   	expect(')');
+;-1015   	expect(')');
 
  push 41
  call expect
  add  sp, 2
-;-1017   	i=narg;
+;-1016   	i=narg;
 
  mov ax, [bp-4]
  mov [bp-2], ax
-;-1018     do {
+;-1017     do {
 
-.docall314:
-;-1019         t0 = docalltype [i];
+.docall311:
+;-1018         t0 = docalltype [i];
 
  mov bx, [bp-2]
  shl bx, 1
  mov ax, [docalltype + bx]
  mov [bp-6], ax
-;-1020         n0 = docallvalue[i];
+;-1019         n0 = docallvalue[i];
 
  mov bx, [bp-2]
  shl bx, 1
  mov ax, [docallvalue + bx]
  mov [bp-8], ax
-;-1021         if(t0==1){
+;-1020         if(t0==1){
 
  mov ax, [bp-6]
  cmp ax, 1
- jne .docall315
-;-1022             printstring("\n push ");
+ jne .docall312
+;-1021             printstring("\n push ");
 
  push docall_5
  call printstring
  add  sp, 2
-;-1023             printunsigned(n0);
+;-1022             printunsigned(n0);
 
  push word [bp-8]
  call printunsigned
  add  sp, 2
-;-1024             }
+;-1023             }
 
-;-1025         if(t0==2){
+;-1024         if(t0==2){
 
-.docall315:
+.docall312:
  mov ax, [bp-6]
  cmp ax, 2
- jne .docall316
-;-1026             printstring("\n push ");
+ jne .docall313
+;-1025             printstring("\n push ");
 
  push docall_6
  call printstring
  add  sp, 2
-;-1027             printstring(fname);
+;-1026             printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1028             prc(95);
+;-1027             prc(95);
 
  push 95
  call prc
  add  sp, 2
-;-1029             printunsigned(n0);
+;-1028             printunsigned(n0);
 
  push word [bp-8]
  call printunsigned
  add  sp, 2
-;-1030             }
+;-1029             }
 
-;-1031         if(t0==3){
+;-1030         if(t0==3){
 
-.docall316:
+.docall313:
  mov ax, [bp-6]
  cmp ax, 3
- jne .docall317
-;-1032             printstring("\n lea  ax, ");
+ jne .docall314
+;-1031             printstring("\n lea  ax, ");
 
  push docall_7
  call printstring
  add  sp, 2
-;-1033             v(n0);
+;-1032             v(n0);
 
  push word [bp-8]
  call v
  add  sp, 2
-;-1034             printstring("\n push ax");
+;-1033             printstring("\n push ax");
 
  push docall_8
  call printstring
  add  sp, 2
-;-1035             }
+;-1034             }
 
-;-1036         if(t0==4){
+;-1035         if(t0==4){
 
-.docall317:
+.docall314:
  mov ax, [bp-6]
  cmp ax, 4
- jne .docall318
-;-1037             gettypes(n0);
+ jne .docall315
+;-1036             gettypes(n0);
 
  push word [bp-8]
  call gettypes
  add  sp, 2
-;-1038             if(wi==2) {
+;-1037             if(wi==2) {
 
  mov ax, [wi]
  cmp ax, 2
- jne .docall319
-;-1039                 printstring("\n push word ");
+ jne .docall316
+;-1038                 printstring("\n push word ");
 
  push docall_9
  call printstring
  add  sp, 2
-;-1040                 v(n0);
+;-1039                 v(n0);
 
  push word [bp-8]
  call v
  add  sp, 2
-;-1041                 }
+;-1040                 }
 
-;-1042             else {
+;-1041             else {
 
- jmp .docall320
-.docall319:
-;-1043                 printstring("\n mov al, byte ");
+ jmp .docall317
+.docall316:
+;-1042                 printstring("\n mov al, byte ");
 
  push docall_10
  call printstring
  add  sp, 2
-;-1044                 v(n0);
+;-1043                 v(n0);
 
  push word [bp-8]
  call v
  add  sp, 2
-;-1045                 printstring("\n mov ah, 0\n push ax");
+;-1044                 printstring("\n mov ah, 0\n push ax");
 
  push docall_11
  call printstring
  add  sp, 2
-;-1046                 }
+;-1045                 }
 
-;-1047             }
+;-1046             }
 
-.docall320:
-;-1048         if(t0==5){
+.docall317:
+;-1047         if(t0==5){
 
-.docall318:
+.docall315:
  mov ax, [bp-6]
  cmp ax, 5
- jne .docall321
-;-1049             printstring("\n push ");
+ jne .docall318
+;-1048             printstring("\n push ");
 
  push docall_12
  call printstring
  add  sp, 2
-;-1050             printreg(n0);
+;-1049             printreg(n0);
 
  push word [bp-8]
  call printreg
  add  sp, 2
-;-1051             if (n0 >= 47) sz32+2;
+;-1050             if (n0 >= 47) sz32+2;
 
  mov ax, [bp-8]
  cmp ax, 47 ;unsigned : 1
- jl  .docall322
+ jl  .docall319
  mov ax, [bp-10]
  add ax, 2
-;-1052             }
+;-1051             }
 
-.docall322:
-;-1053         i--;
+.docall319:
+;-1052         i--;
 
-.docall321:
+.docall318:
  dec  word[bp-2]
-;-1054         } while (i > 0);
+;-1053         } while (i > 0);
 
  mov ax, [bp-2]
  cmp ax, 0
- jle .docall323
- jmp .docall314
-.docall323:
-;-1055     }
+ jle .docall320
+ jmp .docall311
+.docall320:
+;-1054     }
 
-;-1056 	printstring("\n call ");
+;-1055 	printstring("\n call ");
 
-.docall304:
+.docall301:
  push docall_13
  call printstring
  add  sp, 2
-;-1057 	printstring(&procname);
+;-1056 	printstring(&procname);
 
  lea  ax, [procname]
  push ax
  call printstring
  add  sp, 2
-;-1058 	if (narg>0) {
+;-1057 	if (narg>0) {
 
  mov ax, [bp-4]
  cmp ax, 0
- jle .docall324
-;-1059 	    printstring("\n add  sp, ");
+ jle .docall321
+;-1058 	    printstring("\n add  sp, ");
 
  push docall_14
  call printstring
  add  sp, 2
-;-1060         narg=narg+narg;
+;-1059         narg=narg+narg;
 
  mov ax, [bp-4]
  add ax, [bp-4]
  mov [bp-4], ax
-;-1061         narg=narg+sz32;
+;-1060         narg=narg+sz32;
 
  mov ax, [bp-4]
  add ax, [bp-10]
  mov [bp-4], ax
-;-1062         printunsigned(narg);
+;-1061         printunsigned(narg);
 
  push word [bp-4]
  call printunsigned
  add  sp, 2
-;-1063         }
+;-1062         }
 
-;-1064 }
+;-1063 }
 
-.docall324:
+.docall321:
+;-1064 
+
 ;-1065 
 
-;-1066 
-
-;-1067 int expr() {
+;-1066 int expr() {
 
  LEAVE
  ret
@@ -6098,17 +6056,17 @@ docall_14 db "\n add  sp, ",0
 ENDP
 
 expr: PROC
-;-1068     int mode;   int id1;
+;-1067     int mode;   int id1;
 
-;-1069     int ixarr;  int ixconst;
+;-1068     int ixarr;  int ixconst;
 
-;-1070     int ids;    int isCONST;
+;-1069     int ids;    int isCONST;
 
-;-1071     int i;      unsigned char *p;
+;-1070     int i;      unsigned char *p;
 
-;-1072 
+;-1071 
 
-;-1073     if (istoken(T_CONST)) {// constant ;
+;-1072     if (istoken(T_CONST)) {// constant ;
 
 ;Function : expr, Number local Var: 8
 ; # type sign width local variables
@@ -6125,339 +6083,339 @@ expr: PROC
  call istoken
  add  sp, 2
  or  al, al
- je .expr325
-;-1074         printstring("\n mov ax, ");
+ je .expr322
+;-1073         printstring("\n mov ax, ");
 
  push expr_0
  call printstring
  add  sp, 2
-;-1075         printunsigned(lexval);
+;-1074         printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1076         return 4;
+;-1075         return 4;
 
  mov ax, 4
  jmp .retnexpr
-;-1077         }
+;-1076         }
 
-;-1078     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
+;-1077     mode=typeName(); /*0=variable, 1=* ptr, 2=& adr*/
 
-.expr325:
+.expr322:
  call typeName
  mov [bp-2], ax
-;-1079     ireg1=checkreg();//todo
+;-1078     ireg1=checkreg();//todo
 
  call checkreg
  mov word [ireg1], ax
-;-1080     if (ireg1) {
+;-1079     if (ireg1) {
 
  mov ax, [ireg1]
  or  al, al
- je .expr326
-;-1081         doreg1(0);
+ je .expr323
+;-1080         doreg1(0);
 
  push 0
  call doreg1
  add  sp, 2
-;-1082         return;
+;-1081         return;
 
  jmp .retnexpr
-;-1083         }
+;-1082         }
 
-;-1084 
+;-1083 
 
-;-1085     if (token=='(')  {
+;-1084     if (token=='(')  {
 
-.expr326:
+.expr323:
  mov ax, [token]
  cmp ax, 40
- jne .expr327
-;-1086         docall();
+ jne .expr324
+;-1085         docall();
 
  call docall
-;-1087         goto e1;
+;-1086         goto e1;
 
  jmp .e1
-;-1088         }
+;-1087         }
 
-;-1089 
+;-1088 
 
-;-1090     id1=searchname();
+;-1089     id1=searchname();
 
-.expr327:
+.expr324:
  call searchname
  mov [bp-4], ax
-;-1091     gettypes(id1);
+;-1090     gettypes(id1);
 
  push word [bp-4]
  call gettypes
  add  sp, 2
-;-1092     ids=signi;
+;-1091     ids=signi;
 
  mov ax, [signi]
  mov [bp-10], ax
-;-1093     ixarr=0;
+;-1092     ixarr=0;
 
  mov ax, 0
  mov [bp-6], ax
-;-1094     ixconst=0;
+;-1093     ixconst=0;
 
  mov ax, 0
  mov [bp-8], ax
-;-1095     if (istoken('[')) {
+;-1094     if (istoken('[')) {
 
  push 91
  call istoken
  add  sp, 2
  or  al, al
- je .expr328
-;-1096         if (istoken(T_CONST)) {
+ je .expr325
+;-1095         if (istoken(T_CONST)) {
 
  push 257
  call istoken
  add  sp, 2
  or  al, al
- je .expr329
-;-1097             ixconst=1;
+ je .expr326
+;-1096             ixconst=1;
 
  mov ax, 1
  mov [bp-8], ax
-;-1098             ixarr=lexval;
+;-1097             ixarr=lexval;
 
  mov ax, [lexval]
  mov [bp-6], ax
-;-1099             expect(']');
+;-1098             expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-1100             }
+;-1099             }
 
-;-1101         else {
+;-1100         else {
 
- jmp .expr330
-.expr329:
-;-1102             ixarr=searchname();
+ jmp .expr327
+.expr326:
+;-1101             ixarr=searchname();
 
  call searchname
  mov [bp-6], ax
-;-1103             expect(T_NAME);
+;-1102             expect(T_NAME);
 
  push 256
  call expect
  add  sp, 2
-;-1104             expect(']');
+;-1103             expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-1105             gettypes(ixarr);
+;-1104             gettypes(ixarr);
 
  push word [bp-6]
  call gettypes
  add  sp, 2
-;-1106             if (widthi != 2) error1("Array index must be number or int");
+;-1105             if (widthi != 2) error1("Array index must be number or int");
 
  mov ax, [widthi]
  cmp ax, 2
- je  .expr331
+ je  .expr328
  push expr_1
  call error1
  add  sp, 2
-;-1107             }
-
-.expr331:
-;-1108         }
-
-.expr330:
-;-1109     if (istoken(T_PLUSPLUS  )) {
+;-1106             }
 
 .expr328:
+;-1107         }
+
+.expr327:
+;-1108     if (istoken(T_PLUSPLUS  )) {
+
+.expr325:
  push 1219
  call istoken
  add  sp, 2
  or  al, al
- je .expr332
-;-1110         if(mode)error1("Only var allowed");
+ je .expr329
+;-1109         if(mode)error1("Only var allowed");
 
  mov ax, [bp-2]
  or  al, al
- je .expr333
+ je .expr330
  push expr_2
  call error1
  add  sp, 2
-;-1111         printstring("\n inc  ");
+;-1110         printstring("\n inc  ");
 
-.expr333:
+.expr330:
  push expr_3
  call printstring
  add  sp, 2
-;-1112         if (wi==2) printstring("word"); else printstring("byte");
+;-1111         if (wi==2) printstring("word"); else printstring("byte");
 
  mov ax, [wi]
  cmp ax, 2
- jne .expr334
+ jne .expr331
  push expr_4
  call printstring
  add  sp, 2
- jmp .expr335
-.expr334:
+ jmp .expr332
+.expr331:
  push expr_5
  call printstring
  add  sp, 2
-;-1113         v(id1);
+;-1112         v(id1);
 
-.expr335:
+.expr332:
  push word [bp-4]
  call v
  add  sp, 2
-;-1114         goto e1;
+;-1113         goto e1;
 
  jmp .e1
-;-1115         }
+;-1114         }
 
-;-1116     if (istoken(T_MINUSMINUS)) {
+;-1115     if (istoken(T_MINUSMINUS)) {
 
-.expr332:
+.expr329:
  push 1225
  call istoken
  add  sp, 2
  or  al, al
- je .expr336
-;-1117         if(mode)error1("Only var allowed");
+ je .expr333
+;-1116         if(mode)error1("Only var allowed");
 
  mov ax, [bp-2]
  or  al, al
- je .expr337
+ je .expr334
  push expr_6
  call error1
  add  sp, 2
-;-1118         printstring("\n dec  ");
+;-1117         printstring("\n dec  ");
 
-.expr337:
+.expr334:
  push expr_7
  call printstring
  add  sp, 2
-;-1119         if (wi==2) printstring("word"); else printstring("byte");
+;-1118         if (wi==2) printstring("word"); else printstring("byte");
 
  mov ax, [wi]
  cmp ax, 2
- jne .expr338
+ jne .expr335
  push expr_8
  call printstring
  add  sp, 2
- jmp .expr339
-.expr338:
+ jmp .expr336
+.expr335:
  push expr_9
  call printstring
  add  sp, 2
-;-1120         v(id1);
+;-1119         v(id1);
 
-.expr339:
+.expr336:
  push word [bp-4]
  call v
  add  sp, 2
-;-1121         goto e1;
+;-1120         goto e1;
 
  jmp .e1
-;-1122         }
+;-1121         }
 
-;-1123 
+;-1122 
 
-;-1124     if (istoken(T_PLUSASS )) {compoundass("add", mode, id1); goto e1; }
+;-1123     if (istoken(T_PLUSASS )) {compoundass("add", mode, id1); goto e1; }
 
-.expr336:
+.expr333:
  push 1230
  call istoken
  add  sp, 2
  or  al, al
- je .expr340
+ je .expr337
  push word [bp-4]
  push word [bp-2]
  push expr_10
  call compoundass
  add  sp, 6
  jmp .e1
-;-1125     if (istoken(T_MINUSASS)) {compoundass("sub", mode, id1); goto e1; }
+;-1124     if (istoken(T_MINUSASS)) {compoundass("sub", mode, id1); goto e1; }
 
-.expr340:
+.expr337:
  push 1231
  call istoken
  add  sp, 2
  or  al, al
- je .expr341
+ je .expr338
  push word [bp-4]
  push word [bp-2]
  push expr_11
  call compoundass
  add  sp, 6
  jmp .e1
-;-1126     if (istoken(T_ANDASS  )) {compoundass("and", mode, id1); goto e1; }
+;-1125     if (istoken(T_ANDASS  )) {compoundass("and", mode, id1); goto e1; }
 
-.expr341:
+.expr338:
  push 1234
  call istoken
  add  sp, 2
  or  al, al
- je .expr342
+ je .expr339
  push word [bp-4]
  push word [bp-2]
  push expr_12
  call compoundass
  add  sp, 6
  jmp .e1
-;-1127     if (istoken(T_ORASS   )) {compoundass("or" , mode, id1); goto e1; }
+;-1126     if (istoken(T_ORASS   )) {compoundass("or" , mode, id1); goto e1; }
 
-.expr342:
+.expr339:
  push 1235
  call istoken
  add  sp, 2
  or  al, al
- je .expr343
+ je .expr340
  push word [bp-4]
  push word [bp-2]
  push expr_13
  call compoundass
  add  sp, 6
  jmp .e1
-;-1128     if (istoken(T_MULASS  )) error1("not implemented");
+;-1127     if (istoken(T_MULASS  )) error1("not implemented");
 
-.expr343:
+.expr340:
  push 1232
  call istoken
  add  sp, 2
  or  al, al
- je .expr344
+ je .expr341
  push expr_14
  call error1
  add  sp, 2
-;-1129     if (istoken(T_DIVASS  )) error1("not implemented");
+;-1128     if (istoken(T_DIVASS  )) error1("not implemented");
 
-.expr344:
+.expr341:
  push 1233
  call istoken
  add  sp, 2
  or  al, al
- je .expr345
+ je .expr342
  push expr_15
  call error1
  add  sp, 2
-;-1130 
+;-1129 
 
-;-1131     if (istoken('=')) {
+;-1130     if (istoken('=')) {
 
-.expr345:
+.expr342:
  push 61
  call istoken
  add  sp, 2
  or  al, al
- je .expr346
-;-1132         expr();
+ je .expr343
+;-1131         expr();
 
  call expr
-;-1133         doassign(mode, id1, ixarr, ixconst);
+;-1132         doassign(mode, id1, ixarr, ixconst);
 
  push word [bp-8]
  push word [bp-6]
@@ -6465,165 +6423,165 @@ expr: PROC
  push word [bp-2]
  call doassign
  add  sp, 8
-;-1134         goto e1;
+;-1133         goto e1;
 
  jmp .e1
-;-1135         }
+;-1134         }
 
-;-1136     dovar1(mode, "mov", ixarr, id1);
+;-1135     dovar1(mode, "mov", ixarr, id1);
 
-.expr346:
+.expr343:
  push word [bp-4]
  push word [bp-6]
  push expr_16
  push word [bp-2]
  call dovar1
  add  sp, 8
-;-1137 
+;-1136 
 
-;-1138 e1:      if (istoken('+')) rterm("add");
+;-1137 e1:      if (istoken('+')) rterm("add");
 
 .e1:
  push 43
  call istoken
  add  sp, 2
  or  al, al
- je .expr347
+ je .expr344
  push expr_17
  call rterm
  add  sp, 2
-;-1139     else if (istoken('-')) rterm("sub");
+;-1138     else if (istoken('-')) rterm("sub");
 
- jmp .expr348
-.expr347:
+ jmp .expr345
+.expr344:
  push 45
  call istoken
  add  sp, 2
  or  al, al
- je .expr349
+ je .expr346
  push expr_18
  call rterm
  add  sp, 2
-;-1140     else if (istoken('&')) rterm("and");
+;-1139     else if (istoken('&')) rterm("and");
 
- jmp .expr350
-.expr349:
+ jmp .expr347
+.expr346:
  push 38
  call istoken
  add  sp, 2
  or  al, al
- je .expr351
+ je .expr348
  push expr_19
  call rterm
  add  sp, 2
-;-1141     else if (istoken('|')) rterm("or" );
+;-1140     else if (istoken('|')) rterm("or" );
 
- jmp .expr352
-.expr351:
+ jmp .expr349
+.expr348:
  push 124
  call istoken
  add  sp, 2
  or  al, al
- je .expr353
+ je .expr350
  push expr_20
  call rterm
  add  sp, 2
-;-1142     else if (istoken(T_LESSLESS)) rterm("shl");
+;-1141     else if (istoken(T_LESSLESS)) rterm("shl");
 
- jmp .expr354
-.expr353:
+ jmp .expr351
+.expr350:
  push 1240
  call istoken
  add  sp, 2
  or  al, al
- je .expr355
+ je .expr352
  push expr_21
  call rterm
  add  sp, 2
-;-1143     else if (istoken(T_GREATGREAT)) rterm("shr");
+;-1142     else if (istoken(T_GREATGREAT)) rterm("shr");
 
- jmp .expr356
-.expr355:
+ jmp .expr353
+.expr352:
  push 1241
  call istoken
  add  sp, 2
  or  al, al
- je .expr357
+ je .expr354
  push expr_22
  call rterm
  add  sp, 2
-;-1144     else if (istoken('*')) domul (ids);
+;-1143     else if (istoken('*')) domul (ids);
 
- jmp .expr358
-.expr357:
+ jmp .expr355
+.expr354:
  push 42
  call istoken
  add  sp, 2
  or  al, al
- je .expr359
+ je .expr356
  push word [bp-10]
  call domul
  add  sp, 2
-;-1145     else if (istoken('/')) doidiv(ids);
+;-1144     else if (istoken('/')) doidiv(ids);
 
- jmp .expr360
-.expr359:
+ jmp .expr357
+.expr356:
  push 47
  call istoken
  add  sp, 2
  or  al, al
- je .expr361
+ je .expr358
  push word [bp-10]
  call doidiv
  add  sp, 2
-;-1146     else if (istoken('%')) domod (ids);
+;-1145     else if (istoken('%')) domod (ids);
 
- jmp .expr362
-.expr361:
+ jmp .expr359
+.expr358:
  push 37
  call istoken
  add  sp, 2
  or  al, al
- je .expr363
+ je .expr360
  push word [bp-10]
  call domod
  add  sp, 2
-;-1147     if (isrelational()) {
+;-1146     if (isrelational()) {
 
-.expr363:
-.expr362:
 .expr360:
-.expr358:
-.expr356:
-.expr354:
-.expr352:
-.expr350:
-.expr348:
+.expr359:
+.expr357:
+.expr355:
+.expr353:
+.expr351:
+.expr349:
+.expr347:
+.expr345:
  call isrelational
  or  al, al
- je .expr364
-;-1148         rterm("cmp");
+ je .expr361
+;-1147         rterm("cmp");
 
  push expr_23
  call rterm
  add  sp, 2
-;-1149         cmpneg(ids);
+;-1148         cmpneg(ids);
 
  push word [bp-10]
  call cmpneg
  add  sp, 2
-;-1150         }
+;-1149         }
 
-;-1151     return 0;
+;-1150     return 0;
 
-.expr364:
+.expr361:
  mov ax, 0
  jmp .retnexpr
-;-1152 }
+;-1151 }
 
-;-1153 
+;-1152 
 
-;-1154 int pexpr() {//called from if, do, while
+;-1153 int pexpr() {//called from if, do, while
 
  .retnexpr:
  LEAVE
@@ -6655,75 +6613,75 @@ expr_23 db "cmp",0
 ENDP
 
 pexpr: PROC
-;-1155     expect('(');
+;-1154     expect('(');
 
  push 40
  call expect
  add  sp, 2
-;-1156     iscmp=0;
+;-1155     iscmp=0;
 
  mov ax, 0
  mov word [iscmp], ax
-;-1157     if (token==T_NAME) {
+;-1156     if (token==T_NAME) {
 
  mov ax, [token]
  cmp ax, 256
- jne .pexpr365
-;-1158         ireg1=checkreg();
+ jne .pexpr362
+;-1157         ireg1=checkreg();
 
  call checkreg
  mov word [ireg1], ax
-;-1159         if (ireg1) {
+;-1158         if (ireg1) {
 
  mov ax, [ireg1]
  or  al, al
- je .pexpr366
-;-1160             doreg1(1);
+ je .pexpr363
+;-1159             doreg1(1);
 
  push 1
  call doreg1
  add  sp, 2
-;-1161             return;
+;-1160             return;
 
  jmp .retnpexpr
-;-1162             }
+;-1161             }
 
-;-1163         }
+;-1162         }
 
-.pexpr366:
-;-1164 
+.pexpr363:
+;-1163 
 
-;-1165     expr();
+;-1164     expr();
 
-.pexpr365:
+.pexpr362:
  call expr
-;-1166     if (iscmp==0) printstring("\n or  al, al\n je .");
+;-1165     if (iscmp==0) printstring("\n or  al, al\n je .");
 
  mov ax, [iscmp]
  cmp ax, 0
- jne .pexpr367
+ jne .pexpr364
  push pexpr_0
  call printstring
  add  sp, 2
-;-1167     printstring(fname);
+;-1166     printstring(fname);
 
-.pexpr367:
+.pexpr364:
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1168     expect(')');
+;-1167     expect(')');
 
  push 41
  call expect
  add  sp, 2
-;-1169 }
+;-1168 }
+
+;-1169 
 
 ;-1170 
 
-;-1171 
-
-;-1172 int prlabel(int n) {
+;-1171 int prlabel(int n) {
 
  .retnpexpr:
  ret
@@ -6731,7 +6689,7 @@ pexpr_0 db "\n or  al, al\n je .",0
 ENDP
 
 prlabel: PROC
-;-1173     printstring("\n.");
+;-1172     printstring("\n.");
 
 ;Function : prlabel, Number local Var: 1
 ; # type sign width local variables
@@ -6740,25 +6698,25 @@ prlabel: PROC
  push prlabel_0
  call printstring
  add  sp, 2
-;-1174     printstring(fname);
+;-1173     printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1175     printunsigned(n);
+;-1174     printunsigned(n);
 
  push word [bp+4]
  call printunsigned
  add  sp, 2
-;-1176     prc(':');
+;-1175     prc(':');
 
  push 58
  call prc
  add  sp, 2
-;-1177 }
+;-1176 }
 
-;-1178 int prjump (int n) {
+;-1177 int prjump (int n) {
 
  LEAVE
  ret
@@ -6766,7 +6724,7 @@ prlabel_0 db "\n.",0
 ENDP
 
 prjump: PROC
-;-1179     printstring("\n jmp .");
+;-1178     printstring("\n jmp .");
 
 ;Function : prjump, Number local Var: 1
 ; # type sign width local variables
@@ -6775,22 +6733,22 @@ prjump: PROC
  push prjump_0
  call printstring
  add  sp, 2
-;-1180     printstring(fname);
+;-1179     printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1181     printunsigned(n);
+;-1180     printunsigned(n);
 
  push word [bp+4]
  call printunsigned
  add  sp, 2
-;-1182 }
+;-1181 }
 
-;-1183 
+;-1182 
 
-;-1184 int stmt() {
+;-1183 int stmt() {
 
  LEAVE
  ret
@@ -6798,11 +6756,11 @@ prjump_0 db "\n jmp .",0
 ENDP
 
 stmt: PROC
-;-1185     int c; char cha;
+;-1184     int c; char cha;
 
-;-1186     int jdest; int tst; int jtemp;
+;-1185     int jdest; int tst; int jtemp;
 
-;-1187     if(istoken('{')) {
+;-1186     if(istoken('{')) {
 
 ;Function : stmt, Number local Var: 5
 ; # type sign width local variables
@@ -6816,466 +6774,466 @@ stmt: PROC
  call istoken
  add  sp, 2
  or  al, al
- je .stmt368
-;-1188         while(istoken('}')==0) stmt();
+ je .stmt365
+;-1187         while(istoken('}')==0) stmt();
 
-.stmt369:
+.stmt366:
  push 125
  call istoken
  add  sp, 2
  cmp ax, 0
- jne .stmt370
+ jne .stmt367
  call stmt
-;-1189         }
+;-1188         }
 
- jmp .stmt369
-.stmt370:
-;-1190     else if(istoken(T_IF)) {
+ jmp .stmt366
+.stmt367:
+;-1189     else if(istoken(T_IF)) {
 
- jmp .stmt371
-.stmt368:
+ jmp .stmt368
+.stmt365:
  push 513
  call istoken
  add  sp, 2
  or  al, al
- je .stmt372
-;-1191         pexpr();
+ je .stmt369
+;-1190         pexpr();
 
  call pexpr
-;-1192         nlabel++;
+;-1191         nlabel++;
 
  inc  word[nlabel]
-;-1193         jdest=nlabel;
+;-1192         jdest=nlabel;
 
  mov ax, [nlabel]
  mov [bp-6], ax
-;-1194         printinteger(jdest);
+;-1193         printinteger(jdest);
 
  push word [bp-6]
  call printinteger
  add  sp, 2
-;-1195         stmt();
+;-1194         stmt();
 
  call stmt
-;-1196         if (istoken(T_ELSE)) {
+;-1195         if (istoken(T_ELSE)) {
 
  push 514
  call istoken
  add  sp, 2
  or  al, al
- je .stmt373
-;-1197             nlabel++;
+ je .stmt370
+;-1196             nlabel++;
 
  inc  word[nlabel]
-;-1198             tst=nlabel;
+;-1197             tst=nlabel;
 
  mov ax, [nlabel]
  mov [bp-8], ax
-;-1199             prjump(tst);
+;-1198             prjump(tst);
 
  push word [bp-8]
  call prjump
  add  sp, 2
-;-1200             prlabel(jdest);
+;-1199             prlabel(jdest);
 
  push word [bp-6]
  call prlabel
  add  sp, 2
-;-1201             stmt();
+;-1200             stmt();
 
  call stmt
-;-1202             prlabel(tst);
+;-1201             prlabel(tst);
 
  push word [bp-8]
  call prlabel
  add  sp, 2
-;-1203         }
+;-1202         }
 
-;-1204         else prlabel(jdest);
+;-1203         else prlabel(jdest);
 
- jmp .stmt374
-.stmt373:
+ jmp .stmt371
+.stmt370:
  push word [bp-6]
  call prlabel
  add  sp, 2
-;-1205     }
+;-1204     }
 
-.stmt374:
-;-1206     else if(istoken(T_DO)) {
+.stmt371:
+;-1205     else if(istoken(T_DO)) {
 
- jmp .stmt375
-.stmt372:
+ jmp .stmt372
+.stmt369:
  push 516
  call istoken
  add  sp, 2
  or  al, al
- je .stmt376
-;-1207         nlabel++;
+ je .stmt373
+;-1206         nlabel++;
 
  inc  word[nlabel]
-;-1208         jdest=nlabel;
+;-1207         jdest=nlabel;
 
  mov ax, [nlabel]
  mov [bp-6], ax
-;-1209         prlabel(jdest);
+;-1208         prlabel(jdest);
 
  push word [bp-6]
  call prlabel
  add  sp, 2
-;-1210         stmt();
+;-1209         stmt();
 
  call stmt
-;-1211         expect(T_WHILE);
+;-1210         expect(T_WHILE);
 
  push 515
  call expect
  add  sp, 2
-;-1212         pexpr();
+;-1211         pexpr();
 
  call pexpr
-;-1213         nlabel++;
+;-1212         nlabel++;
 
  inc  word[nlabel]
-;-1214         jtemp=nlabel;
+;-1213         jtemp=nlabel;
 
  mov ax, [nlabel]
  mov [bp-10], ax
-;-1215         printinteger(jtemp);
+;-1214         printinteger(jtemp);
 
  push word [bp-10]
  call printinteger
  add  sp, 2
-;-1216         prjump(jdest);
+;-1215         prjump(jdest);
 
  push word [bp-6]
  call prjump
  add  sp, 2
-;-1217          prlabel(jtemp);
+;-1216          prlabel(jtemp);
 
  push word [bp-10]
  call prlabel
  add  sp, 2
-;-1218     }
+;-1217     }
 
-;-1219     else if(istoken(T_WHILE)) {
+;-1218     else if(istoken(T_WHILE)) {
 
- jmp .stmt377
-.stmt376:
+ jmp .stmt374
+.stmt373:
  push 515
  call istoken
  add  sp, 2
  or  al, al
- je .stmt378
-;-1220         nlabel++;
+ je .stmt375
+;-1219         nlabel++;
 
  inc  word[nlabel]
-;-1221         jdest=nlabel;
+;-1220         jdest=nlabel;
 
  mov ax, [nlabel]
  mov [bp-6], ax
-;-1222         prlabel(jdest);
+;-1221         prlabel(jdest);
 
  push word [bp-6]
  call prlabel
  add  sp, 2
-;-1223         pexpr();
+;-1222         pexpr();
 
  call pexpr
-;-1224         nlabel++;
+;-1223         nlabel++;
 
  inc  word[nlabel]
-;-1225         tst=nlabel;
+;-1224         tst=nlabel;
 
  mov ax, [nlabel]
  mov [bp-8], ax
-;-1226         printinteger(tst);
+;-1225         printinteger(tst);
 
  push word [bp-8]
  call printinteger
  add  sp, 2
-;-1227         stmt();
+;-1226         stmt();
 
  call stmt
-;-1228         prjump(jdest);
+;-1227         prjump(jdest);
 
  push word [bp-6]
  call prjump
  add  sp, 2
-;-1229         prlabel(tst);
+;-1228         prlabel(tst);
 
  push word [bp-8]
  call prlabel
  add  sp, 2
-;-1230     }
+;-1229     }
 
-;-1231     else if(istoken(T_GOTO))  {
+;-1230     else if(istoken(T_GOTO))  {
 
- jmp .stmt379
-.stmt378:
+ jmp .stmt376
+.stmt375:
  push 521
  call istoken
  add  sp, 2
  or  al, al
- je .stmt380
-;-1232         printstring("\n jmp .");
+ je .stmt377
+;-1231         printstring("\n jmp .");
 
  push stmt_0
  call printstring
  add  sp, 2
-;-1233         name1();
+;-1232         name1();
 
  call name1
-;-1234         printstring(Symbol);
+;-1233         printstring(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call printstring
  add  sp, 2
-;-1235         expect(';');
+;-1234         expect(';');
 
  push 59
  call expect
  add  sp, 2
-;-1236     }
+;-1235     }
 
-;-1237     else if(token==T_ASM)     {
+;-1236     else if(token==T_ASM)     {
 
- jmp .stmt381
-.stmt380:
+ jmp .stmt378
+.stmt377:
  mov ax, [token]
  cmp ax, 518
- jne .stmt382
-;-1238       printstring("\n");
+ jne .stmt379
+;-1237       printstring("\n");
 
  push stmt_1
  call printstring
  add  sp, 2
-;-1239       c=next();
+;-1238       c=next();
 
  call next
  mov [bp-2], ax
-;-1240       while(c != '\n') {
+;-1239       while(c != '\n') {
 
-.stmt383:
+.stmt380:
  mov ax, [bp-2]
  cmp ax, 10
- je  .stmt384
-;-1241         prc(c);
+ je  .stmt381
+;-1240         prc(c);
 
  push word [bp-2]
  call prc
  add  sp, 2
-;-1242         c=next();
+;-1241         c=next();
 
  call next
  mov [bp-2], ax
-;-1243         };
+;-1242         };
 
- jmp .stmt383
-.stmt384:
-;-1244         token=getlex();
+ jmp .stmt380
+.stmt381:
+;-1243         token=getlex();
 
  call getlex
  mov word [token], ax
-;-1245     }
+;-1244     }
 
-;-1246     else if(istoken(T_ASMBLOCK)) {
+;-1245     else if(istoken(T_ASMBLOCK)) {
 
- jmp .stmt385
-.stmt382:
+ jmp .stmt382
+.stmt379:
  push 519
  call istoken
  add  sp, 2
  or  al, al
- je .stmt386
-;-1247         if (token== '{' )  {
+ je .stmt383
+;-1246         if (token== '{' )  {
 
  mov ax, [token]
  cmp ax, 123
- jne .stmt387
-;-1248             printstring("\n"); cha=next();
+ jne .stmt384
+;-1247             printstring("\n"); cha=next();
 
  push stmt_2
  call printstring
  add  sp, 2
  call next
  mov [bp-4], al
-;-1249             while(cha!= '}') {
+;-1248             while(cha!= '}') {
 
-.stmt388:
+.stmt385:
  mov al, [bp-4]
  cmp al, 125
- je  .stmt389
-;-1250                 prc(cha);
+ je  .stmt386
+;-1249                 prc(cha);
 
  mov al, byte [bp-4]
  mov ah, 0
  push ax
  call prc
  add  sp, 2
-;-1251                 cha=next();
+;-1250                 cha=next();
 
  call next
  mov [bp-4], al
-;-1252             }
+;-1251             }
 
-;-1253             token=getlex();
+;-1252             token=getlex();
 
- jmp .stmt388
-.stmt389:
+ jmp .stmt385
+.stmt386:
  call getlex
  mov word [token], ax
-;-1254         } else error1("Curly open expected");
+;-1253         } else error1("Curly open expected");
 
- jmp .stmt390
-.stmt387:
+ jmp .stmt387
+.stmt384:
  push stmt_3
  call error1
  add  sp, 2
-;-1255     }
+;-1254     }
 
-.stmt390:
-;-1256     else if(istoken(T_INTH))  {
+.stmt387:
+;-1255     else if(istoken(T_INTH))  {
 
- jmp .stmt391
-.stmt386:
+ jmp .stmt388
+.stmt383:
  push 600
  call istoken
  add  sp, 2
  or  al, al
- je .stmt392
-;-1257         printstring("\n int  ");
+ je .stmt389
+;-1256         printstring("\n int  ");
 
  push stmt_4
  call printstring
  add  sp, 2
-;-1258         expect(T_CONST);
+;-1257         expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1259         printunsigned(lexval);
+;-1258         printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1260         expect(';');
+;-1259         expect(';');
 
  push 59
  call expect
  add  sp, 2
-;-1261     }
+;-1260     }
 
-;-1262     else if(istoken(T_EMIT)) {
+;-1261     else if(istoken(T_EMIT)) {
 
- jmp .stmt393
-.stmt392:
+ jmp .stmt390
+.stmt389:
  push 520
  call istoken
  add  sp, 2
  or  al, al
- je .stmt394
-;-1263       printstring("\n db ");
+ je .stmt391
+;-1262       printstring("\n db ");
 
  push stmt_5
  call printstring
  add  sp, 2
-;-1264     L1: token=getlex();
+;-1263     L1: token=getlex();
 
 .L1:
  call getlex
  mov word [token], ax
-;-1265       printunsigned(lexval);
+;-1264       printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1266       token=getlex();
+;-1265       token=getlex();
 
  call getlex
  mov word [token], ax
-;-1267       if (token== ',') {
+;-1266       if (token== ',') {
 
  mov ax, [token]
  cmp ax, 44
- jne .stmt395
-;-1268           prc(',');
+ jne .stmt392
+;-1267           prc(',');
 
  push 44
  call prc
  add  sp, 2
-;-1269           goto L1;
+;-1268           goto L1;
 
  jmp .L1
-;-1270       }
+;-1269       }
 
-;-1271       expect(')');
+;-1270       expect(')');
 
-.stmt395:
+.stmt392:
  push 41
  call expect
  add  sp, 2
-;-1272     }
+;-1271     }
 
-;-1273     else if(istoken(';'))      { }
+;-1272     else if(istoken(';'))      { }
 
- jmp .stmt396
-.stmt394:
+ jmp .stmt393
+.stmt391:
  push 59
  call istoken
  add  sp, 2
  or  al, al
- je .stmt397
-;-1274     else if(istoken(T_RETURN)) {
+ je .stmt394
+;-1273     else if(istoken(T_RETURN)) {
 
- jmp .stmt398
-.stmt397:
+ jmp .stmt395
+.stmt394:
  push 512
  call istoken
  add  sp, 2
  or  al, al
- je .stmt399
-;-1275         if (token!=';') expr();
+ je .stmt396
+;-1274         if (token!=';') expr();
 
  mov ax, [token]
  cmp ax, 59
- je  .stmt400
+ je  .stmt397
  call expr
-;-1276         printstring("\n jmp .retn");
+;-1275         printstring("\n jmp .retn");
 
-.stmt400:
+.stmt397:
  push stmt_6
  call printstring
  add  sp, 2
-;-1277         printstring(fname);
+;-1276         printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1278         nreturn++;
+;-1277         nreturn++;
 
  inc  word[nreturn]
-;-1279         expect(';');
+;-1278         expect(';');
 
  push 59
  call expect
  add  sp, 2
-;-1280     }
+;-1279     }
 
-;-1281     else if(thechar==':')      {
+;-1280     else if(thechar==':')      {
 
- jmp .stmt401
-.stmt399:
+ jmp .stmt398
+.stmt396:
  mov al, [thechar]
  cmp al, 58
- jne .stmt402
-;-1282         printstring("\n."); // Label
+ jne .stmt399
+;-1281         printstring("\n."); // Label
 
  push stmt_7
  call printstring
  add  sp, 2
-;-1283         printstring(Symbol); prc(':');
+;-1282         printstring(Symbol); prc(':');
 
  lea  ax, [Symbol]
  push ax
@@ -7284,43 +7242,43 @@ stmt: PROC
  push 58
  call prc
  add  sp, 2
-;-1284         expect(T_NAME);
+;-1283         expect(T_NAME);
 
  push 256
  call expect
  add  sp, 2
-;-1285         expect(':');
+;-1284         expect(':');
 
  push 58
  call expect
  add  sp, 2
-;-1286     }
+;-1285     }
 
-;-1287     else  {expr();; expect(';'); }
+;-1286     else  {expr();; expect(';'); }
 
- jmp .stmt403
-.stmt402:
+ jmp .stmt400
+.stmt399:
  call expr
  push 59
  call expect
  add  sp, 2
-;-1288 }
+;-1287 }
 
-.stmt403:
-.stmt401:
+.stmt400:
 .stmt398:
-.stmt396:
+.stmt395:
 .stmt393:
-.stmt391:
-.stmt385:
-.stmt381:
-.stmt379:
-.stmt377:
-.stmt375:
-.stmt371:
-;-1289 
+.stmt390:
+.stmt388:
+.stmt382:
+.stmt378:
+.stmt376:
+.stmt374:
+.stmt372:
+.stmt368:
+;-1288 
 
-;-1290 int isvariable() {
+;-1289 int isvariable() {
 
  LEAVE
  ret
@@ -7335,68 +7293,68 @@ stmt_7 db "\n.",0
 ENDP
 
 isvariable: PROC
-;-1291     if(token==T_SIGNED)   goto v1;
+;-1290     if(token==T_SIGNED)   goto v1;
 
  mov ax, [token]
  cmp ax, 531
+ jne .isvariable401
+ jmp .v1
+;-1291     if(token==T_UNSIGNED) goto v1;
+
+.isvariable401:
+ mov ax, [token]
+ cmp ax, 532
+ jne .isvariable402
+ jmp .v1
+;-1292     if(token==T_CHAR)     goto v1;
+
+.isvariable402:
+ mov ax, [token]
+ cmp ax, 530
+ jne .isvariable403
+ jmp .v1
+;-1293     if(token==T_INT)      goto v1;
+
+.isvariable403:
+ mov ax, [token]
+ cmp ax, 517
  jne .isvariable404
  jmp .v1
-;-1292     if(token==T_UNSIGNED) goto v1;
+;-1294     if(token==T_LONG)     goto v1;
 
 .isvariable404:
  mov ax, [token]
- cmp ax, 532
+ cmp ax, 533
  jne .isvariable405
  jmp .v1
-;-1293     if(token==T_CHAR)     goto v1;
+;-1295     return 0;
 
 .isvariable405:
- mov ax, [token]
- cmp ax, 530
- jne .isvariable406
- jmp .v1
-;-1294     if(token==T_INT)      goto v1;
-
-.isvariable406:
- mov ax, [token]
- cmp ax, 517
- jne .isvariable407
- jmp .v1
-;-1295     if(token==T_LONG)     goto v1;
-
-.isvariable407:
- mov ax, [token]
- cmp ax, 533
- jne .isvariable408
- jmp .v1
-;-1296     return 0;
-
-.isvariable408:
  mov ax, 0
  jmp .retnisvariable
-;-1297 v1: return 1;
+;-1296 v1: return 1;
 
 .v1:
  mov ax, 1
  jmp .retnisvariable
-;-1298 }
+;-1297 }
 
-;-1299 
+;-1298 
 
-;-1300 //***************************************************************
+;-1299 //***************************************************************
 
-;-1301 int listvar(unsigned int i) {
+;-1300 int listvar(unsigned int i) {
 
  .retnisvariable:
  ret
 ENDP
 
 listvar: PROC
-;-1302     unsigned int j;
+;-1301     unsigned int j;
 
-;-1303     char c;
+;-1302     char c;
 
-;-1304     printstring("\n;");
+;-1303     printstring("\n;");
 
 ;Function : listvar, Number local Var: 3
 ; # type sign width local variables
@@ -7407,229 +7365,229 @@ listvar: PROC
  push listvar_0
  call printstring
  add  sp, 2
-;-1305     printunsigned(i);
+;-1304     printunsigned(i);
 
  push word [bp+4]
  call printunsigned
  add  sp, 2
-;-1306     prc(32);
+;-1305     prc(32);
 
  push 32
  call prc
  add  sp, 2
-;-1307     c=GType [i];
+;-1306     c=GType [i];
 
  mov bx, [bp+4]
  mov al, [GType + bx]
  mov [bp-4], al
-;-1308     if(c=='V')printstring("var ");
+;-1307     if(c=='V')printstring("var ");
 
  mov al, [bp-4]
  cmp al, 86
- jne .listvar409
+ jne .listvar406
  push listvar_1
  call printstring
  add  sp, 2
-;-1309     if(c=='*')printstring("ptr ");
+;-1308     if(c=='*')printstring("ptr ");
 
-.listvar409:
+.listvar406:
  mov al, [bp-4]
  cmp al, 42
- jne .listvar410
+ jne .listvar407
  push listvar_2
  call printstring
  add  sp, 2
-;-1310     if(c=='&')printstring("arr ");
+;-1309     if(c=='&')printstring("arr ");
 
-.listvar410:
+.listvar407:
  mov al, [bp-4]
  cmp al, 38
- jne .listvar411
+ jne .listvar408
  push listvar_3
  call printstring
  add  sp, 2
-;-1311     if(c=='#')printstring("def ");
+;-1310     if(c=='#')printstring("def ");
 
-.listvar411:
+.listvar408:
  mov al, [bp-4]
  cmp al, 35
- jne .listvar412
+ jne .listvar409
  push listvar_4
  call printstring
  add  sp, 2
-;-1312     c=GSign [i];
+;-1311     c=GSign [i];
 
-.listvar412:
+.listvar409:
  mov bx, [bp+4]
  mov al, [GSign + bx]
  mov [bp-4], al
-;-1313     if(c=='S')printstring("sign ");
+;-1312     if(c=='S')printstring("sign ");
 
  mov al, [bp-4]
  cmp al, 83
- jne .listvar413
+ jne .listvar410
  push listvar_5
  call printstring
  add  sp, 2
-;-1314     if(c=='U')printstring("unsg ");
+;-1313     if(c=='U')printstring("unsg ");
 
-.listvar413:
+.listvar410:
  mov al, [bp-4]
  cmp al, 85
- jne .listvar414
+ jne .listvar411
  push listvar_6
  call printstring
  add  sp, 2
-;-1315     c=GWidth[i];
+;-1314     c=GWidth[i];
 
-.listvar414:
+.listvar411:
  mov bx, [bp+4]
  mov al, [GWidth + bx]
  mov [bp-4], al
-;-1316     if(c== 0)printstring("NULL " );
+;-1315     if(c== 0)printstring("NULL " );
 
  mov al, [bp-4]
  cmp al, 0
- jne .listvar415
+ jne .listvar412
  push listvar_7
  call printstring
  add  sp, 2
-;-1317     if(c== 1)printstring("byte " );
+;-1316     if(c== 1)printstring("byte " );
 
-.listvar415:
+.listvar412:
  mov al, [bp-4]
  cmp al, 1
- jne .listvar416
+ jne .listvar413
  push listvar_8
  call printstring
  add  sp, 2
-;-1318     if(c== 2)printstring("word " );
+;-1317     if(c== 2)printstring("word " );
 
-.listvar416:
+.listvar413:
  mov al, [bp-4]
  cmp al, 2
- jne .listvar417
+ jne .listvar414
  push listvar_9
  call printstring
  add  sp, 2
-;-1319     if(c== 4)printstring("long " );
+;-1318     if(c== 4)printstring("long " );
 
-.listvar417:
+.listvar414:
  mov al, [bp-4]
  cmp al, 4
- jne .listvar418
+ jne .listvar415
  push listvar_10
  call printstring
  add  sp, 2
-;-1320     pt=getVarName(i);
+;-1319     pt=getVarName(i);
 
-.listvar418:
+.listvar415:
  push word [bp+4]
  call getVarName
  add  sp, 2
  mov word [pt], ax
-;-1321 //    j=i*32;
+;-1320 //    j=i*32;
 
-;-1322 //    pt=&GNameField + j;
+;-1321 //    pt=&GNameField + j;
 
-;-1323     printstring(pt);
+;-1322     printstring(pt);
 
  push word [pt]
  call printstring
  add  sp, 2
-;-1324     if(GType[i]=='#') {
+;-1323     if(GType[i]=='#') {
 
  mov bx, [bp+4]
  mov al, [GType + bx]
  cmp al, 35
- jne .listvar419
-;-1325         prc('=');
+ jne .listvar416
+;-1324         prc('=');
 
  push 61
  call prc
  add  sp, 2
-;-1326         j=GData[i];
+;-1325         j=GData[i];
 
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [GData + bx]
  mov [bp-2], ax
-;-1327         printunsigned(j);
+;-1326         printunsigned(j);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1328     }
+;-1327     }
 
-;-1329     if(GType[i]=='&') {
+;-1328     if(GType[i]=='&') {
 
-.listvar419:
+.listvar416:
  mov bx, [bp+4]
  mov al, [GType + bx]
  cmp al, 38
- jne .listvar420
-;-1330         prc('[');
+ jne .listvar417
+;-1329         prc('[');
 
  push 91
  call prc
  add  sp, 2
-;-1331         j=GData[i];
+;-1330         j=GData[i];
 
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [GData + bx]
  mov [bp-2], ax
-;-1332         printunsigned(j);
+;-1331         printunsigned(j);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1333         prc(']');
+;-1332         prc(']');
 
  push 93
  call prc
  add  sp, 2
-;-1334     }
+;-1333     }
 
-;-1335     if (i >= GTop) {
+;-1334     if (i >= GTop) {
 
-.listvar420:
+.listvar417:
  mov ax, [bp+4]
  cmp ax, [GTop] ;unsigned : 0
- jb  .listvar421
-;-1336         printstring(" = bp");
+ jb  .listvar418
+;-1335         printstring(" = bp");
 
  push listvar_11
  call printstring
  add  sp, 2
-;-1337         j=GData[i];
+;-1336         j=GData[i];
 
  mov bx, [bp+4]
  shl bx, 1
  mov ax, [GData + bx]
  mov [bp-2], ax
-;-1338         if (j > 0) prc('+');
+;-1337         if (j > 0) prc('+');
 
  mov ax, [bp-2]
  cmp ax, 0
- jle .listvar422
+ jle .listvar419
  push 43
  call prc
  add  sp, 2
-;-1339         printinteger(j);
+;-1338         printinteger(j);
 
-.listvar422:
+.listvar419:
  push word [bp-2]
  call printinteger
  add  sp, 2
-;-1340     }
+;-1339     }
 
-;-1341 }
+;-1340 }
 
-.listvar421:
-;-1342 
+.listvar418:
+;-1341 
 
-;-1343 int listproc() {
+;-1342 int listproc() {
 
  LEAVE
  ret
@@ -7648,9 +7606,9 @@ listvar_11 db " = bp",0
 ENDP
 
 listproc: PROC
-;-1344     int i;
+;-1343     int i;
 
-;-1345     if (LTop > GTop) {
+;-1344     if (LTop > GTop) {
 
 ;Function : listproc, Number local Var: 1
 ; # type sign width local variables
@@ -7658,68 +7616,68 @@ listproc: PROC
  ENTER  2,0
  mov ax, [LTop]
  cmp ax, [GTop]
- jle .listproc423
-;-1346         printstring("\n;Function : ");
+ jle .listproc420
+;-1345         printstring("\n;Function : ");
 
  push listproc_0
  call printstring
  add  sp, 2
-;-1347         printstring(fname);
+;-1346         printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1348         printstring(", Number local Var: ");
+;-1347         printstring(", Number local Var: ");
 
  push listproc_1
  call printstring
  add  sp, 2
-;-1349         i=LTop - GTop;
+;-1348         i=LTop - GTop;
 
  mov ax, [LTop]
  sub ax, [GTop]
  mov [bp-2], ax
-;-1350         printunsigned(i);
+;-1349         printunsigned(i);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1351         printstring("\n; # type sign width local variables");
+;-1350         printstring("\n; # type sign width local variables");
 
  push listproc_2
  call printstring
  add  sp, 2
-;-1352         i=GTop;
+;-1351         i=GTop;
 
  mov ax, [GTop]
  mov [bp-2], ax
-;-1353         while (i < LTop) {
+;-1352         while (i < LTop) {
 
-.listproc424:
+.listproc421:
  mov ax, [bp-2]
  cmp ax, [LTop]
- jge .listproc425
-;-1354             listvar(i);
+ jge .listproc422
+;-1353             listvar(i);
 
  push word [bp-2]
  call listvar
  add  sp, 2
-;-1355             i++;
+;-1354             i++;
 
  inc  word[bp-2]
-;-1356         }
+;-1355         }
 
-;-1357     }
+;-1356     }
 
- jmp .listproc424
-.listproc425:
-;-1358 }
+ jmp .listproc421
+.listproc422:
+;-1357 }
 
-.listproc423:
-;-1359 
+.listproc420:
+;-1358 
 
-;-1360 int searchFunction() {
+;-1359 int searchFunction() {
 
  LEAVE
  ret
@@ -7729,9 +7687,9 @@ listproc_2 db "\n; # type sign width local variables",0
 ENDP
 
 searchFunction: PROC
-;-1361     int FunctionIndex; char *p;
+;-1360     int FunctionIndex; char *p;
 
-;-1362     p= &FunctionNames;
+;-1361     p= &FunctionNames;
 
 ;Function : searchFunction, Number local Var: 2
 ; # type sign width local variables
@@ -7740,17 +7698,17 @@ searchFunction: PROC
  ENTER  4,0
  mov ax, FunctionNames
  mov [bp-4], ax
-;-1363     FunctionIndex=1;          //0=function name not found
+;-1362     FunctionIndex=1;          //0=function name not found
 
  mov ax, 1
  mov [bp-2], ax
-;-1364     while (FunctionIndex <= FunctionMaxIx ) {
+;-1363     while (FunctionIndex <= FunctionMaxIx ) {
 
-.searchFunction426:
+.searchFunction423:
  mov ax, [bp-2]
  cmp ax, [FunctionMaxIx]
- jg  .searchFunction427
-;-1365         if (eqstr(p, Symbol)) return FunctionIndex;
+ jg  .searchFunction424
+;-1364         if (eqstr(p, Symbol)) return FunctionIndex;
 
  lea  ax, [Symbol]
  push ax
@@ -7758,36 +7716,36 @@ searchFunction: PROC
  call eqstr
  add  sp, 4
  or  al, al
- je .searchFunction428
+ je .searchFunction425
  mov ax, [bp-2]
  jmp .retnsearchFunction
-;-1366         p = strlen(p) + p;
+;-1365         p = strlen(p) + p;
 
-.searchFunction428:
+.searchFunction425:
  push word [bp-4]
  call strlen
  add  sp, 2
  add ax, [bp-4]
  mov [bp-4], ax
-;-1367         p++;
+;-1366         p++;
 
  inc  word[bp-4]
-;-1368         FunctionIndex++;
+;-1367         FunctionIndex++;
 
  inc  word[bp-2]
-;-1369     }
+;-1368     }
 
-;-1370     return 0;               //no function found
+;-1369     return 0;               //no function found
 
- jmp .searchFunction426
-.searchFunction427:
+ jmp .searchFunction423
+.searchFunction424:
  mov ax, 0
  jmp .retnsearchFunction
-;-1371 }
+;-1370 }
 
-;-1372 
+;-1371 
 
-;-1373 int storeFunction() {
+;-1372 int storeFunction() {
 
  .retnsearchFunction:
  LEAVE
@@ -7795,59 +7753,59 @@ searchFunction: PROC
 ENDP
 
 storeFunction: PROC
-;-1374     unsigned int i;
+;-1373     unsigned int i;
 
-;-1375     FunctionMaxIx++;        //leave 0 empty for function not notfound
+;-1374     FunctionMaxIx++;        //leave 0 empty for function not notfound
 
 ;Function : storeFunction, Number local Var: 1
 ; # type sign width local variables
 ;100 var unsg word i = bp-2;
  ENTER  2,0
  inc  word[FunctionMaxIx]
-;-1376     if (FunctionMaxIx >= FUNCMAX) error1("Function table full");
+;-1375     if (FunctionMaxIx >= FUNCMAX) error1("Function table full");
 
  mov ax, [FunctionMaxIx]
  cmp ax, 300 ;unsigned : 1
- jl  .storeFunction429
+ jl  .storeFunction426
  push storeFunction_0
  call error1
  add  sp, 2
-;-1377     FunctionNamePtr=strcpy(FunctionNamePtr, Symbol);
+;-1376     FunctionNamePtr=strcpy(FunctionNamePtr, Symbol);
 
-.storeFunction429:
+.storeFunction426:
  lea  ax, [Symbol]
  push ax
  push word [FunctionNamePtr]
  call strcpy
  add  sp, 4
  mov word [FunctionNamePtr], ax
-;-1378     FunctionNamePtr++;      //function name is saved
+;-1377     FunctionNamePtr++;      //function name is saved
 
  inc  word[FunctionNamePtr]
-;-1379     i = FunctionNamePtr - &FunctionNames;
+;-1378     i = FunctionNamePtr - &FunctionNames;
 
  mov ax, [FunctionNamePtr]
  sub ax, FunctionNames
  mov [bp-2], ax
-;-1380     i += IDLENMAX;
+;-1379     i += IDLENMAX;
 
  add  word[bp-2], 31
-;-1381     if (i >= FUNCTIONNAMESMAX) error1("too many function names");
+;-1380     if (i >= FUNCTIONNAMESMAX) error1("too many function names");
 
  mov ax, [bp-2]
  cmp ax, 3000 ;unsigned : 0
- jb  .storeFunction430
+ jb  .storeFunction427
  push storeFunction_1
  call error1
  add  sp, 2
-;-1382 
+;-1381 
 
-;-1383 }
+;-1382 }
 
-.storeFunction430:
-;-1384 
+.storeFunction427:
+;-1383 
 
-;-1385 int dofunc() {
+;-1384 int dofunc() {
 
  LEAVE
  ret
@@ -7856,11 +7814,11 @@ storeFunction_1 db "too many function names",0
 ENDP
 
 dofunc: PROC
-;-1386     int nloc; unsigned int j;int narg;
+;-1385     int nloc; unsigned int j;int narg;
 
-;-1387     int VarNamePtrLocalStart;
+;-1386     int VarNamePtrLocalStart;
 
-;-1388     cloc=&co;
+;-1387     cloc=&co;
 
 ;Function : dofunc, Number local Var: 4
 ; # type sign width local variables
@@ -7871,10 +7829,10 @@ dofunc: PROC
  ENTER  8,0
  mov ax, co
  mov word [cloc], ax
-;-1389     checknamelen();
+;-1388     checknamelen();
 
  call checknamelen
-;-1390     strcpy(fname, Symbol);
+;-1389     strcpy(fname, Symbol);
 
  lea  ax, [Symbol]
  push ax
@@ -7882,353 +7840,353 @@ dofunc: PROC
  push ax
  call strcpy
  add  sp, 4
-;-1391     if(searchFunction()) error1("Function already defined");
+;-1390     if(searchFunction()) error1("Function already defined");
 
  call searchFunction
  or  al, al
- je .dofunc431
+ je .dofunc428
  push dofunc_0
  call error1
  add  sp, 2
-;-1392     storeFunction();
+;-1391     storeFunction();
 
-.dofunc431:
+.dofunc428:
  call storeFunction
-;-1393 
+;-1392 
 
-;-1394     printstring("\n\n");
+;-1393     printstring("\n\n");
 
  push dofunc_1
  call printstring
  add  sp, 2
-;-1395     printstring(Symbol);
+;-1394     printstring(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call printstring
  add  sp, 2
-;-1396     printstring(": PROC");
+;-1395     printstring(": PROC");
 
  push dofunc_2
  call printstring
  add  sp, 2
-;-1397     expect('(');
+;-1396     expect('(');
 
  push 40
  call expect
  add  sp, 2
-;-1398 //    LStart=GTop;
+;-1397 //    LStart=GTop;
 
-;-1399     LTop=GTop;
+;-1398     LTop=GTop;
 
  mov ax, [GTop]
  mov word [LTop], ax
-;-1400     VarNamePtrLocalStart=VarNamePtr;
+;-1399     VarNamePtrLocalStart=VarNamePtr;
 
  mov ax, [VarNamePtr]
  mov [bp-8], ax
-;-1401 
+;-1400 
 
-;-1402     if (istoken(')')==0) {
+;-1401     if (istoken(')')==0) {
 
  push 41
  call istoken
  add  sp, 2
  cmp ax, 0
- jne .dofunc432
-;-1403         narg=2;
+ jne .dofunc429
+;-1402         narg=2;
 
  mov ax, 2
  mov [bp-6], ax
-;-1404         do {
+;-1403         do {
 
-.dofunc433:
-;-1405             typeName();
+.dofunc430:
+;-1404             typeName();
 
  call typeName
-;-1406             addlocal();
+;-1405             addlocal();
 
  call addlocal
-;-1407             narg+=2;
+;-1406             narg+=2;
 
  add  word[bp-6], 2
-;-1408             GData[LTop]=narg;
+;-1407             GData[LTop]=narg;
 
  mov ax, [bp-6]
  mov bx, [LTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1409             if (iswidth == 4) narg+=2;
+;-1408             if (iswidth == 4) narg+=2;
 
  mov al, [iswidth]
  cmp al, 4
- jne .dofunc434
+ jne .dofunc431
  add  word[bp-6], 2
-;-1410             LTop++;
+;-1409             LTop++;
 
-.dofunc434:
+.dofunc431:
  inc  word[LTop]
-;-1411             }
+;-1410             }
 
-;-1412         while (istoken(','));
+;-1411         while (istoken(','));
 
  push 44
  call istoken
  add  sp, 2
  or  al, al
- je .dofunc435
- jmp .dofunc433
-.dofunc435:
-;-1413         expect(')');
+ je .dofunc432
+ jmp .dofunc430
+.dofunc432:
+;-1412         expect(')');
 
  push 41
  call expect
  add  sp, 2
-;-1414         }
+;-1413         }
 
-;-1415 
+;-1414 
 
-;-1416     expect('{'); /*body*/
+;-1415     expect('{'); /*body*/
 
-.dofunc432:
+.dofunc429:
  push 123
  call expect
  add  sp, 2
-;-1417     nloc=0;
+;-1416     nloc=0;
 
  mov ax, 0
  mov [bp-2], ax
-;-1418     nreturn=0;
+;-1417     nreturn=0;
 
  mov ax, 0
  mov word [nreturn], ax
-;-1419     nconst=0;
+;-1418     nconst=0;
 
  mov ax, 0
  mov word [nconst], ax
-;-1420     while(isvariable()) {
+;-1419     while(isvariable()) {
 
-.dofunc436:
+.dofunc433:
  call isvariable
  or  al, al
- je .dofunc437
-;-1421         do {
+ je .dofunc434
+;-1420         do {
 
-.dofunc438:
-;-1422             typeName();
+.dofunc435:
+;-1421             typeName();
 
  call typeName
-;-1423             checknamelen();
+;-1422             checknamelen();
 
  call checknamelen
-;-1424             addlocal();
+;-1423             addlocal();
 
  call addlocal
-;-1425             nloc-=2;
+;-1424             nloc-=2;
 
  sub  word[bp-2], 2
-;-1426             if (iswidth == 4) nloc-=2;
+;-1425             if (iswidth == 4) nloc-=2;
 
  mov al, [iswidth]
  cmp al, 4
- jne .dofunc439
+ jne .dofunc436
  sub  word[bp-2], 2
-;-1427             GData[LTop]=nloc;
+;-1426             GData[LTop]=nloc;
 
-.dofunc439:
+.dofunc436:
  mov ax, [bp-2]
  mov bx, [LTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1428             if (istoken('[')){
+;-1427             if (istoken('[')){
 
  push 91
  call istoken
  add  sp, 2
  or  al, al
- je .dofunc440
-;-1429                 istype='&';
+ je .dofunc437
+;-1428                 istype='&';
 
  mov ax, 38
  mov byte [istype], al
-;-1430                 GType[LTop]='&';
+;-1429                 GType[LTop]='&';
 
  mov ax, 38
  mov bx, [LTop]
  mov [GType+bx], al
-;-1431                 expect(T_CONST);
+;-1430                 expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1432                 expect(']');
+;-1431                 expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-1433                 nloc=nloc-lexval;
+;-1432                 nloc=nloc-lexval;
 
  mov ax, [bp-2]
  sub ax, [lexval]
  mov [bp-2], ax
-;-1434                 nloc+=2;
+;-1433                 nloc+=2;
 
  add  word[bp-2], 2
-;-1435                 GData[LTop]=nloc;
+;-1434                 GData[LTop]=nloc;
 
  mov ax, [bp-2]
  mov bx, [LTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1436             }
+;-1435             }
 
-;-1437             LTop++;
+;-1436             LTop++;
 
-.dofunc440:
+.dofunc437:
  inc  word[LTop]
-;-1438         } while (istoken(','));
+;-1437         } while (istoken(','));
 
  push 44
  call istoken
  add  sp, 2
  or  al, al
- je .dofunc441
- jmp .dofunc438
-.dofunc441:
-;-1439         expect(';');
+ je .dofunc438
+ jmp .dofunc435
+.dofunc438:
+;-1438         expect(';');
 
  push 59
  call expect
  add  sp, 2
-;-1440     }
+;-1439     }
 
-;-1441     listproc();
+;-1440     listproc();
 
- jmp .dofunc436
-.dofunc437:
+ jmp .dofunc433
+.dofunc434:
  call listproc
-;-1442     if (LTop>GTop){
+;-1441     if (LTop>GTop){
 
  mov ax, [LTop]
  cmp ax, [GTop]
- jle .dofunc442
-;-1443         printstring(";\n ENTER  ");
+ jle .dofunc439
+;-1442         printstring(";\n ENTER  ");
 
  push dofunc_3
  call printstring
  add  sp, 2
-;-1444         nloc=mkneg(nloc);
+;-1443         nloc=mkneg(nloc);
 
  push word [bp-2]
  call mkneg
  add  sp, 2
  mov [bp-2], ax
-;-1445         printunsigned (nloc);
+;-1444         printunsigned (nloc);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1446         printstring(",0");
+;-1445         printstring(",0");
 
  push dofunc_4
  call printstring
  add  sp, 2
-;-1447         }
+;-1446         }
 
-;-1448 
+;-1447 
 
-;-1449     while(istoken('}')==0)  stmt();
+;-1448     while(istoken('}')==0)  stmt();
 
-.dofunc442:
-.dofunc443:
+.dofunc439:
+.dofunc440:
  push 125
  call istoken
  add  sp, 2
  cmp ax, 0
- jne .dofunc444
+ jne .dofunc441
  call stmt
-;-1450 
+;-1449 
 
-;-1451     if (nreturn) {
+;-1450     if (nreturn) {
 
- jmp .dofunc443
-.dofunc444:
+ jmp .dofunc440
+.dofunc441:
  mov ax, [nreturn]
  or  al, al
- je .dofunc445
-;-1452             printstring("\n .retn");
+ je .dofunc442
+;-1451             printstring("\n .retn");
 
  push dofunc_5
  call printstring
  add  sp, 2
-;-1453             printstring(fname);
+;-1452             printstring(fname);
 
  lea  ax, [fname]
  push ax
  call printstring
  add  sp, 2
-;-1454             prc(':');
+;-1453             prc(':');
 
  push 58
  call prc
  add  sp, 2
-;-1455         }
+;-1454         }
 
-;-1456     if (LTop > GTop) printstring("\n LEAVE");
+;-1455     if (LTop > GTop) printstring("\n LEAVE");
 
-.dofunc445:
+.dofunc442:
  mov ax, [LTop]
  cmp ax, [GTop]
- jle .dofunc446
+ jle .dofunc443
  push dofunc_6
  call printstring
  add  sp, 2
-;-1457     printstring("\n ret");
+;-1456     printstring("\n ret");
 
-.dofunc446:
+.dofunc443:
  push dofunc_7
  call printstring
  add  sp, 2
-;-1458     *cloc=0;
+;-1457     *cloc=0;
 
  mov ax, 0
  mov  bx, [cloc]
  mov  [bx], al
-;-1459     printstring(co);
+;-1458     printstring(co);
 
  lea  ax, [co]
  push ax
  call printstring
  add  sp, 2
-;-1460     maxco1=strlen(co);
+;-1459     maxco1=strlen(co);
 
  lea  ax, [co]
  push ax
  call strlen
  add  sp, 2
  mov word [maxco1], ax
-;-1461     if (maxco1 > maxco) maxco=maxco1;
+;-1460     if (maxco1 > maxco) maxco=maxco1;
 
  mov ax, [maxco1]
  cmp ax, [maxco]
- jle .dofunc447
+ jle .dofunc444
  mov ax, [maxco1]
  mov word [maxco], ax
-;-1462     printstring("\nENDP");
+;-1461     printstring("\nENDP");
 
-.dofunc447:
+.dofunc444:
  push dofunc_8
  call printstring
  add  sp, 2
-;-1463     VarNamePtr=VarNamePtrLocalStart;//delete local names
+;-1462     VarNamePtr=VarNamePtrLocalStart;//delete local names
 
  mov ax, [bp-8]
  mov word [VarNamePtr], ax
-;-1464 }
+;-1463 }
 
-;-1465 
+;-1464 
 
-;-1466 char doglobName[IDLENMAX];
+;-1465 char doglobName[IDLENMAX];
 
  LEAVE
  ret
@@ -8246,13 +8204,13 @@ section .bss
 absolute 32599
 doglobName resb 31
 section .text
-;-1467 int doglob() {
+;-1466 int doglob() {
 
 
 doglob: PROC
-;-1468     int i; int j; int isstrarr;
+;-1467     int i; int j; int isstrarr;
 
-;-1469     isstrarr=0;
+;-1468     isstrarr=0;
 
 ;Function : doglob, Number local Var: 3
 ; # type sign width local variables
@@ -8262,65 +8220,65 @@ doglob: PROC
  ENTER  6,0
  mov ax, 0
  mov [bp-6], ax
-;-1470     if (GTop >= VARMAX) error1("Global table full");
+;-1469     if (GTop >= VARMAX) error1("Global table full");
 
  mov ax, [GTop]
  cmp ax, 400 ;unsigned : 1
- jl  .doglob448
+ jl  .doglob445
  push doglob_0
  call error1
  add  sp, 2
-;-1471     if (iswidth == 0) error1("no VOID as var type");
+;-1470     if (iswidth == 0) error1("no VOID as var type");
 
-.doglob448:
+.doglob445:
  mov al, [iswidth]
  cmp al, 0
- jne .doglob449
+ jne .doglob446
  push doglob_1
  call error1
  add  sp, 2
-;-1472     checknamelen();
+;-1471     checknamelen();
 
-.doglob449:
+.doglob446:
  call checknamelen
-;-1473     if (checkName() != 0) error1("Variable already defined");
+;-1472     if (checkName() != 0) error1("Variable already defined");
 
  call checkName
  cmp al, 0
- je  .doglob450
+ je  .doglob447
  push doglob_2
  call error1
  add  sp, 2
-;-1474     if (istoken('[')) {
+;-1473     if (istoken('[')) {
 
-.doglob450:
+.doglob447:
  push 91
  call istoken
  add  sp, 2
  or  al, al
- je .doglob451
-;-1475         istype='&';
+ je .doglob448
+;-1474         istype='&';
 
  mov ax, 38
  mov byte [istype], al
-;-1476         if (istoken(T_CONST)) {
+;-1475         if (istoken(T_CONST)) {
 
  push 257
  call istoken
  add  sp, 2
  or  al, al
- je .doglob452
-;-1477             printstring("\nsection .bss\nabsolute ");
+ je .doglob449
+;-1476             printstring("\nsection .bss\nabsolute ");
 
  push doglob_3
  call printstring
  add  sp, 2
-;-1478             printunsigned(orgDatai);
+;-1477             printunsigned(orgDatai);
 
  push word [orgDatai]
  call printunsigned
  add  sp, 2
-;-1479             printstring("\n"); printstring(Symbol);
+;-1478             printstring("\n"); printstring(Symbol);
 
  push doglob_4
  call printstring
@@ -8329,62 +8287,62 @@ doglob: PROC
  push ax
  call printstring
  add  sp, 2
-;-1480             if (iswidth==1) printstring(" resb ");
+;-1479             if (iswidth==1) printstring(" resb ");
 
  mov al, [iswidth]
  cmp al, 1
- jne .doglob453
+ jne .doglob450
  push doglob_5
  call printstring
  add  sp, 2
-;-1481             if (iswidth==2) printstring(" resw ");
+;-1480             if (iswidth==2) printstring(" resw ");
 
-.doglob453:
+.doglob450:
  mov al, [iswidth]
  cmp al, 2
- jne .doglob454
+ jne .doglob451
  push doglob_6
  call printstring
  add  sp, 2
-;-1482             if (iswidth==4) printstring(" resd ");
+;-1481             if (iswidth==4) printstring(" resd ");
 
-.doglob454:
+.doglob451:
  mov al, [iswidth]
  cmp al, 4
- jne .doglob455
+ jne .doglob452
  push doglob_7
  call printstring
  add  sp, 2
-;-1483             printunsigned(lexval);
+;-1482             printunsigned(lexval);
 
-.doglob455:
+.doglob452:
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1484             printstring("\nsection .text");
+;-1483             printstring("\nsection .text");
 
  push doglob_8
  call printstring
  add  sp, 2
-;-1485             orgDatai=orgDatai+lexval;
+;-1484             orgDatai=orgDatai+lexval;
 
  mov ax, [orgDatai]
  add ax, [lexval]
  mov word [orgDatai], ax
-;-1486             if (iswidth==2) orgDatai=orgDatai+lexval;
+;-1485             if (iswidth==2) orgDatai=orgDatai+lexval;
 
  mov al, [iswidth]
  cmp al, 2
- jne .doglob456
+ jne .doglob453
  mov ax, [orgDatai]
  add ax, [lexval]
  mov word [orgDatai], ax
-;-1487             if (iswidth==4) {i= lexval * 3; orgDatai=orgDatai + i;}
+;-1486             if (iswidth==4) {i= lexval * 3; orgDatai=orgDatai + i;}
 
-.doglob456:
+.doglob453:
  mov al, [iswidth]
  cmp al, 4
- jne .doglob457
+ jne .doglob454
  mov ax, [lexval]
  mov bx, 3
  mul bx
@@ -8392,57 +8350,57 @@ doglob: PROC
  mov ax, [orgDatai]
  add ax, [bp-2]
  mov word [orgDatai], ax
-;-1488             GData[GTop]=lexval;
+;-1487             GData[GTop]=lexval;
 
-.doglob457:
+.doglob454:
  mov ax, [lexval]
  mov bx, [GTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1489             expect(']');
+;-1488             expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-1490         }else {
+;-1489         }else {
 
- jmp .doglob458
-.doglob452:
-;-1491             expect(']');
+ jmp .doglob455
+.doglob449:
+;-1490             expect(']');
 
  push 93
  call expect
  add  sp, 2
-;-1492             if (iswidth != 1) error1("Only ByteArray allowed");
+;-1491             if (iswidth != 1) error1("Only ByteArray allowed");
 
  mov al, [iswidth]
  cmp al, 1
- je  .doglob459
+ je  .doglob456
  push doglob_9
  call error1
  add  sp, 2
-;-1493             printstring("\n");
+;-1492             printstring("\n");
 
-.doglob459:
+.doglob456:
  push doglob_10
  call printstring
  add  sp, 2
-;-1494             printstring(Symbol);
+;-1493             printstring(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call printstring
  add  sp, 2
-;-1495             printstring(" db ");
+;-1494             printstring(" db ");
 
  push doglob_11
  call printstring
  add  sp, 2
-;-1496             isstrarr=1;
+;-1495             isstrarr=1;
 
  mov ax, 1
  mov [bp-6], ax
-;-1497             strcpy(doglobName, Symbol);//save Symbol name
+;-1496             strcpy(doglobName, Symbol);//save Symbol name
 
  lea  ax, [Symbol]
  push ax
@@ -8450,288 +8408,288 @@ doglob: PROC
  push ax
  call strcpy
  add  sp, 4
-;-1498             expect('=');
+;-1497             expect('=');
 
  push 61
  call expect
  add  sp, 2
-;-1499             if (istoken(T_STRING)) {
+;-1498             if (istoken(T_STRING)) {
 
  push 258
  call istoken
  add  sp, 2
  or  al, al
- je .doglob460
-;-1500                 prc(34);
+ je .doglob457
+;-1499                 prc(34);
 
  push 34
  call prc
  add  sp, 2
-;-1501                 prscomment(Symbol);
+;-1500                 prscomment(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call prscomment
  add  sp, 2
-;-1502                 prc(34);
+;-1501                 prc(34);
 
  push 34
  call prc
  add  sp, 2
-;-1503                 printstring(",0");
+;-1502                 printstring(",0");
 
  push doglob_12
  call printstring
  add  sp, 2
-;-1504                 i=strlen(Symbol);
+;-1503                 i=strlen(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call strlen
  add  sp, 2
  mov [bp-2], ax
-;-1505                 GData[GTop]=i;
+;-1504                 GData[GTop]=i;
 
  mov ax, [bp-2]
  mov bx, [GTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1506                 }
+;-1505                 }
 
-;-1507             else if (istoken('{' )) {
+;-1506             else if (istoken('{' )) {
 
- jmp .doglob461
-.doglob460:
+ jmp .doglob458
+.doglob457:
  push 123
  call istoken
  add  sp, 2
  or  al, al
- je .doglob462
-;-1508                 i=0;
+ je .doglob459
+;-1507                 i=0;
 
  mov ax, 0
  mov [bp-2], ax
-;-1509                 do {
+;-1508                 do {
 
-.doglob463:
-;-1510                     if(i) prc(',');
+.doglob460:
+;-1509                     if(i) prc(',');
 
  mov ax, [bp-2]
  or  al, al
- je .doglob464
+ je .doglob461
  push 44
  call prc
  add  sp, 2
-;-1511                     expect(T_CONST);
+;-1510                     expect(T_CONST);
 
-.doglob464:
+.doglob461:
  push 257
  call expect
  add  sp, 2
-;-1512                     printunsigned(lexval);
+;-1511                     printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1513                     i=1;
+;-1512                     i=1;
 
  mov ax, 1
  mov [bp-2], ax
-;-1514                     }
+;-1513                     }
 
-;-1515                     while (istoken(','));
+;-1514                     while (istoken(','));
 
  push 44
  call istoken
  add  sp, 2
  or  al, al
- je .doglob465
- jmp .doglob463
-.doglob465:
-;-1516                 expect('}');
+ je .doglob462
+ jmp .doglob460
+.doglob462:
+;-1515                 expect('}');
 
  push 125
  call expect
  add  sp, 2
-;-1517             }
+;-1516             }
 
-;-1518         else error1("String or number array expected");
+;-1517         else error1("String or number array expected");
 
- jmp .doglob466
-.doglob462:
+ jmp .doglob463
+.doglob459:
  push doglob_13
  call error1
  add  sp, 2
-;-1519         };
+;-1518         };
 
-.doglob466:
-.doglob461:
+.doglob463:
 .doglob458:
-;-1520     }else { //expect('=');
+.doglob455:
+;-1519     }else { //expect('=');
 
- jmp .doglob467
-.doglob451:
-;-1521         printstring("\n");
+ jmp .doglob464
+.doglob448:
+;-1520         printstring("\n");
 
  push doglob_14
  call printstring
  add  sp, 2
-;-1522         printstring(Symbol);
+;-1521         printstring(Symbol);
 
  lea  ax, [Symbol]
  push ax
  call printstring
  add  sp, 2
-;-1523         if (istype=='*') printstring(" dw ");
+;-1522         if (istype=='*') printstring(" dw ");
 
  mov al, [istype]
  cmp al, 42
- jne .doglob468
+ jne .doglob465
  push doglob_15
  call printstring
  add  sp, 2
-;-1524         else {
+;-1523         else {
 
- jmp .doglob469
-.doglob468:
-;-1525             if      (iswidth==1) printstring(" db ");
+ jmp .doglob466
+.doglob465:
+;-1524             if      (iswidth==1) printstring(" db ");
 
  mov al, [iswidth]
  cmp al, 1
- jne .doglob470
+ jne .doglob467
  push doglob_16
  call printstring
  add  sp, 2
-;-1526             else if (iswidth==2) printstring(" dw ");
+;-1525             else if (iswidth==2) printstring(" dw ");
 
- jmp .doglob471
-.doglob470:
+ jmp .doglob468
+.doglob467:
  mov al, [iswidth]
  cmp al, 2
- jne .doglob472
+ jne .doglob469
  push doglob_17
  call printstring
  add  sp, 2
-;-1527             else                 printstring(" dd ");
+;-1526             else                 printstring(" dd ");
 
- jmp .doglob473
-.doglob472:
+ jmp .doglob470
+.doglob469:
  push doglob_18
  call printstring
  add  sp, 2
-;-1528         }
+;-1527         }
 
-.doglob473:
-.doglob471:
-;-1529     if(istoken('-')) prc('-');
+.doglob470:
+.doglob468:
+;-1528     if(istoken('-')) prc('-');
 
-.doglob469:
+.doglob466:
  push 45
  call istoken
  add  sp, 2
  or  al, al
- je .doglob474
+ je .doglob471
  push 45
  call prc
  add  sp, 2
-;-1530     if (istoken('=')) {
+;-1529     if (istoken('=')) {
 
-.doglob474:
+.doglob471:
  push 61
  call istoken
  add  sp, 2
  or  al, al
- je .doglob475
-;-1531         expect(T_CONST);
+ je .doglob472
+;-1530         expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1532         printunsigned(lexval);
+;-1531         printunsigned(lexval);
 
  push word [lexval]
  call printunsigned
  add  sp, 2
-;-1533         }else printunsigned(0);
+;-1532         }else printunsigned(0);
 
- jmp .doglob476
-.doglob475:
+ jmp .doglob473
+.doglob472:
  push 0
  call printunsigned
  add  sp, 2
-;-1534     }
+;-1533     }
 
-.doglob476:
-;-1535     GSign[GTop]=issign;
+.doglob473:
+;-1534     GSign[GTop]=issign;
 
-.doglob467:
+.doglob464:
  mov al, [issign]
  mov bx, [GTop]
  mov [GSign+bx], al
-;-1536     GWidth[GTop]=iswidth;
+;-1535     GWidth[GTop]=iswidth;
 
  mov al, [iswidth]
  mov bx, [GTop]
  mov [GWidth+bx], al
-;-1537     GType[GTop]=istype;
+;-1536     GType[GTop]=istype;
 
  mov al, [istype]
  mov bx, [GTop]
  mov [GType+bx], al
-;-1538     pt=getVarName(GTop);
+;-1537     pt=getVarName(GTop);
 
  push word [GTop]
  call getVarName
  add  sp, 2
  mov word [pt], ax
-;-1539     if (isstrarr) strcpy(pt, doglobName);
+;-1538     if (isstrarr) strcpy(pt, doglobName);
 
  mov ax, [bp-6]
  or  al, al
- je .doglob477
+ je .doglob474
  lea  ax, [doglobName]
  push ax
  push word [pt]
  call strcpy
  add  sp, 4
-;-1540         else strcpy(pt, Symbol);
+;-1539         else strcpy(pt, Symbol);
 
- jmp .doglob478
-.doglob477:
+ jmp .doglob475
+.doglob474:
  lea  ax, [Symbol]
  push ax
  push word [pt]
  call strcpy
  add  sp, 4
-;-1541 	if (isstrarr) strcpy(Symbol, doglobName);
+;-1540 	if (isstrarr) strcpy(Symbol, doglobName);
 
-.doglob478:
+.doglob475:
  mov ax, [bp-6]
  or  al, al
- je .doglob479
+ je .doglob476
  lea  ax, [doglobName]
  push ax
  lea  ax, [Symbol]
  push ax
  call strcpy
  add  sp, 4
-;-1542 	storeVarName();
+;-1541 	storeVarName();
 
-.doglob479:
+.doglob476:
  call storeVarName
-;-1543     GTop++;
+;-1542     GTop++;
 
  inc  word[GTop]
-;-1544     expect(';');
+;-1543     expect(';');
 
  push 59
  call expect
  add  sp, 2
-;-1545 }
+;-1544 }
 
-;-1546 
+;-1545 
 
-;-1547 int dodefine() {
+;-1546 int dodefine() {
 
  LEAVE
  ret
@@ -8757,118 +8715,118 @@ doglob_18 db " dd ",0
 ENDP
 
 dodefine: PROC
-;-1548     expect(T_NAME);
+;-1547     expect(T_NAME);
 
  push 256
  call expect
  add  sp, 2
-;-1549     if (token==T_CONST) {
+;-1548     if (token==T_CONST) {
 
  mov ax, [token]
  cmp ax, 257
- jne .dodefine480
-;-1550         if (GTop >= VARMAX) error1("global table (define) full");
+ jne .dodefine477
+;-1549         if (GTop >= VARMAX) error1("global table (define) full");
 
  mov ax, [GTop]
  cmp ax, 400 ;unsigned : 1
- jl  .dodefine481
+ jl  .dodefine478
  push dodefine_0
  call error1
  add  sp, 2
-;-1551         checknamelen();
+;-1550         checknamelen();
 
-.dodefine481:
+.dodefine478:
  call checknamelen
-;-1552         if (checkName() != 0) error1("#Define var already defined");
+;-1551         if (checkName() != 0) error1("#Define var already defined");
 
  call checkName
  cmp ax, 0
- je  .dodefine482
+ je  .dodefine479
  push dodefine_1
  call error1
  add  sp, 2
-;-1553         if (eqstr(Symbol, "ORGDATA")) {
+;-1552         if (eqstr(Symbol, "ORGDATA")) {
 
-.dodefine482:
+.dodefine479:
  push dodefine_2
  lea  ax, [Symbol]
  push ax
  call eqstr
  add  sp, 4
  or  al, al
- je .dodefine483
-;-1554             orgDataOriginal=lexval;
+ je .dodefine480
+;-1553             orgDataOriginal=lexval;
 
  mov ax, [lexval]
  mov word [orgDataOriginal], ax
-;-1555             orgDatai=lexval;
+;-1554             orgDatai=lexval;
 
  mov ax, [lexval]
  mov word [orgDatai], ax
-;-1556             expect(T_CONST);
+;-1555             expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1557             return;
+;-1556             return;
 
  jmp .retndodefine
-;-1558         }
+;-1557         }
 
-;-1559         GSign [GTop]='U';
+;-1558         GSign [GTop]='U';
 
-.dodefine483:
+.dodefine480:
  mov ax, 85
  mov bx, [GTop]
  mov [GSign+bx], al
-;-1560         GWidth[GTop]=1;
+;-1559         GWidth[GTop]=1;
 
  mov ax, 1
  mov bx, [GTop]
  mov [GWidth+bx], al
-;-1561         GType [GTop]='#';
+;-1560         GType [GTop]='#';
 
  mov ax, 35
  mov bx, [GTop]
  mov [GType+bx], al
-;-1562         pt=getVarName(GTop);
+;-1561         pt=getVarName(GTop);
 
  push word [GTop]
  call getVarName
  add  sp, 2
  mov word [pt], ax
-;-1563         strcpy(pt, Symbol);
+;-1562         strcpy(pt, Symbol);
 
  lea  ax, [Symbol]
  push ax
  push word [pt]
  call strcpy
  add  sp, 4
-;-1564         storeVarName();
+;-1563         storeVarName();
 
  call storeVarName
-;-1565         GData[GTop]=lexval;
+;-1564         GData[GTop]=lexval;
 
  mov ax, [lexval]
  mov bx, [GTop]
  shl bx, 1
  mov [GData+bx], ax
-;-1566         expect(T_CONST);
+;-1565         expect(T_CONST);
 
  push 257
  call expect
  add  sp, 2
-;-1567         GTop++;
+;-1566         GTop++;
 
  inc  word[GTop]
-;-1568     }
+;-1567     }
 
-;-1569 }
+;-1568 }
 
-.dodefine480:
-;-1570 
+.dodefine477:
+;-1569 
 
-;-1571 int parse() {
+;-1570 int parse() {
 
  .retndodefine:
  ret
@@ -8878,78 +8836,78 @@ dodefine_2 db "ORGDATA",0
 ENDP
 
 parse: PROC
-;-1572     token=getlex();
+;-1571     token=getlex();
 
  call getlex
  mov word [token], ax
-;-1573     do {
+;-1572     do {
 
-.parse484:
-;-1574         if (token <= 0) return 1;
+.parse481:
+;-1573         if (token <= 0) return 1;
 
  mov ax, [token]
  cmp ax, 0
- jg  .parse485
+ jg  .parse482
  mov ax, 1
  jmp .retnparse
-;-1575         if (istoken('#')) {
+;-1574         if (istoken('#')) {
 
-.parse485:
+.parse482:
  push 35
  call istoken
  add  sp, 2
  or  al, al
- je .parse486
-;-1576              if (istoken(T_DEFINE))  dodefine();
+ je .parse483
+;-1575              if (istoken(T_DEFINE))  dodefine();
 
  push 511
  call istoken
  add  sp, 2
  or  al, al
- je .parse487
+ je .parse484
  call dodefine
-;-1577              else error1("define expected");
+;-1576              else error1("define expected");
 
- jmp .parse488
-.parse487:
+ jmp .parse485
+.parse484:
  push parse_0
  call error1
  add  sp, 2
-;-1578         }
+;-1577         }
 
-.parse488:
-;-1579     else{
+.parse485:
+;-1578     else{
 
- jmp .parse489
-.parse486:
-;-1580         typeName();
+ jmp .parse486
+.parse483:
+;-1579         typeName();
 
  call typeName
-;-1581         if (token=='(') dofunc();
+;-1580         if (token=='(') dofunc();
 
  mov ax, [token]
  cmp ax, 40
- jne .parse490
+ jne .parse487
  call dofunc
-;-1582         else doglob(); }
+;-1581         else doglob(); }
 
- jmp .parse491
-.parse490:
+ jmp .parse488
+.parse487:
  call doglob
-.parse491:
-;-1583     } while(1);
+.parse488:
+;-1582     } while(1);
 
-.parse489:
+.parse486:
  mov ax, 1
  or  al, al
- je .parse492
- jmp .parse484
-.parse492:
-;-1584 }
+ je .parse489
+ jmp .parse481
+.parse489:
+;-1583 }
 
-;-1585 
+;-1584 
 
-;-1586 char *arglen=0x80; char *argv=0x82;
+;-1585 char *arglen=0x80; char *argv=0x82;
 
  .retnparse:
  ret
@@ -8957,13 +8915,13 @@ parse_0 db "define expected",0
 ENDP
 arglen dw 128
 argv dw 130
-;-1587 int getarguments() {
+;-1586 int getarguments() {
 
 
 getarguments: PROC
-;-1588     int arglen1; unsigned int i; char *c;
+;-1587     int arglen1; unsigned int i; char *c;
 
-;-1589     isPrint=1;
+;-1588     isPrint=1;
 
 ;Function : getarguments, Number local Var: 3
 ; # type sign width local variables
@@ -8973,62 +8931,62 @@ getarguments: PROC
  ENTER  6,0
  mov ax, 1
  mov byte [isPrint], al
-;-1590     arglen1=*arglen;
+;-1589     arglen1=*arglen;
 
  mov bx, [arglen]
  mov al, [bx]
  mov ah, 0
  mov [bp-2], ax
-;-1591     if (arglen1 == 0) {
+;-1590     if (arglen1 == 0) {
 
  mov ax, [bp-2]
  cmp ax, 0
- jne .getarguments493
-;-1592         cputs(Version1);
+ jne .getarguments490
+;-1591         cputs(Version1);
 
  lea  ax, [Version1]
  push ax
  call cputs
  add  sp, 2
-;-1593         cputs(" Usage: A.COM in_file[.C]: ");
+;-1592         cputs(" Usage: A.COM in_file[.C]: ");
 
  push getarguments_0
  call cputs
  add  sp, 2
-;-1594         exitR(3);
+;-1593         exitR(3);
 
  push 3
  call exitR
  add  sp, 2
-;-1595         }
+;-1594         }
 
-;-1596     i=arglen1+129;
+;-1595     i=arglen1+129;
 
-.getarguments493:
+.getarguments490:
  mov ax, [bp-2]
  add ax, 129
  mov [bp-4], ax
-;-1597     *i=0;
+;-1596     *i=0;
 
  mov ax, 0
  mov  bx, [bp-4]
  mov  [bx], ax
-;-1598     arglen1--;
+;-1597     arglen1--;
 
  dec  word[bp-2]
-;-1599     toupper(argv);
+;-1598     toupper(argv);
 
  push word [argv]
  call toupper
  add  sp, 2
-;-1600     strcpy(namein, argv);
+;-1599     strcpy(namein, argv);
 
  push word [argv]
  lea  ax, [namein]
  push ax
  call strcpy
  add  sp, 4
-;-1601     if (instr1(namein, '.') == 0) strcat(namein, ".C");
+;-1600     if (instr1(namein, '.') == 0) strcat(namein, ".C");
 
  push 46
  lea  ax, [namein]
@@ -9036,44 +8994,44 @@ getarguments: PROC
  call instr1
  add  sp, 4
  cmp ax, 0
- jne .getarguments494
+ jne .getarguments491
  push getarguments_1
  lea  ax, [namein]
  push ax
  call strcat
  add  sp, 4
-;-1602     strcpy(namelst, namein);
+;-1601     strcpy(namelst, namein);
 
-.getarguments494:
+.getarguments491:
  lea  ax, [namein]
  push ax
  lea  ax, [namelst]
  push ax
  call strcpy
  add  sp, 4
-;-1603     i=strlen(namelst);
+;-1602     i=strlen(namelst);
 
  lea  ax, [namelst]
  push ax
  call strlen
  add  sp, 2
  mov [bp-4], ax
-;-1604     i--;
+;-1603     i--;
 
  dec  word[bp-4]
-;-1605     c=&namelst+i;
+;-1604     c=&namelst+i;
 
  mov ax, namelst
  add ax, [bp-4]
  mov [bp-6], ax
-;-1606     *c='S';
+;-1605     *c='S';
 
  mov ax, 83
  mov  bx, [bp-6]
  mov  [bx], al
-;-1607 }
+;-1606 }
 
-;-1608 int openfiles() {
+;-1607 int openfiles() {
 
  LEAVE
  ret
@@ -9082,80 +9040,80 @@ getarguments_1 db ".C",0
 ENDP
 
 openfiles: PROC
-;-1609     fdin=openR (namein);
+;-1608     fdin=openR (namein);
 
  lea  ax, [namein]
  push ax
  call openR
  add  sp, 2
  mov word [fdin], ax
-;-1610     if(DOS_ERR){
+;-1609     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
- je .openfiles495
-;-1611         cputs("Source file missing (.C): ");
+ je .openfiles492
+;-1610         cputs("Source file missing (.C): ");
 
  push openfiles_0
  call cputs
  add  sp, 2
-;-1612         cputs(namein);
+;-1611         cputs(namein);
 
  lea  ax, [namein]
  push ax
  call cputs
  add  sp, 2
-;-1613         exitR(1);
+;-1612         exitR(1);
 
  push 1
  call exitR
  add  sp, 2
-;-1614         }
+;-1613         }
 
-;-1615     fdout=creatR(namelst);
+;-1614     fdout=creatR(namelst);
 
-.openfiles495:
+.openfiles492:
  lea  ax, [namelst]
  push ax
  call creatR
  add  sp, 2
  mov word [fdout], ax
-;-1616     if(DOS_ERR){
+;-1615     if(DOS_ERR){
 
  mov ax, [DOS_ERR]
  or  al, al
- je .openfiles496
-;-1617         cputs("list file not creatable: ");
+ je .openfiles493
+;-1616         cputs("list file not creatable: ");
 
  push openfiles_1
  call cputs
  add  sp, 2
-;-1618         cputs(namelst);
+;-1617         cputs(namelst);
 
  lea  ax, [namelst]
  push ax
  call cputs
  add  sp, 2
-;-1619         exitR(2);
+;-1618         exitR(2);
 
  push 2
  call exitR
  add  sp, 2
-;-1620         }
+;-1619         }
 
-;-1621     printstring(";");
+;-1620     printstring(";");
 
-.openfiles496:
+.openfiles493:
  push openfiles_2
  call printstring
  add  sp, 2
-;-1622     printstring(Version1);
+;-1621     printstring(Version1);
 
  lea  ax, [Version1]
  push ax
  call printstring
  add  sp, 2
-;-1623     printstring(", Input: "); printstring(namein);
+;-1622     printstring(", Input: "); printstring(namein);
 
  push openfiles_3
  call printstring
@@ -9164,7 +9122,7 @@ openfiles: PROC
  push ax
  call printstring
  add  sp, 2
-;-1624     printstring(", Output: "); printstring(namelst);
+;-1623     printstring(", Output: "); printstring(namelst);
 
  push openfiles_4
  call printstring
@@ -9173,11 +9131,11 @@ openfiles: PROC
  push ax
  call printstring
  add  sp, 2
-;-1625 }
+;-1624 }
 
-;-1626 
+;-1625 
 
-;-1627 int epilog() {
+;-1626 int epilog() {
 
  ret
 openfiles_0 db "Source file missing (.C): ",0
@@ -9188,9 +9146,9 @@ openfiles_4 db ", Output: ",0
 ENDP
 
 epilog: PROC
-;-1628     unsigned int i;
+;-1627     unsigned int i;
 
-;-1629     isPrint=1;
+;-1628     isPrint=1;
 
 ;Function : epilog, Number local Var: 1
 ; # type sign width local variables
@@ -9198,10 +9156,10 @@ epilog: PROC
  ENTER  2,0
  mov ax, 1
  mov byte [isPrint], al
-;-1630     GTop--;
+;-1629     GTop--;
 
  dec  word[GTop]
-;-1631     printstring("\n;Glob. variables:"); printunsigned(GTop);
+;-1630     printstring("\n;Glob. variables:"); printunsigned(GTop);
 
  push epilog_0
  call printstring
@@ -9209,7 +9167,7 @@ epilog: PROC
  push word [GTop]
  call printunsigned
  add  sp, 2
-;-1632     printstring(" (");                  printunsigned(VARMAX);
+;-1631     printstring(" (");                  printunsigned(VARMAX);
 
  push epilog_1
  call printstring
@@ -9217,12 +9175,12 @@ epilog: PROC
  push 400
  call printunsigned
  add  sp, 2
-;-1633     i = VarNamePtr - &VarNames;
+;-1632     i = VarNamePtr - &VarNames;
 
  mov ax, [VarNamePtr]
  sub ax, VarNames
  mov [bp-2], ax
-;-1634     printstring("):");                  printunsigned(i);
+;-1633     printstring("):");                  printunsigned(i);
 
  push epilog_2
  call printstring
@@ -9230,7 +9188,7 @@ epilog: PROC
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1635     printstring(" (");					printunsigned(VARNAMESMAX);
+;-1634     printstring(" (");					printunsigned(VARNAMESMAX);
 
  push epilog_3
  call printstring
@@ -9238,7 +9196,7 @@ epilog: PROC
  push 4000
  call printunsigned
  add  sp, 2
-;-1636     printstring("), Functions:");       printunsigned(FunctionMaxIx);
+;-1635     printstring("), Functions:");       printunsigned(FunctionMaxIx);
 
  push epilog_4
  call printstring
@@ -9246,7 +9204,7 @@ epilog: PROC
  push word [FunctionMaxIx]
  call printunsigned
  add  sp, 2
-;-1637     printstring(" (");                  printunsigned(FUNCMAX);
+;-1636     printstring(" (");                  printunsigned(FUNCMAX);
 
  push epilog_5
  call printstring
@@ -9254,12 +9212,12 @@ epilog: PROC
  push 300
  call printunsigned
  add  sp, 2
-;-1638     i = FunctionNamePtr - &FunctionNames;
+;-1637     i = FunctionNamePtr - &FunctionNames;
 
  mov ax, [FunctionNamePtr]
  sub ax, FunctionNames
  mov [bp-2], ax
-;-1639     printstring("):");                  printunsigned(i);
+;-1638     printstring("):");                  printunsigned(i);
 
  push epilog_6
  call printstring
@@ -9267,7 +9225,7 @@ epilog: PROC
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1640     printstring(" (");					printunsigned(FUNCTIONNAMESMAX);
+;-1639     printstring(" (");					printunsigned(FUNCTIONNAMESMAX);
 
  push epilog_7
  call printstring
@@ -9275,7 +9233,7 @@ epilog: PROC
  push 3000
  call printunsigned
  add  sp, 2
-;-1641     printstring(")\n;Lines:");          printunsigned(lineno);
+;-1640     printstring(")\n;Lines:");          printunsigned(lineno);
 
  push epilog_8
  call printstring
@@ -9283,7 +9241,7 @@ epilog: PROC
  push word [lineno]
  call printunsigned
  add  sp, 2
-;-1642     printstring(", Constant: ");        printunsigned(maxco);
+;-1641     printstring(", Constant: ");        printunsigned(maxco);
 
  push epilog_9
  call printstring
@@ -9291,7 +9249,7 @@ epilog: PROC
  push word [maxco]
  call printunsigned
  add  sp, 2
-;-1643     printstring(" (");                  printunsigned(COMAX);
+;-1642     printstring(" (");                  printunsigned(COMAX);
 
  push epilog_10
  call printstring
@@ -9299,59 +9257,59 @@ epilog: PROC
  push 3000
  call printunsigned
  add  sp, 2
-;-1644     i = COMAX;
+;-1643     i = COMAX;
 
  mov ax, 3000
  mov [bp-2], ax
-;-1645     i = i - maxco;
+;-1644     i = i - maxco;
 
  mov ax, [bp-2]
  sub ax, [maxco]
  mov [bp-2], ax
-;-1646     if (i<=1000)printstring("\n ** Warning ** constant area too small");
+;-1645     if (i<=1000)printstring("\n ** Warning ** constant area too small");
 
  mov ax, [bp-2]
  cmp ax, 1000
- ja  .epilog497
+ ja  .epilog494
  push epilog_11
  call printstring
  add  sp, 2
-;-1647     printstring("), stacksize: ");
+;-1646     printstring("), stacksize: ");
 
-.epilog497:
+.epilog494:
  push epilog_12
  call printstring
  add  sp, 2
-;-1648     i=65535;
+;-1647     i=65535;
 
  mov ax, 65535
  mov [bp-2], ax
-;-1649     i=i-orgDatai;
+;-1648     i=i-orgDatai;
 
  mov ax, [bp-2]
  sub ax, [orgDatai]
  mov [bp-2], ax
-;-1650     printunsigned(i);
+;-1649     printunsigned(i);
 
  push word [bp-2]
  call printunsigned
  add  sp, 2
-;-1651     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+;-1650     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
  mov ax, [bp-2]
  cmp ax, 1000
- ja  .epilog498
+ ja  .epilog495
  push epilog_13
  call printstring
  add  sp, 2
-;-1652 
+;-1651 
 
-;-1653 }
+;-1652 }
 
-.epilog498:
-;-1654 
+.epilog495:
+;-1653 
 
-;-1655 int main() {
+;-1654 int main() {
 
  LEAVE
  ret
@@ -9372,75 +9330,75 @@ epilog_13 db "\n *** Warning *** Stack too small",0
 ENDP
 
 main: PROC
-;-1656     getarguments();
+;-1655     getarguments();
 
  call getarguments
-;-1657     openfiles();
+;-1656     openfiles();
 
  call openfiles
-;-1658     isPrint=0;
+;-1657     isPrint=0;
 
  mov ax, 0
  mov byte [isPrint], al
-;-1659     printstring("\norg  256 \njmp main");
+;-1658     printstring("\norg  256 \njmp main");
 
  push main_0
  call printstring
  add  sp, 2
-;-1660 
+;-1659 
 
-;-1661 	GTop = 1;
+;-1660 	GTop = 1;
 
  mov ax, 1
  mov word [GTop], ax
-;-1662     VarNamePtr= &VarNames;
+;-1661     VarNamePtr= &VarNames;
 
  mov ax, VarNames
  mov word [VarNamePtr], ax
-;-1663     FunctionNamePtr= &FunctionNames;
+;-1662     FunctionNamePtr= &FunctionNames;
 
  mov ax, FunctionNames
  mov word [FunctionNamePtr], ax
-;-1664     FunctionMaxIx=0;
+;-1663     FunctionMaxIx=0;
 
  mov ax, 0
  mov word [FunctionMaxIx], ax
-;-1665     orgDatai=orgDataOriginal;
+;-1664     orgDatai=orgDataOriginal;
 
  mov ax, [orgDataOriginal]
  mov word [orgDatai], ax
-;-1666     fgetsp=&fgetsdest;
+;-1665     fgetsp=&fgetsdest;
 
  mov ax, fgetsdest
  mov word [fgetsp], ax
-;-1667     *fgetsp=0;
+;-1666     *fgetsp=0;
 
  mov ax, 0
  mov  bx, [fgetsp]
  mov  [bx], al
-;-1668     thechar=fgets1();
+;-1667     thechar=fgets1();
 
  call fgets1
  mov byte [thechar], al
-;-1669 
+;-1668 
 
-;-1670     parse();
+;-1669     parse();
 
  call parse
-;-1671 
+;-1670 
 
-;-1672     epilog();
+;-1671     epilog();
 
  call epilog
-;-1673     end1(0);
+;-1672     end1(0);
 
  push 0
  call end1
  add  sp, 2
-;-1674 }
+;-1673 }
 
  ret
 main_0 db "\norg  256 \njmp main",0
 ENDP
-;Glob. variables:102 (400):818 (4000), Functions:80 (300):648 (3000)
-;Lines:1675, Constant: 688 (3000), stacksize: 32905
+;Glob. variables:102 (400):818 (4000), Functions:79 (300):634 (3000)
+;Lines:1674, Constant: 688 (3000), stacksize: 32905
