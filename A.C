@@ -567,7 +567,7 @@ g1: c=next();
 
     i=0;//convert define to value
     while (i < GTop) {
-        j=adrF(GNameField, i);
+        j=getVarName(i);
         if (eqstr(Symbol,j)) {
             if (GType[i]=='#') {
                 lexval=GData[i];
