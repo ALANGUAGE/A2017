@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.0.1";//16500 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.0.1";//16759 bytes. 32905 stack
 //todo:op=reg not recognized
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
