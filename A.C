@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.0.1";//16759 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1";//16759 bytes. 32905 stack
 //todo:op=reg not recognized
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
@@ -159,9 +159,9 @@ int readRL(char *s, int fd, int len){
 }
 int fputcR(char *n, int fd) {
     asm lea dx, [bp+4]; *n  todo: why not mov
-    asm mov cx, 1;      cx=1;
-    asm mov bx, [bp+6]; bx=fd;
-    asm mov ax, 16384;  ax=0x4000;
+    cx=1;
+    bx=fd;
+    ax=0x4000;
     DosInt();
 }
 
@@ -1076,6 +1076,12 @@ int expr() {
     int ids;    int isCONST;
     int i;      unsigned char *p;
 
+	if (istoken('(')) {//cast to int or long, clear destination
+		     if(istoken(T_INT)) printstring("\n xor ax, ax");
+		else if(istoken(T_LONG)) printstring("\n xor eax, eax");
+		else error1("only int or long allowed");
+		expect(')');
+		}
     if (istoken(T_CONST)) {// constant ;
         printstring("\n mov ax, ");
         printunsigned(lexval);
