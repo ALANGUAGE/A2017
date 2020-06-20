@@ -1,5 +1,7 @@
 char Version1[]="PLA compiler A.COM V1.1";//16759 bytes. 32905 stack
 //todo:op=reg not recognized
+//todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
+//5-Sign, 6-Ptr, 7_&Array
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity
@@ -933,7 +935,13 @@ int domul(int ids) {
             printunsigned(lexval);
             printstring("\n mul bx");
             }
-        else error1("with MUL only const number as multipl. allowed");
+
+
+
+
+
+
+        else error1("with MUL only const number as multiplier allowed");
         }
 }
 
@@ -954,8 +962,8 @@ int doidiv(int ids) {
         if (wi!=2) error1("only int, no byte as divisor allowed");
         printstring("\n mov bx, ");
         v(id1);
-        if (ids) printstring("\n cwd\n idiv bx");
-            else printstring("\n mov dx, 0\n div bx");
+        if (ids) printstring("\n cwd\n idiv bx");//sign ext DX:AX
+            else printstring("\n xor dx, dx\n div bx");
     }
 }
 
@@ -1306,7 +1314,7 @@ int stmt() {
         expect(T_NAME);
         expect(':');
     }
-    else  {expr();; expect(';'); }
+    else  {expr(); expect(';'); }//second ; removed
 }
 
 int isvariable() {
