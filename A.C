@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1.1";//16904 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1.2";//16904 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -1321,7 +1321,7 @@ int stmt() {
     else  {expr(); expect(';'); }
 }
 
-int isvariable1() {
+int isvariable() {
     if(token==T_SIGNED)   return 1;
     if(token==T_UNSIGNED) return 1;
     if(token==T_CHAR)     return 1;

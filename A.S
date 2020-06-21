@@ -1,9 +1,9 @@
 ;PLA compiler A.COM V1.1.1, Input: A.C, Output: A.S
 org  256 
 jmp main
-;-1 char Version1[]="PLA compiler A.COM V1.1.1";//16904 bytes. 32905 stack
+;-1 char Version1[]="PLA compiler A.COM V1.1.2";//16904 bytes. 32905 stack
 
-Version1 db "PLA compiler A.COM V1.1.1",0
+Version1 db "PLA compiler A.COM V1.1.2",0
 ;-2 //todo:op=reg not recognized
 
 ;-3 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
@@ -7499,7 +7499,7 @@ stmt: PROC
 .stmt380:
 ;-1323 
 
-;-1324 int isvariable1() {
+;-1324 int isvariable() {
 
  LEAVE
  ret
@@ -7514,51 +7514,51 @@ stmt_7 db "\n jmp .retn",0
 stmt_8 db "\n.",0
 ENDP
 
-isvariable1: PROC
+isvariable: PROC
 ;-1325     if(token==T_SIGNED)   return 1;
 
  mov ax, [token]
  cmp ax, 531
- jne .isvariable1417
+ jne .isvariable417
  mov ax, 1
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1326     if(token==T_UNSIGNED) return 1;
 
-.isvariable1417:
+.isvariable417:
  mov ax, [token]
  cmp ax, 532
- jne .isvariable1418
+ jne .isvariable418
  mov ax, 1
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1327     if(token==T_CHAR)     return 1;
 
-.isvariable1418:
+.isvariable418:
  mov ax, [token]
  cmp ax, 530
- jne .isvariable1419
+ jne .isvariable419
  mov ax, 1
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1328     if(token==T_INT)      return 1;
 
-.isvariable1419:
+.isvariable419:
  mov ax, [token]
  cmp ax, 517
- jne .isvariable1420
+ jne .isvariable420
  mov ax, 1
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1329     if(token==T_LONG)     return 1;
 
-.isvariable1420:
+.isvariable420:
  mov ax, [token]
  cmp ax, 533
- jne .isvariable1421
+ jne .isvariable421
  mov ax, 1
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1330     return 0;
 
-.isvariable1421:
+.isvariable421:
  mov ax, 0
- jmp .retnisvariable1
+ jmp .retnisvariable
 ;-1331 }
 
 ;-1332 
@@ -7567,7 +7567,7 @@ isvariable1: PROC
 
 ;-1334 int listvar(unsigned int i) {
 
- .retnisvariable1:
+ .retnisvariable:
  ret
 ENDP
 
@@ -9614,5 +9614,5 @@ main: PROC
  ret
 main_0 db "\norg  256 \njmp main",0
 ENDP
-;Glob. variables:102 (400):818 (4000), Functions:79 (300):635 (3000)
+;Glob. variables:102 (400):818 (4000), Functions:79 (300):634 (3000)
 ;Lines:1704, Constant: 688 (3000), stacksize: 33002
