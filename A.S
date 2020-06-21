@@ -2988,16 +2988,16 @@ getlex: PROC
  shl bx, 1
  mov ax, [GData + bx]
  mov word [lexval], ax
-;-570                 strcpy(Symbol, symboltemp);
+;-570 //                strcpy(Symbol, symboltemp);
 
- lea  ax, [symboltemp]
+;-571                 strcpy(Symbol, symboltmp);
+
+ lea  ax, [bp-84]
  push ax
  lea  ax, [Symbol]
  push ax
  call strcpy
  add  sp, 4
-;-571 //                strcpy(Symbol, symboltmp);
-
 ;-572                 return T_CONST;
 
  mov ax, 257

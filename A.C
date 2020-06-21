@@ -429,8 +429,6 @@ int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
     return 0;
 }
 
-char symboltemp[80];
-
 int getlex() {
     char c; char *p;
     char symboltmp[80];
@@ -526,7 +524,6 @@ g1: c=next();
       return T_CONST;
   }
   if (alnum(c)) {
-    strcpy(symboltemp, Symbol);
     strcpy(symboltmp, Symbol);
     p=&Symbol;
     *p=c;
@@ -567,8 +564,7 @@ g1: c=next();
         if (eqstr(Symbol,j)) {
             if (GType[i]=='#') {
                 lexval=GData[i];
-                strcpy(Symbol, symboltemp);
-//                strcpy(Symbol, symboltmp);
+                strcpy(Symbol, symboltmp);
                 return T_CONST;
             }
         }
