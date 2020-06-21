@@ -1,10 +1,10 @@
-char Version1[]="PLA compiler A.COM V1.1";//16759 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1";//16904 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
-#define T_NAME        256//the following defines for better clearity
+#define T_NAME        256//the following defines for better clearity > 255
 #define T_CONST       257
 #define T_STRING      258
 #define T_DEFINE      511
@@ -41,7 +41,7 @@ char Version1[]="PLA compiler A.COM V1.1";//16759 bytes. 32905 stack
 #define T_GREATGREAT 1241
 
 char isPrint=1;//set screen listing
-#define ORGDATA     20000//set it to end of text
+#define ORGDATA     20000//set to end of text=start of arrays
 unsigned int orgDataOriginal=20000;//must be ORGDATA
 unsigned int orgDatai;//actual max of array, must be less than stack
 #define COMAX        3000
@@ -64,6 +64,7 @@ int nconst=0;
 int nreturn=0;
 int nlabel=0;‚
 unsigned int lexval=0;
+unsigned long Llexvar;
 int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
@@ -77,7 +78,6 @@ int  GData [VARMAX];
 char VarNames[VARNAMESMAX];//Space for global and local var names
 char *VarNamePtr;   //first free position
 int GTop=1;         //0 = empty
-// int LStart=1  ;     //max global var
 int LTop=1;
 
 #define FUNCMAX       300//max functions
@@ -393,20 +393,7 @@ int storeVarName() {
     i += IDLENMAX;
     if (i > VARNAMESMAX) error1("too many variable names");
 }
-/*
-int searchVarName() {
-	char *p; int i;
-	p = &VarNames;
-	i=1;//start with 1
-	while (i < VARMAX) {
-		if (eqstr(p, Symbol)) return i;
-		p=strlen(p) + p;
-		p++;
-		i++;
-	}
-	return 0;		
-}
-*/	
+
 int getVarName(unsigned int i) {
 	int j; char *p;
 	j = 1;
@@ -417,7 +404,6 @@ int getVarName(unsigned int i) {
 		j++;	 		
 	}
 	return p;	
-		
 }
 		
 int printName(unsigned int i) {
@@ -447,10 +433,18 @@ char symboltemp[80];
 
 int getlex() {
     char c; char *p;
+    char symboltmp[80];
     int i; int j;
+    
 g1: c=next();
     if (c == 0) return 0;
     if (c <= ' ') goto g1;
+
+/*	do {    
+		c=next();
+    	if (c == 0) return 0;
+    while (c <= ' ');
+*/      
   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
@@ -533,6 +527,7 @@ g1: c=next();
   }
   if (alnum(c)) {
     strcpy(symboltemp, Symbol);
+    strcpy(symboltmp, Symbol);
     p=&Symbol;
     *p=c;
     p++;
@@ -573,6 +568,7 @@ g1: c=next();
             if (GType[i]=='#') {
                 lexval=GData[i];
                 strcpy(Symbol, symboltemp);
+//                strcpy(Symbol, symboltmp);
                 return T_CONST;
             }
         }
