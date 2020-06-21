@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1.2";//16904 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1.2";//16952 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -936,19 +936,18 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
 
 int domul(int ids) {
     if (ids) rterm("imul");
-        else {
+    else {
         if (istoken(T_CONST)) {
             printstring("\n mov bx, ");
             printunsigned(lexval);
             printstring("\n mul bx");
-            }
+            return;
+        }
+	rterm("mul");
+	return;
 
 
-
-
-
-
-        else error1("with MUL only const number as multiplier allowed");
+//        else error1("with MUL only const number as multiplier allowed");
         }
 }
 
