@@ -981,10 +981,10 @@ int domod(int ids) {
 
 
 int docalltype[10]; int docallvalue[10];
-char procname[IDLENMAX]; // 1=CONST, 2=String, 3=&, 4=Name, (5=reg)
 
-int docall() {
+int docall() {// 1=CONST, 2=String, 3=&, 4=Name, (5=reg)
     int i; int narg; int t0; int n0;  int sz32;
+	char procname[IDLENMAX]; 
     narg=0;
     sz32=0;
     checknamelen();
@@ -1004,10 +1004,10 @@ int docall() {
                 n0=nconst;
                 eprs("\n");
                 eprs(fname);
-                eprc(95);
+                eprc(95);//underscore
                 eprnum(nconst);
                 eprs(" db ");
-                eprc(34);
+                eprc(34);//doubel apostrophe
                 eprs(Symbol);
                 eprc(34);
                 eprs(",0");
@@ -1024,7 +1024,7 @@ int docall() {
                     p1=&GType;
                     p1=p1+n0;
                     if (*p1=='&') t0=3;
-
+//todo push reg is missing t0=5
                 }
             if (t0==0) error1("parameter not recognized (no * allowed)");
             docalltype [narg] = t0;
@@ -1318,17 +1318,16 @@ int stmt() {
         expect(T_NAME);
         expect(':');
     }
-    else  {expr(); expect(';'); }//second ; removed
+    else  {expr(); expect(';'); }
 }
 
-int isvariable() {
-    if(token==T_SIGNED)   goto v1;
-    if(token==T_UNSIGNED) goto v1;
-    if(token==T_CHAR)     goto v1;
-    if(token==T_INT)      goto v1;
-    if(token==T_LONG)     goto v1;
+int isvariable1() {
+    if(token==T_SIGNED)   return 1;
+    if(token==T_UNSIGNED) return 1;
+    if(token==T_CHAR)     return 1;
+    if(token==T_INT)      return 1;
+    if(token==T_LONG)     return 1;
     return 0;
-v1: return 1;
 }
 
 //***************************************************************
@@ -1352,8 +1351,6 @@ int listvar(unsigned int i) {
     if(c== 2)printstring("word " );
     if(c== 4)printstring("long " );
     pt=getVarName(i);
-//    j=i*32;
-//    pt=&GNameField + j;
     printstring(pt);
     if(GType[i]=='#') {
         prc('=');
@@ -1413,7 +1410,6 @@ int storeFunction() {
     i = FunctionNamePtr - &FunctionNames;
     i += IDLENMAX;
     if (i >= FUNCTIONNAMESMAX) error1("too many function names");
-
 }
 
 int dofunc() {
@@ -1429,7 +1425,6 @@ int dofunc() {
     printstring(Symbol);
     printstring(": PROC");
     expect('(');
-//    LStart=GTop;
     LTop=GTop;
     VarNamePtrLocalStart=VarNamePtr;
 
@@ -1447,7 +1442,7 @@ int dofunc() {
         expect(')');
         }
 
-    expect('{'); /*body*/
+    expect('{'); //function body
     nloc=0;
     nreturn=0;
     nconst=0;
