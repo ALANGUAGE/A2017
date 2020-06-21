@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1";//16904 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1.1";//16904 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -64,7 +64,7 @@ int nconst=0;
 int nreturn=0;
 int nlabel=0;‚
 unsigned int lexval=0;
-unsigned long Llexvar;
+unsigned long Llexval;
 int typei;       char istype;
 int signi;       char issign;
 int widthi;      char iswidth;
@@ -432,17 +432,14 @@ int ifEOL(char c) {//unix LF, win CRLF= 13/10, mac CR
 int getlex() {
     char c; char *p;
     char symboltmp[80];
-    int i; int j;
+    int i; int j; long l;
     
-g1: c=next();
-    if (c == 0) return 0;
-    if (c <= ' ') goto g1;
-
-/*	do {    
+	do {    
 		c=next();
-    	if (c == 0) return 0;
+    	if (c == 0) return 0; 
+    	}
     while (c <= ' ');
-*/      
+      
   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
@@ -486,7 +483,9 @@ g1: c=next();
   }
   if (digit(c)) {
       lexval=0;
+      Llexval = (long) 0;//todo get number in long      
       lexval=c-'0'; // lexval=int hi=0, c=char
+      Llexval= (long) c-'0';
       if (thechar=='x') thechar='X';
       if (thechar=='X') {
           next();
@@ -496,25 +495,41 @@ g1: c=next();
       	       if (c>64) c=c-7;
                c=c-48;
                lexval=lexval << 4; // * 16
-               i=0;
-               i=c;
+               Llexval = Llexval << 4; // * 16
+               i = (int) c;
+               l = (long) c;
                lexval=lexval+i;
+               Llexval = Llexval + l;
            }
        }else {
            while(digit(thechar)) {
                c=next();
                c=c-48;
                lexval=lexval*10;
-               i=0;
-               i=c;
+               Llexval = Llexval * 10;//16 bit mul
+/*		    mov eax, [Llexval]
+		    mov bx, 10
+            mul bx
+		    mov dword [Llexval], eax
+*/
+/*__asm{
+			mov eax, [Llexval]
+		    mov ebx, 10			; error
+            mul ebx
+		    mov dword [Llexval], eax
+}*/         
+               i = (int) c;
+               l = (long) c;
                lexval=lexval+i;
+               Llexval = Llexval + l;
            }
-       }
+      }
+//      lexval = Llexval;//cast long to int 
       return T_CONST;
   }
-  if (c==39) {
+  if (c==39) {//single apostrophe
       lexval=next();
-      if (lexval==92) {
+      if (lexval==92) {//backslash
           lexval=next();
           if (lexval=='n') lexval=10;
           if (lexval=='t') lexval= 9;
@@ -558,7 +573,7 @@ g1: c=next();
     if (eqstr(Symbol,"goto"    )) return T_GOTO;
     if (eqstr(Symbol,"define"  )) return T_DEFINE;
 
-    i=0;//convert define to value
+    i=0;//convert define to value (lexval)
     while (i < GTop) {
         j=getVarName(i);
         if (eqstr(Symbol,j)) {
@@ -966,7 +981,7 @@ int domod(int ids) {
 
 
 int docalltype[10]; int docallvalue[10];
-char procname[17]; // 1=CONST, 2=String, 3=&, 4=Name
+char procname[IDLENMAX]; // 1=CONST, 2=String, 3=&, 4=Name, (5=reg)
 
 int docall() {
     int i; int narg; int t0; int n0;  int sz32;
@@ -1004,9 +1019,6 @@ int docall() {
                 n0=searchname();
                 }
             if(istoken(T_NAME))  {
-
-
-
                     t0=4;
                     n0=searchname();
                     p1=&GType;
