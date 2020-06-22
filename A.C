@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1.2";//16952 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1.2";//17475 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -940,7 +940,7 @@ int domul(int ids) {
 	    rterm("imul");
 	    return;
 	    }
-	printstring("\n;do not forget to save the high half:mov [Longvar+2],dx");    
+	printstring("\n;do not forget to save the high word:mov [Longvar+2],dx");    
 	if (istoken(T_CONST)) {//mul 123
 		printstring("\n mov bx, ");
 		printunsigned(lexval);
@@ -949,28 +949,15 @@ int domul(int ids) {
 	}
 	mode=typeName();
 	id1=searchname();
-	if (mode) error1("only int as multiplier");
+	if (mode) error1("only simple var as multiplier");
 	gettypes(id1);
 	if (typei) error1("only simple int as multipier");
-	if (wi==1) {
-		printstring("\n mul byte [");
+	if (wi==0) error1("multiplier");	
+	if (wi==1) printstring("\n mul byte [");//  AL  MUL r/m8  = AX
+	if (wi==2) printstring("\n mul word [");//  AX  MUL r/m16 = DX:AX
+	if (wi==4) printstring("\n mul dword [");//EAX  MUL r/m32 = EDX:EAX
 		printName(id1);
 		prc(']');
-		return;
-	}
-	if (wi==2) {
-		printstring("\n mul word [");
-		printName(id1);
-		prc(']');
-		return;
-	}	
-	if (wi==4) {
-		printstring("\n mul dword [");
-		printName(id1);
-		prc(']');
-		return;
-	}
-	error1("multiplier");
 }
 
 int doidiv(int ids) {
@@ -984,26 +971,40 @@ int doidiv(int ids) {
 	}
 	mode=typeName();
 	id1=searchname();
-	if (mode) error1("only const or int as divisor");
-	gettypes(id1);
-	if (typei) error1("only int as simple var divisor");
-	if (wi!=2) error1("only int, no byte as divisor");
-	printstring("\n mov bx, ");
-	v(id1);
-	if (ids) printstring("\n cwd\n idiv bx");//sign ext DX:AX
-		else printstring("\n xor dx, dx\n div bx");
+	if (mode) error1("only simple var as divisor");//no *, &
+	gettypes(id1);//widthi, wi(0,1,2,4), typei(0, 1=*, 2=&)
+	if (typei) error1("only char int or long as simple var divisor");
+	if (wi==0) error1("divisor");	
+
+	if (wi==1) {//   AX   DIV r/m8  =  AL(Quotient),  AH(Remainder)
+		if (ids) printstring("\n cbw\n idiv byte [");//sign ext DX:AX
+			else printstring("\n div byte [");
+		}	
+	if (wi==2) {//DX:AX   DIV r/m16 =  AX(Quotient),  DX(Remainder)
+		if (ids) printstring("\n cwd\n idiv word [");//sign ext DX:AX
+			else printstring("\n xor dx, dx\n div word [");
+		}
+	if (wi==4) {//EDX:EAX DIV r/m32 = EAX(Quotient), EDX(Remainder)
+		if (ids) printstring("\n cdq\n idiv dword [");//sign ext DX:AX
+			else printstring("\n xor edx, edx\n div dword [");
+		}
+	printName(id1);
+	prc(']');
 }
 
 int domod(int ids) {
     doidiv(ids);
-    printstring("\n mov ax, dx");
+    if (wi==1) printstring("\n mov al, ah");
+    if (wi==2) printstring("\n mov ax, dx");
+    if (wi==4) printstring("\n mov eax, edx");
 }
 
 
 int docalltype[10]; int docallvalue[10];
 
-int docall() {// 1=CONST, 2=String, 3=&, 4=Name, (5=reg)
-    int i; int narg; int t0; int n0;  int sz32;
+int docall() {
+    int i; int narg; int t0;// 1=CONST, 2=String, 3=&, 4=Name, (5=reg) 
+    int n0;  int sz32;
 	char procname[IDLENMAX]; 
     narg=0;
     sz32=0;
