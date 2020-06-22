@@ -935,20 +935,42 @@ int doassign(int mode, int i, int ixarr, int ixconst) {
 }
 
 int domul(int ids) {
-    if (ids) rterm("imul");
-    else {
-        if (istoken(T_CONST)) {
-            printstring("\n mov bx, ");
-            printunsigned(lexval);
-            printstring("\n mul bx");
-            return;
-        }
-	rterm("mul");
-	return;
-
-
-//        else error1("with MUL only const number as multiplier allowed");
-        }
+    int mode; int id1;
+    if (ids) {
+	    rterm("imul");
+	    return;
+	    }
+	printstring("\n;do not forget to save the high half:mov [Longvar+2],dx");    
+	if (istoken(T_CONST)) {//mul 123
+		printstring("\n mov bx, ");
+		printunsigned(lexval);
+		printstring("\n mul bx");
+		return;
+	}
+	mode=typeName();
+	id1=searchname();
+	if (mode) error1("only int as multiplier");
+	gettypes(id1);
+	if (typei) error1("only simple int as multipier");
+	if (wi==1) {
+		printstring("\n mul byte [");
+		printName(id1);
+		prc(']');
+		return;
+	}
+	if (wi==2) {
+		printstring("\n mul word [");
+		printName(id1);
+		prc(']');
+		return;
+	}	
+	if (wi==4) {
+		printstring("\n mul dword [");
+		printName(id1);
+		prc(']');
+		return;
+	}
+	error1("multiplier");
 }
 
 int doidiv(int ids) {
@@ -958,19 +980,18 @@ int doidiv(int ids) {
         printunsigned(lexval);
         if (ids) printstring("\n cwd\n idiv bx");
             else printstring("\n mov dx, 0\n div bx");
-        }
-    else {
-        mode=typeName();
-        id1=searchname();
-        if (mode) error1("only const number or int as divisor allowed");
-        gettypes(id1);
-        if (typei) error1("only int as simple var divisor allowed");
-        if (wi!=2) error1("only int, no byte as divisor allowed");
-        printstring("\n mov bx, ");
-        v(id1);
-        if (ids) printstring("\n cwd\n idiv bx");//sign ext DX:AX
-            else printstring("\n xor dx, dx\n div bx");
-    }
+        return;    
+	}
+	mode=typeName();
+	id1=searchname();
+	if (mode) error1("only const or int as divisor");
+	gettypes(id1);
+	if (typei) error1("only int as simple var divisor");
+	if (wi!=2) error1("only int, no byte as divisor");
+	printstring("\n mov bx, ");
+	v(id1);
+	if (ids) printstring("\n cwd\n idiv bx");//sign ext DX:AX
+		else printstring("\n xor dx, dx\n div bx");
 }
 
 int domod(int ids) {
