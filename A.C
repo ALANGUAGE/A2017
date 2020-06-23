@@ -953,11 +953,10 @@ int domul(int ids) {
 	gettypes(id1);
 	if (typei) error1("only simple int as multipier");
 	if (wi==0) error1("multiplier");	
-	if (wi==1) printstring("\n mul byte [");//  AL  MUL r/m8  = AX
-	if (wi==2) printstring("\n mul word [");//  AX  MUL r/m16 = DX:AX
-	if (wi==4) printstring("\n mul dword [");//EAX  MUL r/m32 = EDX:EAX
-		printName(id1);
-		prc(']');
+	if (wi==1) printstring("\n mul byte ");//  AL  MUL r/m8  = AX
+	if (wi==2) printstring("\n mul word ");//  AX  MUL r/m16 = DX:AX
+	if (wi==4) printstring("\n mul dword ");//EAX  MUL r/m32 = EDX:EAX
+	v(id1);
 }
 
 int doidiv(int ids) {
@@ -977,19 +976,18 @@ int doidiv(int ids) {
 	if (wi==0) error1("divisor");	
 
 	if (wi==1) {//   AX   DIV r/m8  =  AL(Quotient),  AH(Remainder)
-		if (ids) printstring("\n cbw\n idiv byte [");//sign ext DX:AX
-			else printstring("\n div byte [");
+		if (ids) printstring("\n cbw\n idiv byte ");//sign ext DX:AX
+			else printstring("\n div byte ");
 		}	
 	if (wi==2) {//DX:AX   DIV r/m16 =  AX(Quotient),  DX(Remainder)
-		if (ids) printstring("\n cwd\n idiv word [");//sign ext DX:AX
-			else printstring("\n xor dx, dx\n div word [");
+		if (ids) printstring("\n cwd\n idiv word ");//sign ext DX:AX
+			else printstring("\n xor dx, dx\n div word ");
 		}
 	if (wi==4) {//EDX:EAX DIV r/m32 = EAX(Quotient), EDX(Remainder)
-		if (ids) printstring("\n cdq\n idiv dword [");//sign ext DX:AX
-			else printstring("\n xor edx, edx\n div dword [");
+		if (ids) printstring("\n cdq\n idiv dword ");//sign ext DX:AX
+			else printstring("\n xor edx, edx\n div dword ");
 		}
-	printName(id1);
-	prc(']');
+	v(id1);
 }
 
 int domod(int ids) {
