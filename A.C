@@ -940,7 +940,7 @@ int domul(int ids) {
 	    rterm("imul");
 	    return;
 	    }
-	printstring("\n;do not forget to save the high word:mov [Longvar+2],dx");    
+	printstring("\n;todo:save high part:mov [Longvar+2(+4)],(e)dx");    
 	if (istoken(T_CONST)) {//mul 123
 		printstring("\n mov bx, ");
 		printunsigned(lexval);
