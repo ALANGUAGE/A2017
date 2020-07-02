@@ -100,10 +100,10 @@ int ireg2;
 
 int writetty()     {//char in AL
     ah=0x0E;
-    asm push bx
+    push bx
     bx=0;     //page in BH
     inth 0x10;
-    asm pop bx
+    pop bx
 }
 int putch(char c)  {
     if (c==10)  {// LF
@@ -506,18 +506,10 @@ int getlex() {
                c=next();
                c=c-48;
                lexval=lexval*10;
-               Llexval = Llexval * 10;//16 bit mul
-/*		    mov eax, [Llexval]
-		    mov bx, 10
-            mul bx
-		    mov dword [Llexval], eax
-*/
-/*__asm{
-			mov eax, [Llexval]
-		    mov ebx, 10			; error
-            mul ebx
-		    mov dword [Llexval], eax
-}*/         
+			asm	mov eax, [Llexval];//emulate: Llexval=Llexval*(long)10;
+		    __emit__ (0x66,0xBB,0x0A,0,0,0 );// error  mov ebx, 10	
+            asm mul ebx
+		    asm mov dword [Llexval], eax
                i = (int) c;
                l = (long) c;
                lexval=lexval+i;
