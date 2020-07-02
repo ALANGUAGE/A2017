@@ -516,8 +516,9 @@ int getlex() {
                Llexval = Llexval + l;
            }
       }
-//      lexval = Llexval;//cast long to int 
-      return T_CONST;
+//      lexval = Llexval;//cast long to int, todo remove calc of lexval 
+	if (Llexval != lexval) error1("lexval != Llexval");	
+    return T_CONST;
   }
   if (c==39) {//single apostrophe
       lexval=next();
