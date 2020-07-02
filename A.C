@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1.2";//17475 bytes. 32905 stack
+char Version1[]="PLA compiler A.COM V1.1.3";//17475 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -44,7 +44,7 @@ char isPrint=1;//set screen listing
 #define ORGDATA     20000//set to end of text=start of arrays
 unsigned int orgDataOriginal=20000;//must be ORGDATA
 unsigned int orgDatai;//actual max of array, must be less than stack
-#define COMAX        3000
+#define COMAX        4000
 char co[COMAX];//constant storage
 int maxco=0;
 int maxco1=0;
@@ -534,6 +534,7 @@ int getlex() {
           if (lexval=='n') lexval=10;
           if (lexval=='t') lexval= 9;
           if (lexval=='0') lexval= 0;
+          if (lexval== 92) lexval=92;//backslash
       }
       next();
       return T_CONST;
@@ -1691,7 +1692,7 @@ int epilog() {
     printstring(" (");                  printunsigned(COMAX);
     i = COMAX;
     i = i - maxco;
-    if (i<=1000)printstring("\n ** Warning ** constant area too small");
+    if (i<=500)printstring("\n ** Warning ** constant area too small");
     printstring("), stacksize: ");
     i=65535;
     i=i-orgDatai;
