@@ -1,4 +1,4 @@
-;PLA compiler A.COM V1.1.2, Input: A.C, Output: A.S
+;PLA compiler A.COM V1.1.3, Input: A.C, Output: A.S
 org  256 
 jmp main
 ;-1 char Version1[]="PLA compiler A.COM V1.1.3";//17475 bytes. 32905 stack
@@ -2640,7 +2640,7 @@ getlex: PROC
  jne .getlex128
  mov ax, 0
  mov word [lexval], ax
-;-537           if (lexval== 92) lexval=92;//backslash
+;-537           if (lexval=='\\') lexval=92;//backslash
 
 .getlex128:
  mov ax, [lexval]

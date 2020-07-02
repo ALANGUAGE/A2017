@@ -534,7 +534,7 @@ int getlex() {
           if (lexval=='n') lexval=10;
           if (lexval=='t') lexval= 9;
           if (lexval=='0') lexval= 0;
-          if (lexval== 92) lexval=92;//backslash
+          if (lexval=='\\') lexval=92;//backslash
       }
       next();
       return T_CONST;
