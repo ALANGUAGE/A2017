@@ -401,14 +401,14 @@ int getVarName(unsigned int i) {
 	while (j < i) {
 		while (*p) p++;
 		p++;
-		j++;	 		
+		j++;
 	}
-	return p;	
+	return p;
 }
-		
+
 int printName(unsigned int i) {
     if (i < GTop) {
-	    i=getVarName(i);	    
+	    i=getVarName(i);
         printstring(i);
     }
     else {
@@ -433,13 +433,13 @@ int getlex() {
     char c; char *p;
     char symboltmp[80];
     int i; int j; long l;
-    
-	do {    
+
+	do {
 		c=next();
-    	if (c == 0) return 0; 
+    	if (c == 0) return 0;
     	}
     while (c <= ' ');
-      
+
   if (c=='=') {if(thechar=='=') {next(); return T_EQ; }}
   if (c=='!') {if(thechar=='=') {next(); return T_NE; }}
   if (c=='<') {if(thechar=='=') {next(); return T_LE; }}
@@ -483,7 +483,7 @@ int getlex() {
   }
   if (digit(c)) {
       lexval=0;
-      Llexval = (long) 0;//todo get number in long      
+      Llexval = (long) 0;//todo get number in long
       lexval=c-'0'; // lexval=int hi=0, c=char
       Llexval= (long) c-'0';
       if (thechar=='x') thechar='X';
@@ -507,7 +507,7 @@ int getlex() {
                c=c-48;
                lexval=lexval*10;
 			asm	mov eax, [Llexval];//emulate: Llexval=Llexval*(long)10;
-		    __emit__ (0x66,0xBB,0x0A,0,0,0 );// error  mov ebx, 10	
+		    __emit__ (0x66,0xBB,0x0A,0,0,0 );// error  mov ebx, 10
             asm mul ebx
 		    asm mov dword [Llexval], eax
                i = (int) c;
@@ -516,8 +516,8 @@ int getlex() {
                Llexval = Llexval + l;
            }
       }
-//      lexval = Llexval;//cast long to int, todo remove calc of lexval 
-	if (Llexval != lexval) error1("lexval != Llexval");	
+//      lexval = Llexval;//cast long to int, todo remove calc of lexval
+	if (Llexval != lexval) error1("lexval != Llexval");
     return T_CONST;
   }
   if (c==39) {//single apostrophe
@@ -579,7 +579,7 @@ int getlex() {
         }
         i++;
     }
-    return T_NAME; } 
+    return T_NAME; }
     error1("Input item not recognized");
 }
 
@@ -934,7 +934,7 @@ int domul(int ids) {
 	    rterm("imul");
 	    return;
 	    }
-	printstring("\n;todo:save high part:mov [Longvar+2(+4)],(e)dx");    
+	printstring("\n;todo:save high part:mov [Longvar+2(+4)],(e)dx");
 	if (istoken(T_CONST)) {//mul 123
 		printstring("\n mov bx, ");
 		printunsigned(lexval);
@@ -946,7 +946,7 @@ int domul(int ids) {
 	if (mode) error1("only simple var as multiplier");
 	gettypes(id1);
 	if (typei) error1("only simple int as multipier");
-	if (wi==0) error1("multiplier");	
+	if (wi==0) error1("multiplier");
 	if (wi==1) printstring("\n mul byte ");//  AL  MUL r/m8  = AX
 	if (wi==2) printstring("\n mul word ");//  AX  MUL r/m16 = DX:AX
 	if (wi==4) printstring("\n mul dword ");//EAX  MUL r/m32 = EDX:EAX
@@ -960,19 +960,19 @@ int doidiv(int ids) {
         printunsigned(lexval);
         if (ids) printstring("\n cwd\n idiv bx");
             else printstring("\n mov dx, 0\n div bx");
-        return;    
+        return;
 	}
 	mode=typeName();
 	id1=searchname();
 	if (mode) error1("only simple var as divisor");//no *, &
 	gettypes(id1);//widthi, wi(0,1,2,4), typei(0, 1=*, 2=&)
 	if (typei) error1("only char int or long as simple var divisor");
-	if (wi==0) error1("divisor");	
+	if (wi==0) error1("divisor");
 
 	if (wi==1) {//   AX   DIV r/m8  =  AL(Quotient),  AH(Remainder)
 		if (ids) printstring("\n cbw\n idiv byte ");//sign ext DX:AX
 			else printstring("\n div byte ");
-		}	
+		}
 	if (wi==2) {//DX:AX   DIV r/m16 =  AX(Quotient),  DX(Remainder)
 		if (ids) printstring("\n cwd\n idiv word ");//sign ext DX:AX
 			else printstring("\n xor dx, dx\n div word ");
@@ -995,9 +995,9 @@ int domod(int ids) {
 int docalltype[10]; int docallvalue[10];
 
 int docall() {
-    int i; int narg; int t0;// 1=CONST, 2=String, 3=&, 4=Name, (5=reg) 
+    int i; int narg; int t0;// 1=CONST, 2=String, 3=&, 4=Name, (5=reg)
     int n0;  int sz32;
-	char procname[IDLENMAX]; 
+	char procname[IDLENMAX];
     narg=0;
     sz32=0;
     checknamelen();
@@ -1066,15 +1066,20 @@ int docall() {
             }
         if(t0==4){
             gettypes(n0);
-            if(wi==2) {
-                printstring("\n push word ");
-                v(n0);
-                }
-            else {
+            if (wi==1) {
                 printstring("\n mov al, byte ");
                 v(n0);
                 printstring("\n mov ah, 0\n push ax");
+            }
+            else if(wi==2) {
+                printstring("\n push word ");
+                v(n0);
                 }
+            else if(wi==4) {
+                printstring("\n push dword ");
+                v(n0);
+                }
+            else error1("wi compiler error in docall() ");
             }
         if(t0==5){
             printstring("\n push ");
