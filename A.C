@@ -1078,13 +1078,14 @@ int docall() {
             else if(wi==4) {
                 printstring("\n push dword ");
                 v(n0);
+                sz32=sz32+2;///////////////
                 }
             else error1("wi compiler error in docall() ");
             }
         if(t0==5){
             printstring("\n push ");
             printreg(n0);
-            if (n0 >= 47) sz32+2;
+            if (n0 >= 47) sz32=sz32+2;//////////////
             }
         i--;
         } while (i > 0);
