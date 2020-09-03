@@ -1078,14 +1078,14 @@ int docall() {
             else if(wi==4) {
                 printstring("\n push dword ");
                 v(n0);
-                sz32=sz32+2;///////////////
+                sz32=sz32+2;
                 }
             else error1("wi compiler error in docall() ");
             }
         if(t0==5){
             printstring("\n push ");
             printreg(n0);
-            if (n0 >= 47) sz32=sz32+2;//////////////
+            if (n0 >= 47) sz32=sz32+2;
             }
         i--;
         } while (i > 0);
@@ -1152,14 +1152,21 @@ int expr() {
     if (istoken(T_PLUSPLUS  )) {
         if(mode)error1("Only var allowed");
         printstring("\n inc  ");
-        if (wi==2) printstring("word"); else printstring("byte");
+        
+        if 		(wi==1) printstring("byte");
+        else if (wi==2) printstring("word"); 
+        else if (wi==4) printstring("dword");
+        else error1("wi compiler error in T_PLUSPLUS ");        
         v(id1);
         goto e1;
         }
     if (istoken(T_MINUSMINUS)) {
         if(mode)error1("Only var allowed");
         printstring("\n dec  ");
-        if (wi==2) printstring("word"); else printstring("byte");
+        if 		(wi==1) printstring("byte");
+        else if (wi==2) printstring("word"); 
+        else if (wi==4) printstring("dword");
+        else error1("wi compiler error in T_PLUSPLUS ");        
         v(id1);
         goto e1;
         }
