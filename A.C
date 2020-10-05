@@ -1,4 +1,4 @@
-char Version1[]="PLA compiler A.COM V1.1.3";//17475 bytes. 32905 stack
+char Version1[]="A.COM V1.1.4";//17475 bytes. 32905 stack
 //todo:op=reg not recognized
 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
 //5-Sign, 6-Ptr, 7_&Array
@@ -1683,6 +1683,7 @@ int epilog() {
     unsigned int i;
     isPrint=1;
     GTop--;
+/*
     printstring("\n;Glob. variables:"); printunsigned(GTop);
     printstring(" (");                  printunsigned(VARMAX);
     i = VarNamePtr - &VarNames;
@@ -1696,13 +1697,15 @@ int epilog() {
     printstring(")\n;Lines:");          printunsigned(lineno);
     printstring(", Constant: ");        printunsigned(maxco);
     printstring(" (");                  printunsigned(COMAX);
+*/
+//printstring("\n");
     i = COMAX;
     i = i - maxco;
     if (i<=500)printstring("\n ** Warning ** constant area too small");
-    printstring("), stacksize: ");
+//    printstring("), stacksize: ");
     i=65535;
     i=i-orgDatai;
-    printunsigned(i);
+//    printunsigned(i);
     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
 }

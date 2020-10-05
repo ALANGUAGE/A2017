@@ -1,9 +1,9 @@
-;PLA compiler A.COM V1.1.3, Input: A.C, Output: A.S
+;A.COM V1.1.4, Input: A.C, Output: A.S
 org  256 
 jmp main
-;-1 char Version1[]="PLA compiler A.COM V1.1.3";//17475 bytes. 32905 stack
+;-1 char Version1[]="A.COM V1.1.4";//17475 bytes. 32905 stack
 
-Version1 db "PLA compiler A.COM V1.1.3",0
+Version1 db "A.COM V1.1.4",0
 ;-2 //todo:op=reg not recognized
 
 ;-3 //todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
@@ -9623,246 +9623,160 @@ epilog: PROC
 ;-1685     GTop--;
 
  dec  word[GTop]
-;-1686     printstring("\n;Glob. variables:"); printunsigned(GTop);
+;-1686 /*
 
- push epilog_0
- call printstring
- add  sp, 2
- push word [GTop]
- call printunsigned
- add  sp, 2
-;-1687     printstring(" (");                  printunsigned(VARMAX);
+;-1687     printstring("\n;Glob. variables:"); printunsigned(GTop);
 
- push epilog_1
- call printstring
- add  sp, 2
- push 400
- call printunsigned
- add  sp, 2
-;-1688     i = VarNamePtr - &VarNames;
+;-1688     printstring(" (");                  printunsigned(VARMAX);
 
- mov ax, [VarNamePtr]
- sub ax, VarNames
- mov [bp-2], ax
-;-1689     printstring("):");                  printunsigned(i);
+;-1689     i = VarNamePtr - &VarNames;
 
- push epilog_2
- call printstring
- add  sp, 2
- push word [bp-2]
- call printunsigned
- add  sp, 2
-;-1690     printstring(" (");					printunsigned(VARNAMESMAX);
+;-1690     printstring("):");                  printunsigned(i);
 
- push epilog_3
- call printstring
- add  sp, 2
- push 4000
- call printunsigned
- add  sp, 2
-;-1691     printstring("), Functions:");       printunsigned(FunctionMaxIx);
+;-1691     printstring(" (");					printunsigned(VARNAMESMAX);
 
- push epilog_4
- call printstring
- add  sp, 2
- push word [FunctionMaxIx]
- call printunsigned
- add  sp, 2
-;-1692     printstring(" (");                  printunsigned(FUNCMAX);
+;-1692     printstring("), Functions:");       printunsigned(FunctionMaxIx);
 
- push epilog_5
- call printstring
- add  sp, 2
- push 300
- call printunsigned
- add  sp, 2
-;-1693     i = FunctionNamePtr - &FunctionNames;
+;-1693     printstring(" (");                  printunsigned(FUNCMAX);
 
- mov ax, [FunctionNamePtr]
- sub ax, FunctionNames
- mov [bp-2], ax
-;-1694     printstring("):");                  printunsigned(i);
+;-1694     i = FunctionNamePtr - &FunctionNames;
 
- push epilog_6
- call printstring
- add  sp, 2
- push word [bp-2]
- call printunsigned
- add  sp, 2
-;-1695     printstring(" (");					printunsigned(FUNCTIONNAMESMAX);
+;-1695     printstring("):");                  printunsigned(i);
 
- push epilog_7
- call printstring
- add  sp, 2
- push 3000
- call printunsigned
- add  sp, 2
-;-1696     printstring(")\n;Lines:");          printunsigned(lineno);
+;-1696     printstring(" (");					printunsigned(FUNCTIONNAMESMAX);
 
- push epilog_8
- call printstring
- add  sp, 2
- push word [lineno]
- call printunsigned
- add  sp, 2
-;-1697     printstring(", Constant: ");        printunsigned(maxco);
+;-1697     printstring(")\n;Lines:");          printunsigned(lineno);
 
- push epilog_9
- call printstring
- add  sp, 2
- push word [maxco]
- call printunsigned
- add  sp, 2
-;-1698     printstring(" (");                  printunsigned(COMAX);
+;-1698     printstring(", Constant: ");        printunsigned(maxco);
 
- push epilog_10
- call printstring
- add  sp, 2
- push 4000
- call printunsigned
- add  sp, 2
-;-1699     i = COMAX;
+;-1699     printstring(" (");                  printunsigned(COMAX);
+
+;-1700 */
+
+;-1701 //printstring("\n");
+
+;-1702     i = COMAX;
 
  mov ax, 4000
  mov [bp-2], ax
-;-1700     i = i - maxco;
+;-1703     i = i - maxco;
 
  mov ax, [bp-2]
  sub ax, [maxco]
  mov [bp-2], ax
-;-1701     if (i<=500)printstring("\n ** Warning ** constant area too small");
+;-1704     if (i<=500)printstring("\n ** Warning ** constant area too small");
 
  mov ax, [bp-2]
  cmp ax, 500
  ja  .epilog537
- push epilog_11
+ push epilog_0
  call printstring
  add  sp, 2
-;-1702     printstring("), stacksize: ");
+;-1705 //    printstring("), stacksize: ");
+
+;-1706     i=65535;
 
 .epilog537:
- push epilog_12
- call printstring
- add  sp, 2
-;-1703     i=65535;
-
  mov ax, 65535
  mov [bp-2], ax
-;-1704     i=i-orgDatai;
+;-1707     i=i-orgDatai;
 
  mov ax, [bp-2]
  sub ax, [orgDatai]
  mov [bp-2], ax
-;-1705     printunsigned(i);
+;-1708 //    printunsigned(i);
 
- push word [bp-2]
- call printunsigned
- add  sp, 2
-;-1706     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
+;-1709     if (i <= 1000) printstring("\n *** Warning *** Stack too small");
 
  mov ax, [bp-2]
  cmp ax, 1000
  ja  .epilog538
- push epilog_13
+ push epilog_1
  call printstring
  add  sp, 2
-;-1707 
+;-1710 
 
-;-1708 }
+;-1711 }
 
 .epilog538:
-;-1709 
+;-1712 
 
-;-1710 int main() {
+;-1713 int main() {
 
  LEAVE
  ret
-epilog_0 db "\n;Glob. variables:",0
-epilog_1 db " (",0
-epilog_2 db "):",0
-epilog_3 db " (",0
-epilog_4 db "), Functions:",0
-epilog_5 db " (",0
-epilog_6 db "):",0
-epilog_7 db " (",0
-epilog_8 db ")\n;Lines:",0
-epilog_9 db ", Constant: ",0
-epilog_10 db " (",0
-epilog_11 db "\n ** Warning ** constant area too small",0
-epilog_12 db "), stacksize: ",0
-epilog_13 db "\n *** Warning *** Stack too small",0
+epilog_0 db "\n ** Warning ** constant area too small",0
+epilog_1 db "\n *** Warning *** Stack too small",0
 ENDP
 
 main: PROC
-;-1711     getarguments();
+;-1714     getarguments();
 
  call getarguments
-;-1712     openfiles();
+;-1715     openfiles();
 
  call openfiles
-;-1713     isPrint=0;
+;-1716     isPrint=0;
 
  mov ax, 0
  mov byte [isPrint], al
-;-1714     printstring("\norg  256 \njmp main");
+;-1717     printstring("\norg  256 \njmp main");
 
  push main_0
  call printstring
  add  sp, 2
-;-1715 
+;-1718 
 
-;-1716 	GTop = 1;
+;-1719 	GTop = 1;
 
  mov ax, 1
  mov word [GTop], ax
-;-1717     VarNamePtr= &VarNames;
+;-1720     VarNamePtr= &VarNames;
 
  mov ax, VarNames
  mov word [VarNamePtr], ax
-;-1718     FunctionNamePtr= &FunctionNames;
+;-1721     FunctionNamePtr= &FunctionNames;
 
  mov ax, FunctionNames
  mov word [FunctionNamePtr], ax
-;-1719     FunctionMaxIx=0;
+;-1722     FunctionMaxIx=0;
 
  mov ax, 0
  mov word [FunctionMaxIx], ax
-;-1720     orgDatai=orgDataOriginal;
+;-1723     orgDatai=orgDataOriginal;
 
  mov ax, [orgDataOriginal]
  mov word [orgDatai], ax
-;-1721     fgetsp=&fgetsdest;
+;-1724     fgetsp=&fgetsdest;
 
  mov ax, fgetsdest
  mov word [fgetsp], ax
-;-1722     *fgetsp=0;
+;-1725     *fgetsp=0;
 
  mov ax, 0
  mov  bx, [fgetsp]
  mov  [bx], al
-;-1723     thechar=fgets1();
+;-1726     thechar=fgets1();
 
  call fgets1
  mov byte [thechar], al
-;-1724 
+;-1727 
 
-;-1725     parse();
+;-1728     parse();
 
  call parse
-;-1726 
+;-1729 
 
-;-1727     epilog();
+;-1730     epilog();
 
  call epilog
-;-1728     end1(0);
+;-1731     end1(0);
 
  push 0
  call end1
  add  sp, 2
-;-1729 }
+;-1732 }
 
  ret
 main_0 db "\norg  256 \njmp main",0
 ENDP
-;Glob. variables:102 (400):818 (4000), Functions:79 (300):634 (3000)
-;Lines:1730, Constant: 815 (4000), stacksize: 32002
