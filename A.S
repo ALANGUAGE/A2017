@@ -9653,8 +9653,11 @@ epilog: PROC
 
 ;-1700 */
 
-;-1701 //printstring("\n");
+;-1701 printstring("\n");
 
+ push epilog_0
+ call printstring
+ add  sp, 2
 ;-1702     i = COMAX;
 
  mov ax, 4000
@@ -9669,7 +9672,7 @@ epilog: PROC
  mov ax, [bp-2]
  cmp ax, 500
  ja  .epilog537
- push epilog_0
+ push epilog_1
  call printstring
  add  sp, 2
 ;-1705 //    printstring("), stacksize: ");
@@ -9691,7 +9694,7 @@ epilog: PROC
  mov ax, [bp-2]
  cmp ax, 1000
  ja  .epilog538
- push epilog_1
+ push epilog_2
  call printstring
  add  sp, 2
 ;-1710 
@@ -9705,8 +9708,9 @@ epilog: PROC
 
  LEAVE
  ret
-epilog_0 db "\n ** Warning ** constant area too small",0
-epilog_1 db "\n *** Warning *** Stack too small",0
+epilog_0 db "\n",0
+epilog_1 db "\n ** Warning ** constant area too small",0
+epilog_2 db "\n *** Warning *** Stack too small",0
 ENDP
 
 main: PROC

@@ -1698,7 +1698,7 @@ int epilog() {
     printstring(", Constant: ");        printunsigned(maxco);
     printstring(" (");                  printunsigned(COMAX);
 */
-//printstring("\n");
+printstring("\n");
     i = COMAX;
     i = i - maxco;
     if (i<=500)printstring("\n ** Warning ** constant area too small");
