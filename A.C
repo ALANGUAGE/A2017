@@ -1,7 +1,17 @@
-char Version1[]="A.COM V1.1.4";//17475 bytes. 32905 stack
-//todo:op=reg not recognized
-//todo Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
-//5-Sign, 6-Ptr, 7_&Array
+char Version1[]="PLA Compiler A.COM V1.2";//17475 bytes. 32905 stack
+/*todo:
+	op=reg not recognized
+	char, int,long var=const, shortcut for: mov ax,0; mov var,ax
+	Property byte: 0-Null, 1-8Byte, 2-16Int, 3-32Long, 4-64LongLong
+											5-Sign, 6-Ptr, 7_&Array
+	L691: while (i<65528) jae without sign
+	#ifdef debug, #endif
+	statistic: var
+	1. array[] not found
+	if (long == const)
+	long += 512; add byte
+	var += var; not found error, better: only with const
+*/
 #define IDLENMAX       31//max length of names
 #define COLUMNMAX     128//output, input is 100
 #define T_NAME        256//the following defines for better clearity > 255
@@ -98,6 +108,20 @@ int ireg1;
 int mod2;
 int ireg2;
 
+int test() {
+	if (fdin > 500) ;
+	if (lexval > 500) ;
+//	if (Llexval > 500) ;
+//	if (Llexval == 500) ;
+//	Llexval += 512;
+//	lexval += nlabel;
+	__asm{
+}	}
+
+
+//---------------------------  Start LIB.C  --------------------
+//------------------------------------   IO  -------------------
+
 int writetty()     {//char in AL
     ah=0x0E;
     push bx
@@ -114,7 +138,7 @@ int putch(char c)  {
     writetty();
 }
 int cputs(char *s) {
-    char c;
+    unsigned char c;//var unsg byte c = bp+-2;
     while(*s) {
         c=*s;
         putch(c);
@@ -125,6 +149,8 @@ int mkneg(int n)   {
     n; // ax=n;
     asm neg ax
 }
+
+//--------------------------------  dos  -----------------------
 
 int DosInt() {
     inth 0x21;
@@ -167,6 +193,8 @@ int fputcR(char *n, int fd) {
     DosInt();
 }
 
+//--------------------------------  string  ---------------------
+
 int letter(char c) {
       if (c=='_') return 1;
       if (c=='.') return 1;
@@ -188,14 +216,21 @@ int alnum(char c) {
     return 0;
 }
 
-int strlen(char *s) { int c;
+//int strlen(char *s) { int c;
+//    c=0;
+//    while (*s!=0) {s++; c++;}
+//    return c;
+//}
+int strlen1(char *s) { int c;
     c=0;
+    if (*s == 34) return 0; // "  quotation
     while (*s!=0) {s++; c++;}
     return c;
 }
-int strcpy(char *s, char *t) {
-    do { *s=*t; s++; t++; }
-    while (*t!=0);
+
+int strcpy(char *s, char *t) {//new
+    while (*t!=0) {
+    	*s=*t; s++; t++; }
     *s=0;
     return s;
 }
@@ -242,10 +277,10 @@ int eprs(char *s) {
 int prc(unsigned char c) {
     if (isPrint) {
         if (c==10) {
-            asm mov ax, 13
+            al=13;
             writetty();
         }
-        asm mov al, [bp+4]; al=c;
+        al=c;
         writetty();
     }
     fputcR(c, fdout);
@@ -304,7 +339,7 @@ int printinteger (int n){
     }
     n=n%10;
     n += '0';
-    prc(n);
+    prc(n);//only print with isPrint=on
 }
 
 int printunsigned(unsigned int n) {
@@ -315,7 +350,7 @@ int printunsigned(unsigned int n) {
     }
     n = n % 10; /*unsigned mod*/
     n += '0';
-    prc(n);
+    prc(n);//only print with isPrint=on
 }
 
 int end1(int n) {
@@ -608,7 +643,7 @@ int v(unsigned int i) {//value
 }
 int checknamelen() {
     int i;
-    i=strlen(Symbol);
+    i=strlen1(Symbol);
     if (i > IDLENMAX) error1("Item name is too long)");
 }
 
@@ -689,19 +724,21 @@ int addlocal() {
 
 
 int cmpneg(int ids) {
-       if(iscmp==T_EQ) printstring("\n jne .");         //ZF=0
-  else if(iscmp==T_NE) printstring("\n je  .");         //ZF=1
-  else if(iscmp==T_LE) if (ids) printstring("\n jg  .");//ZF=0 SF=O
-                       else     printstring("\n ja  .");//ZF=0 CF=0
-  else if(iscmp==T_GE) if (ids){printstring(" ;unsigned : ");
-                                printunsigned(ids);
-                                printstring("\n jl  .");}//SF!=O
-                       else    {printstring(" ;unsigned : ");
-                                printunsigned(ids);
-                                printstring("\n jb  .");}//jb=jc=CF=1
-  else if(iscmp=='<' ) printstring("\n jge .");          //SF=O
-  else if(iscmp=='>' ) printstring("\n jle .");          //ZF=1 | SF!=O
-  else error1("internal error compare unknown in CMPNEG()");
+       if(iscmp==T_EQ)			printstring("\n jne .");//ZF=0
+  else if(iscmp==T_NE)			printstring("\n je  .");//ZF=1
+  else if(iscmp==T_LE)	if (ids)printstring("\n jg  .");//ZF=0 SF=OF
+						else    printstring("\n ja  .");//ZF=0 CF=0
+  else if(iscmp==T_GE)	if (ids)printstring("\n jl  .");//SF!=OF
+						else    printstring("\n jb  .");//jb=jc=CF=1
+  else if(iscmp=='<' )	if (ids)printstring("\n jge .");//SF=OF
+							else	printstring("\n jge .");//CF=0
+  else if(iscmp=='>' )	if (ids)printstring("\n jle .");//ZF=1 | SF!=OF
+  						else	printstring("\n jle .");//ZF=1 | CF=1
+//  else if(iscmp=='<' )	if (ids)printstring("\n jge .");//SF=OF
+//						else	printstring("\n jae .");//CF=0
+//  else if(iscmp=='>' )	if (ids)printstring("\n jle .");//ZF=1 | SF!=OF
+//  						else	printstring("\n jbe .");//ZF=1 | CF=1
+//  else error1("internal error compare unknown in CMPNEG()");
 }
 
 int isrelational() {
@@ -718,7 +755,7 @@ w:  iscmp=token;
 }
 
 int checkreg() { // >=17 = 16bit, >=47 = 32bit
-  if (strlen(Symbol) <  2) return 0;
+  if (strlen1(Symbol) <  2) return 0;
   if (eqstr(Symbol,"al")) return 1;   if (eqstr(Symbol,"cl")) return 3;
   if (eqstr(Symbol,"dl")) return 5;   if (eqstr(Symbol,"bl")) return 7;
   if (eqstr(Symbol,"ah")) return 9;   if (eqstr(Symbol,"ch")) return 11;
@@ -731,7 +768,7 @@ int checkreg() { // >=17 = 16bit, >=47 = 32bit
   if (eqstr(Symbol,"ss")) return 37;  if (eqstr(Symbol,"ds")) return 39;
   if (eqstr(Symbol,"fs")) return 41;  if (eqstr(Symbol,"gs")) return 43;
   // (eqstr(Symbol,"ip")) return 45;
-  if (strlen(Symbol) >   3) return 0;
+  if (strlen1(Symbol) >   3) return 0;
   if (eqstr(Symbol,"eax")) return 47; if (eqstr(Symbol,"ecx")) return 50;
   if (eqstr(Symbol,"edx")) return 53; if (eqstr(Symbol,"ebx")) return 56;
   if (eqstr(Symbol,"esp")) return 59; if (eqstr(Symbol,"ebp")) return 62;
@@ -1166,7 +1203,7 @@ int expr() {
         if 		(wi==1) printstring("byte");
         else if (wi==2) printstring("word"); 
         else if (wi==4) printstring("dword");
-        else error1("wi compiler error in T_PLUSPLUS ");        
+        else error1("wi compiler error in T_MINUSMINUS ");        
         v(id1);
         goto e1;
         }
@@ -1420,7 +1457,7 @@ int searchFunction() {
     FunctionIndex=1;          //0=function name not found
     while (FunctionIndex <= FunctionMaxIx ) {
         if (eqstr(p, Symbol)) return FunctionIndex;
-        p = strlen(p) + p;
+        p = strlen1(p) + p;
         p++;
         FunctionIndex++;
     }
@@ -1512,7 +1549,7 @@ int dofunc() {
     printstring("\n ret");
     *cloc=0;
     printstring(co);
-    maxco1=strlen(co);
+    maxco1=strlen1(co);
     if (maxco1 > maxco) maxco=maxco1;
     printstring("\nENDP");
     VarNamePtr=VarNamePtrLocalStart;//delete local names
@@ -1556,7 +1593,7 @@ int doglob() {
                 prscomment(Symbol);
                 prc(34);
                 printstring(",0");
-                i=strlen(Symbol);
+                i=strlen1(Symbol);
                 GData[GTop]=i;
                 }
             else if (istoken('{' )) {
@@ -1655,7 +1692,7 @@ int getarguments() {
     strcpy(namein, argv);
     if (instr1(namein, '.') == 0) strcat(namein, ".C");
     strcpy(namelst, namein);
-    i=strlen(namelst);
+    i=strlen1(namelst);
     i--;
     c=&namelst+i;
     *c='S';
@@ -1697,8 +1734,8 @@ int epilog() {
     printstring(")\n;Lines:");          printunsigned(lineno);
     printstring(", Constant: ");        printunsigned(maxco);
     printstring(" (");                  printunsigned(COMAX);
+	printstring("). ");
 */
-printstring("\n");
     i = COMAX;
     i = i - maxco;
     if (i<=500)printstring("\n ** Warning ** constant area too small");
@@ -1730,3 +1767,4 @@ int main() {
     epilog();
     end1(0);
 }
+
