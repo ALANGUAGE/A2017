@@ -216,11 +216,12 @@ int alnum(char c) {
     return 0;
 }
 
-//int strlen(char *s) { int c;
-//    c=0;
-//    while (*s!=0) {s++; c++;}
-//    return c;
-//}
+int strlen(char *s) { int c;
+    c=0;
+    while (*s!=0) {s++; c++;}
+    return c;
+}
+
 int strlen1(char *s) { int c;
     c=0;
     if (*s == 34) return 0; // "  quotation
@@ -442,15 +443,16 @@ int getVarName(unsigned int i) {
 }
 
 int printName(unsigned int i) {
+	int j;
     if (i < GTop) {
 	    i=getVarName(i);
         printstring(i);
     }
     else {
         printstring("[bp");
-        i = GData[i];
-        if (i>0) prc('+');
-        printinteger(i);
+        j = GData[i];
+        if (j>0) prc('+');
+        printinteger(j);
         prc(']');
     }
 }
@@ -643,7 +645,7 @@ int v(unsigned int i) {//value
 }
 int checknamelen() {
     int i;
-    i=strlen1(Symbol);
+    i=strlen(Symbol);
     if (i > IDLENMAX) error1("Item name is too long)");
 }
 
@@ -731,14 +733,10 @@ int cmpneg(int ids) {
   else if(iscmp==T_GE)	if (ids)printstring("\n jl  .");//SF!=OF
 						else    printstring("\n jb  .");//jb=jc=CF=1
   else if(iscmp=='<' )	if (ids)printstring("\n jge .");//SF=OF
-							else	printstring("\n jge .");//CF=0
+						else	printstring("\n jae .");//CF=0
   else if(iscmp=='>' )	if (ids)printstring("\n jle .");//ZF=1 | SF!=OF
-  						else	printstring("\n jle .");//ZF=1 | CF=1
-//  else if(iscmp=='<' )	if (ids)printstring("\n jge .");//SF=OF
-//						else	printstring("\n jae .");//CF=0
-//  else if(iscmp=='>' )	if (ids)printstring("\n jle .");//ZF=1 | SF!=OF
-//  						else	printstring("\n jbe .");//ZF=1 | CF=1
-//  else error1("internal error compare unknown in CMPNEG()");
+  						else	printstring("\n jbe .");//ZF=1 | CF=1
+  else error1("internal error compare unknown in CMPNEG()");
 }
 
 int isrelational() {
@@ -755,7 +753,7 @@ w:  iscmp=token;
 }
 
 int checkreg() { // >=17 = 16bit, >=47 = 32bit
-  if (strlen1(Symbol) <  2) return 0;
+  if (strlen(Symbol) <  2) return 0;
   if (eqstr(Symbol,"al")) return 1;   if (eqstr(Symbol,"cl")) return 3;
   if (eqstr(Symbol,"dl")) return 5;   if (eqstr(Symbol,"bl")) return 7;
   if (eqstr(Symbol,"ah")) return 9;   if (eqstr(Symbol,"ch")) return 11;
@@ -768,7 +766,7 @@ int checkreg() { // >=17 = 16bit, >=47 = 32bit
   if (eqstr(Symbol,"ss")) return 37;  if (eqstr(Symbol,"ds")) return 39;
   if (eqstr(Symbol,"fs")) return 41;  if (eqstr(Symbol,"gs")) return 43;
   // (eqstr(Symbol,"ip")) return 45;
-  if (strlen1(Symbol) >   3) return 0;
+  if (strlen(Symbol) >   3) return 0;
   if (eqstr(Symbol,"eax")) return 47; if (eqstr(Symbol,"ecx")) return 50;
   if (eqstr(Symbol,"edx")) return 53; if (eqstr(Symbol,"ebx")) return 56;
   if (eqstr(Symbol,"esp")) return 59; if (eqstr(Symbol,"ebp")) return 62;
@@ -1457,7 +1455,7 @@ int searchFunction() {
     FunctionIndex=1;          //0=function name not found
     while (FunctionIndex <= FunctionMaxIx ) {
         if (eqstr(p, Symbol)) return FunctionIndex;
-        p = strlen1(p) + p;
+        p = strlen(p) + p;
         p++;
         FunctionIndex++;
     }
@@ -1549,7 +1547,7 @@ int dofunc() {
     printstring("\n ret");
     *cloc=0;
     printstring(co);
-    maxco1=strlen1(co);
+    maxco1=strlen(co);
     if (maxco1 > maxco) maxco=maxco1;
     printstring("\nENDP");
     VarNamePtr=VarNamePtrLocalStart;//delete local names
@@ -1593,7 +1591,7 @@ int doglob() {
                 prscomment(Symbol);
                 prc(34);
                 printstring(",0");
-                i=strlen1(Symbol);
+                i=strlen(Symbol);
                 GData[GTop]=i;
                 }
             else if (istoken('{' )) {
@@ -1692,7 +1690,7 @@ int getarguments() {
     strcpy(namein, argv);
     if (instr1(namein, '.') == 0) strcat(namein, ".C");
     strcpy(namelst, namein);
-    i=strlen1(namelst);
+    i=strlen(namelst);
     i--;
     c=&namelst+i;
     *c='S';
@@ -1720,7 +1718,7 @@ int epilog() {
     unsigned int i;
     isPrint=1;
     GTop--;
-/*
+
     printstring("\n;Glob. variables:"); printunsigned(GTop);
     printstring(" (");                  printunsigned(VARMAX);
     i = VarNamePtr - &VarNames;
@@ -1735,7 +1733,7 @@ int epilog() {
     printstring(", Constant: ");        printunsigned(maxco);
     printstring(" (");                  printunsigned(COMAX);
 	printstring("). ");
-*/
+
     i = COMAX;
     i = i - maxco;
     if (i<=500)printstring("\n ** Warning ** constant area too small");
